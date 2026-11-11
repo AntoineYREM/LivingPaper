@@ -1,11 +1,10 @@
 using System.Net;
-using Microsoft.AspNetCore.Mvc.Testing;
 using Shouldly;
 
 namespace LivingPaper.Web.IntegrationTests;
 
 // Smoke test: the real application starts in memory and serves its home page.
-public class HomePageTests(WebApplicationFactory<Program> factory) : IClassFixture<WebApplicationFactory<Program>>
+public class HomePageTests(LivingPaperFactory factory) : IClassFixture<LivingPaperFactory>
 {
     [Fact]
     public async Task Home_ReturnsOk_AndShowsTheProjectName()

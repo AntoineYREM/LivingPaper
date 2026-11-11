@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "prompts": {
+    "analysis.readPart": {
+      "description": "Reads one part of the book and takes notes on its characters. The text of the part is sent as the user message. Variable: {bookTitle} (the title of the book). The analysis reads the JSON described in the prompt: if you change its shape, the analysis will fail.",
+      "template": "You are reading an excerpt of the book \"{bookTitle}\". List the characters (people or creatures that act or speak), not the places or the objects. For each one, note everything the excerpt says about them.\nAnswer only with this JSON, with no other text:\n{\"characters\":[{\"name\":\"most complete name\",\"otherNames\":[\"nicknames or other names used\"],\"role\":\"who they are and what they do in the excerpt, in one sentence\",\"personality\":\"character, values, fears and desires, as the excerpt shows them\",\"speech\":\"register, tone and verbal habits, without copying the text of the book\",\"events\":\"what happens to them in the excerpt and their relationships with the other characters\",\"importance\":a number from 1 to 10 according to their place in the excerpt}]}\nAt most 25 characters, the most important first. Write in English, whatever the language of the book.\nImportant: never write straight double quotes (\") inside the texts, they would break the JSON. To quote a line of dialogue, use single quotes."
+    },
+    "analysis.mergeCharacters": {
+      "description": "Merges the notes of all the parts, chooses the main characters and writes their short descriptions. The notes are sent as the user message. Variables: {bookTitle} (the title of the book) and {maxCharacters}, which the application replaces with 10. To keep another number of characters, write it in place of {maxCharacters} in this prompt. The analysis reads the JSON described in the prompt: if you change its shape, the analysis will fail.",
+      "template": "You receive the notes taken on each part of the book \"{bookTitle}\", part by part, in JSON.\n1. Group a character mentioned under several names (first name, nickname, full name) into one.\n2. Keep the {maxCharacters} most important characters of the whole book, from the most to the least important.\n3. For each one, write in English a \"shortDescription\": one or two sentences saying who the character is in the story, at most 600 characters.\nAnswer only with this JSON, with no other text:\n{\"characters\":[{\"name\":\"...\",\"shortDescription\":\"...\"}]}\nImportant: never write straight double quotes (\") inside the texts, they would break the JSON. To quote a line of dialogue, use single quotes."
+    },
+    "analysis.characterProfile": {
+      "description": "Writes the chat profile of one character: everything the AI needs to play them in a conversation. The notes of all the parts are sent as the user message. Variables: {bookTitle} (the title of the book), {characterName} (the character's name) and {shortDescription} (the short description chosen by the merge). The answer is plain text, not JSON.",
+      "template": "You receive the notes taken on each part of the book \"{bookTitle}\", in JSON.\nWrite the chat profile of the character {characterName} ({shortDescription}): everything an AI needs to play this character in a conversation. In English, 150 to 300 words, as plain text (no JSON, no title): their personality, their way of speaking (register, tics, typical expressions), their relationships with the other characters, the key events of their story from the beginning to the end of the book, and what they know."
+    },
+    "analysis.bookSummary": {
+      "description": "Writes the short summary of the book's atmosphere: era, place and tone. The notes of all the parts are sent as the user message. Variable: {bookTitle} (the title of the book). The answer is plain text, not JSON.",
+      "template": "You receive the notes taken on each part of the book \"{bookTitle}\", in JSON.\nWrite a summary of the atmosphere of the book, in English, in at most 500 characters: the era, the place and the tone (genre, mood). Do not tell the plot. Plain text, no JSON, no title."
+    },
+    "chat.system": {
+      "description": "The system prompt of the chat: the AI plays one character, in short text messages, and answers in the language of the user. Variables: {bookTitle} (the title of the book), {characterName} (the character's name) and {profile} (the character's chat profile written by the analysis).",
+      "template": "You play {characterName}, a character of the book \"{bookTitle}\". Here is your profile:\n{profile}\n\nRules:\n- You ARE {characterName}: answer in the first person, with your personality and your way of speaking.\n- Answer in the language the user writes in, as in a dialogue: a few sentences, no long story.\n- You know your whole story, from the beginning to the end of the book.\n- Never leave your role and never say that you are an AI.\n- Talk like a person texting: short messages, one to three sentences, a natural tone, always with your personality and your way of speaking.\n- Never describe your gestures, movements or expressions (neither between asterisks nor between parentheses): write only what you would send in a message.\n- Plain text only: no markdown, no asterisks, no lists, no titles."
+    },
+    "llm.connectionTest": {
+      "description": "The message sent to a language model to test its connection when it is added in the settings. No variable. Any short answer means the connection works.",
+      "template": "Reply with the single word: pong"
+    }
+  }
+}

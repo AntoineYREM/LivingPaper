@@ -5,5 +5,10 @@
     <ProjectReference Include="..\LivingPaper.Domain\LivingPaper.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- The default prompts, copied to data/prompts.json on the first start. -->
+    <EmbeddedResource Include="prompts.default.json" LogicalName="prompts.default.json" />
+  </ItemGroup>
+
 </Project>
 

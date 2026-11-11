@@ -18,3 +18,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   (`books/{id}.json`) with a `schemaVersion`, atomic writes (temporary file then rename), length limits per field,
   tolerant reading (an unreadable file is reported without breaking the list) and intermediate analysis steps in
   `books/{id}.steps.json`.
+- Editable prompts (PAPER-15): all six prompts (`analysis.readPart`, `analysis.mergeCharacters`,
+  `analysis.characterProfile`, `analysis.bookSummary`, `chat.system`, `llm.connectionTest`) live in `data/prompts.json`
+  instead of the code. The defaults (`prompts.default.json`, in English) are copied in full on the first start; after an
+  update only the missing prompts are added and an existing prompt is never overwritten. Prompts are read again at
+  every use. An invalid file (bad JSON, missing or empty prompt, unknown variable) is an explicit error naming the
+  file and the prompt, never a silent fallback. The data directory is set with `DATA_DIRECTORY` (default `data`).
+  First `README.md` section, on the prompts.
