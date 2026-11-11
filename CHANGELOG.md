@@ -13,3 +13,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   `Persistence`, `Web`), one test project per layer, architecture tests that guard the allowed dependencies,
   a smoke test of the web application, and a GitHub Actions workflow that builds and tests every push.
   Tests use xUnit v3 on Microsoft.Testing.Platform.
+- JSON storage of analyzed books (PAPER-4): `Book`, `Character` and `BookId` in the Domain, the `IBookRepository` and
+  `IAnalysisStepStore` ports in the Application, and JSON file adapters in Persistence. One file per book
+  (`books/{id}.json`) with a `schemaVersion`, atomic writes (temporary file then rename), length limits per field,
+  tolerant reading (an unreadable file is reported without breaking the list) and intermediate analysis steps in
+  `books/{id}.steps.json`.
