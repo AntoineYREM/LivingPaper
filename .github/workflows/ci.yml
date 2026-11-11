@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Restore
+        run: dotnet restore LivingPaper.sln
+
+      - name: Build
+        run: dotnet build LivingPaper.sln --no-restore --configuration Release
+
+      - name: Test
+        run: dotnet test LivingPaper.sln --no-build --configuration Release
+
+      # End-to-end tests (Playwright) get their own step here with the E2E ticket (PAPER-17).

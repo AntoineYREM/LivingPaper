@@ -1,0 +1,10 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <ItemGroup>
+    <ProjectReference Include="..\LivingPaper.Domain\LivingPaper.Domain.csproj" />
+    <ProjectReference Include="..\LivingPaper.Application\LivingPaper.Application.csproj" />
+    <ProjectReference Include="..\LivingPaper.Infrastructure\LivingPaper.Infrastructure.csproj" />
+    <ProjectReference Include="..\LivingPaper.Persistence\LivingPaper.Persistence.csproj" />
+  </ItemGroup>
+
+</Project>

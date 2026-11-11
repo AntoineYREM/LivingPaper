@@ -1,0 +1,9 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\LivingPaper.Application\LivingPaper.Application.csproj" />
+    <ProjectReference Include="..\LivingPaper.Domain\LivingPaper.Domain.csproj" />
+  </ItemGroup>
+
+</Project>
+
