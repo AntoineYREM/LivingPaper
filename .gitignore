@@ -484,3 +484,6 @@ $RECYCLE.BIN/
 # --- LivingPaper ---
 # User data (books, settings with encrypted API keys, prompts): never committed.
 /data/
+
+# Local working books (copyrighted or large files are never committed)
+books/
