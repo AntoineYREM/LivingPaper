@@ -215,7 +215,7 @@ Square corners. The single radius is 2px, which only softens the edge of a contr
 
 ### Language switcher
 
-In the running head, at the right of the brand: one small-capital button per language (`EN`, `FR`, then any language added), each carrying its own name as its accessible label ("Français", never translated) and its own `lang`. The current one is underlined and has `aria-current="true"`; the others underline on hover. It is a form that posts to `/Language` (antiforgery token, works without JavaScript) and returns the visitor to the page they were on. Targets are at least 2.75rem. Added with PAPER-13; the links to the pages (library, examples, settings) will join it in the running head when those pages exist.
+In the running head, at the right of the brand: one small-capital button per language (`EN`, `FR`, then any language added), each carrying its own name as its accessible label ("Français", never translated) and its own `lang`. The current one is underlined and has `aria-current="true"`; the others underline on hover. It is a form that posts to `/Language` (antiforgery token, works without JavaScript) and returns the visitor to the page they were on. Targets are at least 2.75rem. Added with PAPER-13; a row of page links (`.nav`, the current page marked `aria-current="page"`) sits between the brand and the switcher; Settings is there (PAPER-5), the library and examples will join it when those pages exist.
 
 ### Buttons
 - **Shape:** 2px edge, minimum height 2.875rem (a finger can hit it), padding 0 1.5rem, label in small capitals.
@@ -241,6 +241,9 @@ In the running head, at the right of the brand: one small-capital button per lan
 
 ### Entries (settings items)
 - A title, a definition grid of facts (term in faint small capitals, value breaking anywhere), and a bordered small-caps tag. Same ink rule opening the list.
+
+### Confirming a deletion (`.confirm`)
+- A native `<details>`: its `<summary>` is a small danger button ("Delete"), which unfolds a warning and the confirming button ("Confirm the deletion"), set off by a red rule on the left. No script and no browser dialog; keyboard and screen readers get it for free. The summary carries an accessible label that names what is deleted. Added with PAPER-5 (`/Settings`).
 
 ### Chat
 - A column of boxed turns, max 66ch. The character's turn: hairline box, left, speaker name in faint small capitals above. The reader's turn: right, wash ground and lighter hairline. A pending turn: same box, dashed, italic soft ink, in words, no animation. The composer is sticky at the foot: field plus Send, top hairline, paper ground; Send is the only ink slab on the screen. Decided by the owner on 2026-11-11 after reviewing /Design on phone and computer: boxed turns, the familiar messaging pattern, are kept (a play script was considered).

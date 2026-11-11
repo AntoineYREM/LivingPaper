@@ -1,12 +1,22 @@
-@* The running head: the name of the application and the language switcher. Links to the pages (library, examples, settings)
-   are added here by the tickets that create those pages, so there is never a link to a page that does not exist.
-   The switcher is a form that works without JavaScript; each button carries its language's own name. *@
+@* The running head: the name of the application, the links to the pages and the language switcher. Links to the pages
+   (library, examples) are added here by the tickets that create those pages, so there is never a link to a page that
+   does not exist. The switcher is a form that works without JavaScript; each button carries its language's own name. *@
 @using LivingPaper.Web.Localization
+@{
+    var path = Context.Request.Path;
+    // After a form was posted the address carries a handler (?handler=Add) that a plain visit cannot use: go back to the page only.
+    var returnUrl = HttpMethods.IsGet(Context.Request.Method) ? path + Context.Request.QueryString : path.ToString();
+}
 <header class="masthead">
     <div class="page masthead__inner">
         <a class="masthead__brand" href="~/">@T["app.name"]</a>
+        <nav aria-label="@T["nav.label"]">
+            <ul class="nav">
+                <li><a href="~/Settings" aria-current="@(path.StartsWithSegments("/Settings") ? "page" : null)">@T["nav.settings"]</a></li>
+            </ul>
+        </nav>
         <form class="language" method="post" asp-page="/Language" role="group" aria-label="@T["language.label"]">
-            <input type="hidden" name="returnUrl" value="@(Context.Request.Path + Context.Request.QueryString)" />
+            <input type="hidden" name="returnUrl" value="@returnUrl" />
             @foreach (var language in SupportedLanguages.All)
             {
                 <button class="language__button" type="submit" name="code" value="@language.Code" lang="@language.Code" aria-label="@language.NativeName" aria-current="@(language.Code == T.Language ? "true" : null)">@language.Code.ToUpperInvariant()</button>

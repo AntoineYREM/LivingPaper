@@ -621,3 +621,24 @@
     padding-inline: var(--space-4);
   }
 }
+
+/* ---- Confirming a deletion: a native disclosure, so it needs no script and no browser dialog ---- */
+
+.confirm > summary {
+  list-style: none;
+  cursor: pointer;
+}
+
+.confirm > summary::-webkit-details-marker {
+  display: none;
+}
+
+.confirm[open] > summary {
+  background: var(--color-wash);
+}
+
+.confirm > .form {
+  margin-block-start: var(--space-3);
+  padding-inline-start: var(--space-4);
+  border-inline-start: var(--rule-thick) solid var(--color-error);
+}

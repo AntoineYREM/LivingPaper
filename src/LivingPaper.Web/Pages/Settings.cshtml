@@ -1,0 +1,190 @@
+@page
+@model SettingsModel
+@* The settings page. The words come from the translation files; the key of a model is never written into this page. *@
+@{
+    ViewData["Title"] = T["settings.title"];
+
+    string? ErrorOf(string field) => Model.FieldErrors.TryGetValue(field, out var error) ? error : null;
+    string Described(string id, string? error, bool hint = true) =>
+        string.Join(' ', new[] { hint ? id + "-hint" : null, error is null ? null : id + "-error" }.Where(part => part is not null));
+}
+
+<h1>@T["settings.title"]</h1>
+<p class="lead">@T["settings.lead"]</p>
+
+@if (Model.FileProblem is not null)
+{
+    <div class="alert alert--error" role="alert">
+        <strong class="alert__title">@T["settings.alert.error"]</strong>
+        <p>@Model.FileProblem</p>
+    </div>
+    return;
+}
+
+@if (Model.Notice is not null)
+{
+    <div class="alert alert--success" role="status">
+        <strong class="alert__title">@T["settings.alert.done"]</strong>
+        <p>@Model.Notice</p>
+    </div>
+}
+
+@if (!Model.View.IsAnalysisEnabled)
+{
+    <div class="alert alert--warning" role="status">
+        <strong class="alert__title">@T["settings.analysisOff.title"]</strong>
+        <p>@(Model.View.AnalysisProviderId is null ? T["settings.analysisOff.none"] : T["settings.analysisOff.unreadable"])</p>
+    </div>
+}
+
+@if (!Model.View.IsChatEnabled)
+{
+    <div class="alert alert--warning" role="status">
+        <strong class="alert__title">@T["settings.chatOff.title"]</strong>
+        <p>@(Model.View.ChatProviderId is null ? T["settings.chatOff.none"] : T["settings.chatOff.unreadable"])</p>
+    </div>
+}
+
+<section aria-labelledby="models">
+    <h2 id="models">@T["settings.models.title"]</h2>
+    @if (Model.View.Providers.Count == 0)
+    {
+        <p>@T["settings.models.empty"]</p>
+    }
+    @if (Model.View.Providers.Count > 0)
+    {
+        <ul class="entries">
+            @foreach (var provider in Model.View.Providers)
+            {
+                <li class="entry">
+                    <h3 class="entry__title">@provider.Name</h3>
+                    @if (provider.Id == Model.View.AnalysisProviderId || provider.Id == Model.View.ChatProviderId)
+                    {
+                        <p>
+                            @if (provider.Id == Model.View.AnalysisProviderId)
+                            {
+                                <span class="tag">@T["settings.model.forAnalysis"]</span>
+                            }
+                            @if (provider.Id == Model.View.ChatProviderId)
+                            {
+                                <span class="tag">@T["settings.model.forChat"]</span>
+                            }
+                        </p>
+                    }
+                    <dl class="entry__facts">
+                        <dt>@T["settings.model.address"]</dt><dd>@provider.BaseUrl</dd>
+                        <dt>@T["settings.model.model"]</dt><dd>@provider.Model</dd>
+                        <dt>@T["settings.model.key"]</dt><dd>@(provider.KeyUnreadable ? T["settings.model.keyUnreadable"] : provider.HasKey ? T["settings.model.keySaved"] : T["settings.model.keyNone"])</dd>
+                    </dl>
+                    <details class="confirm">
+                        <summary class="button button--small button--danger" aria-label="@T.Format("settings.delete.label", new { name = provider.Name })">@T["settings.delete.button"]</summary>
+                        <form class="form" method="post" asp-page-handler="Delete">
+                            <input type="hidden" name="id" value="@provider.Id" />
+                            <p>@T["settings.delete.warning"]</p>
+                            <div class="form__actions">
+                                <button type="submit" class="button button--small button--danger">@T["settings.delete.confirm"]</button>
+                            </div>
+                        </form>
+                    </details>
+                </li>
+            }
+        </ul>
+    }
+</section>
+
+<hr class="ornament" />
+
+<section aria-labelledby="add">
+    <h2 id="add">@T["settings.add.title"]</h2>
+    <p>@T["settings.add.lead"]</p>
+
+    @if (Model.FormError is not null)
+    {
+        <div class="alert alert--error" role="alert">
+            <strong class="alert__title">@T["settings.alert.error"]</strong>
+            <p>@Model.FormError</p>
+        </div>
+    }
+
+    <form class="form" method="post" asp-page-handler="Add">
+        <div class="field">
+            @{ var nameError = ErrorOf("name"); }
+            <label class="field__label" for="llm-name">@T["settings.add.name"]</label>
+            <input class="input" id="llm-name" name="name" type="text" value="@Model.Typed.Name" autocomplete="off" aria-invalid="@(nameError is null ? null : "true")" aria-describedby="@Described("llm-name", nameError)" />
+            <p class="field__hint" id="llm-name-hint">@T["settings.add.nameHint"]</p>
+            @if (nameError is not null)
+            {
+                <p class="field__error" id="llm-name-error">@nameError</p>
+            }
+        </div>
+        <div class="field">
+            @{ var urlError = ErrorOf("baseUrl"); }
+            <label class="field__label" for="llm-base-url">@T["settings.add.baseUrl"]</label>
+            <input class="input" id="llm-base-url" name="baseUrl" type="text" inputmode="url" value="@Model.Typed.BaseUrl" autocomplete="off" spellcheck="false" aria-invalid="@(urlError is null ? null : "true")" aria-describedby="@Described("llm-base-url", urlError)" />
+            <p class="field__hint" id="llm-base-url-hint">@T["settings.add.baseUrlHint"]</p>
+            @if (urlError is not null)
+            {
+                <p class="field__error" id="llm-base-url-error">@urlError</p>
+            }
+        </div>
+        <div class="field">
+            @{ var keyError = ErrorOf("apiKey"); }
+            <label class="field__label" for="llm-api-key">@T["settings.add.apiKey"]</label>
+            <input class="input" id="llm-api-key" name="apiKey" type="password" autocomplete="new-password" spellcheck="false" aria-invalid="@(keyError is null ? null : "true")" aria-describedby="@Described("llm-api-key", keyError)" />
+            <p class="field__hint" id="llm-api-key-hint">@T["settings.add.apiKeyHint"]@(Model.FormRefused ? " " + T["settings.add.apiKeyAgain"] : null)</p>
+            @if (keyError is not null)
+            {
+                <p class="field__error" id="llm-api-key-error">@keyError</p>
+            }
+        </div>
+        <div class="field">
+            @{ var modelError = ErrorOf("model"); }
+            <label class="field__label" for="llm-model">@T["settings.add.model"]</label>
+            <input class="input" id="llm-model" name="model" type="text" value="@Model.Typed.Model" autocomplete="off" spellcheck="false" aria-invalid="@(modelError is null ? null : "true")" aria-describedby="@Described("llm-model", modelError)" />
+            <p class="field__hint" id="llm-model-hint">@T["settings.add.modelHint"]</p>
+            @if (modelError is not null)
+            {
+                <p class="field__error" id="llm-model-error">@modelError</p>
+            }
+        </div>
+        <div class="form__actions">
+            <button type="submit" class="button" aria-describedby="llm-wait">@T["settings.add.submit"]</button>
+        </div>
+        <p class="field__hint" id="llm-wait">@T["settings.add.wait"]</p>
+    </form>
+</section>
+
+@if (Model.View.Providers.Count > 0)
+{
+    <hr class="ornament" />
+
+    <section aria-labelledby="choose">
+        <h2 id="choose">@T["settings.choose.title"]</h2>
+        <p>@T["settings.choose.lead"]</p>
+        <form class="form" method="post" asp-page-handler="Select">
+            <div class="field">
+                <label class="field__label" for="llm-analysis">@T["settings.choose.analysis"]</label>
+                <select class="select" id="llm-analysis" name="analysis">
+                    <option value="" selected="@(Model.View.AnalysisProviderId is null)">@T["settings.choose.none"]</option>
+                    @foreach (var provider in Model.View.Providers)
+                    {
+                        <option value="@provider.Id" selected="@(provider.Id == Model.View.AnalysisProviderId)">@provider.Name</option>
+                    }
+                </select>
+            </div>
+            <div class="field">
+                <label class="field__label" for="llm-chat">@T["settings.choose.chat"]</label>
+                <select class="select" id="llm-chat" name="chat">
+                    <option value="" selected="@(Model.View.ChatProviderId is null)">@T["settings.choose.none"]</option>
+                    @foreach (var provider in Model.View.Providers)
+                    {
+                        <option value="@provider.Id" selected="@(provider.Id == Model.View.ChatProviderId)">@provider.Name</option>
+                    }
+                </select>
+            </div>
+            <div class="form__actions">
+                <button type="submit" class="button">@T["settings.choose.submit"]</button>
+            </div>
+        </form>
+    </section>
+}
