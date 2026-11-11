@@ -1,19 +1,39 @@
 @model LivingPaper.Web.Pages.IndexModel
-@* The list of the books. It is part of the home page and is also served alone (?handler=List), for the page to refresh it
-   while an analysis runs. The attribute data-analysis-active tells the script that something is still moving (it is written
-   by name only when it applies: Razor would write an empty data-* attribute even for nothing). *@
+@* The list of the books, set like the contents of a book: the title, a dotted line, and what is going on with it. It is part
+   of the library and is also served alone (?handler=List), for the page to refresh it while an analysis runs.
+   The attribute data-analysis-active tells the script that something is still moving (it is written by name only when it
+   applies: Razor would write an empty data-* attribute even for nothing). *@
 @if (Model.Rows.Count == 0)
 {
-    <p>@T["books.empty"]</p>
+    <div class="empty">
+        <p class="empty__title">@T["library.empty.title"]</p>
+        <p>@T["library.empty.body"]</p>
+        <p><a class="button" href="~/Add">@T["library.add"]</a></p>
+    </div>
 }
 @if (Model.Rows.Count > 0)
 {
-    <ul class="entries" @(Model.Rows.Any(row => row.Active) ? "data-analysis-active" : string.Empty)>
+    <ul class="contents" @(Model.Rows.Any(row => row.Active) ? "data-analysis-active" : string.Empty)>
         @foreach (var row in Model.Rows)
         {
-            <li class="entry">
-                <h3 class="entry__title">@row.Book.Title</h3>
-                <p><span class="tag">@row.Status</span> @row.Progress</p>
+            <li class="contents__item">
+                <div class="contents__row">
+                    <a class="contents__title" href="~/Book/@row.Book.Id">@row.Book.Title</a>
+                    <span class="contents__leader" aria-hidden="true"></span>
+                    <span class="contents__status status @row.StatusClass">@row.Status</span>
+                </div>
+                @if (row.Progress is not null)
+                {
+                    <p class="contents__meta">@row.Progress</p>
+                }
+                @if (row.ProgressValue is not null)
+                {
+                    <progress class="progress" value="@row.ProgressValue" max="@row.ProgressMax" aria-label="@T.Format("books.progress.label", new { title = row.Book.Title })">@row.Progress</progress>
+                }
+                @if (row.Meta.Length > 0)
+                {
+                    <p class="contents__meta">@row.Meta</p>
+                }
                 @if (row.Problem is not null)
                 {
                     <p class="entry__problem">@row.Problem</p>
@@ -22,17 +42,8 @@
                 {
                     <p class="entry__warning">@row.Warning</p>
                 }
-                <dl class="entry__facts">
-                    @if (row.Book.FileName.Length > 0)
-                    {
-                        <dt>@T["books.file"]</dt><dd>@row.Book.FileName</dd>
-                    }
-                    @foreach (var fact in row.Facts)
-                    {
-                        <dt>@fact.Label</dt><dd>@fact.Value</dd>
-                    }
-                </dl>
-                <div class="entry__actions">
+                <div class="contents__actions">
+                    <a class="button button--small button--quiet" href="~/Book/@row.Book.Id">@T["library.open"]</a>
                     @if (row.CanRetry)
                     {
                         <form class="form" method="post" asp-page="/Index" asp-page-handler="Retry">

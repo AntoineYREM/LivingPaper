@@ -19,8 +19,14 @@ public sealed partial class BookAnalysisWorker(IServiceProvider services, ILogge
     // the new place away.
     private readonly ConcurrentDictionary<BookId, object> _queued = new();
 
+    private readonly TaskCompletionSource _recovered = new(TaskCreationOptions.RunContinuationsAsynchronously);
+
     private readonly Lock _currentLock = new();
     private (BookId Id, CancellationTokenSource Stop, TaskCompletionSource Done)? _current;
+
+    // Completes when the books cut by a restart have been found again (see ExecuteAsync). A test that creates books waits for
+    // it, or the recovery could take a book it has just created for one left over from a previous run.
+    public Task Recovered => _recovered.Task;
 
     public bool Enqueue(BookId bookId)
     {
@@ -55,9 +61,14 @@ public sealed partial class BookAnalysisWorker(IServiceProvider services, ILogge
         await Task.Yield();
         try
         {
-            using (var scope = services.CreateScope())
+            try
             {
+                using var scope = services.CreateScope();
                 await scope.ServiceProvider.GetRequiredService<BookService>().RecoverAsync(stoppingToken).ConfigureAwait(false);
+            }
+            finally
+            {
+                _recovered.TrySetResult();
             }
 
             await foreach (var (id, ticket) in _channel.Reader.ReadAllAsync(stoppingToken).ConfigureAwait(false))

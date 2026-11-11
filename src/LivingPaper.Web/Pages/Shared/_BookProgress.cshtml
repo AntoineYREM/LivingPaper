@@ -1,0 +1,27 @@
+@model LivingPaper.Web.BookPresenter.Row
+@* Where the analysis of a book is: its status, its progress bar, what went wrong and the retry button. It is part of the page
+   of the book and is also served alone (?handler=Progress), for the page to refresh it while the analysis runs. The script
+   reloads the page as soon as the state is no longer "active": the characters, or the error, are then shown. *@
+<div data-state="@(Model.Active ? "active" : "stopped")">
+    <p><span class="tag">@Model.Status</span> @Model.Progress</p>
+    @if (Model.ProgressValue is not null)
+    {
+        <progress class="progress" value="@Model.ProgressValue" max="@Model.ProgressMax" aria-label="@T.Format("books.progress.label", new { title = Model.Book.Title })">@Model.Progress</progress>
+    }
+    @if (Model.Active)
+    {
+        <p class="field__hint">@T["book.progress.leave"]</p>
+    }
+    @if (Model.Problem is not null)
+    {
+        <p class="entry__problem">@Model.Problem</p>
+    }
+    @if (Model.CanRetry)
+    {
+        <form class="form" method="post" asp-page="/Books/Index" asp-page-handler="Retry" asp-route-id="@Model.Book.Id.ToString()">
+            <div class="form__actions">
+                <button type="submit" class="button">@T["books.retry"]</button>
+            </div>
+        </form>
+    }
+</div>

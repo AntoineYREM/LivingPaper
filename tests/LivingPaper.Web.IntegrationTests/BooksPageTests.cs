@@ -63,7 +63,7 @@ public partial class BooksPageTests
             content.Add(new StringContent("true"), "replace");
         }
 
-        using var request = new HttpRequestMessage(HttpMethod.Post, "/?handler=Add") { Content = content };
+        using var request = new HttpRequestMessage(HttpMethod.Post, "/Add") { Content = content };
         if (acceptLanguage is not null)
         {
             request.Headers.TryAddWithoutValidation("Accept-Language", acceptLanguage);
@@ -115,16 +115,18 @@ public partial class BooksPageTests
         using var factory = NewFactory();
         using var client = NewClient(factory);
 
-        var html = Decoded(await GetAsync(client));
+        var library = Decoded(await GetAsync(client));
+        var html = Decoded(await GetAsync(client, "/Add"));
 
-        html.ShouldContain("No book yet");
+        library.ShouldContain("Your library is empty");
+        Regex.IsMatch(library, @"<a[^>]*href=""/Add""[^>]*>Add a book</a>").ShouldBeTrue();
         html.ShouldContain("enctype=\"multipart/form-data\"");
         html.ShouldContain("type=\"file\"");
         html.ShouldContain("name=\"file\"");
         html.ShouldContain("name=\"title\"");
         html.ShouldContain("name=\"replace\"");
         html.ShouldContain("20 MB");
-        html.ShouldContain("Chat with the characters of your books.");
+        library.ShouldContain("Chat with the characters of your books.");
     }
 
     [Fact]
@@ -133,7 +135,7 @@ public partial class BooksPageTests
         using var factory = NewFactory();
         using var client = NewClient(factory);
 
-        var html = await GetAsync(client);
+        var html = await GetAsync(client, "/Add");
 
         foreach (var field in new[] { "book-file", "book-title", "book-replace" })
         {
@@ -149,12 +151,16 @@ public partial class BooksPageTests
     {
         using var factory = NewFactory();
         using var client = NewClient(factory);
-        var html = await AddBookAsync(client);
+        await SeedAsync(factory, book => { book.Status = BookStatus.Failed; book.ErrorCode = "NoModel"; });
 
-        var forms = Regex.Matches(html, @"<form\b[^>]*method=""post""[\s\S]*?</form>", RegexOptions.IgnoreCase).Select(match => match.Value).Where(form => !form.Contains("/Language", StringComparison.Ordinal)).ToList();
+        foreach (var (path, minimum) in new[] { ("/", 2), ("/Add", 1) }) // The library: retry and delete. The form of the page Add.
+        {
+            var html = await GetAsync(client, path);
+            var forms = Regex.Matches(html, @"<form\b[^>]*method=""post""[\s\S]*?</form>", RegexOptions.IgnoreCase).Select(match => match.Value).Where(form => !form.Contains("/Language", StringComparison.Ordinal)).ToList();
 
-        forms.Count.ShouldBeGreaterThanOrEqualTo(2); // Add and delete.
-        forms.ShouldAllBe(form => form.Contains("__RequestVerificationToken", StringComparison.Ordinal));
+            forms.Count.ShouldBeGreaterThanOrEqualTo(minimum, path);
+            forms.ShouldAllBe(form => form.Contains("__RequestVerificationToken", StringComparison.Ordinal), path);
+        }
     }
 
     [Fact]
@@ -163,10 +169,13 @@ public partial class BooksPageTests
         using var factory = NewFactory();
         using var client = NewClient(factory);
 
-        var html = Decoded(await GetAsync(client));
+        foreach (var path in new[] { "/", "/Add" })
+        {
+            var html = Decoded(await GetAsync(client, path));
 
-        html.ShouldContain("Analysis is off");
-        Regex.IsMatch(html, @"<a[^>]*href=""/Settings""[^>]*>Open the settings</a>").ShouldBeTrue();
+            html.ShouldContain("Analysis is off", customMessage: path);
+            Regex.IsMatch(html, @"<a[^>]*href=""/Settings""[^>]*>Open the settings</a>").ShouldBeTrue(path);
+        }
     }
 
     // ---- Sending a book ----
@@ -178,14 +187,17 @@ public partial class BooksPageTests
         using var client = NewClient(factory);
 
         using var response = await SendBookAsync(client, Epub("Le Malade imaginaire", "Argan est malade."), "malade.epub");
-        var html = Decoded(await GetAsync(client, response.Headers.Location!.OriginalString));
+        var page = Decoded(await GetAsync(client, response.Headers.Location!.OriginalString)); // The page of the book.
+        var library = Decoded(await GetAsync(client));
 
         response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
-        html.ShouldContain("Le Malade imaginaire was added");
-        html.ShouldContain("Waiting for analysis");
-        html.ShouldContain("malade.epub");
         var books = await factory.Services.GetRequiredService<BookService>().ListAsync(Token);
         var book = books.Books.ShouldHaveSingleItem();
+        response.Headers.Location!.OriginalString.ShouldBe("/Book/" + book.Id);
+        page.ShouldContain("Le Malade imaginaire was added");
+        page.ShouldContain("Waiting for analysis");
+        library.ShouldContain("Waiting for analysis");
+        library.ShouldContain("malade.epub");
         book.Status.ShouldBe(BookStatus.Waiting);
         (await File.ReadAllTextAsync(Path.Combine(factory.DataDirectory, "uploads", book.Id + ".txt"), Token)).ShouldBe("Argan est malade.");
         (await File.ReadAllTextAsync(Path.Combine(factory.DataDirectory, "books", book.Id + ".json"), Token)).ShouldNotContain("Argan est malade");
@@ -265,7 +277,7 @@ public partial class BooksPageTests
         using var refused = await SendBookAsync(client, Epub("Le Malade imaginaire"), title: "le malade IMAGINAIRE");
         var refusedHtml = Decoded(await refused.Content.ReadAsStringAsync(Token));
         using var replaced = await SendBookAsync(client, Epub("Le Malade imaginaire"), title: "Le Malade imaginaire", replace: true);
-        var html = Decoded(await GetAsync(client, replaced.Headers.Location!.OriginalString));
+        var html = Decoded(await GetAsync(client, replaced.Headers.Location!.OriginalString)); // The page of the new book.
 
         refusedHtml.ShouldContain("already there");
         refusedHtml.ShouldContain("tick");
@@ -330,7 +342,7 @@ public partial class BooksPageTests
 
         response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
         html.ShouldContain("The Lighthouse was deleted");
-        html.ShouldContain("No book yet");
+        html.ShouldContain("Your library is empty");
         File.Exists(Path.Combine(factory.DataDirectory, "books", id + ".json")).ShouldBeFalse();
         File.Exists(Path.Combine(factory.DataDirectory, "uploads", id + ".txt")).ShouldBeFalse();
     }
@@ -379,10 +391,10 @@ public partial class BooksPageTests
         using var refused = await SendBookAsync(client, Encoding.UTF8.GetBytes("du texte"), acceptLanguage: "fr");
         var failure = Decoded(await refused.Content.ReadAsStringAsync(Token));
 
-        empty.ShouldContain("Aucun livre pour l’instant");
+        empty.ShouldContain("Votre bibliothèque est vide");
         empty.ShouldContain("Ajouter un livre");
         failure.ShouldContain("Ce fichier n’est ni un EPUB ni un PDF");
-        empty.ShouldNotContain("No book yet");
+        empty.ShouldNotContain("Your library is empty");
         failure.ShouldNotContain("neither an EPUB");
     }
 
@@ -390,6 +402,7 @@ public partial class BooksPageTests
 
     private static async Task<Book> SeedAsync(LivingPaperFactory factory, Action<Book> shape, bool queued = false, string title = "The Lighthouse")
     {
+        await factory.Services.GetRequiredService<BookAnalysisWorker>().Recovered; // The restart recovery is over.
         var book = new Book(BookId.New(), title, "lighthouse.epub", DateTimeOffset.UtcNow.AddMinutes(-30));
         book.UpdatedAt = DateTimeOffset.UtcNow; // Moving just now: not stuck.
         shape(book);
@@ -446,13 +459,17 @@ public partial class BooksPageTests
             book.OutputTokens = 678;
         });
 
-        var html = Decoded(await GetAsync(client));
+        var book = (await factory.Services.GetRequiredService<BookService>().ListAsync(Token)).Books.Single();
+        var library = Decoded(await GetAsync(client));
+        var html = Decoded(await GetAsync(client, "/Book/" + book.Id));
 
-        html.ShouldContain("Analyzed");
+        library.ShouldContain("Analyzed");
+        library.ShouldContain("2 characters");
+        library.ShouldContain("analyzed with gpt-5-nano");
         html.ShouldContain("gpt-5-nano (OpenAI)");
         html.ShouldContain("2 min 14 s");
         html.ShouldContain("12,345 in (2,000 cached), 678 out");
-        html.ShouldNotContain("data-analysis-active");
+        library.ShouldNotContain("data-analysis-active");
         html.ShouldNotContain(">Retry<");
     }
 

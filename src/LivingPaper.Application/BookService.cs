@@ -112,6 +112,47 @@ public sealed class BookService(
         }
     }
 
+    // A book as it is stored, or null when there is none with this id. Throws BookUnreadableException when it cannot be read.
+    public Task<Book?> GetAsync(BookId id, CancellationToken cancellationToken) => books.GetAsync(id, cancellationToken);
+
+    // Changes the sheet of one character (position 1 is the most important) of a book whose analysis is done. The chat always
+    // uses the texts saved here. Done one change at a time, so two changes at once cannot overwrite each other.
+    public async Task<UpdateCharacterResult> UpdateCharacterAsync(BookId id, int position, CharacterDraft draft, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(draft);
+        await _lock.WaitAsync(cancellationToken).ConfigureAwait(false);
+        try
+        {
+            var book = await books.GetAsync(id, cancellationToken).ConfigureAwait(false);
+            var index = book?.Characters.FindIndex(character => character.Position == position) ?? -1;
+            if (book is null || index < 0)
+            {
+                return new UpdateCharacterResult(CharacterUpdateOutcome.NotFound, [], null);
+            }
+
+            if (book.Status != BookStatus.Done)
+            {
+                return new UpdateCharacterResult(CharacterUpdateOutcome.NotEditable, [], null);
+            }
+
+            var errors = CharacterValidator.Validate(draft, book.Characters.Where(character => character.Position != position).Select(character => character.Name));
+            if (errors.Count > 0)
+            {
+                return new UpdateCharacterResult(CharacterUpdateOutcome.Invalid, errors, null);
+            }
+
+            var normalized = draft.Normalized();
+            var changed = book.Characters[index] with { Name = normalized.Name!, ShortDescription = normalized.ShortDescription!, ChatProfile = normalized.ChatProfile! };
+            book.Characters[index] = changed;
+            await books.SaveAsync(book, cancellationToken).ConfigureAwait(false);
+            return new UpdateCharacterResult(CharacterUpdateOutcome.Saved, [], changed);
+        }
+        finally
+        {
+            _lock.Release();
+        }
+    }
+
     // Puts a book whose analysis failed or was interrupted back in the queue: it resumes at the step that failed, the steps
     // already done are not paid for again. False when there is nothing to retry: no such book, a book that is done or
     // really waiting or running, or a book whose text is gone (it must be sent again).

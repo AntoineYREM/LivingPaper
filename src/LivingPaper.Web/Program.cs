@@ -42,6 +42,7 @@ builder.Services.AddSingleton<IBookTextStore>(new FileBookTextStore(Path.Combine
 builder.Services.AddSingleton<IBookTextExtractor, BookTextExtractor>();
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddSingleton<BookService>();
+builder.Services.AddScoped<BookPresenter>();
 
 // The analysis of the books (PAPER-8): a background service runs it one book at a time, with the language model chosen in
 // the settings. The pages talk to it through IAnalysisScheduler. ANALYSIS_PAGES_PER_PART and ANALYSIS_PARALLEL_CALLS tune it.
@@ -67,6 +68,8 @@ catch (PromptFileException exception)
 
 // Serves wwwroot: the style sheets, the fonts and the images of the application, all its own (nothing from a CDN).
 app.UseStaticFiles();
+// A 404 is answered by the NotFound page, in the language of the visitor, with the status 404 kept.
+app.UseStatusCodePagesWithReExecute("/NotFound");
 app.UseTextLocalization();
 app.MapRazorPages();
 

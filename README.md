@@ -59,7 +59,8 @@ the models and keys you saved. Do not expose it to the Internet without a revers
 
 ## Your books
 
-On the home page you send an EPUB or a PDF (20 MB at most), and you can delete a book there too.
+The home page is **My library**: your books, set like the contents of a book, each with its status. **Add a book** sends an
+EPUB or a PDF (20 MB at most) and takes you to the page of the book; you can delete a book from the library.
 
 - **The format is checked on the content of the file**, not on its name: a text file renamed `.epub` is refused.
 - **A book is read as soon as you send it**, so a problem shows at once. A PDF made of pictures of pages (a scan, with
@@ -101,3 +102,17 @@ Everything the analysis writes is in English, whatever the language of the book.
 - **Two settings** for the environment: `ANALYSIS_PAGES_PER_PART` (default 40; lower it for a model with a small context
   window) and `ANALYSIS_PARALLEL_CALLS` (default 3; set 1 for a small local server or a provider with strict limits).
   A value that is not a whole number in range stops the application at start.
+
+## The page of a book and the sheets of its characters
+
+The page of a book (`/Book/{id}`) shows, once the analysis is done, the summary of its atmosphere, a warning that characters
+know the whole book (**spoilers**), and the characters, the most important first. While the analysis runs it shows the
+progress and, with JavaScript, opens on the characters by itself when it ends; a failed or interrupted analysis shows why,
+with **Retry**.
+
+Each character has a **sheet**: a short description and a personality profile, which you can **edit** and save. Name, short
+description and profile are validated on the server (100, 600 and 3,000 characters at most; a name must differ from the other
+characters of the book). The chat always uses the texts saved here, so a sheet you correct is the sheet the character plays.
+A sheet can only be edited once the analysis of its book is done.
+
+Everything works without JavaScript; the script only refreshes the progress. The chat itself comes later.

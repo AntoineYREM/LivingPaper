@@ -1,0 +1,12 @@
+@page
+@model NotFoundModel
+@{
+    ViewData["Title"] = T["notfound.title"];
+}
+
+<h1>@T["notfound.title"]</h1>
+<div class="empty">
+    <p class="empty__title">@T["notfound.lead"]</p>
+    <p>@T["notfound.body"]</p>
+    <p><a class="button" href="~/">@T["nav.backToLibrary"]</a></p>
+</div>

@@ -666,3 +666,10 @@
 .entry__actions > .form {
   margin: 0;
 }
+
+/* ---- The way back: a line above the title of a page that belongs to another ---- */
+
+.crumb {
+  margin: var(--space-5) 0 var(--space-3);
+  font-size: var(--text-sm);
+}

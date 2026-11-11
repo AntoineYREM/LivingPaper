@@ -448,6 +448,99 @@ public sealed class BookServiceTests : IDisposable
         failed.ErrorCode.ShouldBe("NoModel");
     }
 
+    // ---- Reading a book and changing a character sheet ----
+
+    private async Task<Book> DoneBookAsync()
+    {
+        var book = await StoredBookAsync(BookStatus.Done);
+        book.Characters.AddRange([new Character(1, "Argan", "A hypochondriac.", "I am Argan."), new Character(2, "Toinette", "A maid.", "I am Toinette.")]);
+        return book;
+    }
+
+    [Fact]
+    public async Task AStoredBook_CanBeReadById_AndAnUnknownOneIsNull()
+    {
+        var book = await DoneBookAsync();
+
+        (await _service.GetAsync(book.Id, Token)).ShouldBeSameAs(book);
+        (await _service.GetAsync(BookId.New(), Token)).ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task ChangingACharacter_SavesTheNewTexts_AndKeepsItsPosition()
+    {
+        var book = await DoneBookAsync();
+
+        var result = await _service.UpdateCharacterAsync(book.Id, 2, new CharacterDraft("  Toinon ", "A sharp maid.", "I am Toinon.\r\nTruly."), Token);
+
+        result.Outcome.ShouldBe(CharacterUpdateOutcome.Saved);
+        result.Errors.ShouldBeEmpty();
+        var saved = book.Characters.Single(character => character.Position == 2);
+        (saved.Name, saved.ShortDescription, saved.ChatProfile).ShouldBe(("Toinon", "A sharp maid.", "I am Toinon.\nTruly."));
+        result.Character.ShouldBe(saved);
+        book.Characters.Select(character => character.Position).ShouldBe([1, 2]);
+        book.Characters[0].Name.ShouldBe("Argan"); // The others are untouched.
+    }
+
+    [Fact]
+    public async Task ChangingACharacter_KeepingItsOwnName_IsFine()
+    {
+        var book = await DoneBookAsync();
+
+        (await _service.UpdateCharacterAsync(book.Id, 1, new CharacterDraft("argan", "A man.", "I am Argan."), Token)).Outcome.ShouldBe(CharacterUpdateOutcome.Saved);
+    }
+
+    [Fact]
+    public async Task AnInvalidSheet_IsRefusedWithItsErrors_AndNothingChanges()
+    {
+        var book = await DoneBookAsync();
+
+        var result = await _service.UpdateCharacterAsync(book.Id, 2, new CharacterDraft("ARGAN", string.Empty, new string('p', CharacterLimits.ChatProfile + 1)), Token);
+
+        result.Outcome.ShouldBe(CharacterUpdateOutcome.Invalid);
+        result.Errors.ShouldBe(
+        [
+            new FieldError("name", CharacterErrors.Taken),
+            new FieldError("shortDescription", CharacterErrors.Required),
+            new FieldError("chatProfile", CharacterErrors.TooLong),
+        ]);
+        book.Characters[1].Name.ShouldBe("Toinette");
+    }
+
+    [Theory]
+    [InlineData(BookStatus.Waiting)]
+    [InlineData(BookStatus.Running)]
+    [InlineData(BookStatus.Failed)]
+    public async Task ASheet_CanOnlyBeChanged_WhenTheAnalysisIsDone(BookStatus status)
+    {
+        var book = await DoneBookAsync();
+        book.Status = status;
+
+        (await _service.UpdateCharacterAsync(book.Id, 1, new CharacterDraft("Argan", "d", "p"), Token)).Outcome.ShouldBe(CharacterUpdateOutcome.NotEditable);
+    }
+
+    [Fact]
+    public async Task ChangingACharacterThatIsNotThere_IsNotFound()
+    {
+        var book = await DoneBookAsync();
+
+        (await _service.UpdateCharacterAsync(book.Id, 9, new CharacterDraft("A", "d", "p"), Token)).Outcome.ShouldBe(CharacterUpdateOutcome.NotFound);
+        (await _service.UpdateCharacterAsync(book.Id, 0, new CharacterDraft("A", "d", "p"), Token)).Outcome.ShouldBe(CharacterUpdateOutcome.NotFound);
+        (await _service.UpdateCharacterAsync(BookId.New(), 1, new CharacterDraft("A", "d", "p"), Token)).Outcome.ShouldBe(CharacterUpdateOutcome.NotFound);
+    }
+
+    [Fact]
+    public async Task TwoChangesAtOnce_BothArrive_NeitherOverwritesTheOther()
+    {
+        var book = await DoneBookAsync();
+
+        await Task.WhenAll(
+            _service.UpdateCharacterAsync(book.Id, 1, new CharacterDraft("Argan the first", "d1", "p1"), Token),
+            _service.UpdateCharacterAsync(book.Id, 2, new CharacterDraft("Toinette the second", "d2", "p2"), Token));
+
+        book.Characters.Select(character => character.Name).ShouldBe(["Argan the first", "Toinette the second"]);
+    }
+
     // A stream that never ends and counts what was read from it, to check that a huge upload is not swallowed.
     private sealed class RepeatingStream(long length) : Stream
     {
