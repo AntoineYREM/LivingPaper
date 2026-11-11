@@ -46,3 +46,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   play, chat, settings entries); and a design reference page, `/Design`, served in development only. Tests check the
   contrast of every text color (WCAG AA) from the tokens, that colors are written once, that nothing is loaded from
   outside, that nothing is animated and that reduced motion is respected. The application now serves `wwwroot`.
+- Translations (PAPER-13): the interface is available in English and French. Texts live in `Resources/en.json` (the source)
+  and `fr.json`, flat `key: text` pairs with `{variables}` and `.one`/`.other` plural forms, embedded in the application,
+  read by a small localizer injected in every view as `T` (`@T["key"]`, `T.Format`, `T.Plural`). A missing text falls back to
+  English and is logged; an invalid file stops the application at start. The language is the visitor's choice (a functional
+  cookie, set by a switcher in the running head that works without JavaScript and only returns to local addresses), else the
+  language of their browser, else English; `<html lang>` and `Content-Language` follow it. Tests fail for a key or a variable
+  missing in a language, a key used but undefined, and any text written in a view. The home page is the first translated page.
+  `CONTRIBUTING.md` explains how to add a language.

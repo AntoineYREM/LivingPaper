@@ -213,6 +213,10 @@ Square corners. The single radius is 2px, which only softens the edge of a contr
 
 ## Components
 
+### Language switcher
+
+In the running head, at the right of the brand: one small-capital button per language (`EN`, `FR`, then any language added), each carrying its own name as its accessible label ("Français", never translated) and its own `lang`. The current one is underlined and has `aria-current="true"`; the others underline on hover. It is a form that posts to `/Language` (antiforgery token, works without JavaScript) and returns the visitor to the page they were on. Targets are at least 2.75rem. Added with PAPER-13; the links to the pages (library, examples, settings) will join it in the running head when those pages exist.
+
 ### Buttons
 - **Shape:** 2px edge, minimum height 2.875rem (a finger can hit it), padding 0 1.5rem, label in small capitals.
 - **Primary:** ink slab with paper text. Hover prints in reverse (paper ground, ink text).

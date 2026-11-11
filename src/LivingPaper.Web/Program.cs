@@ -2,12 +2,16 @@ using LivingPaper.Application;
 using LivingPaper.Infrastructure;
 using LivingPaper.Persistence;
 using LivingPaper.Web;
+using LivingPaper.Web.Localization;
 using Microsoft.AspNetCore.DataProtection;
 
 // Composition root: the only place where the layers are wired together.
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddRazorPages();
+
+// The texts of the interface, in English and French (Resources/*.json, embedded). An invalid file stops the application here.
+builder.Services.AddTextLocalization();
 
 // Everything the application stores (prompts, books, settings) lives in this one directory: a Docker volume in
 // production. Set DATA_DIRECTORY to move it; by default it is ./data next to where the application runs.
@@ -46,6 +50,7 @@ catch (PromptFileException exception)
 
 // Serves wwwroot: the style sheets, the fonts and the images of the application, all its own (nothing from a CDN).
 app.UseStaticFiles();
+app.UseTextLocalization();
 app.MapRazorPages();
 
 app.Run();

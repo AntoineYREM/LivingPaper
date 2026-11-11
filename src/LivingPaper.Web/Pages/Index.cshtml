@@ -1,19 +1,8 @@
 ﻿@page
-@* Placeholder home page. The real design comes with the DESIGN.md ticket (PAPER-16) and every visible
-   text will move to the JSON translation files with the i18n ticket (PAPER-13). *@
+@* The home page. Placeholder content until the library (PAPER-9): the name and the tagline, in the language of the visitor. *@
 @{
-    Layout = null;
+    ViewData["Title"] = T["app.name"];
 }
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="robots" content="noindex, nofollow" />
-    <title>LivingPaper</title>
-</head>
-<body>
-    <h1>LivingPaper</h1>
-    <p>Chat with the characters of your books.</p>
-</body>
-</html>
+
+<h1>@T["app.name"]</h1>
+<p class="lead">@T["home.tagline"]</p>
