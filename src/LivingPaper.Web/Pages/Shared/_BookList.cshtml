@@ -1,4 +1,5 @@
 @model LivingPaper.Web.Pages.IndexModel
+@using LivingPaper.Domain
 @* The list of the books, set like the contents of a book: the title, a dotted line, and what is going on with it. It is part
    of the library and is also served alone (?handler=List), for the page to refresh it while an analysis runs.
    The attribute data-analysis-active tells the script that something is still moving (it is written by name only when it
@@ -8,7 +9,7 @@
     <div class="empty">
         <p class="empty__title">@T["library.empty.title"]</p>
         <p>@T["library.empty.body"]</p>
-        <p><a class="button" href="~/Add">@T["library.add"]</a></p>
+        <p class="form__actions"><a class="button" href="~/Add">@T["library.add"]</a> <a class="button button--quiet" href="~/Import">@T["library.import"]</a></p>
     </div>
 }
 @if (Model.Rows.Count > 0)
@@ -44,6 +45,10 @@
                 }
                 <div class="contents__actions">
                     <a class="button button--small button--quiet" href="~/Book/@row.Book.Id">@T["library.open"]</a>
+                    @if (row.Book.Status == BookStatus.Done)
+                    {
+                        <a class="button button--small button--quiet" href="~/Book/@row.Book.Id/Export" download aria-label="@T.Format("books.export.label", new { title = row.Book.Title })">@T["books.export"]</a>
+                    }
                     @if (row.CanRetry)
                     {
                         <form class="form" method="post" asp-page="/Index" asp-page-handler="Retry">

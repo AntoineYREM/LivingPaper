@@ -1,0 +1,38 @@
+@page
+@model ImportModel
+@* Importing an analyzed book from an export. The words come from the translation files. *@
+@{
+    ViewData["Title"] = T["import.title"];
+    var fileError = Model.FileError;
+}
+
+<p class="crumb"><a href="~/">@T["nav.backToLibrary"]</a></p>
+<h1>@T["import.title"]</h1>
+<p class="lead">@T.Format("import.lead", new { max = ImportModel.MaxKilobytes })</p>
+
+@if (Model.ConflictNote is not null)
+{
+    <div class="alert alert--warning" role="status">
+        <strong class="alert__title">@T["books.alert.attention"]</strong>
+        <p>@Model.ConflictNote</p>
+    </div>
+}
+
+<form class="form" method="post" enctype="multipart/form-data">
+    <div class="field">
+        <label class="field__label" for="import-file">@T["import.file"]</label>
+        <input class="input" id="import-file" name="file" type="file" accept=".json,application/json" aria-invalid="@(fileError is null ? null : "true")" aria-describedby="@(fileError is null ? "import-file-hint" : "import-file-hint import-file-error")" />
+        <p class="field__hint" id="import-file-hint">@T["import.fileHint"]</p>
+        @if (fileError is not null)
+        {
+            <p class="field__error" id="import-file-error">@fileError</p>
+        }
+    </div>
+    <div class="field">
+        <label class="choice" for="import-replace"><input id="import-replace" type="checkbox" name="replace" value="true" checked="@Model.Replace" aria-describedby="import-replace-hint" /> @T["import.replace"]</label>
+        <p class="field__hint" id="import-replace-hint">@T["import.replaceHint"]</p>
+    </div>
+    <div class="form__actions">
+        <button type="submit" class="button">@T["import.submit"]</button>
+    </div>
+</form>

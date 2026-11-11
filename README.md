@@ -145,3 +145,22 @@ They are the files of the `examples/` folder, in the format of a book of the lib
 application starts: an example that is not valid is ignored, with a warning in the logs. `EXAMPLES_DIRECTORY` points to another
 folder. See `CONTRIBUTING.md` to propose one.
 
+## Exporting and importing a book
+
+**Export** (on the page of an analyzed book, and in the library) downloads the book as a `.json` file: its title, its summary,
+its characters and their sheets (the edits you made included), and how it was analyzed (model, tokens, dates). It is the same
+format as the files of `data/books/` and of the examples. It holds no API key, no setting, no path of your machine and not the
+text of the book: the file is built field by field from the book, so nothing else can get in.
+
+**Import** (`/Import`, from the library) adds an analyzed book from such a file, on this installation or another one. The file is
+untrusted input and is checked before anything is kept: at most 1 MB, valid JSON of the shape of a book, a known `schemaVersion`
+(a file from a newer LivingPaper is refused with its own message), required fields, numbers in range, texts no longer than the
+limits of the analysis, sheets that follow the rules of a sheet (names distinct, no control characters). Only a book whose
+analysis is done, with at least one character, can be imported, and nothing is analyzed.
+
+- **The identifier of the file is kept** when it is free, so importing a file again updates the same book. If a book of your
+  library already has that identifier or the same title, the import is refused with an explanation; **tick "Replace" and choose
+  the file again** to confirm: the old book, its analysis and its edited sheets are then deleted. A file whose identifier is that of
+  an example gets a new one, so the example stays where it is.
+- A file you export and import again gives the same book.
+

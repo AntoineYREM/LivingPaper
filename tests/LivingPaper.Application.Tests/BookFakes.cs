@@ -100,3 +100,64 @@ internal sealed class InMemoryExampleCatalog(params Book[] examples) : IExampleC
     public Task<Book?> GetAsync(BookId id, CancellationToken cancellationToken) =>
         Task.FromResult(examples.FirstOrDefault(book => book.Id == id));
 }
+
+// An archive that does not know a file format: it remembers the books it exported, and gives them back when it is handed the
+// same bytes. Any other bytes are refused as not JSON, unless the test says what they are (As).
+internal sealed class FakeBookArchive : IBookArchive
+{
+    private readonly Dictionary<string, Book> _exported = [];
+    private readonly Dictionary<string, ArchiveParseResult> _scripted = [];
+
+    public byte[] Export(Book book)
+    {
+        var key = "exported:" + Guid.NewGuid().ToString("N");
+        _exported[key] = Copy(book); // As a file: what the book was when it was exported.
+        return System.Text.Encoding.UTF8.GetBytes(key);
+    }
+
+    public ArchiveParseResult Parse(byte[] content)
+    {
+        var key = System.Text.Encoding.UTF8.GetString(content);
+        if (_scripted.TryGetValue(key, out var scripted))
+        {
+            return scripted;
+        }
+
+        return _exported.TryGetValue(key, out var book)
+            ? new ArchiveParseResult(Copy(book), null)
+            : new ArchiveParseResult(null, ImportRejection.NotJson);
+    }
+
+    // The bytes that the archive will read as this result.
+    public byte[] As(ArchiveParseResult result)
+    {
+        var key = "scripted:" + Guid.NewGuid().ToString("N");
+        _scripted[key] = result;
+        return System.Text.Encoding.UTF8.GetBytes(key);
+    }
+
+    // What reading a file gives: a book of its own, never the object that was exported.
+    private static Book Copy(Book source)
+    {
+        var copy = new Book(source.Id, source.Title, source.FileName, source.SentAt)
+        {
+            Summary = source.Summary,
+            Status = source.Status,
+            PartsDone = source.PartsDone,
+            PartsTotal = source.PartsTotal,
+            ProfilesDone = source.ProfilesDone,
+            ProfilesTotal = source.ProfilesTotal,
+            PartsSkipped = source.PartsSkipped,
+            ProviderName = source.ProviderName,
+            Model = source.Model,
+            InputTokens = source.InputTokens,
+            CachedInputTokens = source.CachedInputTokens,
+            OutputTokens = source.OutputTokens,
+            StartedAt = source.StartedAt,
+            UpdatedAt = source.UpdatedAt,
+            FinishedAt = source.FinishedAt,
+        };
+        copy.Characters.AddRange(source.Characters);
+        return copy;
+    }
+}

@@ -698,6 +698,343 @@ public sealed class BookServiceTests : IDisposable
         results.Count(result => result.Rejection == ExampleRejection.Duplicate).ShouldBe(4);
     }
 
+    // ---- Export and import ----
+
+    private readonly FakeBookArchive _archive = new();
+
+    private BookService WithArchive(params Book[] examples) =>
+        new(_books, _texts, _extractor, _scheduler, _clock, new AnalysisOptions(), new InMemoryExampleCatalog(examples), _archive);
+
+    private static MemoryStream Stream(byte[] bytes) => new(bytes);
+
+    [Fact]
+    public async Task ExportingAFinishedBook_GivesItsFile_NamedAfterItsTitle()
+    {
+        var book = await DoneBookAsync();
+        book.Title = "Le Malade imaginaire";
+        using var service = WithArchive();
+
+        var file = await service.ExportAsync(book.Id, Token);
+
+        file.ShouldNotBeNull();
+        file.FileName.ShouldBe("le-malade-imaginaire.json");
+        _archive.Parse(file.Content).Book!.Title.ShouldBe("Le Malade imaginaire");
+    }
+
+    [Theory]
+    [InlineData("Le Malade imaginaire", "le-malade-imaginaire.json")]
+    [InlineData("  L'Été à Paris !!  ", "l-ete-a-paris.json")]
+    [InlineData("Œuvres: tome 1/2", "uvres-tome-1-2.json")]
+    [InlineData("???", "book.json")]
+    [InlineData("", "book.json")]
+    [InlineData("../../etc/passwd", "etc-passwd.json")]
+    [InlineData("a\"b\r\nc", "a-b-c.json")]
+    public async Task TheFileName_IsAPlainAsciiSlug_NeverAnythingThatCouldBeAPathOrAHeader(string title, string expected)
+    {
+        var book = await DoneBookAsync();
+        book.Title = title;
+        using var service = WithArchive();
+
+        (await service.ExportAsync(book.Id, Token))!.FileName.ShouldBe(expected);
+    }
+
+    [Fact]
+    public async Task ATooLongTitle_GivesAShortFileName()
+    {
+        var book = await DoneBookAsync();
+        book.Title = string.Join(' ', Enumerable.Repeat("word", 100));
+        using var service = WithArchive();
+
+        (await service.ExportAsync(book.Id, Token))!.FileName.Length.ShouldBeLessThanOrEqualTo(65);
+    }
+
+    [Theory]
+    [InlineData(BookStatus.Waiting)]
+    [InlineData(BookStatus.Running)]
+    [InlineData(BookStatus.Failed)]
+    public async Task ABookThatIsNotAnalyzed_CannotBeExported(BookStatus status)
+    {
+        var book = await DoneBookAsync();
+        book.Status = status;
+        using var service = WithArchive();
+
+        (await service.ExportAsync(book.Id, Token)).ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task AnExample_CanBeExported_AndAnUnknownBookCannot()
+    {
+        var example = Example();
+        using var service = WithArchive(example);
+
+        (await service.ExportAsync(example.Id, Token))!.FileName.ShouldBe("alice-in-wonderland.json");
+        (await service.ExportAsync(BookId.New(), Token)).ShouldBeNull();
+    }
+
+    private async Task<(BookService Service, Book Original, byte[] File)> ExportedAsync()
+    {
+        var original = await DoneBookAsync();
+        var service = WithArchive();
+        var file = (await service.ExportAsync(original.Id, Token))!.Content;
+        return (service, original, file);
+    }
+
+    [Fact]
+    public async Task ImportingAnExportInAnOtherLibrary_AddsTheSameBook_WithItsId_AndNothingToAnalyze()
+    {
+        var (_, original, file) = await ExportedAsync();
+        var other = new InMemoryBookRepository();
+        var otherTexts = new InMemoryBookTextStore();
+        var otherScheduler = new FakeAnalysisScheduler();
+        using var service = new BookService(other, otherTexts, _extractor, otherScheduler, _clock, new AnalysisOptions(), null, _archive);
+
+        var result = await service.ImportAsync(Stream(file), replace: false, Token);
+
+        result.Imported.ShouldNotBeNull();
+        result.Rejection.ShouldBeNull();
+        result.Replaced.ShouldBeFalse();
+        var imported = other.Books.Values.Single();
+        imported.Id.ShouldBe(original.Id);
+        (imported.Title, imported.Status, imported.Characters.Count).ShouldBe((original.Title, BookStatus.Done, 2));
+        imported.Characters.ShouldBe(original.Characters);
+        otherScheduler.Queued.ShouldBeEmpty();
+        otherTexts.Texts.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public async Task ImportingABookWhoseIdIsTaken_AsksToReplace_AndChangesNothing()
+    {
+        var (service, original, file) = await ExportedAsync();
+        original.Title = "Renamed since the export";
+
+        var result = await service.ImportAsync(Stream(file), replace: false, Token);
+
+        result.Rejection.ShouldBe(ImportRejection.Conflict);
+        result.ConflictTitles.ShouldBe(["Renamed since the export"]);
+        _books.Books.Values.Single().ShouldBeSameAs(original);
+        service.Dispose();
+    }
+
+    [Fact]
+    public async Task ImportingABookWhoseTitleIsTaken_AsksToReplace_IgnoringCase()
+    {
+        var (service, original, file) = await ExportedAsync();
+        _books.Books.Remove(original.Id);
+        var sameTitle = await StoredBookAsync(BookStatus.Done);
+        sameTitle.Title = "  " + original.Title.ToUpperInvariant() + " ";
+
+        var result = await service.ImportAsync(Stream(file), replace: false, Token);
+
+        result.Rejection.ShouldBe(ImportRejection.Conflict);
+        _books.Books.Values.Single().ShouldBeSameAs(sameTitle);
+        service.Dispose();
+    }
+
+    [Fact]
+    public async Task Replace_PutsTheImportedBookInPlaceOfTheOne_WithTheSameId_AndStopsItsAnalysis()
+    {
+        var (service, original, file) = await ExportedAsync();
+        original.Characters[0] = original.Characters[0] with { ChatProfile = "Edited after the export." };
+        await _texts.SaveAsync(original.Id, "leftover text", Token);
+
+        var result = await service.ImportAsync(Stream(file), replace: true, Token);
+
+        result.Replaced.ShouldBeTrue();
+        _books.Books.Values.Single().Characters[0].ChatProfile.ShouldBe("I am Argan.");
+        _books.Books.Values.Single().ShouldNotBeSameAs(original);
+        _scheduler.Cancelled.ShouldBe([original.Id]);
+        _texts.Texts.ShouldNotContainKey(original.Id);
+        service.Dispose();
+    }
+
+    [Fact]
+    public async Task Replace_AlsoReplacesTheBookOfTheSameTitle_WhenTheIdIsFree()
+    {
+        var (service, original, file) = await ExportedAsync();
+        _books.Books.Remove(original.Id);
+        var sameTitle = await StoredBookAsync(BookStatus.Done);
+        sameTitle.Title = original.Title;
+
+        var result = await service.ImportAsync(Stream(file), replace: true, Token);
+
+        result.Replaced.ShouldBeTrue();
+        _books.Books.Keys.ShouldBe([original.Id]);
+        service.Dispose();
+    }
+
+    [Fact]
+    public async Task AnImportedBookWithTheIdOfAnExample_GetsANewId_SoTheExampleIsNotHidden()
+    {
+        var example = Example();
+        using var service = WithArchive(example);
+        var asExample = new Book(example.Id, "Imported under an example id", "x.json", Now) { Status = BookStatus.Done };
+        asExample.Characters.Add(new Character(1, "Alice", "d", "p"));
+
+        var result = await service.ImportAsync(Stream(_archive.As(new ArchiveParseResult(asExample, null))), replace: false, Token);
+
+        result.Imported!.Id.ShouldNotBe(example.Id);
+        (await service.FindAsync(example.Id, Token))!.IsExample.ShouldBeTrue();
+    }
+
+    [Fact]
+    public async Task NothingSent_AnEmptyFile_AndATooLargeFile_AreRefused()
+    {
+        using var service = WithArchive();
+
+        (await service.ImportAsync(null, false, Token)).Rejection.ShouldBe(ImportRejection.Empty);
+        (await service.ImportAsync(Stream([]), false, Token)).Rejection.ShouldBe(ImportRejection.Empty);
+        (await service.ImportAsync(new RepeatingStream(BookService.MaxImportBytes + 1), false, Token)).Rejection.ShouldBe(ImportRejection.TooLarge);
+        _books.Books.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public async Task AnEnormousImportStream_IsNotReadToTheEnd()
+    {
+        using var service = WithArchive();
+        var stream = new RepeatingStream(long.MaxValue / 2);
+
+        (await service.ImportAsync(stream, false, Token)).Rejection.ShouldBe(ImportRejection.TooLarge);
+
+        stream.BytesRead.ShouldBeLessThan(BookService.MaxImportBytes + 1_000_000);
+    }
+
+    [Theory]
+    [InlineData(ImportRejection.NotJson)]
+    [InlineData(ImportRejection.UnknownVersion)]
+    [InlineData(ImportRejection.NewerVersion)]
+    [InlineData(ImportRejection.Invalid)]
+    public async Task WhatTheArchiveRefuses_IsRefused_WithItsReasonAndDetail_NothingIsSaved(ImportRejection reason)
+    {
+        using var service = WithArchive();
+
+        var result = await service.ImportAsync(Stream(_archive.As(new ArchiveParseResult(null, reason, "characters[0].name"))), false, Token);
+
+        result.Rejection.ShouldBe(reason);
+        result.Detail.ShouldBe("characters[0].name");
+        _books.Books.ShouldBeEmpty();
+    }
+
+    private async Task<ImportBookResult> ImportAsync(Book book)
+    {
+        using var service = WithArchive();
+        return await service.ImportAsync(Stream(_archive.As(new ArchiveParseResult(book, null))), false, Token);
+    }
+
+    private static Book Imported(Action<Book>? change = null)
+    {
+        var book = new Book(BookId.New(), "Imported", "imported.json", Now) { Status = BookStatus.Done, Summary = "A summary." };
+        book.Characters.AddRange([new Character(1, "Argan", "The invalid.", "I am Argan."), new Character(2, "Toinette", "The maid.", "I am Toinette.")]);
+        change?.Invoke(book);
+        return book;
+    }
+
+    [Theory]
+    [InlineData(BookStatus.Waiting)]
+    [InlineData(BookStatus.Running)]
+    [InlineData(BookStatus.Failed)]
+    public async Task OnlyAnAnalyzedBookCanBeImported(BookStatus status)
+    {
+        var result = await ImportAsync(Imported(book => book.Status = status));
+
+        result.Rejection.ShouldBe(ImportRejection.NotAnalyzed);
+        _books.Books.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public async Task ABookWithNoCharacter_IsNotAnAnalyzedBook() =>
+        (await ImportAsync(Imported(book => book.Characters.Clear()))).Rejection.ShouldBe(ImportRejection.NotAnalyzed);
+
+    [Fact]
+    public async Task TheCharactersOfAnImportedBook_FollowTheRulesOfASheet_NamesTheFieldNeverTheText()
+    {
+        var result = await ImportAsync(Imported(book => book.Characters[1] = new Character(2, "argan", string.Empty, "p\u0007")));
+
+        result.Rejection.ShouldBe(ImportRejection.Invalid);
+        result.Detail.ShouldNotBeNull().ShouldContain("characters[");
+        result.Detail.ShouldNotContain("p\u0007");
+        _books.Books.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public async Task TwoCharactersWithTheSamePosition_AreRefused() =>
+        (await ImportAsync(Imported(book => book.Characters[1] = new Character(1, "Toinette", "d", "p")))).Rejection.ShouldBe(ImportRejection.Invalid);
+
+    [Theory]
+    [InlineData("title", "Line\nbreak")]
+    [InlineData("title", "   ")]
+    [InlineData("model", "gpt\u0000")]
+    [InlineData("providerName", "Open\rAI")]
+    public async Task ControlCharactersInTheTexts_OrAnEmptyTitle_AreRefused(string field, string value)
+    {
+        var result = await ImportAsync(Imported(book =>
+        {
+            switch (field)
+            {
+                case "title": book.Title = value; break;
+                case "model": book.Model = value; break;
+                default: book.ProviderName = value; break;
+            }
+        }));
+
+        result.Rejection.ShouldBe(ImportRejection.Invalid);
+        result.Detail.ShouldBe(field);
+    }
+
+    [Fact]
+    public async Task TheFileNameOfAnImportedBook_KeepsNoFolder()
+    {
+        var result = await ImportAsync(Imported(book => book.FileName = @"C:\Users\someone\Documents\secret-plans.pdf"));
+
+        result.Imported!.FileName.ShouldBe("secret-plans.pdf");
+    }
+
+    [Fact]
+    public async Task TheTextsOfImportedCharacters_AreCleaned_LikeThoseOfASheetSaved()
+    {
+        var result = await ImportAsync(Imported(book => book.Characters[0] = new Character(1, "  Argan ", " The invalid. ", "I am Argan.\r\nTruly.  ")));
+
+        var saved = result.Imported!.Characters[0];
+        (saved.Name, saved.ShortDescription, saved.ChatProfile).ShouldBe(("Argan", "The invalid.", "I am Argan.\nTruly."));
+    }
+
+    [Fact]
+    public async Task AnImportedBook_KeepsItsDatesAndItsAnalysisFigures()
+    {
+        var result = await ImportAsync(Imported(book =>
+        {
+            book.InputTokens = 123;
+            book.Model = "gpt-5-nano";
+            book.FinishedAt = Now.AddHours(-1);
+            book.UpdatedAt = Now.AddHours(-1);
+            book.SentAt = Now.AddDays(-3);
+        }));
+
+        var imported = result.Imported!;
+        (imported.InputTokens, imported.Model, imported.SentAt, imported.UpdatedAt, imported.FinishedAt).ShouldBe((123, "gpt-5-nano", Now.AddDays(-3), Now.AddHours(-1), Now.AddHours(-1)));
+    }
+
+    [Fact]
+    public async Task TwoImportsOfTheSameFileAtOnce_AddOneBook()
+    {
+        var (service, _, file) = await ExportedAsync();
+        _books.Books.Clear();
+
+        var results = await Task.WhenAll(Enumerable.Range(0, 5).Select(_ => service.ImportAsync(Stream(file), replace: false, Token)));
+
+        results.Count(result => result.Imported is not null).ShouldBe(1);
+        results.Count(result => result.Rejection == ImportRejection.Conflict).ShouldBe(4);
+        service.Dispose();
+    }
+
+    [Fact]
+    public async Task WithoutAnArchive_ExportAndImportAreNotAvailable()
+    {
+        var book = await DoneBookAsync();
+
+        await Should.ThrowAsync<InvalidOperationException>(() => _service.ExportAsync(book.Id, Token));
+        await Should.ThrowAsync<InvalidOperationException>(() => _service.ImportAsync(Stream([1]), false, Token));
+    }
+
     // A stream that never ends and counts what was read from it, to check that a huge upload is not swallowed.
     private sealed class RepeatingStream(long length) : Stream
     {

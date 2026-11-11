@@ -16,6 +16,8 @@ public static class PageNotice
     public const string Retried = "retried";
     public const string CharacterSaved = "characterSaved";
     public const string ExampleAdded = "exampleAdded";
+    public const string Imported = "imported";
+    public const string ImportedReplaced = "importedReplaced";
 
     public static void Set(ITempDataDictionary tempData, string kind, string title)
     {
@@ -39,6 +41,8 @@ public static class PageNotice
             Retried => texts.Format("books.notice.retried", new { title }),
             CharacterSaved => texts.Format("books.notice.characterSaved", new { title }),
             ExampleAdded => texts.Format("books.notice.exampleAdded", new { title }),
+            Imported => texts.Format("books.notice.imported", new { title }),
+            ImportedReplaced => texts.Format("books.notice.importedReplaced", new { title }),
             _ => null,
         };
     }

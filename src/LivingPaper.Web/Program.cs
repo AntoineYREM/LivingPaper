@@ -41,6 +41,9 @@ builder.Services.AddSingleton<IBookRepository>(new JsonBookRepository(Path.Combi
 builder.Services.AddSingleton<IBookTextStore>(new FileBookTextStore(Path.Combine(dataDirectory, "uploads")));
 builder.Services.AddSingleton<IBookTextExtractor, BookTextExtractor>();
 
+// The file of an exported book (PAPER-12): the format of a book of the library, also the one of the examples.
+builder.Services.AddSingleton<IBookArchive, JsonBookArchive>();
+
 // The examples (PAPER-11): public-domain books already analyzed, the *.json files of examples/ in the repository, copied next to
 // the application (and into the Docker image). EXAMPLES_DIRECTORY moves them. Read only.
 var examplesDirectory = Path.GetFullPath(builder.Configuration["EXAMPLES_DIRECTORY"] ?? Path.Combine(AppContext.BaseDirectory, "examples"));
@@ -87,6 +90,7 @@ app.UseStaticFiles();
 app.UseStatusCodePagesWithReExecute("/NotFound");
 app.UseTextLocalization();
 app.MapRazorPages();
+app.MapExport();
 
 app.Run();
 
