@@ -483,7 +483,9 @@ $RECYCLE.BIN/
 
 # --- LivingPaper ---
 # User data (books, settings with encrypted API keys, prompts): never committed.
-/data/
+# Everything the application stores (prompts, books, settings, encryption keys). It lands in ./data next to where the
+# application runs, so it can also appear under src/LivingPaper.Web/ when started from there.
+data/
 
 # Local working books (copyrighted or large files are never committed)
 books/

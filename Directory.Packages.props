@@ -6,6 +6,9 @@
     <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.15" />
     <!-- ILogger for the adapters (Infrastructure), so retries of the language model client can be logged. Abstractions only. -->
     <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.15" />
+    <!-- IDataProtector for the adapter that encrypts the API keys (Infrastructure). Abstractions only: the application
+         (Web) provides the implementation and stores the keys of the encryption in data/keys. -->
+    <PackageVersion Include="Microsoft.AspNetCore.DataProtection.Abstractions" Version="10.0.15" />
     <PackageVersion Include="Shouldly" Version="4.3.0" />
     <!-- xUnit v3 runs on Microsoft.Testing.Platform: each test project is its own executable, with no VSTest
          testhost.exe (some antiviruses block testhost.exe from watching its parent process). -->

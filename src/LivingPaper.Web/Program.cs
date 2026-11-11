@@ -2,6 +2,7 @@ using LivingPaper.Application;
 using LivingPaper.Infrastructure;
 using LivingPaper.Persistence;
 using LivingPaper.Web;
+using Microsoft.AspNetCore.DataProtection;
 
 // Composition root: the only place where the layers are wired together.
 var builder = WebApplication.CreateBuilder(args);
@@ -16,6 +17,19 @@ builder.Services.AddSingleton<IPromptProvider>(new FilePromptProvider(dataDirect
 // One factory for the whole application: its clients share a connection pool. It builds a client for each language
 // model of the settings (PAPER-5) when the analysis or the chat needs one.
 builder.Services.AddSingleton<IChatModelFactory, OpenAiCompatibleChatModelFactory>();
+
+// The API keys of the language models are encrypted before they are written to data/settings.json. The encryption keys
+// are kept in data/keys, so a restart can read them again; deleting that folder makes the saved keys unreadable (the
+// settings then say so and the models must be added again). In a container (Linux) they are not themselves encrypted:
+// see the README for what that protects against.
+builder.Services.AddDataProtection()
+    .SetApplicationName("LivingPaper")
+    .PersistKeysToFileSystem(new DirectoryInfo(Path.Combine(dataDirectory, "keys")));
+builder.Services.AddSingleton<ISecretProtector, DataProtectionSecretProtector>();
+builder.Services.AddSingleton<ILlmSettingsRepository>(services =>
+    new JsonLlmSettingsRepository(dataDirectory, services.GetRequiredService<ISecretProtector>()));
+builder.Services.AddSingleton<ILlmConnectionTester, LlmConnectionTester>();
+builder.Services.AddSingleton<LlmSettingsService>();
 
 var app = builder.Build();
 

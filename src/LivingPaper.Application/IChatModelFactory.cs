@@ -7,5 +7,7 @@ namespace LivingPaper.Application;
 public interface IChatModelFactory
 {
     // Throws ArgumentException when the provider's base URL is not an absolute http or https URL.
-    IChatModel Create(LlmProvider provider);
+    // retryPassingFailures: false for a call where the answer must come at once, such as the connection test of the
+    // settings: a wrong address would otherwise make the user wait through the retries (17 seconds) to see the error.
+    IChatModel Create(LlmProvider provider, bool retryPassingFailures = true);
 }

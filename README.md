@@ -33,3 +33,26 @@ The default prompts and the exact variables of each one are in
 
 Prompts are written in English: everything the analysis writes (book summary, character descriptions and profiles) is
 in English whatever the language of the book, and the chat prompt tells the AI to answer in the language you write in.
+
+## Language models and your API keys
+
+You bring your own language model: any OpenAI-compatible API (OpenAI, a local server such as Ollama or LM Studio,
+another vendor). Each model is a name, a base URL, an API key (optional for a local server) and a model name. A model
+is saved only after a connection test succeeds: the application sends the `llm.connectionTest` prompt of
+`data/prompts.json` and checks that a usable reply comes back. You choose one model to analyze books and one to chat;
+they can be the same.
+
+- **Where:** `data/settings.json` holds the models and your choices. `data/keys/` holds the keys that encrypt your API
+  keys. Both are in the data directory (`./data` by default, the `data/` volume in Docker) and both are ignored by git.
+- **What is protected:** an API key is encrypted before it is written, is never sent back to your browser, never
+  written to the logs and never part of a book export.
+- **What is not:** in a container on Linux, the encryption keys in `data/keys/` are stored as plain files next to
+  `settings.json`. The encryption therefore protects a `settings.json` that leaks on its own (shared, copied, partly
+  backed up). It does not protect against someone who gets the whole data volume.
+- **Back up both together.** If `data/keys/` is lost, the saved API keys can no longer be read: the settings say so
+  and you add those models again.
+- **Local addresses are allowed on purpose** (`localhost`, `192.168.x.x`, `host.docker.internal`) so that local models
+  work, and the application follows no redirect.
+
+**Warning: LivingPaper is for personal use and has no authentication.** Anyone who can reach the application can use
+the models and keys you saved. Do not expose it to the Internet without a reverse proxy that protects it.

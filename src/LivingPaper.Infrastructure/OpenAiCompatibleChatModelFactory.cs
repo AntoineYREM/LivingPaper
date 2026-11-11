@@ -33,7 +33,7 @@ public sealed class OpenAiCompatibleChatModelFactory : IChatModelFactory, IDispo
         };
     }
 
-    public IChatModel Create(LlmProvider provider)
+    public IChatModel Create(LlmProvider provider, bool retryPassingFailures = true)
     {
         ArgumentNullException.ThrowIfNull(provider);
         var baseAddress = ParseBaseAddress(provider.BaseUrl);
@@ -42,7 +42,9 @@ public sealed class OpenAiCompatibleChatModelFactory : IChatModelFactory, IDispo
         // Not disposed here: the handler (the only thing that holds resources) is shared and owned by the factory.
         var client = new HttpClient(_handler, disposeHandler: false) { BaseAddress = baseAddress, Timeout = Timeout.InfiniteTimeSpan };
         var model = new OpenAiCompatibleChatModel(client, provider, _options);
-        return new RetryingChatModel(model, _options.RetryDelays, _loggerFactory.CreateLogger<RetryingChatModel>());
+        return retryPassingFailures
+            ? new RetryingChatModel(model, _options.RetryDelays, _loggerFactory.CreateLogger<RetryingChatModel>())
+            : model;
     }
 
     public void Dispose() => _handler.Dispose();

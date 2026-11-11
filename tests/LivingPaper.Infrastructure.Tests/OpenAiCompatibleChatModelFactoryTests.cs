@@ -128,6 +128,26 @@ public sealed class OpenAiCompatibleChatModelFactoryTests : IAsyncLifetime
     }
 
     [Fact]
+    public async Task Create_WithoutRetries_GivesAClientThatTriesOnlyOnce()
+    {
+        _server.Handler = context => FakeReplies.Status(context, 503, "busy");
+
+        var exception = await Should.ThrowAsync<ChatProviderException>(
+            () => _factory.Create(Provider(), retryPassingFailures: false).CompleteAsync(Messages, null, Token));
+
+        exception.StatusCode.ShouldBe(503);
+        _server.Requests.Count.ShouldBe(1); // The connection test of the settings: no wait before showing the error.
+    }
+
+    [Fact]
+    public async Task Create_WithoutRetries_StillWorksWhenTheProviderAnswers()
+    {
+        _server.Handler = context => FakeReplies.TextAsync(context, "pong");
+
+        (await _factory.Create(Provider(), retryPassingFailures: false).CompleteAsync(Messages, null, Token)).ShouldBe("pong");
+    }
+
+    [Fact]
     public async Task Create_GivesAClientThatDoesNotRetryAWrongKey()
     {
         _server.Handler = context => FakeReplies.Status(context, 401, "wrong key");

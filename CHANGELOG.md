@@ -32,3 +32,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   in a message. Passing failures (429, 5xx, 408, network, time limit, cut or empty reply) are retried three times
   after 2, 5 and 10 seconds; refusals (400, 401, 403, 404) and filtered replies are not. Redirects are never followed.
   New dependency: `Microsoft.Extensions.Logging.Abstractions` (Infrastructure), to log retries.
+- Language model settings, logic (PAPER-5, first part; the page comes after the design and the translations): the rules
+  for adding, deleting and choosing models (`LlmSettings`, `LlmProviderValidator`), `LlmSettingsService` (a model is
+  saved only after a successful connection test), `ILlmConnectionTester` (one try, 60 s limit, tells an unreachable
+  address, a refused key, an unknown model, an invalid reply or a provider error apart), `data/settings.json` with the
+  API keys encrypted by ASP.NET Core Data Protection (encryption keys in `data/keys`, a key that can no longer be read is
+  reported and never used), and `IChatModelFactory.Create(provider, retryPassingFailures)`. `data/` is now ignored by
+  git at any depth. New dependency: `Microsoft.AspNetCore.DataProtection.Abstractions` (Infrastructure).
