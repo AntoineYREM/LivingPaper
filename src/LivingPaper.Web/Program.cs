@@ -1,4 +1,5 @@
 using LivingPaper.Application;
+using LivingPaper.Infrastructure;
 using LivingPaper.Persistence;
 using LivingPaper.Web;
 
@@ -11,6 +12,10 @@ builder.Services.AddRazorPages();
 // production. Set DATA_DIRECTORY to move it; by default it is ./data next to where the application runs.
 var dataDirectory = Path.GetFullPath(builder.Configuration["DATA_DIRECTORY"] ?? "data");
 builder.Services.AddSingleton<IPromptProvider>(new FilePromptProvider(dataDirectory));
+
+// One factory for the whole application: its clients share a connection pool. It builds a client for each language
+// model of the settings (PAPER-5) when the analysis or the chat needs one.
+builder.Services.AddSingleton<IChatModelFactory, OpenAiCompatibleChatModelFactory>();
 
 var app = builder.Build();
 

@@ -25,3 +25,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   every use. An invalid file (bad JSON, missing or empty prompt, unknown variable) is an explicit error naming the
   file and the prompt, never a silent fallback. The data directory is set with `DATA_DIRECTORY` (default `data`).
   First `README.md` section, on the prompts.
+- OpenAI-compatible language model client (PAPER-6): the `IChatModel` port (a streamed reply and a complete reply, with
+  the tokens used) and `IChatModelFactory`, implemented by an adapter for `POST {baseUrl}/chat/completions` that works
+  with any OpenAI-compatible provider. A reply cut before `[DONE]` and a provider content filter are errors, never a
+  shorter reply. Failures carry a kind and the HTTP status; the body of an HTTP error, the URL and the key never appear
+  in a message. Passing failures (429, 5xx, 408, network, time limit, cut or empty reply) are retried three times
+  after 2, 5 and 10 seconds; refusals (400, 401, 403, 404) and filtered replies are not. Redirects are never followed.
+  New dependency: `Microsoft.Extensions.Logging.Abstractions` (Infrastructure), to log retries.

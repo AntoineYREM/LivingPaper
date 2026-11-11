@@ -5,5 +5,9 @@
     <ProjectReference Include="..\LivingPaper.Domain\LivingPaper.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+  </ItemGroup>
+
 </Project>
 

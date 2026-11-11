@@ -11,6 +11,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- Kestrel and HttpContext, to run a small fake language model server on a free local port. No package. -->
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\src\LivingPaper.Infrastructure\LivingPaper.Infrastructure.csproj" />
   </ItemGroup>
 
