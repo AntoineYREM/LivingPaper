@@ -541,6 +541,163 @@ public sealed class BookServiceTests : IDisposable
         book.Characters.Select(character => character.Name).ShouldBe(["Argan the first", "Toinette the second"]);
     }
 
+    // ---- The examples ----
+
+    private static Book Example(string title = "Alice in Wonderland")
+    {
+        var example = new Book(BookId.New(), title, "alice.epub", Now.AddYears(-1))
+        {
+            Status = BookStatus.Done,
+            Summary = "England, 1865. A dream.",
+            ProviderName = "OpenAI",
+            Model = "gpt-5-nano",
+            PartsDone = 3,
+            PartsTotal = 3,
+            ProfilesDone = 1,
+            ProfilesTotal = 1,
+            PartsSkipped = 1,
+            InputTokens = 100,
+            CachedInputTokens = 10,
+            OutputTokens = 50,
+            StartedAt = Now.AddYears(-1),
+            FinishedAt = Now.AddYears(-1).AddMinutes(3),
+        };
+        example.Characters.Add(new Character(1, "Alice", "A curious girl.", "I am Alice."));
+        return example;
+    }
+
+    private BookService WithExamples(params Book[] examples) =>
+        new(_books, _texts, _extractor, _scheduler, _clock, new AnalysisOptions(), new InMemoryExampleCatalog(examples));
+
+    [Fact]
+    public async Task Find_LooksInTheLibraryFirst_ThenInTheExamples()
+    {
+        var example = Example();
+        var mine = await DoneBookAsync();
+        using var service = WithExamples(example);
+
+        var inLibrary = await service.FindAsync(mine.Id, Token);
+        var inExamples = await service.FindAsync(example.Id, Token);
+
+        inLibrary!.IsExample.ShouldBeFalse();
+        inLibrary.Book.ShouldBeSameAs(mine);
+        inExamples!.IsExample.ShouldBeTrue();
+        inExamples.Book.Title.ShouldBe("Alice in Wonderland");
+        (await service.FindAsync(BookId.New(), Token)).ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task AnExampleWithTheIdOfABookOfTheLibrary_IsShadowedByTheLibrary()
+    {
+        var mine = await DoneBookAsync();
+        var example = Example();
+        using var service = new BookService(_books, _texts, _extractor, _scheduler, _clock, new AnalysisOptions(), new InMemoryExampleCatalog(new Book(mine.Id, "Imposter", "x", Now) { Status = BookStatus.Done }, example));
+
+        (await service.FindAsync(mine.Id, Token))!.IsExample.ShouldBeFalse();
+    }
+
+    [Fact]
+    public async Task WithoutACatalog_ThereAreNoExamples_AndFindOnlyLooksInTheLibrary()
+    {
+        var mine = await DoneBookAsync();
+
+        (await _service.ListExamplesAsync(Token)).Books.ShouldBeEmpty();
+        (await _service.FindAsync(mine.Id, Token))!.IsExample.ShouldBeFalse();
+        (await _service.AddExampleAsync(BookId.New(), Token)).Rejection.ShouldBe(ExampleRejection.NotFound);
+    }
+
+    [Fact]
+    public async Task TheExamplesAreListed_ByTitle()
+    {
+        using var service = WithExamples(Example("Zola"), Example("Alice"));
+
+        (await service.ListExamplesAsync(Token)).Books.Select(book => book.Title).ShouldBe(["Alice", "Zola"]);
+    }
+
+    [Fact]
+    public async Task AddingAnExample_CopiesItIntoTheLibrary_ADoneBookWithItsSheets_UnderANewId()
+    {
+        var example = Example();
+        using var service = WithExamples(example);
+
+        var result = await service.AddExampleAsync(example.Id, Token);
+
+        result.Succeeded.ShouldBeTrue();
+        var copy = result.Added!;
+        copy.Id.ShouldNotBe(example.Id);
+        _books.Books[copy.Id].ShouldBeSameAs(copy);
+        (copy.Title, copy.FileName, copy.Summary, copy.Status).ShouldBe(("Alice in Wonderland", "alice.epub", "England, 1865. A dream.", BookStatus.Done));
+        copy.Characters.ShouldBe(example.Characters);
+        (copy.ProviderName, copy.Model, copy.InputTokens, copy.CachedInputTokens, copy.OutputTokens).ShouldBe(("OpenAI", "gpt-5-nano", 100, 10, 50));
+        (copy.PartsDone, copy.PartsTotal, copy.ProfilesDone, copy.ProfilesTotal, copy.PartsSkipped).ShouldBe((3, 3, 1, 1, 1));
+        copy.SentAt.ShouldBe(Now);
+        copy.UpdatedAt.ShouldBe(Now);
+        copy.StartedAt.ShouldBe(example.StartedAt);
+        copy.FinishedAt.ShouldBe(example.FinishedAt);
+        _scheduler.Queued.ShouldBeEmpty(); // Nothing to analyze.
+        _texts.Texts.ShouldBeEmpty(); // Nor any text to keep.
+    }
+
+    [Fact]
+    public async Task TheCopy_IsABookOfTheLibrary_ItsSheetsCanBeEdited_WithoutTouchingTheExample()
+    {
+        var example = Example();
+        using var service = WithExamples(example);
+        var copy = (await service.AddExampleAsync(example.Id, Token)).Added!;
+
+        var edit = await service.UpdateCharacterAsync(copy.Id, 1, new CharacterDraft("Alice", "Edited.", "I am an edited Alice."), Token);
+        var untouched = await service.UpdateCharacterAsync(example.Id, 1, new CharacterDraft("Alice", "Edited.", "I am an edited Alice."), Token);
+
+        edit.Outcome.ShouldBe(CharacterUpdateOutcome.Saved);
+        untouched.Outcome.ShouldBe(CharacterUpdateOutcome.NotFound); // An example cannot be changed.
+        example.Characters[0].ChatProfile.ShouldBe("I am Alice.");
+    }
+
+    [Fact]
+    public async Task AnExample_CannotBeDeleted_OrRetried()
+    {
+        var example = Example();
+        using var service = WithExamples(example);
+
+        (await service.DeleteAsync(example.Id, Token)).ShouldBeFalse();
+        (await service.RetryAsync(example.Id, Token)).ShouldBeFalse();
+
+        (await service.ListExamplesAsync(Token)).Books.Count.ShouldBe(1);
+    }
+
+    [Fact]
+    public async Task AddingAnExampleWhoseTitleIsAlreadyInTheLibrary_IsRefused_IgnoringCase()
+    {
+        var example = Example("Alice in Wonderland");
+        using var service = WithExamples(example);
+        await service.AddAsync(Bytes(), "mine.epub", "  alice IN wonderland ", replace: false, Token);
+
+        var result = await service.AddExampleAsync(example.Id, Token);
+
+        result.Rejection.ShouldBe(ExampleRejection.Duplicate);
+        _books.Books.Count.ShouldBe(1);
+    }
+
+    [Fact]
+    public async Task AddingAnExampleThatDoesNotExist_IsNotFound()
+    {
+        using var service = WithExamples(Example());
+
+        (await service.AddExampleAsync(BookId.New(), Token)).Rejection.ShouldBe(ExampleRejection.NotFound);
+    }
+
+    [Fact]
+    public async Task AddingTheSameExampleTwiceAtOnce_AddsOneCopy()
+    {
+        var example = Example();
+        using var service = WithExamples(example);
+
+        var results = await Task.WhenAll(Enumerable.Range(0, 5).Select(_ => service.AddExampleAsync(example.Id, Token)));
+
+        results.Count(result => result.Succeeded).ShouldBe(1);
+        results.Count(result => result.Rejection == ExampleRejection.Duplicate).ShouldBe(4);
+    }
+
     // A stream that never ends and counts what was read from it, to check that a huge upload is not swallowed.
     private sealed class RepeatingStream(long length) : Stream
     {

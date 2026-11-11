@@ -1,0 +1,53 @@
+@page
+@model ExamplesModel
+@* The examples: books already analyzed, read only. The words come from the translation files. *@
+@{
+    ViewData["Title"] = T["examples.title"];
+}
+
+<h1>@T["examples.title"]</h1>
+<p class="lead">@T["examples.lead"]</p>
+
+@if (Model.Error is not null)
+{
+    <div class="alert alert--error" role="alert">
+        <strong class="alert__title">@T["books.alert.error"]</strong>
+        <p>@Model.Error</p>
+    </div>
+}
+
+@if (Model.Rows.Count == 0)
+{
+    <div class="empty">
+        <p class="empty__title">@T["examples.empty.title"]</p>
+        <p>@T["examples.empty.body"]</p>
+    </div>
+}
+
+@if (Model.Rows.Count > 0)
+{
+    <ul class="contents">
+        @foreach (var row in Model.Rows)
+        {
+            <li class="contents__item">
+                <div class="contents__row">
+                    <a class="contents__title" href="~/Book/@row.Book.Id">@row.Book.Title</a>
+                    <span class="contents__leader" aria-hidden="true"></span>
+                    <span class="contents__status status">@T["book.example.tag"]</span>
+                </div>
+                @if (!string.IsNullOrEmpty(row.Book.Summary))
+                {
+                    <p class="contents__meta">@row.Book.Summary</p>
+                }
+                <p class="contents__meta">@row.Meta</p>
+                <div class="contents__actions">
+                    <a class="button button--small button--quiet" href="~/Book/@row.Book.Id">@T["library.open"]</a>
+                    <form class="form" method="post" asp-page="/Examples" asp-page-handler="Add">
+                        <input type="hidden" name="id" value="@row.Book.Id" />
+                        <button type="submit" class="button button--small" aria-label="@T.Format("examples.add.label", new { title = row.Book.Title })">@T["examples.add"]</button>
+                    </form>
+                </div>
+            </li>
+        }
+    </ul>
+}

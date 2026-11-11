@@ -13,4 +13,10 @@
     <EmbeddedResource Include="Resources\*.json" LogicalName="Resources.%(Filename)%(Extension)" />
   </ItemGroup>
 
+<ItemGroup>
+    <!-- The examples of the repository (examples/*.json) travel with the application: next to it when it runs from the build,
+         and in the published files (the Docker image). -->
+    <Content Include="..\..\examples\*.json" Link="examples\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>

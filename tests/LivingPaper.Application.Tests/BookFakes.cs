@@ -90,3 +90,13 @@ internal sealed class FixedTimeProvider(DateTimeOffset now) : TimeProvider
 {
     public override DateTimeOffset GetUtcNow() => now;
 }
+
+// The examples, in memory.
+internal sealed class InMemoryExampleCatalog(params Book[] examples) : IExampleCatalog
+{
+    public Task<BookListing> ListAsync(CancellationToken cancellationToken) =>
+        Task.FromResult(new BookListing([.. examples.OrderBy(book => book.Title, StringComparer.OrdinalIgnoreCase)], []));
+
+    public Task<Book?> GetAsync(BookId id, CancellationToken cancellationToken) =>
+        Task.FromResult(examples.FirstOrDefault(book => book.Id == id));
+}

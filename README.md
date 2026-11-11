@@ -133,3 +133,15 @@ into the field.
   as saved on its sheet). The text of the messages and of the replies is never written to the logs.
 - **The chat needs JavaScript** (the reply streams in as NDJSON lines through `fetch`); without it the chat buttons are hidden.
   With no model chosen for the chat, the page says so and links to the settings.
+
+## The examples
+
+The **Examples** page shows public-domain books that are already analyzed, so you can try LivingPaper without a key: read the
+summary and the sheets, and chat with the characters once a model is chosen for the chat. Examples are read only: they cannot be
+edited, retried or deleted. **Add to my library** copies one into your library (a book titled the same as one you already have is
+refused), where you can edit its sheets like any other book.
+
+They are the files of the `examples/` folder, in the format of a book of the library, checked like an imported book when the
+application starts: an example that is not valid is ignored, with a warning in the logs. `EXAMPLES_DIRECTORY` points to another
+folder. See `CONTRIBUTING.md` to propose one.
+

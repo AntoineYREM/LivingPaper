@@ -14,17 +14,21 @@ namespace LivingPaper.Web.IntegrationTests;
 public sealed class LivingPaperFactory : WebApplicationFactory<Program>
 {
     private readonly bool _ownsDirectory;
+    private readonly bool _ownsExamples;
     private readonly Action<IServiceCollection>? _configureServices;
     private readonly string? _environment;
 
     // xUnit builds a fixture with the only public constructor, so this one takes no argument; With(...) is for the rest.
     public LivingPaperFactory()
-        : this(null, null, null)
+        : this(null, null, null, null)
     {
     }
 
-    private LivingPaperFactory(string? dataDirectory, Action<IServiceCollection>? configureServices, string? environment)
+    private LivingPaperFactory(string? dataDirectory, Action<IServiceCollection>? configureServices, string? environment, string? examplesDirectory)
     {
+        _ownsExamples = examplesDirectory is null;
+        ExamplesDirectory = examplesDirectory ?? Path.Combine(Path.GetTempPath(), "livingpaper-web-examples-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(ExamplesDirectory);
         _environment = environment;
         _ownsDirectory = dataDirectory is null;
         DataDirectory = dataDirectory ?? Path.Combine(Path.GetTempPath(), "livingpaper-web-tests-" + Guid.NewGuid().ToString("N"));
@@ -33,10 +37,14 @@ public sealed class LivingPaperFactory : WebApplicationFactory<Program>
     }
 
     // environment: "Production" to see what the application does outside development (tests start in "Development").
-    public static LivingPaperFactory With(string? dataDirectory = null, Action<IServiceCollection>? configureServices = null, string? environment = null) =>
-        new(dataDirectory, configureServices, environment);
+    // examplesDirectory: where the examples are read from. Each factory has its own, empty unless a test puts files in it, so the
+    // tests never depend on the examples shipped with the repository (they have their own tests).
+    public static LivingPaperFactory With(string? dataDirectory = null, Action<IServiceCollection>? configureServices = null, string? environment = null, string? examplesDirectory = null) =>
+        new(dataDirectory, configureServices, environment, examplesDirectory);
 
     public string DataDirectory { get; }
+
+    public string ExamplesDirectory { get; }
 
     public ListLoggerProvider Logs { get; } = new();
 
@@ -44,6 +52,7 @@ public sealed class LivingPaperFactory : WebApplicationFactory<Program>
     {
         ArgumentNullException.ThrowIfNull(builder);
         builder.UseSetting("DATA_DIRECTORY", DataDirectory);
+        builder.UseSetting("EXAMPLES_DIRECTORY", ExamplesDirectory);
         if (_environment is not null)
         {
             builder.UseEnvironment(_environment);
@@ -59,6 +68,11 @@ public sealed class LivingPaperFactory : WebApplicationFactory<Program>
         if (disposing && _ownsDirectory && Directory.Exists(DataDirectory))
         {
             Directory.Delete(DataDirectory, recursive: true);
+        }
+
+        if (disposing && _ownsExamples && Directory.Exists(ExamplesDirectory))
+        {
+            Directory.Delete(ExamplesDirectory, recursive: true);
         }
     }
 }

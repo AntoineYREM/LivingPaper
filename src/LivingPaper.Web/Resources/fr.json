@@ -218,5 +218,19 @@
   "chat.failure.contentFiltered": "Le filtre de contenu du modèle a arrêté la réponse. Essayez un autre message, ou un autre modèle.",
   "chat.failure.invalidReply": "La réponse du modèle n’a pas pu être lue. Envoyez de nouveau votre message.",
   "chat.failure.promptFile": "Le fichier de prompts est inutilisable. Corrigez data/prompts.json.",
-  "chat.failure.unexpected": "La réponse s’est arrêtée à cause d’une erreur de l’application. Envoyez de nouveau votre message."
+  "chat.failure.unexpected": "La réponse s’est arrêtée à cause d’une erreur de l’application. Envoyez de nouveau votre message.",
+
+  "nav.examples": "Exemples",
+  "nav.backToExamples": "Retour aux exemples",
+  "examples.title": "Exemples",
+  "examples.lead": "Des livres du domaine public déjà analysés, pour essayer LivingPaper sans clé. Lisez-les, discutez avec leurs personnages (dès qu’un modèle est choisi pour le chat) ou ajoutez-en un à votre bibliothèque pour le faire vôtre.",
+  "examples.empty.title": "Aucun exemple n’est fourni avec cette installation.",
+  "examples.empty.body": "Les exemples sont les fichiers du dossier examples. CONTRIBUTING.md explique comment en proposer un.",
+  "examples.add": "Ajouter à ma bibliothèque",
+  "examples.add.label": "Ajouter {title} à ma bibliothèque",
+  "examples.error.duplicate": "Un livre intitulé {title} est déjà dans votre bibliothèque. Supprimez-le d’abord si vous voulez une copie neuve de l’exemple.",
+  "book.example.tag": "Exemple",
+  "book.example.note": "Ce livre est un exemple, en lecture seule. Vous pouvez le lire et discuter avec ses personnages ; ajoutez-le à votre bibliothèque pour modifier ses fiches et le garder comme le vôtre.",
+  "character.example.note": "Cette fiche appartient à un exemple, en lecture seule. Ajoutez le livre à votre bibliothèque pour modifier ses fiches.",
+  "books.notice.exampleAdded": "{title} a été ajouté à votre bibliothèque."
 }

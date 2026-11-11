@@ -40,6 +40,11 @@ builder.Services.AddSingleton<LlmSettingsService>();
 builder.Services.AddSingleton<IBookRepository>(new JsonBookRepository(Path.Combine(dataDirectory, "books")));
 builder.Services.AddSingleton<IBookTextStore>(new FileBookTextStore(Path.Combine(dataDirectory, "uploads")));
 builder.Services.AddSingleton<IBookTextExtractor, BookTextExtractor>();
+
+// The examples (PAPER-11): public-domain books already analyzed, the *.json files of examples/ in the repository, copied next to
+// the application (and into the Docker image). EXAMPLES_DIRECTORY moves them. Read only.
+var examplesDirectory = Path.GetFullPath(builder.Configuration["EXAMPLES_DIRECTORY"] ?? Path.Combine(AppContext.BaseDirectory, "examples"));
+builder.Services.AddSingleton<IExampleCatalog>(new JsonExampleCatalog(examplesDirectory));
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddSingleton<BookService>();
 builder.Services.AddSingleton<CharacterChatService>();
@@ -66,6 +71,15 @@ catch (PromptFileException exception)
     // message, each time a prompt is used. The file is never overwritten. The message holds no prompt text.
     app.Logger.PromptsFileUnusable(exception.Message);
 }
+
+// The examples are read at start, like the prompts: one that is not valid is ignored with a warning, the others stay.
+var examples = await app.Services.GetRequiredService<IExampleCatalog>().ListAsync(app.Lifetime.ApplicationStopping);
+foreach (var ignored in examples.Unreadable)
+{
+    app.Logger.ExampleIgnored(ignored.StorageName, ignored.Reason);
+}
+
+app.Logger.ExamplesLoaded(examples.Books.Count);
 
 // Serves wwwroot: the style sheets, the fonts and the images of the application, all its own (nothing from a CDN).
 app.UseStaticFiles();

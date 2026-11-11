@@ -218,5 +218,19 @@
   "chat.failure.contentFiltered": "The content filter of the model stopped the reply. Try another message, or another model.",
   "chat.failure.invalidReply": "The reply of the model could not be read. Send your message again.",
   "chat.failure.promptFile": "The prompts file cannot be used. Fix data/prompts.json.",
-  "chat.failure.unexpected": "The reply stopped because of an error of the application. Send your message again."
+  "chat.failure.unexpected": "The reply stopped because of an error of the application. Send your message again.",
+
+  "nav.examples": "Examples",
+  "nav.backToExamples": "Back to the examples",
+  "examples.title": "Examples",
+  "examples.lead": "Public-domain books already analyzed, so that you can try LivingPaper without a key. Read them, chat with their characters (once a model is chosen for the chat) or add one to your library to make it yours.",
+  "examples.empty.title": "No example comes with this installation.",
+  "examples.empty.body": "The examples are the files of the examples folder. CONTRIBUTING.md tells how to propose one.",
+  "examples.add": "Add to my library",
+  "examples.add.label": "Add {title} to my library",
+  "examples.error.duplicate": "A book titled {title} is already in your library. Delete it first if you want a fresh copy of the example.",
+  "book.example.tag": "Example",
+  "book.example.note": "This book is an example, and is read only. You can read it and chat with its characters; add it to your library to edit its sheets and keep it as your own.",
+  "character.example.note": "This sheet belongs to an example, which is read only. Add the book to your library to edit its sheets.",
+  "books.notice.exampleAdded": "{title} was added to your library."
 }

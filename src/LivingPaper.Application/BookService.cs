@@ -15,7 +15,8 @@ public sealed class BookService(
     IBookTextExtractor extractor,
     IAnalysisScheduler scheduler,
     TimeProvider clock,
-    AnalysisOptions options) : IDisposable
+    AnalysisOptions options,
+    IExampleCatalog? examples = null) : IDisposable
 {
     // The largest book file accepted: 20 MB.
     public const long MaxBookBytes = 20L * 1024 * 1024;
@@ -105,6 +106,71 @@ public sealed class BookService(
         try
         {
             return await DeleteCoreAsync(id, cancellationToken).ConfigureAwait(false);
+        }
+        finally
+        {
+            _lock.Release();
+        }
+    }
+
+    // A book of the library, or else an example, by id: what the pages that show a book use. The library comes first. Changing
+    // a sheet, deleting and retrying only ever look in the library, so an example is read only whatever a page does.
+    public async Task<BookLookup?> FindAsync(BookId id, CancellationToken cancellationToken)
+    {
+        var book = await books.GetAsync(id, cancellationToken).ConfigureAwait(false);
+        if (book is not null)
+        {
+            return new BookLookup(book, IsExample: false);
+        }
+
+        var example = examples is null ? null : await examples.GetAsync(id, cancellationToken).ConfigureAwait(false);
+        return example is null ? null : new BookLookup(example, IsExample: true);
+    }
+
+    public async Task<BookListing> ListExamplesAsync(CancellationToken cancellationToken) =>
+        examples is null ? new BookListing([], []) : await examples.ListAsync(cancellationToken).ConfigureAwait(false);
+
+    // Copies an example into the library: a book that is done, with its sheets (which can then be edited), under a new id.
+    // Refused when a book of the library has the same title: nothing is replaced behind the user's back.
+    public async Task<AddExampleResult> AddExampleAsync(BookId exampleId, CancellationToken cancellationToken)
+    {
+        var example = examples is null ? null : await examples.GetAsync(exampleId, cancellationToken).ConfigureAwait(false);
+        if (example is null)
+        {
+            return new AddExampleResult(null, ExampleRejection.NotFound);
+        }
+
+        await _lock.WaitAsync(cancellationToken).ConfigureAwait(false);
+        try
+        {
+            var inLibrary = (await books.ListAsync(cancellationToken).ConfigureAwait(false)).Books;
+            if (inLibrary.Any(book => SameTitle(book.Title, example.Title)))
+            {
+                return new AddExampleResult(null, ExampleRejection.Duplicate);
+            }
+
+            var now = clock.GetUtcNow();
+            var copy = new Book(BookId.New(), example.Title, example.FileName, now)
+            {
+                Summary = example.Summary,
+                Status = BookStatus.Done,
+                PartsDone = example.PartsDone,
+                PartsTotal = example.PartsTotal,
+                ProfilesDone = example.ProfilesDone,
+                ProfilesTotal = example.ProfilesTotal,
+                PartsSkipped = example.PartsSkipped,
+                ProviderName = example.ProviderName,
+                Model = example.Model,
+                InputTokens = example.InputTokens,
+                CachedInputTokens = example.CachedInputTokens,
+                OutputTokens = example.OutputTokens,
+                StartedAt = example.StartedAt,
+                FinishedAt = example.FinishedAt,
+                UpdatedAt = now,
+            };
+            copy.Characters.AddRange(example.Characters);
+            await books.SaveAsync(copy, cancellationToken).ConfigureAwait(false);
+            return new AddExampleResult(copy, null);
         }
         finally
         {

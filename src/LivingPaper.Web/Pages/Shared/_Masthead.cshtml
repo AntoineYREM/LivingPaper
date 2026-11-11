@@ -13,6 +13,7 @@
         <nav aria-label="@T["nav.label"]">
             <ul class="nav">
                 <li><a href="~/" aria-current="@(path == "/" ? "page" : null)">@T["nav.library"]</a></li>
+                <li><a href="~/Examples" aria-current="@(path.StartsWithSegments("/Examples") ? "page" : null)">@T["nav.examples"]</a></li>
                 <li><a href="~/Settings" aria-current="@(path.StartsWithSegments("/Settings") ? "page" : null)">@T["nav.settings"]</a></li>
             </ul>
         </nav>
