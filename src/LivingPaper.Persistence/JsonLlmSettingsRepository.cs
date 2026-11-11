@@ -120,7 +120,7 @@ public sealed partial class JsonLlmSettingsRepository(string dataDirectory, ISec
         SettingsFile? file;
         try
         {
-            var bytes = await File.ReadAllBytesAsync(path, cancellationToken).ConfigureAwait(false);
+            var bytes = await SharedFile.ReadAllBytesAsync(path, cancellationToken).ConfigureAwait(false);
             file = JsonSerializer.Deserialize<SettingsFile>(bytes, SettingsFile.JsonOptions);
         }
         catch (JsonException exception)

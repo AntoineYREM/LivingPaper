@@ -13,8 +13,8 @@ public sealed class JsonBookRepositoryTests : IDisposable
     private static readonly string[] DocumentedFields =
     [
         "cachedInputTokens", "characters", "fileName", "finishedAt", "id", "inputTokens", "model", "outputTokens",
-        "partsDone", "partsTotal", "profilesDone", "profilesTotal", "providerName", "schemaVersion", "sentAt",
-        "status", "summary", "title", "updatedAt",
+        "partsDone", "partsSkipped", "partsTotal", "profilesDone", "profilesTotal", "providerName", "schemaVersion", "sentAt",
+        "startedAt", "status", "summary", "title", "updatedAt",
     ];
 
     private readonly TempDirectory _temp = new();
@@ -40,6 +40,8 @@ public sealed class JsonBookRepositoryTests : IDisposable
         book.InputTokens = 1200;
         book.CachedInputTokens = 200;
         book.OutputTokens = 800;
+        book.PartsSkipped = 1;
+        book.StartedAt = Now.AddMinutes(1);
         book.UpdatedAt = Now.AddMinutes(5);
         book.FinishedAt = Now.AddMinutes(5);
         book.Characters.Add(new Character(1, "Argan", "A hypochondriac.", "I am Argan, and I am ill."));

@@ -69,23 +69,13 @@ public sealed class JsonBookRepository(string booksDirectory) : IBookRepository
         return new BookListing([.. books.OrderByDescending(book => book.SentAt)], unreadable);
     }
 
-    public Task<bool> DeleteAsync(BookId id, CancellationToken cancellationToken)
+    public async Task<bool> DeleteAsync(BookId id, CancellationToken cancellationToken)
     {
-        cancellationToken.ThrowIfCancellationRequested();
         var path = PathOf(id);
         var existed = File.Exists(path);
-        DeleteIfExists(path);
-        DeleteIfExists(Path.Combine(booksDirectory, id + StepsSuffix));
-        return Task.FromResult(existed);
-    }
-
-    // File.Delete throws when the directory itself does not exist yet (nothing was ever saved).
-    private static void DeleteIfExists(string path)
-    {
-        if (File.Exists(path))
-        {
-            File.Delete(path);
-        }
+        await SharedFile.DeleteIfExistsAsync(path, cancellationToken).ConfigureAwait(false);
+        await SharedFile.DeleteIfExistsAsync(Path.Combine(booksDirectory, id + StepsSuffix), cancellationToken).ConfigureAwait(false);
+        return existed;
     }
 
     private string PathOf(BookId id) => Path.Combine(booksDirectory, id + Extension);
@@ -101,7 +91,7 @@ public sealed class JsonBookRepository(string booksDirectory) : IBookRepository
         BookFile? file;
         try
         {
-            var bytes = await File.ReadAllBytesAsync(path, cancellationToken).ConfigureAwait(false);
+            var bytes = await SharedFile.ReadAllBytesAsync(path, cancellationToken).ConfigureAwait(false);
             file = JsonSerializer.Deserialize<BookFile>(bytes, BookFile.JsonOptions);
         }
         catch (JsonException)

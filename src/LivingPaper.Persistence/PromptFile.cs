@@ -35,7 +35,7 @@ internal sealed class PromptFile
         PromptFile? file;
         try
         {
-            var bytes = await File.ReadAllBytesAsync(path, cancellationToken).ConfigureAwait(false);
+            var bytes = await SharedFile.ReadAllBytesAsync(path, cancellationToken).ConfigureAwait(false);
             file = JsonSerializer.Deserialize<PromptFile>(bytes, JsonOptions);
         }
         catch (JsonException exception)

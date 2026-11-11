@@ -43,6 +43,15 @@ builder.Services.AddSingleton<IBookTextExtractor, BookTextExtractor>();
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddSingleton<BookService>();
 
+// The analysis of the books (PAPER-8): a background service runs it one book at a time, with the language model chosen in
+// the settings. The pages talk to it through IAnalysisScheduler. ANALYSIS_PAGES_PER_PART and ANALYSIS_PARALLEL_CALLS tune it.
+builder.Services.AddSingleton(AnalysisSettings.Read(builder.Configuration));
+builder.Services.AddSingleton<IAnalysisStepStore>(new JsonAnalysisStepStore(Path.Combine(dataDirectory, "books")));
+builder.Services.AddSingleton<BookAnalyzer>();
+builder.Services.AddSingleton<BookAnalysisWorker>();
+builder.Services.AddSingleton<IAnalysisScheduler>(services => services.GetRequiredService<BookAnalysisWorker>());
+builder.Services.AddHostedService(services => services.GetRequiredService<BookAnalysisWorker>());
+
 var app = builder.Build();
 
 try

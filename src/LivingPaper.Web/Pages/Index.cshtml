@@ -37,38 +37,9 @@
 
 <section aria-labelledby="books">
     <h2 id="books">@T["books.title"]</h2>
-    @if (Model.Books.Count == 0)
-    {
-        <p>@T["books.empty"]</p>
-    }
-    @if (Model.Books.Count > 0)
-    {
-        <ul class="entries">
-            @foreach (var book in Model.Books)
-            {
-                <li class="entry">
-                    <h3 class="entry__title">@book.Title</h3>
-                    <p><span class="tag">@Model.StatusText(book)</span></p>
-                    @if (book.FileName.Length > 0)
-                    {
-                        <dl class="entry__facts">
-                            <dt>@T["books.file"]</dt><dd>@book.FileName</dd>
-                        </dl>
-                    }
-                    <details class="confirm">
-                        <summary class="button button--small button--danger" aria-label="@T.Format("books.delete.label", new { title = book.Title })">@T["books.delete.button"]</summary>
-                        <form class="form" method="post" asp-page-handler="Delete">
-                            <input type="hidden" name="id" value="@book.Id" />
-                            <p>@T["books.delete.warning"]</p>
-                            <div class="form__actions">
-                                <button type="submit" class="button button--small button--danger">@T["books.delete.confirm"]</button>
-                            </div>
-                        </form>
-                    </details>
-                </li>
-            }
-        </ul>
-    }
+    <div id="book-list" data-refresh-url="@Url.Page("/Index", "List")">
+        <partial name="_BookList" model="Model" />
+    </div>
 </section>
 
 <hr class="ornament" />
@@ -102,3 +73,7 @@
         <p class="field__hint" id="book-wait">@T["books.add.wait"]</p>
     </form>
 </section>
+
+@section Scripts {
+    <script src="~/js/books.js" defer></script>
+}

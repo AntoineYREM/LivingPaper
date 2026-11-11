@@ -1,0 +1,57 @@
+@model LivingPaper.Web.Pages.IndexModel
+@* The list of the books. It is part of the home page and is also served alone (?handler=List), for the page to refresh it
+   while an analysis runs. The attribute data-analysis-active tells the script that something is still moving (it is written
+   by name only when it applies: Razor would write an empty data-* attribute even for nothing). *@
+@if (Model.Rows.Count == 0)
+{
+    <p>@T["books.empty"]</p>
+}
+@if (Model.Rows.Count > 0)
+{
+    <ul class="entries" @(Model.Rows.Any(row => row.Active) ? "data-analysis-active" : string.Empty)>
+        @foreach (var row in Model.Rows)
+        {
+            <li class="entry">
+                <h3 class="entry__title">@row.Book.Title</h3>
+                <p><span class="tag">@row.Status</span> @row.Progress</p>
+                @if (row.Problem is not null)
+                {
+                    <p class="entry__problem">@row.Problem</p>
+                }
+                @if (row.Warning is not null)
+                {
+                    <p class="entry__warning">@row.Warning</p>
+                }
+                <dl class="entry__facts">
+                    @if (row.Book.FileName.Length > 0)
+                    {
+                        <dt>@T["books.file"]</dt><dd>@row.Book.FileName</dd>
+                    }
+                    @foreach (var fact in row.Facts)
+                    {
+                        <dt>@fact.Label</dt><dd>@fact.Value</dd>
+                    }
+                </dl>
+                <div class="entry__actions">
+                    @if (row.CanRetry)
+                    {
+                        <form class="form" method="post" asp-page="/Index" asp-page-handler="Retry">
+                            <input type="hidden" name="id" value="@row.Book.Id" />
+                            <button type="submit" class="button button--small">@T["books.retry"]</button>
+                        </form>
+                    }
+                    <details class="confirm">
+                        <summary class="button button--small button--danger" aria-label="@T.Format("books.delete.label", new { title = row.Book.Title })">@T["books.delete.button"]</summary>
+                        <form class="form" method="post" asp-page="/Index" asp-page-handler="Delete">
+                            <input type="hidden" name="id" value="@row.Book.Id" />
+                            <p>@T["books.delete.warning"]</p>
+                            <div class="form__actions">
+                                <button type="submit" class="button button--small button--danger">@T["books.delete.confirm"]</button>
+                            </div>
+                        </form>
+                    </details>
+                </div>
+            </li>
+        }
+    </ul>
+}

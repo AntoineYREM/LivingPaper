@@ -45,6 +45,8 @@ internal sealed class BookFile
 
     public string? Model { get; set; }
 
+    public int PartsSkipped { get; set; }
+
     public int InputTokens { get; set; }
 
     public int CachedInputTokens { get; set; }
@@ -52,6 +54,8 @@ internal sealed class BookFile
     public int OutputTokens { get; set; }
 
     public DateTimeOffset? SentAt { get; set; }
+
+    public DateTimeOffset? StartedAt { get; set; }
 
     public DateTimeOffset? UpdatedAt { get; set; }
 
@@ -75,10 +79,12 @@ internal sealed class BookFile
         ErrorDetail = book.ErrorDetail,
         ProviderName = book.ProviderName,
         Model = book.Model,
+        PartsSkipped = book.PartsSkipped,
         InputTokens = book.InputTokens,
         CachedInputTokens = book.CachedInputTokens,
         OutputTokens = book.OutputTokens,
         SentAt = book.SentAt,
+        StartedAt = book.StartedAt,
         UpdatedAt = book.UpdatedAt,
         FinishedAt = book.FinishedAt,
         Characters = [.. book.Characters.Select(character => new CharacterFile
@@ -119,7 +125,7 @@ internal sealed class BookFile
             return null;
         }
 
-        if (new[] { PartsDone, PartsTotal, ProfilesDone, ProfilesTotal, InputTokens, CachedInputTokens, OutputTokens }.Any(value => value < 0)
+        if (new[] { PartsDone, PartsTotal, PartsSkipped, ProfilesDone, ProfilesTotal, InputTokens, CachedInputTokens, OutputTokens }.Any(value => value < 0)
             || Characters.Any(character => character is null || character.Position < 1))
         {
             reason = "a number is out of range";
@@ -138,9 +144,11 @@ internal sealed class BookFile
             ErrorDetail = ErrorDetail,
             ProviderName = ProviderName,
             Model = Model,
+            PartsSkipped = PartsSkipped,
             InputTokens = InputTokens,
             CachedInputTokens = CachedInputTokens,
             OutputTokens = OutputTokens,
+            StartedAt = StartedAt,
             UpdatedAt = UpdatedAt.Value,
             FinishedAt = FinishedAt,
         };

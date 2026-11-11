@@ -642,3 +642,27 @@
   padding-inline-start: var(--space-4);
   border-inline-start: var(--rule-thick) solid var(--color-error);
 }
+
+/* ---- A book in the list: what is wrong with it, and what can be done ---- */
+
+.entry__problem,
+.entry__warning {
+  margin: 0;
+  padding-inline-start: var(--space-4);
+  border-inline-start: var(--rule-thick) solid var(--color-rule-strong);
+}
+
+.entry__problem {
+  border-inline-start-color: var(--color-error);
+}
+
+.entry__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+
+.entry__actions > .form {
+  margin: 0;
+}

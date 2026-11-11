@@ -6,20 +6,21 @@ namespace LivingPaper.Application.Tests;
 
 public class PromptKeysTests
 {
-    private static readonly string[] SixKeys =
+    private static readonly string[] SevenKeys =
     [
         "analysis.bookSummary", "analysis.characterProfile", "analysis.mergeCharacters", "analysis.readPart",
-        "chat.system", "llm.connectionTest",
+        "analysis.readPartSimple", "chat.system", "llm.connectionTest",
     ];
 
     [Fact]
-    public void All_ListsTheSixPromptsOfTheApplication()
+    public void All_ListsTheSevenPromptsOfTheApplication()
     {
-        PromptKeys.All.Order().ShouldBe(SixKeys);
+        PromptKeys.All.Order().ShouldBe(SevenKeys);
     }
 
     [Theory]
     [InlineData("analysis.readPart", new[] { "bookTitle" })]
+    [InlineData("analysis.readPartSimple", new[] { "bookTitle" })]
     [InlineData("analysis.mergeCharacters", new[] { "bookTitle", "maxCharacters" })]
     [InlineData("analysis.characterProfile", new[] { "bookTitle", "characterName", "shortDescription" })]
     [InlineData("analysis.bookSummary", new[] { "bookTitle" })]
@@ -37,7 +38,7 @@ public class PromptKeysTests
     }
 
     [Fact]
-    public void IsKnown_RecognizesOnlyTheSixKeys()
+    public void IsKnown_RecognizesOnlyTheSevenKeys()
     {
         PromptKeys.All.ShouldAllBe(key => PromptKeys.IsKnown(key));
         PromptKeys.IsKnown("analysis.nothing").ShouldBeFalse();

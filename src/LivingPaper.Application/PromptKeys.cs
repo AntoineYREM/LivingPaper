@@ -5,6 +5,8 @@ namespace LivingPaper.Application;
 public static class PromptKeys
 {
     public const string ReadPart = "analysis.readPart";
+    // The notes of a part read again when the model's content filter refused the rich notes: only names, roles and importance.
+    public const string ReadPartSimple = "analysis.readPartSimple";
     public const string MergeCharacters = "analysis.mergeCharacters";
     public const string CharacterProfile = "analysis.characterProfile";
     public const string BookSummary = "analysis.bookSummary";
@@ -14,6 +16,7 @@ public static class PromptKeys
     private static readonly Dictionary<string, string[]> Variables = new(StringComparer.Ordinal)
     {
         [ReadPart] = [PromptVariables.BookTitle],
+        [ReadPartSimple] = [PromptVariables.BookTitle],
         [MergeCharacters] = [PromptVariables.BookTitle, PromptVariables.MaxCharacters],
         [CharacterProfile] = [PromptVariables.BookTitle, PromptVariables.CharacterName, PromptVariables.ShortDescription],
         [BookSummary] = [PromptVariables.BookTitle],

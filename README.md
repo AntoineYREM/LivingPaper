@@ -73,3 +73,31 @@ On the home page you send an EPUB or a PDF (20 MB at most), and you can delete a
   Re-analyzing a book (another model, an edited prompt) means sending it again and ticking "Replace".
 
 PDF files are read with [PdfPig](https://github.com/UglyToad/PdfPig) (Apache License 2.0, compatible with the AGPL).
+
+## The analysis
+
+As soon as a book is sent, it is analyzed in the background, one book at a time, so you can leave the page. The list of
+the books shows where it is ("3 of 12 parts read", then "4 of 10 profiles written") and refreshes by itself (a small
+script; without it, reload the page). The language model used is the one you chose for analysis in the settings.
+
+1. **The book is read in parts** of about 40 pages (a PDF by real pages, an EPUB by about 2,000 letters a page), and the
+   model notes the characters of each part.
+2. **The notes are merged**: a character called by several names becomes one, and the 10 most important are kept.
+   A very long book never overflows the model: past about 150,000 letters of notes, each part keeps fewer characters.
+3. **One profile per character** and **a short summary of the atmosphere** (era, place, tone) are written.
+
+Everything the analysis writes is in English, whatever the language of the book. The prompts are in `data/prompts.json`.
+
+- **If it fails** (provider down, wrong key, unreadable replies), the book says why and offers **Retry**: every step that
+  succeeded is saved in `data/books/{id}.steps.json`, so the retry resumes where it stopped and does not pay for the
+  steps already done. A reply that is not the JSON asked for is asked again twice, then the analysis stops with a clear
+  error: nothing is invented to hide it.
+- **A restart** loses nothing: the books that were waiting start again by themselves, and a book that was running is shown
+  as interrupted, with Retry. A running analysis that has not moved for 10 minutes is shown as interrupted too.
+- **The content filter** of some providers refuses passages of dark books. That part is read again with simpler notes; if
+  it is refused again it is left out, and the book says how many parts were.
+- **At the end** the page shows the number of characters, the model, the duration and the tokens used. The steps and the
+  stored text of the book are then deleted.
+- **Two settings** for the environment: `ANALYSIS_PAGES_PER_PART` (default 40; lower it for a model with a small context
+  window) and `ANALYSIS_PARALLEL_CALLS` (default 3; set 1 for a small local server or a provider with strict limits).
+  A value that is not a whole number in range stops the application at start.

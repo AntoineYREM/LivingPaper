@@ -103,10 +103,13 @@ public partial class TranslationResourcesTests
         var french = Load("fr");
 
         // A name or a brand may be the same in both languages; a sentence may not.
-        english.Where(pair => french[pair.Key] == pair.Value && pair.Value.Contains(' ', StringComparison.Ordinal))
+        // (A text with no word of its own, only {variables} and a unit such as "min", is the same in both languages.)
+        english.Where(pair => french[pair.Key] == pair.Value && pair.Value.Contains(' ', StringComparison.Ordinal) && HasAWord(pair.Value))
             .Select(pair => pair.Key)
             .ShouldBeEmpty("these sentences are identical in en.json and fr.json: translate them");
     }
+
+    private static bool HasAWord(string text) => System.Text.RegularExpressions.Regex.IsMatch(System.Text.RegularExpressions.Regex.Replace(text, @"\{[A-Za-z0-9]+\}", string.Empty), @"\p{L}{4,}");
 
     private static List<string> VariablesOf(string text) => [.. PromptTemplate.Parse(text).VariableNames.Order()];
 
@@ -123,7 +126,8 @@ public partial class TranslationResourcesTests
     [GeneratedRegex(@"\b(?:T|texts|localizer)\.Plural\(\s*""([^""]+)""")]
     private static partial Regex PluralUse();
 
-    [GeneratedRegex(@"//[^
+    [GeneratedRegex(@"//[^
+
 ]*")]
     private static partial Regex LineComment();
 

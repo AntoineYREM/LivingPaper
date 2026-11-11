@@ -10,10 +10,14 @@ internal sealed class InMemoryBookRepository : IBookRepository
 
     public Exception? SaveFailure { get; set; }
 
+    // Called at every save: a test counts the writes.
+    public Action? OnSave { get; set; }
+
     // The calls give the processor back (Task.Yield), as a real disk would, so two requests at once really interleave.
     public async Task SaveAsync(Book book, CancellationToken cancellationToken)
     {
         await Task.Yield();
+        OnSave?.Invoke();
         if (SaveFailure is not null)
         {
             throw SaveFailure;

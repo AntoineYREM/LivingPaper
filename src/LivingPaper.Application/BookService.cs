@@ -3,12 +3,19 @@ using LivingPaper.Domain;
 
 namespace LivingPaper.Application;
 
-// The use cases of sending and deleting a book. A book is read at once (so a scanned PDF or a damaged file is refused in
+// The use cases of the books: sending, deleting, retrying the analysis of one, and finding again after a restart the books
+// whose analysis was cut. A book is read at once (so a scanned PDF or a damaged file is refused in
 // front of the user, not minutes later), created waiting for its analysis, and its text is kept apart until the analysis
 // has finished.
 // Sending is done one at a time (a lock around the check for the same title and the save), so two sends of the same title
 // at once cannot both succeed.
-public sealed class BookService(IBookRepository books, IBookTextStore texts, IBookTextExtractor extractor, TimeProvider clock) : IDisposable
+public sealed class BookService(
+    IBookRepository books,
+    IBookTextStore texts,
+    IBookTextExtractor extractor,
+    IAnalysisScheduler scheduler,
+    TimeProvider clock,
+    AnalysisOptions options) : IDisposable
 {
     // The largest book file accepted: 20 MB.
     public const long MaxBookBytes = 20L * 1024 * 1024;
@@ -81,6 +88,8 @@ public sealed class BookService(IBookRepository books, IBookTextStore texts, IBo
                 await DeleteCoreAsync(old.Id, cancellationToken).ConfigureAwait(false);
             }
 
+            // The analysis starts by itself: there is no confirmation step.
+            scheduler.Enqueue(book.Id);
             return new AddBookResult(book, null, Replaced: existing.Count > 0);
         }
         finally
@@ -103,10 +112,85 @@ public sealed class BookService(IBookRepository books, IBookTextStore texts, IBo
         }
     }
 
+    // Puts a book whose analysis failed or was interrupted back in the queue: it resumes at the step that failed, the steps
+    // already done are not paid for again. False when there is nothing to retry: no such book, a book that is done or
+    // really waiting or running, or a book whose text is gone (it must be sent again).
+    public async Task<bool> RetryAsync(BookId id, CancellationToken cancellationToken)
+    {
+        await _lock.WaitAsync(cancellationToken).ConfigureAwait(false);
+        try
+        {
+            var book = await books.GetAsync(id, cancellationToken).ConfigureAwait(false);
+            if (book is null || !(book.Status == BookStatus.Failed || IsInterrupted(book))
+                || await texts.ReadAsync(id, cancellationToken).ConfigureAwait(false) is null)
+            {
+                return false;
+            }
+
+            // A stuck analysis is stopped first, so it cannot write over the new one.
+            await scheduler.CancelAsync(id, cancellationToken).ConfigureAwait(false);
+            book.Status = BookStatus.Waiting;
+            book.ErrorCode = null;
+            book.ErrorDetail = null;
+            book.FinishedAt = null;
+            book.UpdatedAt = clock.GetUtcNow();
+            await books.SaveAsync(book, cancellationToken).ConfigureAwait(false);
+            scheduler.Enqueue(id);
+            return true;
+        }
+        finally
+        {
+            _lock.Release();
+        }
+    }
+
+    // A book that says it is waiting or running but is not in the queue of this application was cut by a restart; a
+    // running one that has not moved for ten minutes is stuck. Either way it can be retried.
+    public bool IsInterrupted(Book book)
+    {
+        ArgumentNullException.ThrowIfNull(book);
+        return book.Status switch
+        {
+            BookStatus.Waiting => !scheduler.IsQueued(book.Id),
+            BookStatus.Running => !scheduler.IsQueued(book.Id) || clock.GetUtcNow() - book.UpdatedAt > options.InterruptedAfter,
+            _ => false,
+        };
+    }
+
+    // At startup: a book "running" belongs to an application that is gone, so it is interrupted (and can be retried); the
+    // books "waiting" are queued again, oldest first, so a restart loses nothing.
+    public async Task RecoverAsync(CancellationToken cancellationToken)
+    {
+        await _lock.WaitAsync(cancellationToken).ConfigureAwait(false);
+        try
+        {
+            var listed = (await books.ListAsync(cancellationToken).ConfigureAwait(false)).Books;
+            foreach (var book in listed.Where(book => book.Status == BookStatus.Running))
+            {
+                book.Status = BookStatus.Failed;
+                book.ErrorCode = nameof(AnalysisFailure.Interrupted);
+                book.ErrorDetail = "The application stopped while the book was being analyzed.";
+                book.UpdatedAt = clock.GetUtcNow();
+                await books.SaveAsync(book, cancellationToken).ConfigureAwait(false);
+            }
+
+            foreach (var book in listed.Where(book => book.Status == BookStatus.Waiting).OrderBy(book => book.SentAt))
+            {
+                scheduler.Enqueue(book.Id);
+            }
+        }
+        finally
+        {
+            _lock.Release();
+        }
+    }
+
     public void Dispose() => _lock.Dispose();
 
     private async Task<bool> DeleteCoreAsync(BookId id, CancellationToken cancellationToken)
     {
+        // The analysis of the book, if one is running, is stopped and awaited first: it would write the book again.
+        await scheduler.CancelAsync(id, cancellationToken).ConfigureAwait(false);
         var existed = await books.DeleteAsync(id, cancellationToken).ConfigureAwait(false);
         await texts.DeleteAsync(id, cancellationToken).ConfigureAwait(false);
         return existed;

@@ -242,6 +242,9 @@ In the running head, at the right of the brand: one small-capital button per lan
 ### Entries (settings items)
 - A title, a definition grid of facts (term in faint small capitals, value breaking anywhere), and a bordered small-caps tag. Same ink rule opening the list.
 
+### A book in the list (`.entry__problem`, `.entry__warning`, `.entry__actions`)
+- Under the title: the status tag and, beside it, the progress in words ("3 of 12 parts read"). What went wrong is a paragraph with a left rule in the proofreader's red (`.entry__problem`), a warning (parts left out) one with a neutral rule (`.entry__warning`); neither relies on color, the sentence says it. The actions (Retry, Delete) sit in a row (`.entry__actions`): Retry is a small ink button, Delete the confirming disclosure below. While a book waits or runs, the list refreshes every 5 seconds (`wwwroot/js/books.js`, small vanilla script); it never replaces the list under an open confirmation or a focus, and without the script a reload shows the same thing. Added with PAPER-8.
+
 ### Confirming a deletion (`.confirm`)
 - A native `<details>`: its `<summary>` is a small danger button ("Delete"), which unfolds a warning and the confirming button ("Confirm the deletion"), set off by a red rule on the left. No script and no browser dialog; keyboard and screen readers get it for free. The summary carries an accessible label that names what is deleted. Added with PAPER-5 (`/Settings`).
 

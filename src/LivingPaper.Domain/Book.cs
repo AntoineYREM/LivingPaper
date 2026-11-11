@@ -35,6 +35,10 @@ public sealed class Book(BookId id, string title, string fileName, DateTimeOffse
 
     public string? Model { get; set; }
 
+    // How many parts of the book the model's content filter refused even with simple notes: they were left out of the
+    // analysis, and the page says so.
+    public int PartsSkipped { get; set; }
+
     public int InputTokens { get; set; }
 
     public int CachedInputTokens { get; set; }
@@ -42,6 +46,9 @@ public sealed class Book(BookId id, string title, string fileName, DateTimeOffse
     public int OutputTokens { get; set; }
 
     public DateTimeOffset SentAt { get; set; } = sentAt;
+
+    // When the analysis last started (a retry starts it again). With FinishedAt it gives the duration of the analysis.
+    public DateTimeOffset? StartedAt { get; set; }
 
     // Moved at every step. A Waiting or Running book not updated for 10 minutes is shown as interrupted.
     public DateTimeOffset UpdatedAt { get; set; } = sentAt;

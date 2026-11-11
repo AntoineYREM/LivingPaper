@@ -20,21 +20,12 @@ public sealed class FileBookTextStore(string uploadsDirectory) : IBookTextStore
     {
         var path = PathOf(bookId);
         return File.Exists(path)
-            ? Utf8.GetString(await File.ReadAllBytesAsync(path, cancellationToken).ConfigureAwait(false))
+            ? Utf8.GetString(await SharedFile.ReadAllBytesAsync(path, cancellationToken).ConfigureAwait(false))
             : null;
     }
 
-    public Task DeleteAsync(BookId bookId, CancellationToken cancellationToken)
-    {
-        cancellationToken.ThrowIfCancellationRequested();
-        var path = PathOf(bookId);
-        if (File.Exists(path))
-        {
-            File.Delete(path);
-        }
-
-        return Task.CompletedTask;
-    }
+    public Task DeleteAsync(BookId bookId, CancellationToken cancellationToken) =>
+        SharedFile.DeleteIfExistsAsync(PathOf(bookId), cancellationToken);
 
     private string PathOf(BookId bookId) => Path.Combine(uploadsDirectory, bookId + ".txt");
 }

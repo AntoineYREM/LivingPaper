@@ -51,7 +51,7 @@ public sealed class JsonAnalysisStepStore(string booksDirectory) : IAnalysisStep
 
         try
         {
-            var bytes = await File.ReadAllBytesAsync(path, cancellationToken).ConfigureAwait(false);
+            var bytes = await SharedFile.ReadAllBytesAsync(path, cancellationToken).ConfigureAwait(false);
             var file = JsonSerializer.Deserialize<StepsFile>(bytes, BookFile.JsonOptions);
             return file is { SchemaVersion: CurrentSchemaVersion, Steps: not null }
                 ? file.Steps
@@ -64,16 +64,8 @@ public sealed class JsonAnalysisStepStore(string booksDirectory) : IAnalysisStep
         }
     }
 
-    public Task DeleteAllAsync(BookId bookId, CancellationToken cancellationToken)
-    {
-        cancellationToken.ThrowIfCancellationRequested();
-        if (File.Exists(PathOf(bookId)))
-        {
-            File.Delete(PathOf(bookId));
-        }
-
-        return Task.CompletedTask;
-    }
+    public Task DeleteAllAsync(BookId bookId, CancellationToken cancellationToken) =>
+        SharedFile.DeleteIfExistsAsync(PathOf(bookId), cancellationToken);
 
     public void Dispose() => _writeLock.Dispose();
 

@@ -13,9 +13,11 @@ public sealed class BookServiceTests : IDisposable
     private readonly InMemoryBookRepository _books = new();
     private readonly InMemoryBookTextStore _texts = new();
     private readonly FakeBookTextExtractor _extractor = new();
+    private readonly FakeAnalysisScheduler _scheduler = new();
+    private readonly ManualTimeProvider _clock = new(Now);
     private readonly BookService _service;
 
-    public BookServiceTests() => _service = new BookService(_books, _texts, _extractor, new FixedTimeProvider(Now));
+    public BookServiceTests() => _service = new BookService(_books, _texts, _extractor, _scheduler, _clock, new AnalysisOptions());
 
     public void Dispose() => _service.Dispose();
 
@@ -27,7 +29,7 @@ public sealed class BookServiceTests : IDisposable
         _service.AddAsync(content ?? Bytes(), fileName, title, replace, Token);
 
     private static BookService NewService(InMemoryBookRepository books, InMemoryBookTextStore texts, FakeBookTextExtractor extractor) =>
-        new(books, texts, extractor, new FixedTimeProvider(Now));
+        new(books, texts, extractor, new FakeAnalysisScheduler(), new FixedTimeProvider(Now), new AnalysisOptions());
 
     // ---- Sending a book ----
 
@@ -288,6 +290,162 @@ public sealed class BookServiceTests : IDisposable
         (await _service.DeleteAsync(id, Token)).ShouldBeFalse();
 
         _texts.Texts.ShouldBeEmpty();
+    }
+
+    // ---- The analysis ----
+
+    [Fact]
+    public async Task ABookSent_IsPutInTheQueueOfTheAnalysis()
+    {
+        var book = (await AddAsync()).Added!;
+
+        _scheduler.Queued.ShouldBe([book.Id]);
+    }
+
+    [Fact]
+    public async Task ARefusedBook_IsNotQueued()
+    {
+        await AddAsync(content: Bytes(0));
+
+        _scheduler.Queued.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public async Task Deleting_StopsTheAnalysisOfTheBookFirst_SoNothingIsWrittenAfterwards()
+    {
+        var book = (await AddAsync()).Added!;
+
+        await _service.DeleteAsync(book.Id, Token);
+
+        _scheduler.Cancelled.ShouldBe([book.Id]);
+        _scheduler.Queued.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public async Task Replace_StopsTheAnalysisOfTheOldBook_AndQueuesTheNewOne()
+    {
+        var first = (await AddAsync(title: "Same")).Added!;
+
+        var second = (await AddAsync(title: "Same", replace: true)).Added!;
+
+        _scheduler.Cancelled.ShouldBe([first.Id]);
+        _scheduler.Queued.ShouldBe([second.Id]);
+    }
+
+    private async Task<Book> StoredBookAsync(BookStatus status, string? errorCode = null, bool withText = true)
+    {
+        var book = new Book(BookId.New(), "Stored " + Guid.NewGuid().ToString("N")[..6], "a.pdf", Now) { Status = status, ErrorCode = errorCode, ErrorDetail = errorCode is null ? null : "detail" };
+        _books.Books[book.Id] = book;
+        if (withText)
+        {
+            await _texts.SaveAsync(book.Id, "text", Token);
+        }
+
+        return book;
+    }
+
+    [Fact]
+    public async Task Retry_PutsAFailedBookBackInTheQueue_WithoutItsError()
+    {
+        var book = await StoredBookAsync(BookStatus.Failed, "ModelUnreachable");
+        _clock.Advance(TimeSpan.FromMinutes(3));
+
+        (await _service.RetryAsync(book.Id, Token)).ShouldBeTrue();
+
+        book.Status.ShouldBe(BookStatus.Waiting);
+        book.ErrorCode.ShouldBeNull();
+        book.ErrorDetail.ShouldBeNull();
+        book.UpdatedAt.ShouldBe(Now.AddMinutes(3));
+        _scheduler.Queued.ShouldBe([book.Id]);
+    }
+
+    [Fact]
+    public async Task Retry_IsRefused_ForABookThatIsDone_WaitingInTheQueue_OrMissing()
+    {
+        var done = await StoredBookAsync(BookStatus.Done);
+        var waiting = await StoredBookAsync(BookStatus.Waiting);
+        _scheduler.Enqueue(waiting.Id);
+
+        (await _service.RetryAsync(done.Id, Token)).ShouldBeFalse();
+        (await _service.RetryAsync(waiting.Id, Token)).ShouldBeFalse();
+        (await _service.RetryAsync(BookId.New(), Token)).ShouldBeFalse();
+
+        done.Status.ShouldBe(BookStatus.Done);
+    }
+
+    [Fact]
+    public async Task Retry_IsRefused_WhenTheTextOfTheBookIsGone_ItMustBeSentAgain()
+    {
+        var book = await StoredBookAsync(BookStatus.Failed, "TextMissing", withText: false);
+
+        (await _service.RetryAsync(book.Id, Token)).ShouldBeFalse();
+
+        book.Status.ShouldBe(BookStatus.Failed);
+    }
+
+    [Fact]
+    public async Task ABookThatSaysItIsRunningButIsNotInTheQueue_IsInterrupted_AndCanBeRetried()
+    {
+        var book = await StoredBookAsync(BookStatus.Running);
+
+        _service.IsInterrupted(book).ShouldBeTrue();
+        (await _service.RetryAsync(book.Id, Token)).ShouldBeTrue();
+        book.Status.ShouldBe(BookStatus.Waiting);
+    }
+
+    [Theory]
+    [InlineData(BookStatus.Waiting, true, 60, false)] // Waiting behind another book, however long.
+    [InlineData(BookStatus.Waiting, false, 0, true)] // Not in the queue any more.
+    [InlineData(BookStatus.Running, true, 9, false)] // Moved 9 minutes ago.
+    [InlineData(BookStatus.Running, true, 11, true)] // Not moved for 11 minutes: stuck.
+    [InlineData(BookStatus.Running, false, 0, true)]
+    [InlineData(BookStatus.Done, false, 90, false)]
+    [InlineData(BookStatus.Failed, false, 90, false)]
+    public async Task IsInterrupted_FollowsTheQueueAndTheTenMinuteRule(BookStatus status, bool queued, int minutesSinceUpdate, bool expected)
+    {
+        var book = await StoredBookAsync(status);
+        if (queued)
+        {
+            _scheduler.Enqueue(book.Id);
+        }
+
+        _clock.Advance(TimeSpan.FromMinutes(minutesSinceUpdate));
+
+        _service.IsInterrupted(book).ShouldBe(expected);
+    }
+
+    [Fact]
+    public async Task Retry_OfAStuckAnalysis_StopsItFirst_ThenQueuesTheBookAgain()
+    {
+        var book = await StoredBookAsync(BookStatus.Running);
+        _scheduler.Enqueue(book.Id);
+        _clock.Advance(TimeSpan.FromMinutes(11));
+
+        (await _service.RetryAsync(book.Id, Token)).ShouldBeTrue();
+
+        _scheduler.Cancelled.ShouldBe([book.Id]);
+        _scheduler.Queued.ShouldBe([book.Id]);
+        book.Status.ShouldBe(BookStatus.Waiting);
+    }
+
+    [Fact]
+    public async Task AtStartup_ARunningBookIsMarkedInterrupted_AndTheWaitingBooksAreQueuedOldestFirst()
+    {
+        var running = await StoredBookAsync(BookStatus.Running);
+        var newer = await StoredBookAsync(BookStatus.Waiting);
+        newer.SentAt = Now.AddMinutes(2);
+        var older = await StoredBookAsync(BookStatus.Waiting);
+        older.SentAt = Now.AddMinutes(1);
+        var done = await StoredBookAsync(BookStatus.Done);
+        var failed = await StoredBookAsync(BookStatus.Failed, "NoModel");
+
+        await _service.RecoverAsync(Token);
+
+        running.Status.ShouldBe(BookStatus.Failed);
+        running.ErrorCode.ShouldBe("Interrupted");
+        _scheduler.Queued.ShouldBe([older.Id, newer.Id]);
+        done.Status.ShouldBe(BookStatus.Done);
+        failed.ErrorCode.ShouldBe("NoModel");
     }
 
     // A stream that never ends and counts what was read from it, to check that a huge upload is not swallowed.
