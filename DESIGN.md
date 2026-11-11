@@ -251,6 +251,9 @@ In the running head, at the right of the brand: one small-capital button per lan
 ### Confirming a deletion (`.confirm`)
 - A native `<details>`: its `<summary>` is a small danger button ("Delete"), which unfolds a warning and the confirming button ("Confirm the deletion"), set off by a red rule on the left. No script and no browser dialog; keyboard and screen readers get it for free. The summary carries an accessible label that names what is deleted. Added with PAPER-5 (`/Settings`).
 
+### Chat page (PAPER-10)
+- A page of its own (`/Book/{id}/Character/{n}/Chat`) in the validated design: boxed turns, the composer sticky at the foot. A message that scrolls into view stops above the composer (`scroll-margin-block-end` on `.chat .message`); the short hint sits above the composer, not inside it, to keep the stuck part low. A reply being written is the pending box, then fills with the text as it arrives. An error of the model is the red alert inside the window, and the unsent message returns to the field. `.js-only` hides what needs JavaScript (the chat buttons and the window) until `js-flag.js` marks the page; a `<noscript>` note says why the chat is missing.
+
 ### Chat
 - A column of boxed turns, max 66ch. The character's turn: hairline box, left, speaker name in faint small capitals above. The reader's turn: right, wash ground and lighter hairline. A pending turn: same box, dashed, italic soft ink, in words, no animation. The composer is sticky at the foot: field plus Send, top hairline, paper ground; Send is the only ink slab on the screen. Decided by the owner on 2026-11-11 after reviewing /Design on phone and computer: boxed turns, the familiar messaging pattern, are kept (a play script was considered).
 

@@ -11,9 +11,12 @@ internal sealed class KeyedPromptProvider : IPromptProvider
 {
     public Exception? Failure { get; set; }
 
+    public int Renders { get; private set; }
+
     // "[analysis.readPart] title=The Lighthouse name=Argan max=10": the model routes on the key and reads the variables.
     public Task<string> RenderAsync(string key, IReadOnlyDictionary<string, string> variables, CancellationToken cancellationToken)
     {
+        Renders++;
         if (Failure is not null)
         {
             return Task.FromException<string>(Failure);

@@ -115,6 +115,17 @@ public class AnalysisWorkerTests
         throw new TimeoutException($"The book did not reach the expected state in 20 seconds. Last seen: {last}.");
     }
 
+    private static async Task WaitUntilAsync(Func<bool> condition)
+    {
+        var deadline = DateTime.UtcNow.AddSeconds(10);
+        while (!condition() && DateTime.UtcNow < deadline)
+        {
+            await Task.Delay(25, Token);
+        }
+
+        condition().ShouldBeTrue("the text of the book and its steps are deleted once the analysis is done");
+    }
+
     private static string Books(LivingPaperFactory factory, params string[] path) => Path.Combine([factory.DataDirectory, "books", .. path]);
 
     // ---- From a book sent to its characters ----
@@ -137,8 +148,8 @@ public class AnalysisWorkerTests
         book.PartsDone.ShouldBe(1);
         book.ProfilesDone.ShouldBe(2);
         book.InputTokens.ShouldBe(100 * 5); // One part, the merge, two profiles and the summary.
-        File.Exists(Path.Combine(factory.DataDirectory, "uploads", sent.Id + ".txt")).ShouldBeFalse("the text is deleted after the analysis");
-        File.Exists(Books(factory, sent.Id + ".steps.json")).ShouldBeFalse();
+        // The book is saved as done first; the text and the steps are deleted right after.
+        await WaitUntilAsync(() => !File.Exists(Path.Combine(factory.DataDirectory, "uploads", sent.Id + ".txt")) && !File.Exists(Books(factory, sent.Id + ".steps.json")));
         (await File.ReadAllTextAsync(Books(factory, sent.Id + ".json"), Token)).ShouldNotContain("Argan est malade");
         (await File.ReadAllTextAsync(Books(factory, sent.Id + ".json"), Token)).ShouldNotContain(Key);
     }

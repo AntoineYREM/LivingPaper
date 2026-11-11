@@ -73,7 +73,8 @@ public partial class DesignPageTests
 
         var html = await client.GetStringAsync("/Design", Token);
 
-        html.ShouldNotContain("<script", Case.Insensitive);
+        // No script of its own and none from outside: only the flag that tells the style sheets JavaScript runs.
+        Regex.Matches(html, @"<script\b[^>]*>", RegexOptions.IgnoreCase).Select(match => match.Value).ShouldAllBe(tag => tag.Contains("src=\"/js/js-flag.js\"", StringComparison.Ordinal));
         Regex.Matches(html, @"\b(src|href)=""https?://", RegexOptions.IgnoreCase).ShouldBeEmpty();
         html.ShouldNotContain("bootstrap", Case.Insensitive);
     }

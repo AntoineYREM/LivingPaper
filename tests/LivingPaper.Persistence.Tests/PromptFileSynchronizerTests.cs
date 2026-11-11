@@ -91,6 +91,7 @@ public sealed class PromptFileSynchronizerTests : IDisposable
 
         Template(PromptKeys.MergeCharacters).ShouldContain("{maxCharacters}"); // The number of characters is a variable.
         Template(PromptKeys.ChatSystem).ShouldContain("language the user writes in"); // Chat answers in the user's language.
+        Template(PromptKeys.ChatSystem).ShouldContain("last message"); // ...that of their last message: it follows them if they change.
         Template(PromptKeys.ChatSystem).ShouldContain("{profile}");
         Template(PromptKeys.ReadPart).ShouldContain("English"); // Data written by the analysis is in English.
     }

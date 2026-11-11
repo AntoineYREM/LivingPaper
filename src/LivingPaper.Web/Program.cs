@@ -42,6 +42,7 @@ builder.Services.AddSingleton<IBookTextStore>(new FileBookTextStore(Path.Combine
 builder.Services.AddSingleton<IBookTextExtractor, BookTextExtractor>();
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddSingleton<BookService>();
+builder.Services.AddSingleton<CharacterChatService>();
 builder.Services.AddScoped<BookPresenter>();
 
 // The analysis of the books (PAPER-8): a background service runs it one book at a time, with the language model chosen in

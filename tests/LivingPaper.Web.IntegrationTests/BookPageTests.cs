@@ -111,16 +111,19 @@ public partial class BookPageTests
     }
 
     [Fact]
-    public async Task ThePageOfABook_HasNoLinkToAChatThatDoesNotExistYet()
+    public async Task EveryCharacter_HasAChatButton_HiddenWithoutJavaScript()
     {
         using var factory = NewFactory();
         using var client = NewClient(factory);
         var book = await SeedDoneAsync(factory);
 
-        var html = (await GetAsync(client, "/Book/" + book.Id)).Html;
+        var cast = (await GetAsync(client, "/Book/" + book.Id)).Html;
+        var sheet = (await GetAsync(client, SheetPath(book))).Html;
 
-        html.ShouldNotContain("/Chat");
-        Regex.IsMatch(html, @">\s*Chat\b").ShouldBeFalse();
+        Regex.IsMatch(cast, $@"<a[^>]*class=""button button--small js-only""[^>]*href=""/Book/{book.Id}/Character/1/Chat""").ShouldBeTrue();
+        Regex.IsMatch(cast, $@"href=""/Book/{book.Id}/Character/2/Chat""").ShouldBeTrue();
+        Regex.IsMatch(sheet, $@"<a[^>]*class=""button js-only""[^>]*href=""/Book/{book.Id}/Character/1/Chat""[^>]*>Chat with Argan</a>").ShouldBeTrue();
+        cast.ShouldContain("/js/js-flag.js");
     }
 
     [Fact]

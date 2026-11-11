@@ -115,4 +115,21 @@ description and profile are validated on the server (100, 600 and 3,000 characte
 characters of the book). The chat always uses the texts saved here, so a sheet you correct is the sheet the character plays.
 A sheet can only be edited once the analysis of its book is done.
 
-Everything works without JavaScript; the script only refreshes the progress. The chat itself comes later.
+Everything works without JavaScript except the chat; the script only refreshes the progress.
+
+## The chat
+
+From a character's sheet or card, **Chat with ...** opens a conversation with the character, played by the language model you
+chose for the chat in the settings. The character speaks in the first person, in short messages like text messages (no
+described gestures, no formatting), stays in its role, never says it is an AI, and **answers in the language of your last
+message**. The reply is shown as it is written. If the model fails, the error is shown in the window and your message goes back
+into the field.
+
+- **Nothing is stored.** The conversation lives in the page and disappears when you leave it. The browser sends the whole
+  conversation with each message; only the last 20 messages go to the model.
+- **Limits**, checked on the server (a request that breaks them is refused with 400): at most 100 messages, 4,000 characters a
+  message, roles `user` and `assistant` only, the last message being yours.
+- **The prompt** is `chat.system` in `data/prompts.json` (in English, with the book, the name and the profile of the character
+  as saved on its sheet). The text of the messages and of the replies is never written to the logs.
+- **The chat needs JavaScript** (the reply streams in as NDJSON lines through `fetch`); without it the chat buttons are hidden.
+  With no model chosen for the chat, the page says so and links to the settings.
