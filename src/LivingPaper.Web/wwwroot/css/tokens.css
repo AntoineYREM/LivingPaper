@@ -1,0 +1,70 @@
+/*
+  LivingPaper design tokens: the only place where a color, a size or a space is decided.
+  The other style sheets use var(--token) and never a raw value. See DESIGN.md.
+
+  The interface is a printed novel: black ink on white paper. A color other than ink and grey is a state (error,
+  success, warning) and always comes with a word, never alone.
+  Colors are written as #rrggbb so a test can compute their contrast: every text pair reaches WCAG AA (4.5:1), most
+  reach AAA (7:1).
+*/
+
+:root {
+  color-scheme: light;
+
+  /* ---- Colors ---- */
+  --color-paper: #ffffff;
+  --color-ink: #141414;           /* body text and titles, 18.4:1 on paper */
+  --color-ink-soft: #3f3f3f;      /* running text that must recede, 10.5:1 */
+  --color-ink-faint: #666666;     /* meta, placeholders, dot leaders' labels, 5.7:1 */
+  --color-wash: #f5f5f5;          /* a quiet field: notes, quoted passages, the sample of a code */
+  --color-rule: #d6d6d6;          /* hairlines between things: decoration only, never the only mark of a control */
+  --color-rule-strong: #8c8c8c;   /* the border of a control, 3.4:1 on paper */
+
+  --color-error: #a3161b;         /* the proofreader's red: errors and what destroys (delete) */
+  --color-error-wash: #fdf1f1;
+  --color-success: #1a6a37;
+  --color-success-wash: #eff7f1;
+  --color-warning: #7a4f00;
+  --color-warning-wash: #fbf5e6;
+
+  /* ---- Type ---- */
+  --font-serif: "EB Garamond Variable", "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+
+  --text-xs: 0.875rem;
+  --text-sm: 1rem;
+  --text-base: clamp(1.1875rem, 1.12rem + 0.3vw, 1.3125rem);  /* 19px on a phone, up to 21px on a large screen */
+  --text-lg: 1.4375rem;
+  --text-xl: 1.8125rem;
+  --text-2xl: 2.375rem;
+  --text-display: clamp(2.75rem, 2.1rem + 3vw, 4.5rem);
+
+  --leading-body: 1.6;
+  --leading-tight: 1.12;
+  --leading-ui: 1.35;
+
+  --tracking-caps: 0.09em;        /* small capitals need air */
+  --measure: 66ch;                /* the width of a line of reading text */
+  --page-width: 46rem;            /* the width of the whole column, margins excluded */
+
+  /* ---- Space: a scale of 8, with half steps below ---- */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4.5rem;
+  --space-9: 6.5rem;
+  --gutter: clamp(1.25rem, 5vw, 2.5rem);   /* the margin of the page, left and right */
+
+  /* ---- Shapes ---- */
+  --radius: 2px;                  /* a printed page has square corners; this only softens the edge of a control */
+  --rule-width: 1px;
+  --rule-thick: 3px;              /* the heavy rule of a running head */
+  --control-height: 2.875rem;     /* 46px: a finger can hit it */
+
+  /* ---- Motion: feedback only, never decoration ---- */
+  --duration-quick: 120ms;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+}

@@ -39,3 +39,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   API keys encrypted by ASP.NET Core Data Protection (encryption keys in `data/keys`, a key that can no longer be read is
   reported and never used), and `IChatModelFactory.Create(provider, retryPassingFailures)`. `data/` is now ignored by
   git at any depth. New dependency: `Microsoft.AspNetCore.DataProtection.Abstractions` (Infrastructure).
+- Visual identity (PAPER-16): a printed novel, black ink on white paper, one serif (EB Garamond, SIL OFL, served by the
+  application). `PRODUCT.md` and `DESIGN.md` record the product and the design system; style sheets `tokens.css`,
+  `base.css` and `components.css` (colors, sizes and spaces defined once, in tokens); a shared Razor layout; the components
+  of the first pages (buttons, forms, alerts, list of books as a table of contents, list of characters as the cast of a
+  play, chat, settings entries); and a design reference page, `/Design`, served in development only. Tests check the
+  contrast of every text color (WCAG AA) from the tokens, that colors are written once, that nothing is loaded from
+  outside, that nothing is animated and that reduced motion is respected. The application now serves `wwwroot`.

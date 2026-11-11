@@ -15,23 +15,26 @@ public sealed class LivingPaperFactory : WebApplicationFactory<Program>
 {
     private readonly bool _ownsDirectory;
     private readonly Action<IServiceCollection>? _configureServices;
+    private readonly string? _environment;
 
     // xUnit builds a fixture with the only public constructor, so this one takes no argument; With(...) is for the rest.
     public LivingPaperFactory()
-        : this(null, null)
+        : this(null, null, null)
     {
     }
 
-    private LivingPaperFactory(string? dataDirectory, Action<IServiceCollection>? configureServices)
+    private LivingPaperFactory(string? dataDirectory, Action<IServiceCollection>? configureServices, string? environment)
     {
+        _environment = environment;
         _ownsDirectory = dataDirectory is null;
         DataDirectory = dataDirectory ?? Path.Combine(Path.GetTempPath(), "livingpaper-web-tests-" + Guid.NewGuid().ToString("N"));
         _configureServices = configureServices;
         Directory.CreateDirectory(DataDirectory);
     }
 
-    public static LivingPaperFactory With(string? dataDirectory = null, Action<IServiceCollection>? configureServices = null) =>
-        new(dataDirectory, configureServices);
+    // environment: "Production" to see what the application does outside development (tests start in "Development").
+    public static LivingPaperFactory With(string? dataDirectory = null, Action<IServiceCollection>? configureServices = null, string? environment = null) =>
+        new(dataDirectory, configureServices, environment);
 
     public string DataDirectory { get; }
 
@@ -41,6 +44,11 @@ public sealed class LivingPaperFactory : WebApplicationFactory<Program>
     {
         ArgumentNullException.ThrowIfNull(builder);
         builder.UseSetting("DATA_DIRECTORY", DataDirectory);
+        if (_environment is not null)
+        {
+            builder.UseEnvironment(_environment);
+        }
+
         builder.ConfigureLogging(logging => logging.AddProvider(Logs));
         builder.ConfigureTestServices(services => _configureServices?.Invoke(services));
     }

@@ -489,3 +489,9 @@ data/
 
 # Local working books (copyrighted or large files are never committed)
 books/
+
+# Impeccable (design tool): its working captures are not committed. The surface briefs and design.json are.
+.impeccable/review/
+.impeccable/build/
+.impeccable/mocks/
+.impeccable/live/

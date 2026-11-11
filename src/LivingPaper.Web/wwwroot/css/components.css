@@ -1,0 +1,588 @@
+/*
+  LivingPaper components. Each one is a familiar control or a familiar shape of a printed book, in the book's type:
+  buttons and fields behave as everyone expects, a list of books reads like a table of contents, a list of characters
+  like the cast of a play. Square corners, hairlines, no shadow (a printed page is flat). Every value comes from tokens.css.
+*/
+
+/* ---- Buttons ---- */
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: var(--control-height);
+  padding: 0 var(--space-5);
+  border: var(--rule-width) solid var(--color-ink);
+  border-radius: var(--radius);
+  background: var(--color-ink);
+  color: var(--color-paper);
+  font-size: 1.125rem;
+  font-weight: 600;
+  font-variant-caps: all-small-caps;
+  letter-spacing: var(--tracking-caps);
+  line-height: 1;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color var(--duration-quick) var(--ease-out), color var(--duration-quick) var(--ease-out), border-color var(--duration-quick) var(--ease-out);
+}
+
+/* The inked button prints in reverse when it is under the pointer. */
+.button:hover {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  text-decoration: none;
+}
+
+.button--quiet {
+  border-color: var(--color-rule-strong);
+  background: transparent;
+  color: var(--color-ink);
+}
+
+.button--quiet:hover {
+  border-color: var(--color-ink);
+  background: var(--color-wash);
+}
+
+/* What destroys something is in the proofreader's red, and says so in words. */
+.button--danger {
+  border-color: var(--color-error);
+  background: transparent;
+  color: var(--color-error);
+}
+
+.button--danger:hover {
+  background: var(--color-error);
+  color: var(--color-paper);
+}
+
+.button--small {
+  min-height: 2.5rem;
+  padding: 0 var(--space-4);
+  font-size: 1.0625rem;
+}
+
+.button:disabled,
+.button[aria-disabled="true"] {
+  border-color: var(--color-rule);
+  background: var(--color-wash);
+  color: var(--color-ink-faint);
+  cursor: not-allowed;
+}
+
+/* ---- Forms ---- */
+
+.form {
+  max-width: var(--measure);
+}
+
+.field {
+  display: grid;
+  gap: var(--space-2);
+  margin-block-end: var(--space-5);
+}
+
+.field__label {
+  font-size: 1.125rem;
+  font-weight: 600;
+  font-variant-caps: all-small-caps;
+  letter-spacing: var(--tracking-caps);
+  line-height: var(--leading-ui);
+}
+
+.field__hint {
+  margin: 0;
+  color: var(--color-ink-faint);
+  font-size: var(--text-sm);
+  line-height: var(--leading-ui);
+}
+
+.field__error {
+  margin: 0;
+  color: var(--color-error);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  line-height: var(--leading-ui);
+}
+
+.input,
+.select,
+.textarea {
+  width: 100%;
+  min-height: var(--control-height);
+  padding: var(--space-2) var(--space-3);
+  border: var(--rule-width) solid var(--color-rule-strong);
+  border-radius: var(--radius);
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-size: var(--text-base);
+  line-height: var(--leading-ui);
+  transition: border-color var(--duration-quick) var(--ease-out);
+}
+
+.input:hover,
+.select:hover,
+.textarea:hover {
+  border-color: var(--color-ink);
+}
+
+.textarea {
+  min-height: 6.5rem;
+  resize: vertical;
+}
+
+/* A field in error is said so in words (field__error) and drawn with a heavier red border, never by color alone. */
+.input[aria-invalid="true"],
+.select[aria-invalid="true"],
+.textarea[aria-invalid="true"] {
+  border-color: var(--color-error);
+  box-shadow: inset 0 0 0 1px var(--color-error);
+}
+
+.input:disabled,
+.select:disabled,
+.textarea:disabled {
+  background: var(--color-wash);
+  color: var(--color-ink-faint);
+  cursor: not-allowed;
+}
+
+.fieldset {
+  margin: 0 0 var(--space-5);
+  padding: var(--space-4) var(--space-5) var(--space-5);
+  border: var(--rule-width) solid var(--color-rule);
+  border-radius: var(--radius);
+}
+
+.fieldset > legend {
+  padding-inline: var(--space-2);
+  font-size: 1.125rem;
+  font-weight: 600;
+  font-variant-caps: all-small-caps;
+  letter-spacing: var(--tracking-caps);
+}
+
+.choice {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+  min-height: 2.5rem;
+}
+
+.form__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-block-start: var(--space-6);
+}
+
+/* ---- Alerts: a note in the margin, with its word ---- */
+
+.alert {
+  max-width: var(--measure);
+  margin-block: var(--space-5);
+  padding: var(--space-4) var(--space-5);
+  border: var(--rule-width) solid var(--color-rule-strong);
+  border-radius: var(--radius);
+  background: transparent;   /* a plain note is one hairline; only a state gets a tinted ground */
+}
+
+.alert > :last-child {
+  margin-block-end: 0;
+}
+
+.alert__title {
+  display: block;
+  margin: 0 0 var(--space-1);
+  font-size: 1.125rem;
+  font-weight: 700;
+  font-variant-caps: all-small-caps;
+  letter-spacing: var(--tracking-caps);
+  line-height: var(--leading-ui);
+}
+
+.alert--error {
+  border-color: var(--color-error);
+  background: var(--color-error-wash);
+}
+
+.alert--error .alert__title {
+  color: var(--color-error);
+}
+
+.alert--success {
+  border-color: var(--color-success);
+  background: var(--color-success-wash);
+}
+
+.alert--success .alert__title {
+  color: var(--color-success);
+}
+
+.alert--warning {
+  border-color: var(--color-warning);
+  background: var(--color-warning-wash);
+}
+
+.alert--warning .alert__title {
+  color: var(--color-warning);
+}
+
+/* ---- Contents: the list of books, set like the table of contents of a book ---- */
+
+.contents {
+  margin: var(--space-5) 0;
+  padding: 0;
+  list-style: none;
+  max-width: none;
+}
+
+.contents__item {
+  margin: 0;
+  padding-block: var(--space-4);
+  border-block-end: var(--rule-width) solid var(--color-rule);
+}
+
+.contents__item:first-child {
+  border-block-start: var(--rule-width) solid var(--color-ink);
+}
+
+.contents__row {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+}
+
+.contents__title {
+  font-size: var(--text-lg);
+  font-weight: 500;
+  line-height: var(--leading-ui);
+}
+
+/* The dotted line that leads the eye from the title to what is said about it. */
+.contents__leader {
+  flex: 1;
+  min-width: var(--space-5);
+  align-self: end;
+  margin-block-end: 0.4em;
+  border-block-end: 2px dotted var(--color-rule-strong);
+}
+
+.contents__status {
+  white-space: nowrap;
+  font-variant-numeric: lining-nums tabular-nums;
+}
+
+.contents__meta {
+  margin: var(--space-1) 0 0;
+  color: var(--color-ink-soft);
+  font-size: var(--text-sm);
+  font-style: italic;
+}
+
+.contents__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-3);
+  margin-block-start: var(--space-3);
+}
+
+.status {
+  font-weight: 700;
+  font-variant-caps: all-small-caps;
+  letter-spacing: var(--tracking-caps);
+}
+
+.status--ready {
+  color: var(--color-success);
+}
+
+.status--failed {
+  color: var(--color-error);
+}
+
+.progress {
+  display: block;
+  width: 100%;
+  height: 4px;
+  margin-block-start: var(--space-3);
+  border: 0;
+  border-radius: 0;
+  background: var(--color-rule);
+  color: var(--color-ink);
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.progress::-webkit-progress-bar {
+  background: var(--color-rule);
+}
+
+.progress::-webkit-progress-value {
+  background: var(--color-ink);
+}
+
+.progress::-moz-progress-bar {
+  background: var(--color-ink);
+}
+
+/* ---- Cast: the list of characters, set like the cast of a play ---- */
+
+.cast {
+  margin: var(--space-5) 0;
+  padding: 0;
+  list-style: none;
+  max-width: none;
+}
+
+.cast__entry {
+  display: grid;
+  grid-template-columns: minmax(0, 12rem) minmax(0, 1fr) auto;
+  gap: var(--space-2) var(--space-5);
+  align-items: baseline;
+  margin: 0;
+  padding-block: var(--space-4);
+  border-block-end: var(--rule-width) solid var(--color-rule);
+}
+
+.cast__entry:first-child {
+  border-block-start: var(--rule-width) solid var(--color-ink);
+}
+
+.cast__name {
+  font-size: 1.25rem;
+  font-weight: 700;
+  font-variant-caps: all-small-caps;
+  letter-spacing: var(--tracking-caps);
+  line-height: var(--leading-ui);
+}
+
+.cast__note {
+  max-width: none;
+  margin: 0;
+  color: var(--color-ink-soft);
+  font-style: italic;
+}
+
+/* ---- Entry: one thing in a list of settings, with what is known about it ---- */
+
+.entries {
+  margin: var(--space-5) 0;
+  padding: 0;
+  list-style: none;
+  max-width: none;
+}
+
+.entry {
+  display: grid;
+  gap: var(--space-3);
+  margin: 0;
+  padding-block: var(--space-5);
+  border-block-end: var(--rule-width) solid var(--color-rule);
+}
+
+.entry:first-child {
+  border-block-start: var(--rule-width) solid var(--color-ink);
+}
+
+.entry__title {
+  margin: 0;
+  font-size: var(--text-lg);
+  font-style: normal;
+  font-weight: 600;
+  font-variant-caps: normal;
+  letter-spacing: 0;
+}
+
+.entry__facts {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: var(--space-1) var(--space-4);
+  margin: 0;
+}
+
+.entry__facts dt {
+  color: var(--color-ink-faint);
+  font-weight: 600;
+  font-variant-caps: all-small-caps;
+  letter-spacing: var(--tracking-caps);
+}
+
+.entry__facts dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.tag {
+  display: inline-block;
+  padding: 0 var(--space-2);
+  border: var(--rule-width) solid var(--color-ink);
+  border-radius: var(--radius);
+  font-size: 1rem;
+  font-weight: 600;
+  font-variant-caps: all-small-caps;
+  letter-spacing: var(--tracking-caps);
+  line-height: 1.5;
+  vertical-align: baseline;
+}
+
+/* ---- Chat: a conversation set in the margins of a page ---- */
+
+.chat {
+  max-width: var(--measure);
+}
+
+.chat__log {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  margin: 0;
+  padding: var(--space-5) 0;
+  list-style: none;
+  max-width: none;
+}
+
+.message {
+  display: grid;
+  gap: var(--space-1);
+  max-width: 88%;
+  margin: 0;
+}
+
+.message--user {
+  align-self: flex-end;
+  justify-items: end;
+}
+
+.message__who {
+  color: var(--color-ink-faint);
+  font-size: 1.0625rem;
+  font-weight: 600;
+  font-variant-caps: all-small-caps;
+  letter-spacing: var(--tracking-caps);
+}
+
+.message__text {
+  padding: var(--space-3) var(--space-4);
+  border: var(--rule-width) solid var(--color-rule-strong);
+  border-radius: var(--radius);
+  hyphens: manual;
+}
+
+.message__text p {
+  margin: 0;
+}
+
+.message__text p + p {
+  margin-block-start: var(--space-2);
+}
+
+/* The reader's own lines sit on a quiet grey ground: the only ink slab of the screen is the Send button. */
+.message--user .message__text {
+  border-color: var(--color-rule);
+  background: var(--color-wash);
+}
+
+/* A reply that is still being written: the same box, dashed, in words (no animation). */
+.message--pending .message__text {
+  border-style: dashed;
+  color: var(--color-ink-soft);
+  font-style: italic;
+}
+
+/* The composer stays at the foot of the screen, on a phone above the system bar. */
+.chat__composer {
+  position: sticky;
+  bottom: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--space-3);
+  align-items: end;
+  padding-block: var(--space-4) calc(var(--space-4) + env(safe-area-inset-bottom, 0px));
+  border-block-start: var(--rule-width) solid var(--color-rule);
+  background: var(--color-paper);
+}
+
+.chat__composer .field {
+  margin-block-end: 0;
+}
+
+/* ---- Short texts of the interface are never hyphenated: a word broken in a two-line note reads badly ---- */
+
+.alert,
+.cast__note,
+.contents__meta,
+.field__hint,
+.field__error,
+.empty {
+  hyphens: manual;
+}
+
+/* ---- Empty: nothing here yet ---- */
+
+.empty {
+  padding-block: var(--space-7);
+  text-align: center;
+}
+
+.empty__title {
+  margin: 0 auto var(--space-3);
+  font-size: var(--text-xl);
+  font-style: italic;
+  line-height: var(--leading-tight);
+}
+
+.empty p {
+  margin-inline: auto;
+  color: var(--color-ink-soft);
+}
+
+/* ---- Narrow screens ---- */
+
+@media (max-width: 40rem) {
+  .contents__row {
+    flex-wrap: wrap;
+  }
+
+  .contents__leader {
+    display: none;
+  }
+
+  .contents__status {
+    flex-basis: 100%;
+  }
+
+  .cast__entry {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-1);
+  }
+
+  .cast__entry .button {
+    justify-self: start;
+    margin-block-start: var(--space-2);
+  }
+
+  .entry__facts {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+
+  .entry__facts dd {
+    margin-block-end: var(--space-2);
+  }
+
+  .message {
+    max-width: 94%;
+  }
+
+  /* The button stays beside the field: stacked, the composer would fill a quarter of a phone screen, more with the keyboard. */
+  .chat__composer {
+    gap: var(--space-2);
+  }
+
+  .chat__composer .button {
+    padding-inline: var(--space-4);
+  }
+}

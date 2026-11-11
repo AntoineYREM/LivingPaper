@@ -1,0 +1,36 @@
+@* The page of the book: one centered column, a running head above and a folio below (see DESIGN.md).
+   The words of the page come from the pages themselves (and, with PAPER-13, from the translation files): this layout
+   holds none of its own. A page gives its running head and its folio through the "Masthead" and "Folio" sections.
+   ViewData["Language"] is the language of the page ("en" by default): hyphenation depends on it.
+   ViewData["SkipLabel"] is the text of the link that jumps to the content, the first thing a keyboard reaches. *@
+@{
+    var language = ViewData["Language"] as string ?? "en";
+    var skipLabel = ViewData["SkipLabel"] as string;
+}
+<!DOCTYPE html>
+<html lang="@language">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>@ViewData["Title"]</title>
+    <link rel="preload" href="~/fonts/eb-garamond-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="stylesheet" href="~/css/tokens.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/base.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/components.css" asp-append-version="true" />
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body>
+    @if (!string.IsNullOrEmpty(skipLabel))
+    {
+        <a class="skip-link" href="#main">@skipLabel</a>
+    }
+    @await RenderSectionAsync("Masthead", required: false)
+    <main id="main">
+        <div class="page">
+            @RenderBody()
+        </div>
+    </main>
+    @await RenderSectionAsync("Folio", required: false)
+</body>
+</html>

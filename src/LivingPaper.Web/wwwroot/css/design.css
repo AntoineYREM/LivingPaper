@@ -1,0 +1,60 @@
+/*
+  Furniture of the design reference page (/Design) only: the swatches of the palette. The identity itself is in
+  tokens.css, base.css and components.css.
+*/
+
+.swatches {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr));
+  gap: var(--space-5) var(--space-4);
+  margin: var(--space-5) 0;
+  padding: 0;
+  list-style: none;
+  max-width: none;
+}
+
+.swatch {
+  margin: 0;
+}
+
+.swatch__chip {
+  height: 3.5rem;
+  border: var(--rule-width) solid var(--color-rule);
+  border-radius: var(--radius);
+}
+
+.swatch__name {
+  display: block;
+  margin-block-start: var(--space-2);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  line-height: var(--leading-ui);
+}
+
+.swatch__use {
+  display: block;
+  color: var(--color-ink-soft);
+  font-size: var(--text-xs);
+  line-height: var(--leading-ui);
+}
+
+.swatch--paper .swatch__chip { background: var(--color-paper); }
+.swatch--ink .swatch__chip { background: var(--color-ink); }
+.swatch--ink-soft .swatch__chip { background: var(--color-ink-soft); }
+.swatch--ink-faint .swatch__chip { background: var(--color-ink-faint); }
+.swatch--wash .swatch__chip { background: var(--color-wash); }
+.swatch--rule .swatch__chip { background: var(--color-rule); }
+.swatch--rule-strong .swatch__chip { background: var(--color-rule-strong); }
+.swatch--error .swatch__chip { background: var(--color-error); }
+.swatch--error-wash .swatch__chip { background: var(--color-error-wash); }
+.swatch--success .swatch__chip { background: var(--color-success); }
+.swatch--success-wash .swatch__chip { background: var(--color-success-wash); }
+.swatch--warning .swatch__chip { background: var(--color-warning); }
+.swatch--warning-wash .swatch__chip { background: var(--color-warning-wash); }
+
+.specimen-label {
+  margin-block: var(--space-6) var(--space-2);
+  color: var(--color-ink-faint);
+  font-size: var(--text-sm);
+  font-style: italic;
+}

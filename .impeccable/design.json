@@ -1,0 +1,143 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-11T00:00:00Z",
+  "title": "Design System: LivingPaper",
+  "extensions": {
+    "colorMeta": {
+      "paper": { "role": "neutral", "displayName": "Paper White", "canonical": "#ffffff", "tonalRamp": ["#141414", "#3f3f3f", "#666666", "#8c8c8c", "#d6d6d6", "#f5f5f5", "#fafafa", "#ffffff"] },
+      "ink": { "role": "primary", "displayName": "Printer's Ink", "canonical": "#141414", "tonalRamp": ["#000000", "#141414", "#2b2b2b", "#3f3f3f", "#666666", "#8c8c8c", "#bdbdbd", "#f5f5f5"] },
+      "ink-soft": { "role": "neutral", "displayName": "Soft Ink", "canonical": "#3f3f3f", "tonalRamp": ["#141414", "#232323", "#2f2f2f", "#3f3f3f", "#555555", "#6e6e6e", "#9a9a9a", "#d6d6d6"] },
+      "ink-faint": { "role": "neutral", "displayName": "Faint Ink", "canonical": "#666666", "tonalRamp": ["#2b2b2b", "#3f3f3f", "#505050", "#666666", "#7a7a7a", "#8c8c8c", "#b0b0b0", "#d6d6d6"] },
+      "wash": { "role": "neutral", "displayName": "Quiet Wash", "canonical": "#f5f5f5", "tonalRamp": ["#8c8c8c", "#bdbdbd", "#d6d6d6", "#e4e4e4", "#ececec", "#f5f5f5", "#fafafa", "#ffffff"] },
+      "rule": { "role": "neutral", "displayName": "Hairline", "canonical": "#d6d6d6", "tonalRamp": ["#666666", "#8c8c8c", "#a8a8a8", "#bdbdbd", "#d6d6d6", "#e4e4e4", "#f0f0f0", "#f8f8f8"] },
+      "rule-strong": { "role": "neutral", "displayName": "Control Edge", "canonical": "#8c8c8c", "tonalRamp": ["#3f3f3f", "#666666", "#7a7a7a", "#8c8c8c", "#a8a8a8", "#bdbdbd", "#d6d6d6", "#ececec"] },
+      "error": { "role": "tertiary", "displayName": "Proofreader's Red", "canonical": "#a3161b", "tonalRamp": ["#4a0a0d", "#6d1014", "#8a1318", "#a3161b", "#c4474b", "#dc8184", "#f0bbbd", "#fdf1f1"] },
+      "error-wash": { "role": "tertiary", "displayName": "Red Wash", "canonical": "#fdf1f1", "tonalRamp": ["#a3161b", "#c4474b", "#dc8184", "#eab0b2", "#f4cfd0", "#f9e2e2", "#fdf1f1", "#ffffff"] },
+      "success": { "role": "tertiary", "displayName": "Proof Green", "canonical": "#1a6a37", "tonalRamp": ["#0b2e18", "#114622", "#165a2e", "#1a6a37", "#4a9066", "#86b99a", "#bddac8", "#eff7f1"] },
+      "success-wash": { "role": "tertiary", "displayName": "Green Wash", "canonical": "#eff7f1", "tonalRamp": ["#1a6a37", "#4a9066", "#86b99a", "#bddac8", "#d8eadf", "#e6f2ea", "#eff7f1", "#ffffff"] },
+      "warning": { "role": "tertiary", "displayName": "Marginal Ochre", "canonical": "#7a4f00", "tonalRamp": ["#2e1d00", "#4a3000", "#633f00", "#7a4f00", "#a67a2e", "#c9a566", "#e4cf9f", "#fbf5e6"] },
+      "warning-wash": { "role": "tertiary", "displayName": "Ochre Wash", "canonical": "#fbf5e6", "tonalRamp": ["#7a4f00", "#a67a2e", "#c9a566", "#e4cf9f", "#f0e3c2", "#f6ecd4", "#fbf5e6", "#ffffff"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "The h1 of a page; one per page." },
+      "headline": { "displayName": "Headline", "purpose": "h2 section titles." },
+      "title": { "displayName": "Title", "purpose": "Book titles, brand name, h3 (bold small capitals), lead in italic." },
+      "body": { "displayName": "Body", "purpose": "Running text at 66ch, oldstyle figures." },
+      "label": { "displayName": "Label", "purpose": "True small capitals for buttons, field labels, nav, status words, speaker and cast names." },
+      "note": { "displayName": "Note", "purpose": "Hints, errors, meta, captions." }
+    },
+    "shadows": [],
+    "motion": [
+      { "name": "duration-quick", "value": "120ms", "purpose": "Color feedback on buttons and field borders. No keyframes; reduced to 0.01ms under prefers-reduced-motion." },
+      { "name": "ease-out", "value": "cubic-bezier(0.22, 1, 0.36, 1)", "purpose": "The only easing." }
+    ],
+    "breakpoints": [
+      { "name": "narrow", "value": "40rem" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The ink slab; one per screen. Prints in reverse on hover.",
+      "html": "<button class=\"ds-button\">Add a book</button>",
+      "css": ".ds-button { display: inline-flex; align-items: center; justify-content: center; min-height: 2.875rem; padding: 0 1.5rem; border: 1px solid var(--color-ink); border-radius: var(--radius); background: var(--color-ink); color: var(--color-paper); font: inherit; font-size: 1.125rem; font-weight: 600; font-variant-caps: all-small-caps; letter-spacing: var(--tracking-caps); line-height: 1; cursor: pointer; transition: background-color 120ms var(--ease-out), color 120ms var(--ease-out); } .ds-button:hover { background: var(--color-paper); color: var(--color-ink); } .ds-button:focus-visible { outline: 2px solid var(--color-ink); outline-offset: 3px; }"
+    },
+    {
+      "name": "Quiet Button",
+      "kind": "button",
+      "refersTo": "button-quiet",
+      "description": "Secondary action: control-edge border, wash on hover.",
+      "html": "<button class=\"ds-button-quiet\">Cancel</button>",
+      "css": ".ds-button-quiet { display: inline-flex; align-items: center; justify-content: center; min-height: 2.875rem; padding: 0 1.5rem; border: 1px solid var(--color-rule-strong); border-radius: var(--radius); background: transparent; color: var(--color-ink); font: inherit; font-size: 1.125rem; font-weight: 600; font-variant-caps: all-small-caps; letter-spacing: var(--tracking-caps); line-height: 1; cursor: pointer; transition: background-color 120ms var(--ease-out), border-color 120ms var(--ease-out); } .ds-button-quiet:hover { border-color: var(--color-ink); background: var(--color-wash); } .ds-button-quiet:focus-visible { outline: 2px solid var(--color-ink); outline-offset: 3px; }"
+    },
+    {
+      "name": "Danger Button",
+      "kind": "button",
+      "refersTo": "button-danger",
+      "description": "What destroys, in red and in words; fills red on hover.",
+      "html": "<button class=\"ds-button-danger\">Delete this book</button>",
+      "css": ".ds-button-danger { display: inline-flex; align-items: center; justify-content: center; min-height: 2.875rem; padding: 0 1.5rem; border: 1px solid var(--color-error); border-radius: var(--radius); background: transparent; color: var(--color-error); font: inherit; font-size: 1.125rem; font-weight: 600; font-variant-caps: all-small-caps; letter-spacing: var(--tracking-caps); line-height: 1; cursor: pointer; transition: background-color 120ms var(--ease-out), color 120ms var(--ease-out); } .ds-button-danger:hover { background: var(--color-error); color: var(--color-paper); } .ds-button-danger:focus-visible { outline: 2px solid var(--color-ink); outline-offset: 3px; }"
+    },
+    {
+      "name": "Text Field",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Label in small capitals, hint, field with a control-edge border.",
+      "html": "<div class=\"ds-field\"><label class=\"ds-field-label\" for=\"ds-name\">Name</label><p class=\"ds-field-hint\">As it should appear in the list.</p><input class=\"ds-input\" id=\"ds-name\" type=\"text\" value=\"Pride and Prejudice\"></div>",
+      "css": ".ds-field { display: grid; gap: 0.5rem; max-width: 66ch; } .ds-field-label { font-size: 1.125rem; font-weight: 600; font-variant-caps: all-small-caps; letter-spacing: var(--tracking-caps); line-height: 1.35; } .ds-field-hint { margin: 0; color: var(--color-ink-faint); font-size: 1rem; line-height: 1.35; } .ds-input { width: 100%; min-height: 2.875rem; padding: 0.5rem 0.75rem; border: 1px solid var(--color-rule-strong); border-radius: var(--radius); background: var(--color-paper); color: var(--color-ink); font: inherit; line-height: 1.35; transition: border-color 120ms var(--ease-out); } .ds-input:hover { border-color: var(--color-ink); } .ds-input:focus-visible { outline: 2px solid var(--color-ink); outline-offset: 3px; }"
+    },
+    {
+      "name": "Error Alert",
+      "kind": "custom",
+      "refersTo": "alert-error",
+      "description": "A state note: tinted ground, state border, a title that names the state.",
+      "html": "<div class=\"ds-alert\"><span class=\"ds-alert-title\">Error</span><p>The connection test failed. Check the address and the key.</p></div>",
+      "css": ".ds-alert { max-width: 66ch; padding: 1rem 1.5rem; border: 1px solid var(--color-error); border-radius: var(--radius); background: var(--color-error-wash); } .ds-alert p { margin: 0; } .ds-alert-title { display: block; margin: 0 0 0.25rem; color: var(--color-error); font-size: 1.125rem; font-weight: 700; font-variant-caps: all-small-caps; letter-spacing: var(--tracking-caps); }"
+    },
+    {
+      "name": "Contents Row",
+      "kind": "custom",
+      "refersTo": "colors.rule",
+      "description": "A book in the list, set as a table-of-contents line with a dot leader and a status word.",
+      "html": "<div class=\"ds-contents\"><div class=\"ds-contents-row\"><span class=\"ds-contents-title\">Emma</span><span class=\"ds-contents-leader\"></span><span class=\"ds-status\">Ready</span></div><p class=\"ds-contents-meta\">Ten characters, analyzed in two minutes.</p></div>",
+      "css": ".ds-contents { padding-block: 1rem; border-block: 1px solid var(--color-rule); border-block-start-color: var(--color-ink); max-width: 66ch; } .ds-contents-row { display: flex; align-items: baseline; gap: 0.75rem; } .ds-contents-title { font-size: 1.4375rem; font-weight: 500; line-height: 1.35; } .ds-contents-leader { flex: 1; min-width: 1.5rem; align-self: end; margin-block-end: 0.4em; border-block-end: 2px dotted var(--color-rule-strong); } .ds-status { color: var(--color-success); font-weight: 700; font-variant-caps: all-small-caps; letter-spacing: var(--tracking-caps); } .ds-contents-meta { margin: 0.25rem 0 0; color: var(--color-ink-soft); font-size: 1rem; font-style: italic; }"
+    },
+    {
+      "name": "Chat Turns",
+      "kind": "custom",
+      "refersTo": "message-character",
+      "description": "Boxed turns: character in a hairline box, reader on a wash ground, pending dashed and in words.",
+      "html": "<div class=\"ds-chat\"><div class=\"ds-message\"><span class=\"ds-who\">Elizabeth</span><div class=\"ds-text\">You are very kind to ask.</div></div><div class=\"ds-message ds-message-user\"><span class=\"ds-who\">You</span><div class=\"ds-text ds-text-user\">Did you like him?</div></div><div class=\"ds-message\"><span class=\"ds-who\">Elizabeth</span><div class=\"ds-text ds-text-pending\">Elizabeth is writing</div></div></div>",
+      "css": ".ds-chat { display: flex; flex-direction: column; gap: 1.5rem; max-width: 66ch; } .ds-message { display: grid; gap: 0.25rem; max-width: 88%; } .ds-message-user { align-self: flex-end; justify-items: end; } .ds-who { color: var(--color-ink-faint); font-size: 1.0625rem; font-weight: 600; font-variant-caps: all-small-caps; letter-spacing: var(--tracking-caps); } .ds-text { padding: 0.75rem 1rem; border: 1px solid var(--color-rule-strong); border-radius: var(--radius); } .ds-text-user { border-color: var(--color-rule); background: var(--color-wash); } .ds-text-pending { border-style: dashed; color: var(--color-ink-soft); font-style: italic; }"
+    },
+    {
+      "name": "Drop Cap Opening",
+      "kind": "custom",
+      "refersTo": "typography.body",
+      "description": "Signature: a text that begins something opens with the printer's ornament and a drop cap; following paragraphs are indented.",
+      "html": "<div class=\"ds-opening\"><hr class=\"ds-ornament\"><p class=\"ds-dropcap\">She is quick of wit and slow to forgive, a reader of faces before she reads a page.</p><p class=\"ds-indent\">In company she keeps her own counsel.</p></div>",
+      "css": ".ds-opening { max-width: 66ch; } .ds-ornament { width: 7.5rem; height: 1rem; margin: 1.5rem auto; border: 0; background: var(--color-ink-faint); } .ds-opening p { margin: 0; line-height: 1.6; } .ds-dropcap::first-letter { float: left; margin: 0.04em 0.08em -0.02em 0; font-size: 3.7em; font-weight: 500; line-height: 0.78; font-variant-numeric: lining-nums; } .ds-indent { text-indent: 1.5em; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Printed Novel",
+    "overview": "The interface is the page of a printed novel, and the software steps back like the margins of a book. Black ink on white paper, one serif family, one centered column, hairline rules, square corners, no shadow. The owner imposed this look; it refuses the category default of cards, rounded tiles, an accent color and an icon on everything. The reader should forget the software and remember the book.\n\nThe system borrows the apparatus of print. A list of books is a table of contents with dot leaders; a list of characters is the cast of a play; a text that begins something opens with a drop cap and the printer's ornament; a page ends on a folio. Nothing moves for decoration. Hierarchy comes from size, weight, italic and true small capitals, never from color or depth.\n\nThe build chose white paper by decision: there is no dark mode. Words stand in for icons. Everything is served by the application itself (font, ornament), with no CDN.",
+    "keyCharacteristics": [
+      "One family, EB Garamond (variable, SIL OFL), in roman, italic and true small capitals.",
+      "Color is ink and grey; red, green and ochre exist only as states and always come with a word.",
+      "Single column, 46rem wide, margins that grow with the screen.",
+      "Flat: hairlines and ink slabs instead of shadows; 2px edge on controls only.",
+      "Signature move: the drop cap with the printer's ornament, and the folio at the foot of a page."
+    ],
+    "rules": [
+      { "name": "The Ink And Grey Rule", "body": "Outside the three states, nothing is colored. A new accent color is a new world, not an extension.", "section": "colors" },
+      { "name": "The Word Beside The Color Rule", "body": "A state color is always paired with a word (title, status word, error sentence), never color alone. The red field border also thickens.", "section": "colors" },
+      { "name": "The Tokens Only Rule", "body": "Colors are written only in tokens.css as #rrggbb; every other style sheet uses var(--color-*). Every text/background pair must reach WCAG AA (4.5:1); a test computes it from the tokens.", "section": "colors" },
+      { "name": "The True Small Caps Rule", "body": "Labels use font-variant-caps: all-small-caps with letter-spacing 0.09em, never uppercase text at reduced size.", "section": "typography" },
+      { "name": "The Lining Figures Rule", "body": "Figures are oldstyle in running text; counts, versions, statuses and the folio use lining (and tabular where they align).", "section": "typography" },
+      { "name": "The One Family Rule", "body": "No second typeface, no system display face. Weight, italic and caps carry every role.", "section": "typography" },
+      { "name": "The Flat Page Rule", "body": "A printed page has no shadow. A surface is distinguished by a rule or a wash, never by lifting.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do write every color in tokens.css only and reference var(--color-*) elsewhere; keep every text pair at WCAG AA or better.",
+      "Do keep the column at 46rem and reading text at 66ch (60 to 75).",
+      "Do use true small capitals (0.09em) for labels, buttons, nav, status words and speaker names.",
+      "Do pair every state color with a word, and say what a destructive action destroys.",
+      "Do keep a visible :focus-visible outline (2px ink, 3px offset) on everything focusable; support prefers-reduced-motion.",
+      "Do use the drop cap and ornament where a text begins something, and end pages with a folio.",
+      "Do use words instead of icons, and give every field a visible label.",
+      "Do serve everything (fonts, ornament) from the application; set text in lang-aware hyphenation, and keep short interface notes unhyphenated."
+    ],
+    "donts": [
+      "Don't add dark mode, an accent color, shadows, rounded corners above 2px, gradients, or cards.",
+      "Don't add icons, icon fonts or a second typeface.",
+      "Don't animate for decoration: no @keyframes; transitions are 120ms feedback on color only.",
+      "Don't remove an outline, rely on color alone for state, or use rule as the only mark of a control (use rule-strong).",
+      "Don't load anything from a CDN or external host, or introduce Bootstrap.",
+      "Don't use more than one ink slab per screen.",
+      "Don't treat the demo page texts as final: they are sample content until PAPER-13 (translations)."
+    ]
+  }
+}

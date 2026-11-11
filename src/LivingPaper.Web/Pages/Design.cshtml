@@ -1,0 +1,408 @@
+@page
+@* The design reference page (PAPER-16): the visual identity with SAMPLE content, for the owner to review on a phone and on a
+   computer. Development only (Design.cshtml.cs): it is never served in production, so these sample texts are not product
+   UI and are not translated. The real pages get their texts from the translation files (PAPER-13). *@
+@model DesignModel
+@{
+    ViewData["Title"] = "Design reference · LivingPaper";
+    ViewData["SkipLabel"] = "Skip to the content";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/design.css" asp-append-version="true" />
+}
+
+@section Masthead {
+    <header class="masthead">
+        <div class="page masthead__inner">
+            <a class="masthead__brand" href="#top">LivingPaper</a>
+            <nav aria-label="Main">
+                <ul class="nav">
+                    <li><a href="#library" aria-current="page">My library</a></li>
+                    <li><a href="#examples">Examples</a></li>
+                    <li><a href="#settings">Settings</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+}
+
+@section Folio {
+    <footer class="folio">
+        <p class="figures">LivingPaper 0.1.0</p>
+    </footer>
+}
+
+<h1 id="top">Design reference</h1>
+<p class="lead">The identity of LivingPaper is a printed novel: black ink on white paper, one serif, a single centered column.</p>
+
+<div class="alert" role="note">
+    <strong class="alert__title">Sample content</strong>
+    <p>Everything on this page is an example. It is shown in development only and never in production.</p>
+</div>
+
+<nav aria-label="On this page">
+    <ul class="nav">
+        <li><a href="#type">Type</a></li>
+        <li><a href="#color">Color</a></li>
+        <li><a href="#controls">Controls</a></li>
+        <li><a href="#alerts">Alerts</a></li>
+        <li><a href="#library">Library</a></li>
+        <li><a href="#cast">Cast</a></li>
+        <li><a href="#character">Character</a></li>
+        <li><a href="#chat">Chat</a></li>
+        <li><a href="#settings">Settings</a></li>
+    </ul>
+</nav>
+
+<hr class="ornament" />
+
+<section aria-labelledby="type">
+    <h2 id="type">Type</h2>
+    <p>One family, EB Garamond, for everything. Body text is set at 19 to 21 pixels with a line of about 66 characters, so a page reads like a page of a novel.</p>
+
+    <p class="specimen-label">Display, 1st level</p>
+    <p style="font-size: var(--text-display); line-height: var(--leading-tight); margin-block-end: var(--space-4);">Le Malade imaginaire</p>
+    <p class="specimen-label">Heading, 2nd level</p>
+    <p style="font-size: var(--text-xl); font-weight: 600; line-height: var(--leading-tight); margin-block-end: var(--space-2);">The characters of the book</p>
+    <p class="specimen-label">Heading, 3rd level (small capitals)</p>
+    <p class="caps" style="font-size: var(--text-lg); font-weight: 700; margin-block-end: var(--space-2);">Personality profile</p>
+
+    <p class="specimen-label">Running text, with a drop cap, as in a novel</p>
+    <div class="prose">
+        <p class="dropcap">Argan is a wealthy man who has decided that he is gravely ill. He weighs his remedies, counts the bills of his apothecary and bends the whole household around his health. Around him the people who love him, and those who love his money, learn to speak his language.</p>
+        <p>The lines that follow the first are indented rather than spaced. A link looks <a href="#type">like this</a>, a quotation <em>like this</em>, and a figure like 1673 sits in the line with the letters.</p>
+    </div>
+
+    <blockquote>
+        <p>“A quoted passage is set in italics and indented, with nothing around it.”</p>
+    </blockquote>
+
+    <p class="specimen-label">French, to see the accents, the quotation marks and the hyphenation</p>
+    <p lang="fr">Les personnages du livre vous répondent dans votre langue : « Où est donc ma canne, Toinette ? » La cœur lourd, déjà très fatigué, Argan appelle encore l’apothicaire.</p>
+
+    <p class="specimen-label">Small capitals and lining figures</p>
+    <p><span class="caps">Part 3 of 8</span> &middot; <span class="figures">12 400 tokens &middot; 2 min 14 s</span></p>
+</section>
+
+<hr class="ornament" />
+
+<section aria-labelledby="color">
+    <h2 id="color">Color</h2>
+    <p>Black on white. Grey for what recedes. A color appears only as a state (error, success, warning) and always with a word beside it.</p>
+    <ul class="swatches">
+        <li class="swatch swatch--paper"><div class="swatch__chip"></div><span class="swatch__name">paper</span><span class="swatch__use">the page</span></li>
+        <li class="swatch swatch--ink"><div class="swatch__chip"></div><span class="swatch__name">ink</span><span class="swatch__use">text, titles, primary button</span></li>
+        <li class="swatch swatch--ink-soft"><div class="swatch__chip"></div><span class="swatch__name">ink-soft</span><span class="swatch__use">text that recedes</span></li>
+        <li class="swatch swatch--ink-faint"><div class="swatch__chip"></div><span class="swatch__name">ink-faint</span><span class="swatch__use">meta, placeholders</span></li>
+        <li class="swatch swatch--wash"><div class="swatch__chip"></div><span class="swatch__name">wash</span><span class="swatch__use">a quiet field</span></li>
+        <li class="swatch swatch--rule"><div class="swatch__chip"></div><span class="swatch__name">rule</span><span class="swatch__use">hairlines</span></li>
+        <li class="swatch swatch--rule-strong"><div class="swatch__chip"></div><span class="swatch__name">rule-strong</span><span class="swatch__use">border of a control</span></li>
+        <li class="swatch swatch--error"><div class="swatch__chip"></div><span class="swatch__name">error</span><span class="swatch__use">error, delete</span></li>
+        <li class="swatch swatch--error-wash"><div class="swatch__chip"></div><span class="swatch__name">error-wash</span><span class="swatch__use">ground of an error</span></li>
+        <li class="swatch swatch--success"><div class="swatch__chip"></div><span class="swatch__name">success</span><span class="swatch__use">done, ready</span></li>
+        <li class="swatch swatch--success-wash"><div class="swatch__chip"></div><span class="swatch__name">success-wash</span><span class="swatch__use">ground of a success</span></li>
+        <li class="swatch swatch--warning"><div class="swatch__chip"></div><span class="swatch__name">warning</span><span class="swatch__use">to watch</span></li>
+        <li class="swatch swatch--warning-wash"><div class="swatch__chip"></div><span class="swatch__name">warning-wash</span><span class="swatch__use">ground of a warning</span></li>
+    </ul>
+</section>
+
+<hr class="ornament" />
+
+<section aria-labelledby="controls">
+    <h2 id="controls">Controls</h2>
+
+    <h3>Buttons</h3>
+    <p class="form__actions">
+        <button type="button" class="button">Add a book</button>
+        <button type="button" class="button button--quiet">Cancel</button>
+        <button type="button" class="button button--danger">Delete</button>
+        <button type="button" class="button" disabled>Waiting</button>
+    </p>
+    <p class="form__actions">
+        <button type="button" class="button button--small">Retry</button>
+        <button type="button" class="button button--small button--quiet">Replace</button>
+        <button type="button" class="button button--small button--danger">Delete</button>
+    </p>
+
+    <h3>A form</h3>
+    <form class="form" action="#controls" method="get">
+        <div class="field">
+            <label class="field__label" for="model-name">Name</label>
+            <input class="input" id="model-name" name="name" type="text" value="OpenAI" autocomplete="off" />
+        </div>
+        <div class="field">
+            <label class="field__label" for="model-url">Base URL</label>
+            <input class="input" id="model-url" name="url" type="url" value="api.openai.com/v1" aria-invalid="true" aria-describedby="model-url-hint model-url-error" />
+            <p class="field__hint" id="model-url-hint">The address of the API, for example https://api.openai.com/v1</p>
+            <p class="field__error" id="model-url-error">Error: the address must start with http:// or https://.</p>
+        </div>
+        <div class="field">
+            <label class="field__label" for="model-key">API key</label>
+            <input class="input" id="model-key" name="key" type="password" autocomplete="off" aria-describedby="model-key-hint" />
+            <p class="field__hint" id="model-key-hint">Kept encrypted on this computer. It is never shown again.</p>
+        </div>
+        <div class="field">
+            <label class="field__label" for="model-model">Model</label>
+            <input class="input" id="model-model" name="model" type="text" placeholder="gpt-5-nano" autocomplete="off" />
+        </div>
+        <fieldset class="fieldset">
+            <legend>Use it for</legend>
+            <label class="choice"><input type="checkbox" name="use" value="analysis" checked /> Analyzing books</label>
+            <label class="choice"><input type="checkbox" name="use" value="chat" checked /> Chatting</label>
+        </fieldset>
+        <div class="form__actions">
+            <button type="submit" class="button">Test and save</button>
+            <button type="button" class="button button--quiet">Cancel</button>
+        </div>
+    </form>
+</section>
+
+<hr class="ornament" />
+
+<section aria-labelledby="alerts">
+    <h2 id="alerts">Alerts</h2>
+    <p>A note in the margin: a word that names it, then what to do. Never a color alone.</p>
+    <div class="alert" role="note">
+        <strong class="alert__title">Note</strong>
+        <p>Profiles and conversations cover the whole book and may reveal its ending.</p>
+    </div>
+    <div class="alert alert--success" role="status">
+        <strong class="alert__title">Done</strong>
+        <p>The analysis of <em>Le Malade imaginaire</em> is finished: 8 characters found in 2 min 14 s.</p>
+    </div>
+    <div class="alert alert--warning" role="status">
+        <strong class="alert__title">Attention</strong>
+        <p>The analysis of a long book can take several minutes. You can leave this page; it continues in the background.</p>
+    </div>
+    <div class="alert alert--error" role="alert">
+        <strong class="alert__title">Error</strong>
+        <p>The connection test failed: the key was refused (HTTP 401). Check the key and try again.</p>
+    </div>
+</section>
+
+<hr class="ornament" />
+
+<section aria-labelledby="library">
+    <h2 id="library">My library</h2>
+    <p>A list of books reads like the contents of a book: the title, a dotted line, and what is going on with it.</p>
+    <ul class="contents">
+        <li class="contents__item">
+            <div class="contents__row">
+                <a class="contents__title" href="#cast">Le Malade imaginaire</a>
+                <span class="contents__leader" aria-hidden="true"></span>
+                <span class="contents__status status status--ready">Ready</span>
+            </div>
+            <p class="contents__meta">Molière &middot; 8 characters &middot; analyzed with gpt-5-nano</p>
+            <div class="contents__actions">
+                <a class="button button--small button--quiet" href="#character">Open</a>
+                <button type="button" class="button button--small button--danger">Delete</button>
+            </div>
+        </li>
+        <li class="contents__item">
+            <div class="contents__row">
+                <a class="contents__title" href="#library">Dracula</a>
+                <span class="contents__leader" aria-hidden="true"></span>
+                <span class="contents__status status">Analyzing &middot; part 3 of 8</span>
+            </div>
+            <p class="contents__meta">Bram Stoker</p>
+            <progress class="progress" value="3" max="8" aria-label="Analysis of Dracula">3 of 8</progress>
+        </li>
+        <li class="contents__item">
+            <div class="contents__row">
+                <a class="contents__title" href="#library">Madame Bovary</a>
+                <span class="contents__leader" aria-hidden="true"></span>
+                <span class="contents__status status status--failed">Failed</span>
+            </div>
+            <p class="contents__meta">Gustave Flaubert &middot; The model did not answer. Retry when it is available.</p>
+            <div class="contents__actions">
+                <button type="button" class="button button--small">Retry</button>
+                <button type="button" class="button button--small button--danger">Delete</button>
+            </div>
+        </li>
+        <li class="contents__item">
+            <div class="contents__row">
+                <a class="contents__title" href="#library">Pride and Prejudice</a>
+                <span class="contents__leader" aria-hidden="true"></span>
+                <span class="contents__status status">Waiting</span>
+            </div>
+            <p class="contents__meta">Jane Austen &middot; waiting for the analysis in front of it</p>
+        </li>
+    </ul>
+
+    <p class="specimen-label">Nothing here yet</p>
+    <div class="empty">
+        <p class="empty__title">Your library is empty.</p>
+        <p>Add a book, an EPUB or a PDF, and its characters will be waiting for you.</p>
+        <p><a class="button" href="#controls">Add a book</a></p>
+    </div>
+</section>
+
+<hr class="ornament" />
+
+<section aria-labelledby="cast">
+    <h2 id="cast">Le Malade imaginaire</h2>
+    <p class="lead">Molière &middot; a comedy of a man who is afraid to die and of those who profit from it.</p>
+    <div class="alert" role="note">
+        <strong class="alert__title">Spoilers</strong>
+        <p>Characters know the whole book, ending included.</p>
+    </div>
+
+    <h3>The characters</h3>
+    <ul class="cast">
+        <li class="cast__entry">
+            <span class="cast__name">Argan</span>
+            <p class="cast__note">A wealthy man convinced that he is gravely ill, who bends the whole household around his remedies.</p>
+            <a class="button button--small button--quiet" href="#chat">Chat</a>
+        </li>
+        <li class="cast__entry">
+            <span class="cast__name">Toinette</span>
+            <p class="cast__note">Argan’s quick-witted maid, who refuses to indulge his illness and takes his daughter’s side.</p>
+            <a class="button button--small button--quiet" href="#chat">Chat</a>
+        </li>
+        <li class="cast__entry">
+            <span class="cast__name">Béline</span>
+            <p class="cast__note">Argan’s second wife, affectionate to his face and eager for his fortune.</p>
+            <a class="button button--small button--quiet" href="#chat">Chat</a>
+        </li>
+        <li class="cast__entry">
+            <span class="cast__name">Angélique</span>
+            <p class="cast__note">Argan’s elder daughter, in love with Cléante and promised by her father to a doctor.</p>
+            <a class="button button--small button--quiet" href="#chat">Chat</a>
+        </li>
+        <li class="cast__entry">
+            <span class="cast__name">Cléante</span>
+            <p class="cast__note">A young man in love with Angélique, who enters the house disguised as her music teacher.</p>
+            <a class="button button--small button--quiet" href="#chat">Chat</a>
+        </li>
+        <li class="cast__entry">
+            <span class="cast__name">Béralde</span>
+            <p class="cast__note">Argan’s brother, who speaks plainly against doctors and for common sense.</p>
+            <a class="button button--small button--quiet" href="#chat">Chat</a>
+        </li>
+        <li class="cast__entry">
+            <span class="cast__name">Thomas Diafoirus</span>
+            <p class="cast__note">A doctor’s son, solemn and awkward, chosen by Argan to marry Angélique.</p>
+            <a class="button button--small button--quiet" href="#chat">Chat</a>
+        </li>
+        <li class="cast__entry">
+            <span class="cast__name">Monsieur Purgon</span>
+            <p class="cast__note">Argan’s physician, who curses his patient the day his remedies are refused.</p>
+            <a class="button button--small button--quiet" href="#chat">Chat</a>
+        </li>
+    </ul>
+</section>
+
+<hr class="ornament" />
+
+<section aria-labelledby="character">
+    <h2 id="character">Toinette</h2>
+    <p class="lead">Argan’s quick-witted maid, who refuses to indulge his illness and takes his daughter’s side.</p>
+    <hr class="ornament" />
+    <h3>Personality profile</h3>
+    <div class="prose">
+        <p class="dropcap">Toinette is the only person in the household who tells Argan the truth, and she does it with such comedy that he forgives her every time. Sharp, loyal to Angélique and quite without fear of her master, she answers pomp with mockery and solemn nonsense with a straight face.</p>
+        <p>She speaks quickly and plainly, in short sentences with a bite, and she never misses the chance to turn a doctor’s Latin against him. She knows every secret of the house and keeps the ones that matter. In the end she disguises herself as a physician to cure her master of his doctors.</p>
+    </div>
+    <p><a class="button" href="#chat">Chat with Toinette</a></p>
+</section>
+
+<hr class="ornament" />
+
+<section aria-labelledby="chat">
+    <h2 id="chat">Chat</h2>
+    <div class="chat">
+        <p class="specimen-label">Sample conversation, in French, with Toinette</p>
+        <ol class="chat__log" role="log" aria-live="polite" aria-label="Conversation with Toinette" lang="fr">
+            <li class="message message--user">
+                <span class="message__who">You</span>
+                <div class="message__text"><p>Pourquoi supportez-vous les médecins de Monsieur Argan ?</p></div>
+            </li>
+            <li class="message message--character">
+                <span class="message__who">Toinette</span>
+                <div class="message__text"><p>Les supporter ? Si je n’étais pas là pour m’en moquer, Monsieur se ferait saigner jusqu’à la dernière goutte.</p></div>
+            </li>
+            <li class="message message--user">
+                <span class="message__who">You</span>
+                <div class="message__text"><p>Et si je lui dis la vérité ?</p></div>
+            </li>
+            <li class="message message--character">
+                <span class="message__who">Toinette</span>
+                <div class="message__text"><p>Dites-la-lui, mais dites-la en riant. C’est la seule façon qu’il écoute. Pour le reste, il y a Monsieur Purgon et ses ordonnances.</p></div>
+            </li>
+            <li class="message message--user">
+                <span class="message__who">You</span>
+                <div class="message__text"><p>Et Béline, que pense-t-elle de tout cela ?</p></div>
+            </li>
+            <li class="message message--character message--pending">
+                <span class="message__who">Toinette</span>
+                <div class="message__text"><p>Toinette is writing…</p></div>
+            </li>
+        </ol>
+        <div class="alert alert--error" role="alert">
+            <strong class="alert__title">Error</strong>
+            <p>The reply was cut before its end. Send your message again.</p>
+        </div>
+        <form class="chat__composer" action="#chat" method="get">
+            <div class="field">
+                <label class="field__label" for="composer-message">Your message</label>
+                <textarea class="textarea" id="composer-message" name="message" rows="2"></textarea>
+            </div>
+            <button type="submit" class="button">Send</button>
+        </form>
+    </div>
+</section>
+
+<hr class="ornament" />
+
+<section aria-labelledby="settings">
+    <h2 id="settings">Settings</h2>
+    <h3>Language models</h3>
+    <ul class="entries">
+        <li class="entry">
+            <h4 class="entry__title">OpenAI</h4>
+            <p><span class="tag">For analysis</span> <span class="tag">For chat</span></p>
+            <dl class="entry__facts">
+                <dt>Address</dt><dd>https://api.openai.com/v1</dd>
+                <dt>Model</dt><dd>gpt-5-nano</dd>
+                <dt>Key</dt><dd>Saved, encrypted</dd>
+            </dl>
+            <div><button type="button" class="button button--small button--danger">Delete</button></div>
+        </li>
+        <li class="entry">
+            <h4 class="entry__title">Local model</h4>
+            <dl class="entry__facts">
+                <dt>Address</dt><dd>http://localhost:11434/v1</dd>
+                <dt>Model</dt><dd>llama3.1</dd>
+                <dt>Key</dt><dd>None needed</dd>
+            </dl>
+            <div><button type="button" class="button button--small button--danger">Delete</button></div>
+        </li>
+    </ul>
+
+    <h3>Which model does what</h3>
+    <form class="form" action="#settings" method="get">
+        <div class="field">
+            <label class="field__label" for="choose-analysis">Model that analyzes books</label>
+            <select class="select" id="choose-analysis" name="analysis">
+                <option>OpenAI</option>
+                <option>Local model</option>
+            </select>
+        </div>
+        <div class="field">
+            <label class="field__label" for="choose-chat">Model that chats</label>
+            <select class="select" id="choose-chat" name="chat">
+                <option>OpenAI</option>
+                <option>Local model</option>
+            </select>
+        </div>
+        <div class="form__actions">
+            <button type="submit" class="button">Save the choice</button>
+        </div>
+    </form>
+
+    <div class="alert alert--warning" role="status">
+        <strong class="alert__title">Analysis is off</strong>
+        <p>No model is chosen to analyze books. Choose one above to analyze a book again.</p>
+    </div>
+</section>

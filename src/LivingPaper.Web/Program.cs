@@ -44,6 +44,8 @@ catch (PromptFileException exception)
     app.Logger.PromptsFileUnusable(exception.Message);
 }
 
+// Serves wwwroot: the style sheets, the fonts and the images of the application, all its own (nothing from a CDN).
+app.UseStaticFiles();
 app.MapRazorPages();
 
 app.Run();
