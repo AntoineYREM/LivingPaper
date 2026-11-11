@@ -1,8 +1,104 @@
 ﻿@page
-@* The home page. Placeholder content until the library (PAPER-9): the name and the tagline, in the language of the visitor. *@
+@model IndexModel
+@* The home page: the books, and the form to send one. The words come from the translation files. The full library page
+   (PAPER-9) will replace the list. *@
 @{
     ViewData["Title"] = T["app.name"];
+    var fileError = Model.FileError;
 }
 
 <h1>@T["app.name"]</h1>
 <p class="lead">@T["home.tagline"]</p>
+
+@if (Model.Notice is not null)
+{
+    <div class="alert alert--success" role="status">
+        <strong class="alert__title">@T["books.alert.done"]</strong>
+        <p>@Model.Notice</p>
+    </div>
+}
+
+@if (Model.AnalysisOff)
+{
+    <div class="alert alert--warning" role="status">
+        <strong class="alert__title">@T["home.analysisOff.title"]</strong>
+        <p>@T["home.analysisOff.body"]</p>
+        <p><a href="~/Settings">@T["home.analysisOff.link"]</a></p>
+    </div>
+}
+
+@if (Model.Unreadable.Count > 0)
+{
+    <div class="alert alert--error" role="alert">
+        <strong class="alert__title">@T["books.alert.error"]</strong>
+        <p>@Model.UnreadableMessage</p>
+    </div>
+}
+
+<section aria-labelledby="books">
+    <h2 id="books">@T["books.title"]</h2>
+    @if (Model.Books.Count == 0)
+    {
+        <p>@T["books.empty"]</p>
+    }
+    @if (Model.Books.Count > 0)
+    {
+        <ul class="entries">
+            @foreach (var book in Model.Books)
+            {
+                <li class="entry">
+                    <h3 class="entry__title">@book.Title</h3>
+                    <p><span class="tag">@Model.StatusText(book)</span></p>
+                    @if (book.FileName.Length > 0)
+                    {
+                        <dl class="entry__facts">
+                            <dt>@T["books.file"]</dt><dd>@book.FileName</dd>
+                        </dl>
+                    }
+                    <details class="confirm">
+                        <summary class="button button--small button--danger" aria-label="@T.Format("books.delete.label", new { title = book.Title })">@T["books.delete.button"]</summary>
+                        <form class="form" method="post" asp-page-handler="Delete">
+                            <input type="hidden" name="id" value="@book.Id" />
+                            <p>@T["books.delete.warning"]</p>
+                            <div class="form__actions">
+                                <button type="submit" class="button button--small button--danger">@T["books.delete.confirm"]</button>
+                            </div>
+                        </form>
+                    </details>
+                </li>
+            }
+        </ul>
+    }
+</section>
+
+<hr class="ornament" />
+
+<section aria-labelledby="add">
+    <h2 id="add">@T["books.add.title"]</h2>
+    <p>@T.Format("books.add.lead", new { max = IndexModel.MaxMegabytes })</p>
+
+    <form class="form" method="post" asp-page-handler="Add" enctype="multipart/form-data">
+        <div class="field">
+            <label class="field__label" for="book-file">@T["books.add.file"]</label>
+            <input class="input" id="book-file" name="file" type="file" accept=".epub,.pdf,application/epub+zip,application/pdf" aria-invalid="@(fileError is null ? null : "true")" aria-describedby="@(fileError is null ? "book-file-hint" : "book-file-hint book-file-error")" />
+            <p class="field__hint" id="book-file-hint">@T["books.add.fileHint"]</p>
+            @if (fileError is not null)
+            {
+                <p class="field__error" id="book-file-error">@fileError</p>
+            }
+        </div>
+        <div class="field">
+            <label class="field__label" for="book-title">@T["books.add.titleLabel"]</label>
+            <input class="input" id="book-title" name="title" type="text" value="@Model.Typed.Title" autocomplete="off" aria-describedby="book-title-hint" />
+            <p class="field__hint" id="book-title-hint">@T["books.add.titleHint"]</p>
+        </div>
+        <div class="field">
+            <label class="choice" for="book-replace"><input id="book-replace" type="checkbox" name="replace" value="true" checked="@Model.Typed.Replace" aria-describedby="book-replace-hint" /> @T["books.add.replace"]</label>
+            <p class="field__hint" id="book-replace-hint">@T["books.add.replaceHint"]</p>
+        </div>
+        <div class="form__actions">
+            <button type="submit" class="button" aria-describedby="book-wait">@T["books.add.submit"]</button>
+        </div>
+        <p class="field__hint" id="book-wait">@T["books.add.wait"]</p>
+    </form>
+</section>

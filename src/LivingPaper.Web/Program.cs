@@ -35,6 +35,14 @@ builder.Services.AddSingleton<ILlmSettingsRepository>(services =>
 builder.Services.AddSingleton<ILlmConnectionTester, LlmConnectionTester>();
 builder.Services.AddSingleton<LlmSettingsService>();
 
+// The books (PAPER-7): one JSON file each in data/books, and the text of a book kept in data/uploads only until its
+// analysis has finished. The reader of EPUB and PDF files is an adapter; the service is what the pages call.
+builder.Services.AddSingleton<IBookRepository>(new JsonBookRepository(Path.Combine(dataDirectory, "books")));
+builder.Services.AddSingleton<IBookTextStore>(new FileBookTextStore(Path.Combine(dataDirectory, "uploads")));
+builder.Services.AddSingleton<IBookTextExtractor, BookTextExtractor>();
+builder.Services.AddSingleton(TimeProvider.System);
+builder.Services.AddSingleton<BookService>();
+
 var app = builder.Build();
 
 try

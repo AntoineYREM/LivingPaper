@@ -56,3 +56,20 @@ they can be the same.
 
 **Warning: LivingPaper is for personal use and has no authentication.** Anyone who can reach the application can use
 the models and keys you saved. Do not expose it to the Internet without a reverse proxy that protects it.
+
+## Your books
+
+On the home page you send an EPUB or a PDF (20 MB at most), and you can delete a book there too.
+
+- **The format is checked on the content of the file**, not on its name: a text file renamed `.epub` is refused.
+- **A book is read as soon as you send it**, so a problem shows at once. A PDF made of pictures of pages (a scan, with
+  almost no text) is refused: use the EPUB of the same book. Damaged, encrypted or protected files are refused too. An
+  EPUB that unpacks to far more than a book can hold (a "zip bomb") is refused.
+- **The title** is the one you type, else the one written in the file, else the name of the file. A second book with
+  the same title is refused unless you tick "Replace", which deletes the earlier book and its analysis.
+- **Where it goes:** `data/books/{id}.json` holds the book (title, status, and later its summary and characters), and
+  `data/uploads/{id}.txt` holds its text until the analysis has finished successfully, then it is deleted. The text of a
+  book is never in the book's JSON file, never in an export and never in the logs. Deleting a book deletes all of it.
+  Re-analyzing a book (another model, an edited prompt) means sending it again and ticking "Replace".
+
+PDF files are read with [PdfPig](https://github.com/UglyToad/PdfPig) (Apache License 2.0, compatible with the AGPL).

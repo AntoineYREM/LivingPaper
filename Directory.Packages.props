@@ -9,6 +9,8 @@
     <!-- IDataProtector for the adapter that encrypts the API keys (Infrastructure). Abstractions only: the application
          (Web) provides the implementation and stores the keys of the encryption in data/keys. -->
     <PackageVersion Include="Microsoft.AspNetCore.DataProtection.Abstractions" Version="10.0.15" />
+    <!-- Reads the text of PDF books (Infrastructure). Apache License 2.0, compatible with the AGPL. Pure .NET, no native code. -->
+    <PackageVersion Include="PdfPig" Version="0.1.16" />
     <PackageVersion Include="Shouldly" Version="4.3.0" />
     <!-- xUnit v3 runs on Microsoft.Testing.Platform: each test project is its own executable, with no VSTest
          testhost.exe (some antiviruses block testhost.exe from watching its parent process). -->
