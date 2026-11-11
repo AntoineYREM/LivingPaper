@@ -28,7 +28,7 @@ the category default of cards, rounded tiles, an accent color and an icon on eve
 OWN-WORLD: white paper, near-black ink (`#141414`), one family (EB Garamond, variable) in roman, italic and true small
 capitals, hairline rules, square corners, no shadow. Grey recedes. Red, green and ochre exist only as states and are always
 accompanied by a word. A list of books is a table of contents with dot leaders; a list of characters is the cast of a play;
-a conversation is a column of boxed turns (the familiar messaging pattern: the character in a hairline box on the left, the reader on a grey ground on the right, the speaker's name in small capitals above each), which the owner may later replace by a play script; a profile opens with an ornament, a drop cap and indented paragraphs; parts are separated by the printer's ornament (a diamond between
+a conversation is a column of boxed turns (the familiar messaging pattern: the character in a hairline box on the left, the reader on a grey ground on the right, the speaker's name in small capitals above each), which the owner chose to keep after review (a play script was considered); a profile opens with an ornament, a drop cap and indented paragraphs; parts are separated by the printer's ornament (a diamond between
 two beads and two fine rules); the page ends on a folio.
 
 STORY: the visitor sees at once that this is about books and about reading, trusts the quiet interface, finds the character

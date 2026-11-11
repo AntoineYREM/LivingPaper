@@ -239,7 +239,7 @@ Square corners. The single radius is 2px, which only softens the edge of a contr
 - A title, a definition grid of facts (term in faint small capitals, value breaking anywhere), and a bordered small-caps tag. Same ink rule opening the list.
 
 ### Chat
-- A column of boxed turns, max 66ch. The character's turn: hairline box, left, speaker name in faint small capitals above. The reader's turn: right, wash ground and lighter hairline. A pending turn: same box, dashed, italic soft ink, in words, no animation. The composer is sticky at the foot: field plus Send, top hairline, paper ground; Send is the only ink slab on the screen. Open decision: boxed turns versus a play script, to be settled by the owner after review on phone and computer.
+- A column of boxed turns, max 66ch. The character's turn: hairline box, left, speaker name in faint small capitals above. The reader's turn: right, wash ground and lighter hairline. A pending turn: same box, dashed, italic soft ink, in words, no animation. The composer is sticky at the foot: field plus Send, top hairline, paper ground; Send is the only ink slab on the screen. Decided by the owner on 2026-11-11 after reviewing /Design on phone and computer: boxed turns, the familiar messaging pattern, are kept (a play script was considered).
 
 ### Empty state
 - Centered, italic 1.8125rem title and soft ink text. No illustration.
