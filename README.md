@@ -1,4 +1,4 @@
-# LivingPaper
+# LivingPaper    
 
 > Chat with the characters of your books.
 
