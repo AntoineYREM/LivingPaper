@@ -1,0 +1,29 @@
+name: Feature request
+description: An idea for LivingPaper.
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Look at the [roadmap](https://github.com/AntoineYREM/LivingPaper/blob/main/ROADMAP.md) first. Accounts, a site password and hosting for others are decided in
+        [ADR 0004](https://github.com/AntoineYREM/LivingPaper/blob/main/docs/decisions/0004-no-authentication-in-v0.md); an idea there is welcome, with its reasons.
+  - type: textarea
+    id: problem
+    attributes:
+      label: What do you want to do that you cannot do now?
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: What would you like to see?
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: What did you try or consider instead?
+  - type: checkboxes
+    id: help
+    attributes:
+      label: Contribution
+      options:
+        - label: I would like to work on it (after we agree on the approach)

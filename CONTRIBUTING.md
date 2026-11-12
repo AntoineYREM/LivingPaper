@@ -1,7 +1,59 @@
 # Contributing to LivingPaper
 
-This file is a stub and grows with the project (the contribution process, the CLA, the code rules and the pull request
-checklist come with the open source ticket). For now it explains two things: how to propose an example, and the translations.
+Thank you for helping. LivingPaper is a small, self-hosted project made by one maintainer. This file says how to propose a change,
+how to propose an example book, and how translations work.
+
+## Before you start
+
+- **Look at the open issues** (`good first issue` and `help wanted` are meant for you) and the [roadmap](ROADMAP.md). For
+  anything bigger than a fix, **open an issue first** and say what you want to do: it saves you a pull request that cannot be
+  accepted.
+- **Read the rules of the project**: `AGENTS.md` (architecture, code rules, security rules, UI rules, tests) and the short
+  [architecture note](docs/architecture.md). They apply to humans and to AI agents alike.
+- **Be kind.** The [Code of Conduct](CODE_OF_CONDUCT.md) applies everywhere in the project. Report a security problem as said in
+  [SECURITY.md](SECURITY.md), never in a public issue.
+
+## The contributor license agreement (CLA)
+
+**Every external contribution needs a signed [CLA](CLA.md).** It lets the maintainer distribute the project under the AGPL-3.0
+and also under other terms (a commercial edition, for example). **You keep the ownership of your work.**
+
+You sign once, in your first pull request: a bot (CLA Assistant) asks you to post a comment, and the pull request cannot be merged
+before. If you contribute for your employer, read article 8 of the CLA first.
+
+## How to propose a change
+
+1. **Fork** the repository and create a branch from `main`.
+2. **Set up** with [docs/how-to-run.md](docs/how-to-run.md) (.NET 10 SDK; Docker is optional).
+3. **Write a test first** for any business logic or bug fix, then the minimal code. Keep the change small and focused: one
+   subject per pull request, no unrelated clean-up.
+4. **Run `dotnet build` and `dotnet test`** (see [docs/how-to-test.md](docs/how-to-test.md)). Both must pass, with no warning:
+   warnings are errors.
+5. **Update the documentation** that your change makes wrong (README, `docs/`, `CHANGELOG.md` under *Unreleased*) and the two
+   translation files if you add a text for the user.
+6. **Open a pull request** with the template filled in. The CI must be green. The maintainer reviews it; expect remarks.
+
+Commit messages are in English, short, and say what changes (`Add an Import button to the library`).
+
+### Contributions written with an AI tool
+
+They are welcome under one rule: **you must have read and understood every line you submit**, be able to explain it in the
+review, and be sure that it holds no text you have no right to share. A pull request that looks generated and not read (large,
+generic, unrelated to an issue, tests that test nothing) is closed.
+
+### What will not be accepted
+
+- A secret, an API key, or personal data in any file, in the history or in a test.
+- A book, or a passage of a book, that is under copyright (examples are public-domain works only, see below).
+- A new dependency without a reason written in the pull request and a license compatible with the AGPL-3.0 (the CI checks
+  licenses).
+- A sign-in, accounts or a password, without an issue that decided it: the reasons are in
+  [docs/decisions/0004-no-authentication-in-v0.md](docs/decisions/0004-no-authentication-in-v0.md).
+
+## Licenses of your contribution
+
+The code is under the **AGPL-3.0** ([LICENSE](LICENSE)) and your contribution is covered by the CLA. The files of `examples/` are
+under **CC0** ([examples/LICENSE](examples/LICENSE)): by proposing an example you dedicate your analysis to the public domain.
 
 ## Proposing an example
 

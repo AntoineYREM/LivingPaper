@@ -1,0 +1,46 @@
+name: Bug report
+description: Something does not work as the documentation says.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reporting. **Never paste an API key, the text of a book, or a conversation you want to keep private.**
+        For a security problem, do not open an issue: see [SECURITY.md](https://github.com/AntoineYREM/LivingPaper/blob/main/SECURITY.md).
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened, and what did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Add a model in Settings...
+        2. Add a book...
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version (shown in the page footer) or commit
+  - type: dropdown
+    id: how
+    attributes:
+      label: How do you run it?
+      options:
+        - Docker (docker compose)
+        - From source (dotnet run)
+        - Other
+  - type: input
+    id: model
+    attributes:
+      label: Language model (provider and model name), if it matters
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs or screenshots
+      description: Logs never hold the text of a book or of a chat. Check that there is no key before you paste.
+      render: shell
