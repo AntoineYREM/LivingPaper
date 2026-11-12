@@ -54,3 +54,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   language of their browser, else English; `<html lang>` and `Content-Language` follow it. Tests fail for a key or a variable
   missing in a language, a key used but undefined, and any text written in a view. The home page is the first translated page.
   `CONTRIBUTING.md` explains how to add a language.
+- Docker (PAPER-3): a multi-stage `Dockerfile` (SDK to build, ASP.NET runtime to run), `docker-compose.yml` and `.dockerignore`.
+  `docker compose up --build` starts the application on <http://localhost:8080>. The container runs as an unprivileged user,
+  keeps everything in the `/data` volume (it survives `docker compose down`), carries the examples and no secret, and has a
+  health check. The port is published on `127.0.0.1` only, as the application has no sign-in.
+- Open source files (PAPER-14, PAPER-18): `LICENSE` (AGPL-3.0), `CLA.md`, `CODE_OF_CONDUCT.md` (Contributor Covenant 2.1),
+  `SECURITY.md`, `ROADMAP.md`, `THIRD-PARTY-NOTICES.md`, a complete `README.md` and `CONTRIBUTING.md`, `docs/how-to-run.md`,
+  `docs/how-to-test.md`, `docs/architecture.md` and six decision records in `docs/decisions/`. The examples are under CC0.
+  Issue and pull request templates, Dependabot, CodeQL (active once the repository is public), and two new steps in the CI:
+  a check that every dependency has a license compatible with the AGPL, and a build of the Docker image.
+
+### Fixed
+
+- The pages of a book, its character sheets and the chat (`Pages/Books`) were never committed because the `books/` rule of
+  `.gitignore` also matched them on Windows; the rule is now anchored to the root.
+- The tests of the web application no longer reach the limit of file watchers (inotify) of Linux machines, and the test of a
+  connection cut in the middle of a reply no longer depends on timing.

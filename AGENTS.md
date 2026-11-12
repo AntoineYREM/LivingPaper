@@ -13,7 +13,8 @@ personal data, secrets or private URLs.
 ## Status
 
 Version 0 is under construction. Commands below marked *(planned)* do not exist yet; update this file as the
-project grows.
+project grows. Docs for humans: `README.md`, `docs/how-to-run.md`, `docs/how-to-test.md`, `docs/architecture.md` and the
+decision records in `docs/decisions/`.
 
 ## V0 scope
 
@@ -93,9 +94,10 @@ OCR for scanned PDFs, saved conversations.
 ## Commands
 
 ```bash
-dotnet build                                  # build the solution (planned)
-dotnet test                                   # run all tests (planned)
-docker compose up --build                     # run the app in a container (planned)
+dotnet build                                  # build the solution
+dotnet test                                   # run all tests
+docker compose up --build                     # run the app in a container (http://localhost:8080)
+python3 .github/scripts/check-licenses.py     # check the licenses of the dependencies (after dotnet restore)
 ```
 
 Configuration comes from environment variables. Copy `.env.example` to `.env` for local development; `.env` is

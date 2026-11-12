@@ -27,4 +27,12 @@ jobs:
       - name: Test
         run: dotnet test LivingPaper.sln --no-build --configuration Release
 
+      # Dependencies must have a license that can be combined with the AGPL-3.0 (see THIRD-PARTY-NOTICES.md).
+      - name: Check dependency licenses
+        run: python3 .github/scripts/check-licenses.py
+
+      # The image must build: it is how most people run the application.
+      - name: Build the Docker image
+        run: docker build --tag livingpaper:ci .
+
       # End-to-end tests (Playwright) get their own step here with the E2E ticket (PAPER-17).
