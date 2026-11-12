@@ -7,6 +7,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-11-12
+
 ### Added
 
 - Publication of the repository (PAPER-21): a CLA workflow (`.github/workflows/cla.yml`) asks external contributors to sign
@@ -102,3 +104,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   `.gitignore` also matched them on Windows; the rule is now anchored to the root.
 - The tests of the web application no longer reach the limit of file watchers (inotify) of Linux machines, and the test of a
   connection cut in the middle of a reply no longer depends on timing.
+
+[Unreleased]: https://github.com/AntoineYREM/LivingPaper/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/AntoineYREM/LivingPaper/releases/tag/v0.1.0
