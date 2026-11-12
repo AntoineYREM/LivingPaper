@@ -21,6 +21,7 @@ their own licenses.
 |---|---|
 | [xUnit v3](https://github.com/xunit/xunit) | Apache-2.0 |
 | [Shouldly](https://github.com/shouldly/shouldly) | BSD-3-Clause |
+| [Playwright for .NET](https://github.com/microsoft/playwright-dotnet) (drives Chromium in the end-to-end tests; downloads Chromium and the Playwright driver on first run) | MIT |
 | [Microsoft.Testing.Platform](https://github.com/microsoft/testfx), `Microsoft.AspNetCore.Mvc.Testing` | MIT |
 
 ## The examples

@@ -11,6 +11,8 @@
     <PackageVersion Include="Microsoft.AspNetCore.DataProtection.Abstractions" Version="10.0.15" />
     <!-- Reads the text of PDF books (Infrastructure). Apache License 2.0, compatible with the AGPL. Pure .NET, no native code. -->
     <PackageVersion Include="PdfPig" Version="0.1.16" />
+    <!-- Drives a real browser in the end-to-end tests (tests/LivingPaper.E2ETests only, never shipped). MIT license. -->
+    <PackageVersion Include="Microsoft.Playwright" Version="1.60.0" />
     <PackageVersion Include="Shouldly" Version="4.3.0" />
     <!-- xUnit v3 runs on Microsoft.Testing.Platform: each test project is its own executable, with no VSTest
          testhost.exe (some antiviruses block testhost.exe from watching its parent process). -->

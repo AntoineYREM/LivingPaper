@@ -63,6 +63,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   `docs/how-to-test.md`, `docs/architecture.md` and six decision records in `docs/decisions/`. The examples are under CC0.
   Issue and pull request templates, Dependabot, CodeQL (active once the repository is public), and two new steps in the CI:
   a check that every dependency has a license compatible with the AGPL, and a build of the Docker image.
+- End-to-end tests (PAPER-17): `tests/LivingPaper.E2ETests` drives Chromium (Playwright for .NET) against the application, started
+  on a real port with a temporary data directory, and a fake OpenAI-compatible server that answers from the prompts. Four
+  journeys (add a language model, analyze an EPUB made by the test, chat with streaming and a refusal of the model, an example)
+  and a pass on a phone screen (no sideways scroll). A failed test keeps a screenshot and a trace, uploaded by the CI. One
+  command: `dotnet test --project tests/LivingPaper.E2ETests`.
 
 ### Fixed
 

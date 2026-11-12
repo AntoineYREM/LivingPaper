@@ -24,8 +24,22 @@ jobs:
       - name: Build
         run: dotnet build LivingPaper.sln --no-restore --configuration Release
 
+      # Unit, integration and end-to-end tests. The end-to-end tests (tests/LivingPaper.E2ETests) drive a real Chromium against
+      # the application and a fake language model; they install Chromium and its system libraries themselves (CI=true).
       - name: Test
         run: dotnet test LivingPaper.sln --no-build --configuration Release
+        env:
+          E2E_ARTIFACTS: ${{ github.workspace }}/e2e-artifacts
+
+      # A screenshot and a trace (open with `playwright show-trace`) of every end-to-end test that failed.
+      - name: Keep the screenshots and traces of failed end-to-end tests
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-failures
+          path: e2e-artifacts
+          if-no-files-found: ignore
+          retention-days: 14
 
       # Dependencies must have a license that can be combined with the AGPL-3.0 (see THIRD-PARTY-NOTICES.md).
       - name: Check dependency licenses
@@ -35,4 +49,3 @@ jobs:
       - name: Build the Docker image
         run: docker build --tag livingpaper:ci .
 
-      # End-to-end tests (Playwright) get their own step here with the E2E ticket (PAPER-17).
