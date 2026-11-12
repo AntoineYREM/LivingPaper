@@ -1,3 +1,20 @@
 {
-   "signedContributors": []
+  "signedContributors": [
+    {
+      "name": "Aqprox974",
+      "id": 235278341,
+      "comment_id": 6827614216,
+      "created_at": "2026-11-12T15:18:20Z",
+      "repoId": 1454239058,
+      "pullRequestNo": 11
+    },
+    {
+      "name": "Aqprox974",
+      "id": 235278341,
+      "comment_id": 6830352762,
+      "created_at": "2026-11-12T17:04:46Z",
+      "repoId": 1454239058,
+      "pullRequestNo": 11
+    }
+  ]
 }
