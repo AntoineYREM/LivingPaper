@@ -9,6 +9,18 @@ LivingPaper is an open-source web app. You add a book (EPUB or PDF), an AI reads
 personality profile, then you chat with a character as if texting them. It is **self-hosted** and for one person: you bring your
 own API key for any OpenAI-compatible provider (OpenAI, another vendor, or a model running on your computer).
 
+## Screenshots
+
+The shipped examples, in the interface (English; French is one click away). Black ink on white paper, like a printed novel.
+
+| The examples | The characters of a book | Chat with a character |
+|---|---|---|
+| ![The Examples page: public-domain books already analyzed](docs/images/examples.png) | ![The characters of Le Malade imaginaire, each with a short description](docs/images/characters.png) | ![The chat page of Argan, with the field to write a message](docs/images/chat.png) |
+
+On a phone, the same pages fit the screen:
+
+<img src="docs/images/characters-phone.png" alt="The characters of Le Malade imaginaire on a phone" width="260">
+
 ## What it does
 
 - **Add a book** (EPUB or PDF): it is analyzed in the background, with progress, a retry that does not pay twice, and the tokens

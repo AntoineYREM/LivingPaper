@@ -9,6 +9,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- Publication of the repository (PAPER-21): a CLA workflow (`.github/workflows/cla.yml`) asks external contributors to sign
+  `CLA.md` in their first pull request and records the signature on the branch `cla-signatures`, with no external service;
+  screenshots in the README (`docs/images/`); Dependabot no longer proposes a major version of the .NET images.
+- The CI runs on Ubuntu 24.04 instead of `ubuntu-latest`, which moved to Ubuntu 26.04, where Playwright cannot install Chromium.
+
+### Fixed
+
+- The folio ("LivingPaper, version 0.1.0") is centered at the foot of the page; it was a narrow block on the left.
+
 - Choose the model in a list (PAPER-26): in Settings the user types a name, an address and a key, presses "Get the models",
   chooses a model in the list the provider returns (`GET {baseUrl}/models`) and saves it. The list proves that the key works,
   so nothing else is tested. The draft, key included, stays in the memory of the server (15 minutes, 5 drafts at most, never on

@@ -223,6 +223,11 @@ main {
   font-variant-numeric: lining-nums;
 }
 
+/* The paragraph keeps the reading measure (a narrow block): centered as a block, not only its text. */
+.folio p {
+  margin-inline: auto;
+}
+
 /* ---- Reading text ---- */
 
 h1,

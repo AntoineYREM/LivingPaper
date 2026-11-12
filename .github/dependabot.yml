@@ -30,3 +30,7 @@ updates:
       interval: weekly
     commit-message:
       prefix: "Update"
+    ignore:
+      # The project targets .NET 10 (LTS), set in global.json and the Dockerfile. Moving to .NET 11 is a decision, not an update.
+      - dependency-name: "mcr.microsoft.com/dotnet/*"
+        update-types: ["version-update:semver-major"]
