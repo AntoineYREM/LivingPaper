@@ -23,11 +23,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: CLA Assistant
-        # Runs for a pull request, for the signing comment and for "recheck", and for nothing else.
+        # Runs for a pull request, for the signing comment and for "recheck", and for nothing else. "contains" (not "==")
+        # because GitHub keeps the line breaks a contributor leaves after the phrase ("...sign the CLA\r\n\r\n"), and an exact
+        # comparison would skip the step: the signature was then never recorded (seen in the first test, PR #11).
         if: >-
           github.event_name == 'pull_request_target'
-          || github.event.comment.body == 'recheck'
-          || github.event.comment.body == 'I have read the CLA Document and I hereby sign the CLA'
+          || contains(github.event.comment.body, 'recheck')
+          || contains(github.event.comment.body, 'I have read the CLA Document and I hereby sign the CLA')
         uses: ribtoks/cla-github-action@v2.6.2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
