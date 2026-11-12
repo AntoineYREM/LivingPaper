@@ -5,14 +5,14 @@
   <ItemGroup>
     <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.15" />
     <!-- ILogger for the adapters (Infrastructure), so retries of the language model client can be logged. Abstractions only. -->
-    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.15" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="11.0.0" />
     <!-- IDataProtector for the adapter that encrypts the API keys (Infrastructure). Abstractions only: the application
          (Web) provides the implementation and stores the keys of the encryption in data/keys. -->
-    <PackageVersion Include="Microsoft.AspNetCore.DataProtection.Abstractions" Version="10.0.15" />
+    <PackageVersion Include="Microsoft.AspNetCore.DataProtection.Abstractions" Version="11.0.0" />
     <!-- Reads the text of PDF books (Infrastructure). Apache License 2.0, compatible with the AGPL. Pure .NET, no native code. -->
     <PackageVersion Include="PdfPig" Version="0.1.16" />
     <!-- Drives a real browser in the end-to-end tests (tests/LivingPaper.E2ETests only, never shipped). MIT license. -->
-    <PackageVersion Include="Microsoft.Playwright" Version="1.60.0" />
+    <PackageVersion Include="Microsoft.Playwright" Version="1.64.1" />
     <PackageVersion Include="Shouldly" Version="4.3.0" />
     <!-- xUnit v3 runs on Microsoft.Testing.Platform: each test project is its own executable, with no VSTest
          testhost.exe (some antiviruses block testhost.exe from watching its parent process). -->
