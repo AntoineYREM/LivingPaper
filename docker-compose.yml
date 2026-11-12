@@ -1,0 +1,20 @@
+# docker compose up --build   ->   http://localhost:8080
+services:
+  livingpaper:
+    build: .
+    image: livingpaper:local
+    restart: unless-stopped
+    ports:
+      # Only this computer can reach the application: V0 has no sign-in, and anyone who reaches it can use the saved API keys.
+      # Do not publish the port on all interfaces ("8080:8080") unless a reverse proxy with authentication stands in front.
+      - "127.0.0.1:8080:8080"
+    volumes:
+      # Books, settings, encrypted keys and prompts survive "docker compose down" and rebuilds.
+      # "docker compose down -v" deletes them.
+      - livingpaper-data:/data
+    extra_hosts:
+      # Lets a model that runs on this computer (Ollama, LM Studio) be reached at http://host.docker.internal:<port>, also on Linux.
+      - "host.docker.internal:host-gateway"
+
+volumes:
+  livingpaper-data:

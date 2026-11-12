@@ -1,0 +1,21 @@
+# Keep the build context small and free of anything private: only the sources go into the image.
+**/bin/
+**/obj/
+.git/
+.github/
+.vs/
+.idea/
+.impeccable/
+.env
+.env.*
+!.env.example
+books/
+data/
+**/data/
+TestResults/
+tests/
+docs/
+*.md
+Dockerfile
+docker-compose*.yml
+.dockerignore
