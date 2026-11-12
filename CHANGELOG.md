@@ -9,6 +9,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- Release image (PAPER-19): pushing a tag `v*` runs the build and all tests, then publishes the Docker image to GitHub
+  Container Registry for amd64 and arm64, tagged `0.1.0`, `0.1` and `latest` (from `v0.1.0`), with the OCI label
+  `org.opencontainers.image.version`. The workflow uses the `GITHUB_TOKEN` (no secret) and `packages: write` only; the CI
+  workflow is reused with `workflow_call`. `docs/how-to-run.md` explains how to run the published image.
 - Solution skeleton: .NET 10 solution with the hexagonal layers (`Domain`, `Application`, `Infrastructure`,
   `Persistence`, `Web`), one test project per layer, architecture tests that guard the allowed dependencies,
   a smoke test of the web application, and a GitHub Actions workflow that builds and tests every push.

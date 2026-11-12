@@ -26,6 +26,31 @@ Open <http://localhost:8080>. The first start builds the image (a few minutes), 
   `prompts.json` without touching yours.
 - **Back up** the volume, keys included: without `/data/keys` the saved API keys cannot be read again.
 
+### Without building: the published image
+
+Each release publishes an image (amd64 and arm64) to GitHub Container Registry, tagged `0.1.0`, `0.1` and `latest`. Replace
+`OWNER` with the GitHub account that hosts the repository (in lower case) and save this as `docker-compose.yml` in an empty
+folder, next to nothing else:
+
+```yaml
+services:
+  livingpaper:
+    image: ghcr.io/OWNER/livingpaper:latest
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8080:8080"
+    volumes:
+      - livingpaper-data:/data
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+volumes:
+  livingpaper-data:
+```
+
+Then `docker compose up -d`. To update, `docker compose pull && docker compose up -d`. Pin a version (`:0.1.0`) rather than
+`latest` if you want updates only when you decide. The same warning about the port applies.
+
 ```bash
 # copy the volume to a folder of this computer
 docker run --rm -v livingpaper_livingpaper-data:/data -v "$PWD":/backup alpine tar czf /backup/livingpaper-data.tgz -C /data .

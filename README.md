@@ -39,8 +39,8 @@ Then open <http://localhost:8080>:
 2. On the home page, **Add a book**. The analysis starts by itself; the list shows where it is.
 3. Open the book, pick a character and press **Chat**.
 
-Your data is kept in the Docker volume `livingpaper-data` and survives `docker compose down` (not `down -v`). To run from source,
-change a setting or reach a model on your computer (Ollama, LM Studio), see [docs/how-to-run.md](docs/how-to-run.md).
+Your data is kept in the Docker volume `livingpaper-data` and survives `docker compose down` (not `down -v`). To use the
+published image instead of building it, run from source, change a setting or reach a model on your computer (Ollama, LM Studio), see [docs/how-to-run.md](docs/how-to-run.md).
 
 ### Use a model running on your computer
 
