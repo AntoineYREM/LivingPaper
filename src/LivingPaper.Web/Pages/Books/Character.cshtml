@@ -1,0 +1,90 @@
+@page "/Book/{id}/Character/{position:int}"
+@model LivingPaper.Web.Pages.Books.CharacterModel
+@* The sheet of a character. The words come from the translation files. *@
+@{
+    ViewData["Title"] = Model.Character.Name;
+    string? ErrorOf(string field) => Model.FieldErrors.TryGetValue(field, out var error) ? error : null;
+    string Described(string id, string? error) => error is null ? id + "-hint" : id + "-hint " + id + "-error";
+    var nameError = ErrorOf("name");
+    var descriptionError = ErrorOf("shortDescription");
+    var profileError = ErrorOf("chatProfile");
+}
+
+<p class="crumb"><a href="~/Book/@Model.Book.Id">@T.Format("nav.backToBook", new { title = Model.Book.Title })</a></p>
+<h1>@Model.Character.Name</h1>
+<p class="lead">@Model.Character.ShortDescription</p>
+
+@if (Model.Notice is not null)
+{
+    <div class="alert alert--success" role="status">
+        <strong class="alert__title">@T["books.alert.done"]</strong>
+        <p>@Model.Notice</p>
+    </div>
+}
+
+<div class="alert" role="note">
+    <strong class="alert__title">@T["book.spoilers.title"]</strong>
+    <p>@T["book.spoilers.body"]</p>
+</div>
+
+<section aria-labelledby="profile">
+    <h2 id="profile">@T["character.profile.title"]</h2>
+    <div class="prose">
+        @for (var index = 0; index < Model.Paragraphs.Count; index++)
+        {
+            <p class="@(index == 0 ? "dropcap" : null)">@Model.Paragraphs[index]</p>
+        }
+    </div>
+</section>
+
+<p><a class="button js-only" href="~/Book/@Model.Book.Id/Character/@Model.Character.Position/Chat">@T.Format("chat.start", new { name = Model.Character.Name })</a></p>
+
+<hr class="ornament" />
+
+@if (Model.IsExample)
+{
+    <div class="alert" role="note">
+        <strong class="alert__title">@T["book.example.tag"]</strong>
+        <p>@T["character.example.note"]</p>
+    </div>
+}
+
+@if (!Model.IsExample)
+{
+    <section aria-labelledby="edit">
+        <h2 id="edit">@T["character.edit.title"]</h2>
+        <p>@T["character.edit.lead"]</p>
+        <form class="form" method="post">
+            <div class="field">
+                <label class="field__label" for="character-name">@T["character.name"]</label>
+                <input class="input" id="character-name" name="name" type="text" value="@Model.Typed.Name" autocomplete="off" aria-invalid="@(nameError is null ? null : "true")" aria-describedby="@Described("character-name", nameError)" />
+                <p class="field__hint" id="character-name-hint">@T.Format("character.nameHint", new { max = CharacterModel.MaxLength("name") })</p>
+                @if (nameError is not null)
+                {
+                    <p class="field__error" id="character-name-error">@nameError</p>
+                }
+            </div>
+            <div class="field">
+                <label class="field__label" for="character-description">@T["character.shortDescription"]</label>
+                <textarea class="textarea" id="character-description" name="shortDescription" rows="3" aria-invalid="@(descriptionError is null ? null : "true")" aria-describedby="@Described("character-description", descriptionError)">@Model.Typed.ShortDescription</textarea>
+                <p class="field__hint" id="character-description-hint">@T.Format("character.shortDescriptionHint", new { max = CharacterModel.MaxLength("shortDescription") })</p>
+                @if (descriptionError is not null)
+                {
+                    <p class="field__error" id="character-description-error">@descriptionError</p>
+                }
+            </div>
+            <div class="field">
+                <label class="field__label" for="character-profile">@T["character.chatProfile"]</label>
+                <textarea class="textarea" id="character-profile" name="chatProfile" rows="14" aria-invalid="@(profileError is null ? null : "true")" aria-describedby="@Described("character-profile", profileError)">@Model.Typed.ChatProfile</textarea>
+                <p class="field__hint" id="character-profile-hint">@T.Format("character.chatProfileHint", new { max = CharacterModel.MaxLength("chatProfile") })</p>
+                @if (profileError is not null)
+                {
+                    <p class="field__error" id="character-profile-error">@profileError</p>
+                }
+            </div>
+            <div class="form__actions">
+                <button type="submit" class="button">@T["character.save"]</button>
+            </div>
+        </form>
+    </section>
+}

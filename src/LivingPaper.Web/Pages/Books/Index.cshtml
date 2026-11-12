@@ -1,0 +1,97 @@
+@page "/Book/{id}"
+@model LivingPaper.Web.Pages.Books.IndexModel
+@* The page of a book. The words come from the translation files. *@
+@{
+    ViewData["Title"] = Model.Book.Title;
+}
+
+<p class="crumb"><a href="@(Model.IsExample ? "~/Examples" : "~/")">@(Model.IsExample ? T["nav.backToExamples"] : T["nav.backToLibrary"])</a></p>
+<h1>@Model.Book.Title</h1>
+
+@if (Model.IsExample)
+{
+    <div class="alert" role="note">
+        <strong class="alert__title">@T["book.example.tag"]</strong>
+        <p>@T["book.example.note"]</p>
+        <form class="form" method="post" asp-page="/Examples" asp-page-handler="Add">
+            <input type="hidden" name="id" value="@Model.Book.Id" />
+            <div class="form__actions">
+                <button type="submit" class="button button--small">@T["examples.add"]</button>
+            </div>
+        </form>
+    </div>
+}
+
+@if (Model.Notice is not null)
+{
+    <div class="alert alert--success" role="status">
+        <strong class="alert__title">@T["books.alert.done"]</strong>
+        <p>@Model.Notice</p>
+    </div>
+}
+
+@if (Model.IsDone)
+{
+    @if (!string.IsNullOrEmpty(Model.Book.Summary))
+    {
+        <p class="lead">@Model.Book.Summary</p>
+    }
+
+    @if (Model.Row.Warning is not null)
+    {
+        <div class="alert alert--warning" role="status">
+            <strong class="alert__title">@T["books.alert.attention"]</strong>
+            <p>@Model.Row.Warning</p>
+        </div>
+    }
+
+    <div class="alert" role="note">
+        <strong class="alert__title">@T["book.spoilers.title"]</strong>
+        <p>@T["book.spoilers.body"]</p>
+    </div>
+
+    <section aria-labelledby="cast">
+        <h2 id="cast">@T["book.cast.title"]</h2>
+        <ul class="cast">
+            @foreach (var character in Model.Characters)
+            {
+                <li class="cast__entry">
+                    <span class="cast__name">@character.Name</span>
+                    <p class="cast__note">@character.ShortDescription</p>
+                    <div class="cast__actions">
+                        <a class="button button--small button--quiet" href="~/Book/@Model.Book.Id/Character/@character.Position" aria-label="@T.Format("book.cast.readLabel", new { name = character.Name })">@T["book.cast.read"]</a>
+                        <a class="button button--small js-only" href="~/Book/@Model.Book.Id/Character/@character.Position/Chat" aria-label="@T.Format("chat.start", new { name = character.Name })">@T["chat.cast"]</a>
+                    </div>
+                </li>
+            }
+        </ul>
+    </section>
+
+    <hr class="ornament" />
+
+    <section aria-labelledby="about">
+        <h2 id="about">@T["book.about.title"]</h2>
+        <dl class="entry__facts">
+            @foreach (var fact in Model.Facts)
+            {
+                <dt>@fact.Label</dt><dd>@fact.Value</dd>
+            }
+        </dl>
+        <p><a class="button button--small button--quiet" href="~/Book/@Model.Book.Id/Export" download>@T["books.export"]</a></p>
+        <p class="field__hint">@T["books.export.hint"]</p>
+    </section>
+}
+
+@if (!Model.IsDone)
+{
+    <section aria-labelledby="progress">
+        <h2 id="progress">@T["book.progress.title"]</h2>
+        <div id="book-progress" data-refresh-url="@(Model.Row.Active ? Url.Page("/Books/Index", "Progress", new { id = Model.Book.Id.ToString() }) : null)">
+            <partial name="_BookProgress" model="Model.Row" />
+        </div>
+    </section>
+}
+
+@section Scripts {
+    <script src="~/js/book.js" defer></script>
+}

@@ -488,7 +488,7 @@ $RECYCLE.BIN/
 data/
 
 # Local working books (copyrighted or large files are never committed)
-books/
+/books/
 
 # Impeccable (design tool): its working captures are not committed. The surface briefs and design.json are.
 .impeccable/review/

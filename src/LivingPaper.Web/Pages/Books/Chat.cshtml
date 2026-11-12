@@ -1,0 +1,58 @@
+@page "/Book/{id}/Character/{position:int}/Chat"
+@model LivingPaper.Web.Pages.Books.ChatModel
+@using LivingPaper.Application
+@* The chat with a character. It needs JavaScript (see ChatModel). The words come from the translation files; the script
+   receives the ones it shows as JSON (chat-texts). *@
+@{
+    ViewData["Title"] = T.Format("chat.title", new { name = Model.Character.Name });
+}
+
+<p class="crumb"><a href="~/Book/@Model.Book.Id/Character/@Model.Character.Position">@T.Format("nav.backToSheet", new { name = Model.Character.Name })</a></p>
+<h1>@T.Format("chat.title", new { name = Model.Character.Name })</h1>
+<p class="lead">@Model.Character.ShortDescription</p>
+
+<div class="alert" role="note">
+    <strong class="alert__title">@T["book.spoilers.title"]</strong>
+    <p>@T["book.spoilers.body"]</p>
+</div>
+
+@if (!Model.ChatAvailable)
+{
+    <div class="alert alert--warning" role="status">
+        <strong class="alert__title">@T["chat.off.title"]</strong>
+        <p>@T["chat.off.body"]</p>
+        <p><a href="~/Settings">@T["home.analysisOff.link"]</a></p>
+    </div>
+}
+
+@if (Model.ChatAvailable)
+{
+    <noscript>
+        <div class="alert alert--warning" role="status">
+            <strong class="alert__title">@T["chat.noscript.title"]</strong>
+            <p>@T["chat.noscript.body"]</p>
+        </div>
+    </noscript>
+
+    <div class="chat js-only" id="chat" data-endpoint="@Url.Page("/Books/Chat", "Message", new { id = Model.Book.Id.ToString(), position = Model.Character.Position })" data-max-length="@ConversationLimits.MaxMessageLength">
+        <ol class="chat__log" id="chat-log" role="log" aria-live="polite" aria-label="@T.Format("chat.log", new { name = Model.Character.Name })"></ol>
+        <div class="alert alert--error" role="alert" id="chat-error" hidden>
+            <strong class="alert__title">@T["chat.error.title"]</strong>
+            <p id="chat-error-text"></p>
+        </div>
+        <p class="field__hint" id="chat-hint">@T["chat.hint"]</p>
+        <form class="chat__composer" id="chat-form">
+            <div class="field">
+                <label class="field__label" for="chat-message">@T["chat.message"]</label>
+                <textarea class="textarea" id="chat-message" name="message" rows="2" maxlength="@ConversationLimits.MaxMessageLength" autocomplete="off" aria-describedby="chat-hint"></textarea>
+            </div>
+            <button type="submit" class="button" id="chat-send">@T["chat.send"]</button>
+        </form>
+        @Html.AntiForgeryToken()
+    </div>
+    <script type="application/json" id="chat-texts">@Html.Raw(Model.ScriptTexts())</script>
+}
+
+@section Scripts {
+    <script src="~/js/chat.js" defer></script>
+}
