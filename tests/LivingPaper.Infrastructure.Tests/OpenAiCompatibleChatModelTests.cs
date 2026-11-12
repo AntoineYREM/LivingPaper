@@ -302,6 +302,9 @@ public sealed class OpenAiCompatibleChatModelTests : IAsyncLifetime
         _server.Handler = async context =>
         {
             await FakeReplies.StreamAsync(context, [FakeReplies.Chunk("Half")], done: false);
+            // Let the client read the headers and the first piece before the connection breaks: an abort that arrives first
+            // is a reset before any reply (Unreachable), not a reply cut in the middle.
+            await Task.Delay(300);
             context.Abort();
         };
 

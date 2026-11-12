@@ -13,6 +13,10 @@ namespace LivingPaper.Web.IntegrationTests;
 // client, which tests never let reach a real provider.
 public sealed class LivingPaperFactory : WebApplicationFactory<Program>
 {
+    // Every factory starts a host in Development, and each one opens file watchers (static files, configuration): on Linux the
+    // limit of inotify instances (128 on the CI runners) is reached after a hundred tests. Polling has no such limit.
+    static LivingPaperFactory() => Environment.SetEnvironmentVariable("DOTNET_USE_POLLING_FILE_WATCHER", "true");
+
     private readonly bool _ownsDirectory;
     private readonly bool _ownsExamples;
     private readonly Action<IServiceCollection>? _configureServices;
