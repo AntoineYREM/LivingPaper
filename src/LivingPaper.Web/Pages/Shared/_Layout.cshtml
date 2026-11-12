@@ -1,7 +1,7 @@
 @* The page of the book: one centered column, a running head above and a folio below (see DESIGN.md).
    The words of the page come from the pages themselves and from the translation files (Resources/*.json): this layout holds
-   none of its own. A page may give its own running head or folio through the "Masthead" and "Folio" sections; without a
-   "Masthead" the shared one (_Masthead.cshtml, with the language switcher) is used.
+   none of its own. A page may give its own running head or folio through the "Masthead" and "Folio" sections; without them
+   the shared ones (_Masthead.cshtml with the language switcher, _Folio.cshtml with the version) are used.
    ViewData["SkipLabel"] replaces the text of the link that jumps to the content, the first thing a keyboard reaches. *@
 @{
     var skipLabel = ViewData["SkipLabel"] as string ?? T["layout.skipToContent"];
@@ -35,7 +35,14 @@
             @RenderBody()
         </div>
     </main>
-    @await RenderSectionAsync("Folio", required: false)
+    @if (IsSectionDefined("Folio"))
+    {
+        @await RenderSectionAsync("Folio")
+    }
+    else
+    {
+        <partial name="_Folio" />
+    }
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

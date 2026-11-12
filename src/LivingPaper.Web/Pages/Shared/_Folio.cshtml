@@ -1,0 +1,4 @@
+@* The folio at the foot of a page: the name of the application and its version (defined once, in Directory.Build.props). *@
+<footer class="folio">
+    <p class="figures">@T.Format("layout.version", new { name = T["app.name"], version = AppVersion.Current })</p>
+</footer>

@@ -9,6 +9,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- Version number (PAPER-20): the version is written once, as `<Version>` in `Directory.Build.props`, and shown in the folio at
+  the foot of every page ("LivingPaper, version 0.1.0", translated). A test checks that the page shows the version of the
+  project. The release tag is `v` followed by that number (`v0.1.0`), and the image published for it carries the same version.
 - Release image (PAPER-19): pushing a tag `v*` runs the build and all tests, then publishes the Docker image to GitHub
   Container Registry for amd64 and arm64, tagged `0.1.0`, `0.1` and `latest` (from `v0.1.0`), with the OCI label
   `org.opencontainers.image.version`. The workflow uses the `GITHUB_TOKEN` (no secret) and `packages: write` only; the CI

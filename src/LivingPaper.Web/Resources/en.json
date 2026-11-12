@@ -1,6 +1,7 @@
 {
   "app.name": "LivingPaper",
   "layout.skipToContent": "Skip to the content",
+  "layout.version": "{name}, version {version}",
   "language.label": "Language",
   "home.tagline": "Chat with the characters of your books.",
 

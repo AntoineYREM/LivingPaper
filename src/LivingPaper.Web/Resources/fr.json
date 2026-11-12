@@ -1,6 +1,7 @@
 {
   "app.name": "LivingPaper",
   "layout.skipToContent": "Aller au contenu",
+  "layout.version": "{name} — version {version}",
   "language.label": "Langue",
   "home.tagline": "Discutez avec les personnages de vos livres.",
 
