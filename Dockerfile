@@ -1,5 +1,5 @@
 # Build stage: the .NET SDK compiles and publishes the web application.
-FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:11.0 AS build
 WORKDIR /src
 
 # Restore first, from the project files only, so that this layer is cached until a dependency changes.
