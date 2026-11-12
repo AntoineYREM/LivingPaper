@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Publication of the repository (PAPER-21): a CLA workflow (`.github/workflows/cla.yml`) asks external contributors to sign
   `CLA.md` in their first pull request and records the signature on the branch `cla-signatures`, with no external service;
   screenshots in the README (`docs/images/`); Dependabot no longer proposes a major version of the .NET images.
+- CodeQL runs with the default setup of GitHub (Settings, Code security) instead of the workflow `codeql.yml`, which is removed:
+  GitHub refuses the results of both together, and it made the pull requests fail.
 - The CI runs on Ubuntu 24.04 instead of `ubuntu-latest`, which moved to Ubuntu 26.04, where Playwright cannot install Chromium.
 
 ### Fixed
