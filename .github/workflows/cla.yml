@@ -1,0 +1,39 @@
+name: CLA Assistant
+
+# Asks every external contributor to sign CLA.md in their first pull request, and records the signature.
+# The signatures are kept in this repository, on the branch "cla-signatures" (file signatures/version1/cla.json): no external
+# service. That branch must stay unprotected, because the action commits to it; "main" is protected.
+# The action is the maintained fork of the archived contributor-assistant/github-action. It never checks out the code of the
+# pull request: "pull_request_target" runs the workflow of the base branch, so a pull request cannot change what runs here.
+on:
+  issue_comment:
+    types: [created]
+  pull_request_target:
+    types: [opened, closed, synchronize]
+
+# Explicit, in case the default permissions of the repository are read-only.
+permissions:
+  actions: write
+  contents: write
+  pull-requests: write
+  statuses: write
+
+jobs:
+  cla:
+    runs-on: ubuntu-latest
+    steps:
+      - name: CLA Assistant
+        # Runs for a pull request, for the signing comment and for "recheck", and for nothing else.
+        if: >-
+          github.event_name == 'pull_request_target'
+          || github.event.comment.body == 'recheck'
+          || github.event.comment.body == 'I have read the CLA Document and I hereby sign the CLA'
+        uses: ribtoks/cla-github-action@v2.6.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          path-to-signatures: signatures/version1/cla.json
+          path-to-document: https://github.com/AntoineYREM/LivingPaper/blob/main/CLA.md
+          branch: cla-signatures
+          # The maintainer does not sign their own CLA; bots are not contributors.
+          allowlist: AntoineYREM,dependabot[bot],github-actions[bot]

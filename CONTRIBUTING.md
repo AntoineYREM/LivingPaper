@@ -18,8 +18,13 @@ how to propose an example book, and how translations work.
 **Every external contribution needs a signed [CLA](CLA.md).** It lets the maintainer distribute the project under the AGPL-3.0
 and also under other terms (a commercial edition, for example). **You keep the ownership of your work.**
 
-You sign once, in your first pull request: a bot (CLA Assistant) asks you to post a comment, and the pull request cannot be merged
-before. If you contribute for your employer, read article 8 of the CLA first.
+You sign once, in your first pull request: a bot (CLA Assistant) asks you to post this comment, word for word, and the pull request
+cannot be merged before:
+
+> I have read the CLA Document and I hereby sign the CLA
+
+If the check does not turn green, post `recheck`. Your signature is recorded in this repository, on the branch `cla-signatures`.
+If you contribute for your employer, read article 8 of the CLA first.
 
 ## How to propose a change
 
