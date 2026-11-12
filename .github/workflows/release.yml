@@ -20,7 +20,7 @@ jobs:
       contents: read
       packages: write # push to GHCR with the GITHUB_TOKEN: no secret is stored
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # QEMU and Buildx build the arm64 variant (Apple Silicon, Raspberry Pi) on the amd64 runner.
       - uses: docker/setup-qemu-action@v3
