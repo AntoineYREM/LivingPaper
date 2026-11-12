@@ -25,7 +25,7 @@ public sealed class BookAnalyzerTests : IDisposable
     {
         var provider = new LlmProvider("p1", "OpenAI", "https://api.openai.com/v1", "sk-secret-key-123", "gpt-5-nano");
         _settingsRepository.Seed(LlmSettings.Restore([provider], "p1", "p1"));
-        _settings = new LlmSettingsService(_settingsRepository, new FakeConnectionTester());
+        _settings = new LlmSettingsService(_settingsRepository, new FakeConnectionTester(), new FakeModelCatalog(), new PendingProviderStore(TimeProvider.System));
     }
 
     public void Dispose() => _settings.Dispose();

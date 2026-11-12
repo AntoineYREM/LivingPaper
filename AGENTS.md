@@ -19,7 +19,9 @@ decision records in `docs/decisions/`.
 ## V0 scope
 
 - Settings page: the user adds and deletes LLMs (any OpenAI-compatible API: base URL + API key + model).
-  A connection test must succeed before an LLM is saved. Keys are encrypted at rest and never sent back to the
+  The user types name, base URL and key, gets the provider's list of models (`GET /models`, which proves the key) and chooses one
+  in it; the draft, key included, is kept in server memory for 15 minutes between the two steps and never sent back to the
+  browser. A provider with no list falls back to a typed model name and a connection test before saving. Keys are encrypted at rest and never sent back to the
   browser. This page is also where the user chooses which LLM is used for book analysis and which one for chat.
   A deleted LLM that was selected must be unselected, and analysis/chat stay disabled until another is chosen.
 - Books and analyses are stored as JSON files: easy to export and import.
@@ -66,7 +68,7 @@ OCR for scanned PDFs, saved conversations.
   in the database. An analysis with no progress for 10 minutes is marked as interrupted and can be retried.
 - **AI:** all AI calls go through a port in `Application` (`IChatModel`) implemented by one adapter that speaks the
   OpenAI-compatible Chat Completions API, so any compatible provider works (OpenAI, local servers, other vendors).
-  A provider is `{ id, name, baseUrl, apiKey, model }`. Adding one runs a connection test first. Transient
+  A provider is `{ id, name, baseUrl, apiKey, model }`. Adding one asks the provider for its models first (a connection test when it has no list). Transient
   failures are retried 3 times with growing delays. The port is faked in tests.
 - **Data:** one JSON file per book (`data/books/{id}.json`) holding metadata, analysis status, book summary and
   characters. The book text itself is never stored. Every file has a `schemaVersion`. Writes are atomic (temp

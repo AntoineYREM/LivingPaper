@@ -176,6 +176,15 @@
   box-shadow: inset 0 0 0 1px var(--color-error);
 }
 
+/* A listbox (size above 1): several rows at once, for the long list of models of a provider. */
+.select--list {
+  padding: var(--space-1);
+}
+
+.select--list option {
+  padding: var(--space-1) var(--space-2);
+}
+
 .input:disabled,
 .select:disabled,
 .textarea:disabled {

@@ -11,7 +11,8 @@ vendor would exclude people and make the tests depend on a paid service.
 
 All AI calls go through one port (`IChatModel`) with one adapter that speaks the **OpenAI-compatible Chat Completions API**.
 A model is `{ name, base URL, API key, model name }`; the user adds as many as they want, and chooses one for the analysis and one
-for the chat. **A connection test must succeed before a model is saved.** Transient failures are retried three times with growing
+for the chat. **The key must be proven before a model is saved**: the application asks the provider for its list of models (`GET {baseUrl}/models`) and the user
+chooses one in it, with no other test (PAPER-26). A provider with no such list falls back to a typed model name and a connection test. Transient failures are retried three times with growing
 delays. The key is optional for a local server.
 
 The user brings their own key: there is no hosted service and no shared key.

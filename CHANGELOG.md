@@ -9,6 +9,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- Choose the model in a list (PAPER-26): in Settings the user types a name, an address and a key, presses "Get the models",
+  chooses a model in the list the provider returns (`GET {baseUrl}/models`) and saves it. The list proves that the key works,
+  so nothing else is tested. The draft, key included, stays in the memory of the server (15 minutes, 5 drafts at most, never on
+  disk) and the page only carries a random identifier: the key never comes back to the browser. A provider with no list of
+  models (HTTP 404, 405, 501 or an answer that is not a list) falls back to typing the model, which is tested with a short
+  request before it is saved, as before. The addresses are checked as for the chat, no redirect is followed, the answer is
+  limited in time and in size, and no error body, address or key appears in a message. This replaces the former form with a
+  free "model" field. New classes: `IModelCatalog`, `PendingProviderStore`, `OpenAiCompatibleModelCatalog`.
+
 - Version number (PAPER-20): the version is written once, as `<Version>` in `Directory.Build.props`, and shown in the folio at
   the foot of every page ("LivingPaper, version 0.1.0", translated). A test checks that the page shows the version of the
   project. The release tag is `v` followed by that number (`v0.1.0`), and the image published for it carries the same version.

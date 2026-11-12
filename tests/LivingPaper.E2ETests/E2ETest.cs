@@ -77,8 +77,9 @@ public abstract class E2ETest : IAsyncLifetime
         await Page.Locator("#llm-name").FillAsync(name);
         await Page.Locator("#llm-base-url").FillAsync(Llm.BaseUrl);
         await Page.Locator("#llm-api-key").FillAsync("test-key-not-a-secret");
-        await Page.Locator("#llm-model").FillAsync("fake-model");
-        await Page.GetByRole(AriaRole.Button, new PageGetByRoleOptions { Name = "Test and save" }).ClickAsync();
+        await Page.GetByRole(AriaRole.Button, new PageGetByRoleOptions { Name = "Get the models" }).ClickAsync();
+        await Page.Locator("#llm-model").SelectOptionAsync("fake-model");
+        await Page.GetByRole(AriaRole.Button, new PageGetByRoleOptions { Name = "Save", Exact = true }).ClickAsync();
         await Assertions.Expect(Page.GetByText($"{name} was added.")).ToBeVisibleAsync();
 
         await Page.Locator("#llm-analysis").SelectOptionAsync(new SelectOptionValue { Label = name });

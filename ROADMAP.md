@@ -5,7 +5,7 @@ What exists, what is next, and what is not planned. Open tasks are in the GitHub
 
 ## Version 0 (current)
 
-- Add an LLM (any OpenAI-compatible API) with a connection test; choose one for the analysis and one for the chat.
+- Add an LLM (any OpenAI-compatible API): get the models of the provider, choose one in the list; choose one for the analysis and one for the chat.
 - Add a book (EPUB or PDF); background analysis: summary and the 10 main characters with a personality profile.
 - My library, editable sheets, export and import of a book as a JSON file.
 - Examples: public-domain books already analyzed, to try the application without a key.

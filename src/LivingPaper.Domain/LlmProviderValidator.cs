@@ -7,7 +7,8 @@ public static class LlmProviderValidator
 {
     // existingNames: the names already used, to refuse a duplicate (ignoring case and the spaces around).
     // The errors come in the order of the form: name, base URL, key, model.
-    public static IReadOnlyList<FieldError> Validate(LlmProviderDraft draft, IEnumerable<string> existingNames)
+    // includeModel: false for the first step of adding a model, where the model is not chosen yet.
+    public static IReadOnlyList<FieldError> Validate(LlmProviderDraft draft, IEnumerable<string> existingNames, bool includeModel = true)
     {
         ArgumentNullException.ThrowIfNull(draft);
         ArgumentNullException.ThrowIfNull(existingNames);
@@ -17,7 +18,11 @@ public static class LlmProviderValidator
         Add(errors, "name", CheckName(normalized.Name!, existingNames));
         Add(errors, "baseUrl", CheckBaseUrl(normalized.BaseUrl!));
         Add(errors, "apiKey", CheckApiKey(normalized.ApiKey!));
-        Add(errors, "model", CheckModel(normalized.Model!));
+        if (includeModel)
+        {
+            Add(errors, "model", CheckModel(normalized.Model!));
+        }
+
         return errors;
     }
 

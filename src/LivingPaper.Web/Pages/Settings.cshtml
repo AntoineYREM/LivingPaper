@@ -96,7 +96,14 @@
 
 <section aria-labelledby="add">
     <h2 id="add">@T["settings.add.title"]</h2>
-    <p>@T["settings.add.lead"]</p>
+
+    @if (Model.DraftExpired)
+    {
+        <div class="alert alert--warning" role="status">
+            <strong class="alert__title">@T["settings.alert.attention"]</strong>
+            <p>@T["settings.draft.expired"]</p>
+        </div>
+    }
 
     @if (Model.FormError is not null)
     {
@@ -106,52 +113,90 @@
         </div>
     }
 
-    <form class="form" method="post" asp-page-handler="Add">
-        <div class="field">
-            @{ var nameError = ErrorOf("name"); }
-            <label class="field__label" for="llm-name">@T["settings.add.name"]</label>
-            <input class="input" id="llm-name" name="name" type="text" value="@Model.Typed.Name" autocomplete="off" aria-invalid="@(nameError is null ? null : "true")" aria-describedby="@Described("llm-name", nameError)" />
-            <p class="field__hint" id="llm-name-hint">@T["settings.add.nameHint"]</p>
-            @if (nameError is not null)
+    @if (Model.Draft is { } draft)
+    {
+        @* Second step: the provider answered, so the key works. The key stays on the server; only the draft's identifier travels. *@
+        var modelError = ErrorOf("model");
+        <p>@T.Format(draft.CanChooseFromList ? "settings.pick.lead" : "settings.pick.noList", new { name = draft.Name })</p>
+        <dl class="entry__facts">
+            <dt>@T["settings.add.name"]</dt><dd>@draft.Name</dd>
+            <dt>@T["settings.model.address"]</dt><dd>@draft.BaseUrl</dd>
+        </dl>
+        <form class="form" method="post" asp-page-handler="Add">
+            <input type="hidden" name="draft" value="@draft.Id" />
+            <div class="field">
+                <label class="field__label" for="llm-model">@T["settings.add.model"]</label>
+                @if (draft.CanChooseFromList)
+                {
+                    <select class="select select--list" id="llm-model" name="model" size="@Math.Clamp(draft.Models.Count, 2, 8)" required aria-invalid="@(modelError is null ? null : "true")" aria-describedby="@Described("llm-model", modelError)">
+                        @foreach (var modelName in draft.Models)
+                        {
+                            <option value="@modelName">@modelName</option>
+                        }
+                    </select>
+                    <p class="field__hint" id="llm-model-hint">@T["settings.pick.hint"]</p>
+                }
+                @if (!draft.CanChooseFromList)
+                {
+                    <input class="input" id="llm-model" name="model" type="text" autocomplete="off" spellcheck="false" aria-invalid="@(modelError is null ? null : "true")" aria-describedby="@Described("llm-model", modelError)" />
+                    <p class="field__hint" id="llm-model-hint">@T["settings.add.modelHint"]</p>
+                }
+                @if (modelError is not null)
+                {
+                    <p class="field__error" id="llm-model-error">@modelError</p>
+                }
+            </div>
+            <div class="form__actions">
+                <button type="submit" class="button" aria-describedby="@(draft.CanChooseFromList ? null : "llm-wait")">@(draft.CanChooseFromList ? T["settings.pick.submit"] : T["settings.add.submit"])</button>
+                <a class="button button--quiet" href="~/Settings#add">@T["settings.pick.again"]</a>
+            </div>
+            @if (!draft.CanChooseFromList)
             {
-                <p class="field__error" id="llm-name-error">@nameError</p>
+                <p class="field__hint" id="llm-wait">@T["settings.add.wait"]</p>
             }
-        </div>
-        <div class="field">
-            @{ var urlError = ErrorOf("baseUrl"); }
-            <label class="field__label" for="llm-base-url">@T["settings.add.baseUrl"]</label>
-            <input class="input" id="llm-base-url" name="baseUrl" type="text" inputmode="url" value="@Model.Typed.BaseUrl" autocomplete="off" spellcheck="false" aria-invalid="@(urlError is null ? null : "true")" aria-describedby="@Described("llm-base-url", urlError)" />
-            <p class="field__hint" id="llm-base-url-hint">@T["settings.add.baseUrlHint"]</p>
-            @if (urlError is not null)
-            {
-                <p class="field__error" id="llm-base-url-error">@urlError</p>
-            }
-        </div>
-        <div class="field">
-            @{ var keyError = ErrorOf("apiKey"); }
-            <label class="field__label" for="llm-api-key">@T["settings.add.apiKey"]</label>
-            <input class="input" id="llm-api-key" name="apiKey" type="password" autocomplete="new-password" spellcheck="false" aria-invalid="@(keyError is null ? null : "true")" aria-describedby="@Described("llm-api-key", keyError)" />
-            <p class="field__hint" id="llm-api-key-hint">@T["settings.add.apiKeyHint"]@(Model.FormRefused ? " " + T["settings.add.apiKeyAgain"] : null)</p>
-            @if (keyError is not null)
-            {
-                <p class="field__error" id="llm-api-key-error">@keyError</p>
-            }
-        </div>
-        <div class="field">
-            @{ var modelError = ErrorOf("model"); }
-            <label class="field__label" for="llm-model">@T["settings.add.model"]</label>
-            <input class="input" id="llm-model" name="model" type="text" value="@Model.Typed.Model" autocomplete="off" spellcheck="false" aria-invalid="@(modelError is null ? null : "true")" aria-describedby="@Described("llm-model", modelError)" />
-            <p class="field__hint" id="llm-model-hint">@T["settings.add.modelHint"]</p>
-            @if (modelError is not null)
-            {
-                <p class="field__error" id="llm-model-error">@modelError</p>
-            }
-        </div>
-        <div class="form__actions">
-            <button type="submit" class="button" aria-describedby="llm-wait">@T["settings.add.submit"]</button>
-        </div>
-        <p class="field__hint" id="llm-wait">@T["settings.add.wait"]</p>
-    </form>
+        </form>
+    }
+
+    @if (Model.Draft is null)
+    {
+        <p>@T["settings.add.lead"]</p>
+        <form class="form" method="post" asp-page-handler="Models">
+            <div class="field">
+                @{ var nameError = ErrorOf("name"); }
+                <label class="field__label" for="llm-name">@T["settings.add.name"]</label>
+                <input class="input" id="llm-name" name="name" type="text" value="@Model.Typed.Name" autocomplete="off" aria-invalid="@(nameError is null ? null : "true")" aria-describedby="@Described("llm-name", nameError)" />
+                <p class="field__hint" id="llm-name-hint">@T["settings.add.nameHint"]</p>
+                @if (nameError is not null)
+                {
+                    <p class="field__error" id="llm-name-error">@nameError</p>
+                }
+            </div>
+            <div class="field">
+                @{ var urlError = ErrorOf("baseUrl"); }
+                <label class="field__label" for="llm-base-url">@T["settings.add.baseUrl"]</label>
+                <input class="input" id="llm-base-url" name="baseUrl" type="text" inputmode="url" value="@Model.Typed.BaseUrl" autocomplete="off" spellcheck="false" aria-invalid="@(urlError is null ? null : "true")" aria-describedby="@Described("llm-base-url", urlError)" />
+                <p class="field__hint" id="llm-base-url-hint">@T["settings.add.baseUrlHint"]</p>
+                @if (urlError is not null)
+                {
+                    <p class="field__error" id="llm-base-url-error">@urlError</p>
+                }
+            </div>
+            <div class="field">
+                @{ var keyError = ErrorOf("apiKey"); }
+                <label class="field__label" for="llm-api-key">@T["settings.add.apiKey"]</label>
+                <input class="input" id="llm-api-key" name="apiKey" type="password" autocomplete="new-password" spellcheck="false" aria-invalid="@(keyError is null ? null : "true")" aria-describedby="@Described("llm-api-key", keyError)" />
+                <p class="field__hint" id="llm-api-key-hint">@T["settings.add.apiKeyHint"]@(Model.FormRefused ? " " + T["settings.add.apiKeyAgain"] : null)</p>
+                @if (keyError is not null)
+                {
+                    <p class="field__error" id="llm-api-key-error">@keyError</p>
+                }
+            </div>
+            <div class="form__actions">
+                <button type="submit" class="button" aria-describedby="llm-wait">@T["settings.add.getModels"]</button>
+            </div>
+            <p class="field__hint" id="llm-wait">@T["settings.add.waitModels"]</p>
+        </form>
+    }
 </section>
 
 @if (Model.View.Providers.Count > 0)

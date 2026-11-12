@@ -87,8 +87,13 @@ are added in the **Settings** page.
 
 ## Add a language model
 
-Open **Settings**, add a model (a name, a base URL, an API key, a model name). A connection test runs before it is saved. Then
-choose which model analyzes books and which one chats.
+Open **Settings**, type a name, a base URL and an API key, then press **Get the models**: the application asks the provider for its
+list of models, which also checks the key. Choose a model in the list and save. Then choose which model analyzes books and which one
+chats.
+
+If the provider has no list of models (some local servers), the page says so and asks you to type the model name; it is then tested
+with a short request before it is saved. The key is kept in memory between the two steps (15 minutes at most, forgotten when the
+application restarts) and is never shown again.
 
 | Provider | Base URL | Key |
 |---|---|---|

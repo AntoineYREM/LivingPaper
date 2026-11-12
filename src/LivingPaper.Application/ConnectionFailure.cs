@@ -18,6 +18,9 @@ public enum ConnectionFailure
     // Another error of the provider (busy, failing, redirecting...). The HTTP status is given.
     ProviderError,
 
+    // The provider has no list of its models (HTTP 404, 405, 501, or an answer that is not a list). Only for ModelListResult.
+    NoModelList,
+
     // The prompts file cannot be used, so the test message could not be built. Detail says what to fix.
     PromptFile,
 }

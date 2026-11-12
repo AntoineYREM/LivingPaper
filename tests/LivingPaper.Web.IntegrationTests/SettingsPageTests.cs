@@ -37,8 +37,25 @@ public partial class SettingsPageTests
         }
     }
 
-    private static LivingPaperFactory NewFactory(ScriptedChatModelFactory models) =>
-        LivingPaperFactory.With(configureServices: services => services.AddSingleton<IChatModelFactory>(models));
+    // Plays the provider's list of models: the models it offers, or the failure the test asks for. Never a real call.
+    private sealed class ScriptedModelCatalog : IModelCatalog
+    {
+        public IReadOnlyList<string> Models { get; set; } = ["gpt-5", "gpt-5-nano", "llama3.1"];
+
+        public ConnectionFailure? Failure { get; set; }
+
+        public int? Status { get; set; }
+
+        public Task<ModelListResult> ListAsync(string baseUrl, string apiKey, CancellationToken cancellationToken) =>
+            Task.FromResult(Failure is { } failure ? ModelListResult.Failed(failure, Status) : ModelListResult.Found(Models));
+    }
+
+    private static LivingPaperFactory NewFactory(ScriptedChatModelFactory models, ScriptedModelCatalog? catalog = null) =>
+        LivingPaperFactory.With(configureServices: services =>
+        {
+            services.AddSingleton<IChatModelFactory>(models);
+            services.AddSingleton<IModelCatalog>(catalog ?? new ScriptedModelCatalog());
+        });
 
     private static HttpClient NewClient(LivingPaperFactory factory) =>
         factory.CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false, HandleCookies = true });
@@ -71,13 +88,21 @@ public partial class SettingsPageTests
         return await client.SendAsync(request, Token);
     }
 
-    private static Dictionary<string, string> NewModel(string name = "OpenAI", string baseUrl = "https://api.openai.com/v1", string key = Key, string model = "gpt-5-nano") =>
-        new() { ["name"] = name, ["baseUrl"] = baseUrl, ["apiKey"] = key, ["model"] = model };
+    // The first step of adding a model: the name, the address and the key.
+    private static Dictionary<string, string> NewProvider(string name = "OpenAI", string baseUrl = "https://api.openai.com/v1", string key = Key) =>
+        new() { ["name"] = name, ["baseUrl"] = baseUrl, ["apiKey"] = key };
 
-    private static async Task<string> AddAsync(HttpClient client, string name = "OpenAI", string model = "gpt-5-nano")
+    // The identifier of the draft, in the address the first step goes back to: /Settings?draft=...#add
+    private static string DraftOf(HttpResponseMessage response) =>
+        Regex.Match(response.Headers.Location!.OriginalString, "draft=([0-9a-f]+)").Groups[1].Value;
+
+    // Both steps: get the models, then save the chosen one. Returns the page that follows.
+    private static async Task<string> AddAsync(HttpClient client, string name = "OpenAI", string model = "gpt-5-nano", string baseUrl = "https://api.openai.com/v1", string key = Key)
     {
-        using var response = await PostAsync(client, "Add", NewModel(name: name, model: model));
-        response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
+        using var fetched = await PostAsync(client, "Models", NewProvider(name, baseUrl, key));
+        fetched.StatusCode.ShouldBe(HttpStatusCode.Redirect);
+        using var saved = await PostAsync(client, "Add", new Dictionary<string, string> { ["draft"] = DraftOf(fetched), ["model"] = model });
+        saved.StatusCode.ShouldBe(HttpStatusCode.Redirect);
         return await GetAsync(client);
     }
 
@@ -114,7 +139,8 @@ public partial class SettingsPageTests
         html.ShouldContain("name=\"name\"");
         html.ShouldContain("name=\"baseUrl\"");
         html.ShouldContain("name=\"apiKey\"");
-        html.ShouldContain("name=\"model\"");
+        html.ShouldContain("Get the models");
+        html.ShouldNotContain("name=\"model\""); // The model is chosen in the second step, from the list of the provider.
         html.ShouldContain("type=\"password\"");
     }
 
@@ -126,7 +152,7 @@ public partial class SettingsPageTests
 
         var html = await GetAsync(client);
 
-        foreach (var field in new[] { "llm-name", "llm-base-url", "llm-api-key", "llm-model" })
+        foreach (var field in new[] { "llm-name", "llm-base-url", "llm-api-key" })
         {
             html.ShouldContain($"for=\"{field}\"");
             html.ShouldContain($"id=\"{field}\"");
@@ -136,12 +162,106 @@ public partial class SettingsPageTests
     }
 
     [Fact]
-    public async Task TheConnectionTestWaitIsAnnounced_BecauseItCanTakeAMinute()
+    public async Task TheWaitForTheListOfModels_IsAnnounced()
     {
         using var factory = NewFactory(new ScriptedChatModelFactory());
         using var client = NewClient(factory);
 
-        (await GetAsync(client)).ShouldContain("up to a minute");
+        (await GetAsync(client)).ShouldContain("takes a few seconds");
+    }
+
+    [Fact]
+    public async Task TheSecondStep_OffersTheModelsOfTheProviderInAListbox_WithALabel_AndNeverTheKey()
+    {
+        using var factory = NewFactory(new ScriptedChatModelFactory());
+        using var client = NewClient(factory);
+        using var fetched = await PostAsync(client, "Models", NewProvider());
+
+        fetched.StatusCode.ShouldBe(HttpStatusCode.Redirect);
+        fetched.Headers.Location!.OriginalString.ShouldEndWith("#add");
+        var html = Decoded(await GetAsync(client, fetched.Headers.Location.OriginalString.Split('#')[0]));
+
+        html.ShouldContain("The key works");
+        html.ShouldContain("for=\"llm-model\"");
+        Regex.IsMatch(html, @"<select[^>]*id=""llm-model""[^>]*name=""model""[^>]*size=""3""[^>]*required").ShouldBeTrue();
+        Regex.Matches(html, @"<option value=""([^""]+)"">").Select(match => match.Groups[1].Value).ShouldBe(["gpt-5", "gpt-5-nano", "llama3.1"]);
+        html.ShouldContain("value=\"" + DraftOf(fetched) + "\"");
+        html.ShouldContain("https://api.openai.com/v1");
+        html.ShouldNotContain(Key);
+        Regex.IsMatch(html, @"<input[^>]*name=""apiKey""").ShouldBeFalse("the key is not asked twice");
+        File.Exists(Path.Combine(factory.DataDirectory, "settings.json")).ShouldBeFalse("nothing is saved before the user chooses");
+    }
+
+    [Fact]
+    public async Task TheSecondStep_AModelOutsideTheList_IsRefused_AndTheUserCanChooseAgain()
+    {
+        using var factory = NewFactory(new ScriptedChatModelFactory());
+        using var client = NewClient(factory);
+        using var fetched = await PostAsync(client, "Models", NewProvider());
+
+        using var response = await PostAsync(client, "Add", new Dictionary<string, string> { ["draft"] = DraftOf(fetched), ["model"] = "invented" });
+        var html = Decoded(await response.Content.ReadAsStringAsync(Token));
+
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        html.ShouldContain("Error: this model is not in the list.");
+        html.ShouldContain("<option value=\"gpt-5\">");
+        File.Exists(Path.Combine(factory.DataDirectory, "settings.json")).ShouldBeFalse();
+    }
+
+    [Fact]
+    public async Task AnExpiredOrUnknownDraft_SaysSo_AndOffersTheFirstStepAgain()
+    {
+        using var factory = NewFactory(new ScriptedChatModelFactory());
+        using var client = NewClient(factory);
+
+        var onGet = Decoded(await GetAsync(client, "/Settings?draft=0123456789abcdef0123456789abcdef"));
+        using var onPost = await PostAsync(client, "Add", new Dictionary<string, string> { ["draft"] = "0123456789abcdef0123456789abcdef", ["model"] = "gpt-5" });
+        var afterPost = Decoded(await onPost.Content.ReadAsStringAsync(Token));
+
+        onGet.ShouldContain("This draft is no longer available");
+        onGet.ShouldContain("Get the models");
+        afterPost.ShouldContain("This draft is no longer available");
+        File.Exists(Path.Combine(factory.DataDirectory, "settings.json")).ShouldBeFalse();
+    }
+
+    [Fact]
+    public async Task WhenTheProviderHasNoList_TheUserTypesTheModel_ItIsTestedWithARealCall_ThenSaved()
+    {
+        var chat = new ScriptedChatModelFactory();
+        using var factory = NewFactory(chat, new ScriptedModelCatalog { Failure = ConnectionFailure.NoModelList, Status = 404 });
+        using var client = NewClient(factory);
+        using var fetched = await PostAsync(client, "Models", NewProvider(name: "Local", baseUrl: "http://localhost:8080/v1", key: string.Empty));
+        var page = Decoded(await GetAsync(client, fetched.Headers.Location!.OriginalString.Split('#')[0]));
+
+        page.ShouldContain("does not offer a list of its models");
+        Regex.IsMatch(page, @"<input[^>]*id=""llm-model""[^>]*type=""text""").ShouldBeTrue();
+        page.ShouldContain("up to a minute");
+
+        using var saved = await PostAsync(client, "Add", new Dictionary<string, string> { ["draft"] = DraftOf(fetched), ["model"] = "my-model" });
+        saved.StatusCode.ShouldBe(HttpStatusCode.Redirect);
+        Decoded(await GetAsync(client)).ShouldContain("my-model");
+    }
+
+    [Theory]
+    [InlineData(ChatFailureKind.Http, 404, "The provider does not know this model (HTTP 404)")]
+    [InlineData(ChatFailureKind.Http, 401, "The key was refused (HTTP 401)")]
+    [InlineData(ChatFailureKind.Unreachable, null, "Nothing answered at this address")]
+    [InlineData(ChatFailureKind.InvalidResponse, null, "The provider answered, but not with a usable reply")]
+    public async Task WhenTheProviderHasNoList_ARefusedConnectionTest_SavesNothing_AndKeepsTheDraft(ChatFailureKind kind, int? status, string expected)
+    {
+        var chat = new ScriptedChatModelFactory { Failure = new ChatProviderException(kind, "failed", status) };
+        using var factory = NewFactory(chat, new ScriptedModelCatalog { Failure = ConnectionFailure.NoModelList });
+        using var client = NewClient(factory);
+        using var fetched = await PostAsync(client, "Models", NewProvider());
+
+        using var response = await PostAsync(client, "Add", new Dictionary<string, string> { ["draft"] = DraftOf(fetched), ["model"] = "typed-model" });
+        var html = Decoded(await response.Content.ReadAsStringAsync(Token));
+
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        html.ShouldContain(expected);
+        html.ShouldContain("role=\"alert\"");
+        html.ShouldNotContain(Key);
+        File.Exists(Path.Combine(factory.DataDirectory, "settings.json")).ShouldBeFalse();
     }
 
     [Fact]
@@ -153,20 +273,21 @@ public partial class SettingsPageTests
 
         var forms = Regex.Matches(html, @"<form\b[^>]*method=""post""[\s\S]*?</form>", RegexOptions.IgnoreCase).Select(match => match.Value).Where(form => !form.Contains("/Language", StringComparison.Ordinal)).ToList();
 
-        forms.Count.ShouldBeGreaterThanOrEqualTo(3); // Add, delete, choose.
+        forms.Count.ShouldBeGreaterThanOrEqualTo(3); // Get the models, delete, choose.
         forms.ShouldAllBe(form => form.Contains("__RequestVerificationToken", StringComparison.Ordinal));
     }
 
     // ---- Adding a model ----
 
     [Fact]
-    public async Task AddingAModel_TestsItSavesItEncrypted_AndGoesBackToThePageWithANotice()
+    public async Task AddingAModel_ChoosesItInTheList_SavesItEncrypted_WithoutAnotherTest_AndGoesBackToThePageWithANotice()
     {
-        var models = new ScriptedChatModelFactory();
+        var models = new ScriptedChatModelFactory { Failure = new InvalidOperationException("the chat model must not be called: the list proved the key") };
         using var factory = NewFactory(models);
         using var client = NewClient(factory);
+        using var fetched = await PostAsync(client, "Models", NewProvider());
 
-        using var response = await PostAsync(client, "Add", NewModel());
+        using var response = await PostAsync(client, "Add", new Dictionary<string, string> { ["draft"] = DraftOf(fetched), ["model"] = "gpt-5-nano" });
 
         response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
         response.Headers.Location?.OriginalString.ShouldStartWith("/Settings");
@@ -200,16 +321,26 @@ public partial class SettingsPageTests
         using var factory = NewFactory(models);
         using var client = NewClient(factory);
 
-        var afterAdd = await AddAsync(client);
-        models.Failure = new ChatProviderException(ChatFailureKind.Http, "refused", 401);
-        using var failed = await PostAsync(client, "Add", NewModel(name: "Other"));
+        var catalog = new ScriptedModelCatalog();
+        using var withCatalog = NewFactory(models, catalog);
+        using var catalogClient = NewClient(withCatalog);
+
+        var afterAdd = await AddAsync(catalogClient);
+        catalog.Failure = ConnectionFailure.KeyRefused;
+        catalog.Status = 401;
+        using var failed = await PostAsync(catalogClient, "Models", NewProvider(name: "Other"));
         var afterFailure = await failed.Content.ReadAsStringAsync(Token);
-        using var invalid = await PostAsync(client, "Add", NewModel(name: string.Empty));
+        using var invalid = await PostAsync(catalogClient, "Models", NewProvider(name: string.Empty));
         var afterInvalid = await invalid.Content.ReadAsStringAsync(Token);
+        catalog.Failure = null;
+        using var fetched = await PostAsync(catalogClient, "Models", NewProvider(name: "Third"));
+        var secondStep = await GetAsync(catalogClient, fetched.Headers.Location!.OriginalString.Split('#')[0]);
 
         afterAdd.ShouldNotContain(Key);
         afterFailure.ShouldNotContain(Key);
         afterInvalid.ShouldNotContain(Key);
+        secondStep.ShouldNotContain(Key);
+        (await GetAsync(catalogClient)).ShouldNotContain(Key);
         (await GetAsync(client)).ShouldNotContain(Key);
     }
 
@@ -219,12 +350,11 @@ public partial class SettingsPageTests
         using var factory = NewFactory(new ScriptedChatModelFactory());
         using var client = NewClient(factory);
 
-        using var response = await PostAsync(client, "Add", NewModel(name: string.Empty, baseUrl: "ftp://files.example.com", model: "typed-model"));
+        using var response = await PostAsync(client, "Models", NewProvider(name: string.Empty, baseUrl: "ftp://files.example.com"));
         var html = Decoded(await response.Content.ReadAsStringAsync(Token));
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
         html.ShouldContain("value=\"ftp://files.example.com\"");
-        html.ShouldContain("value=\"typed-model\"");
         html.ShouldContain("Error: this field is required.");
         html.ShouldContain("Error: the address must start with http:// or https://.");
         Regex.Count(html, "aria-invalid=\"true\"").ShouldBe(2);
@@ -241,50 +371,46 @@ public partial class SettingsPageTests
         using var client = NewClient(factory);
         await AddAsync(client);
 
-        using var response = await PostAsync(client, "Add", NewModel(name: " openai "));
+        using var response = await PostAsync(client, "Models", NewProvider(name: " openai "));
         var html = Decoded(await response.Content.ReadAsStringAsync(Token));
 
         html.ShouldContain("Error: another language model already has this name.");
     }
 
     [Theory]
-    [InlineData(ChatFailureKind.Unreachable, null, "Nothing answered at this address")]
-    [InlineData(ChatFailureKind.TimedOut, null, "Nothing answered at this address")]
-    [InlineData(ChatFailureKind.Http, 401, "The key was refused (HTTP 401)")]
-    [InlineData(ChatFailureKind.Http, 403, "The key was refused (HTTP 403)")]
-    [InlineData(ChatFailureKind.Http, 404, "The provider does not know this model (HTTP 404)")]
-    [InlineData(ChatFailureKind.Http, 429, "The provider reported an error (HTTP 429)")]
-    [InlineData(ChatFailureKind.Http, 500, "The provider reported an error (HTTP 500)")]
-    [InlineData(ChatFailureKind.InvalidResponse, null, "The provider answered, but not with a usable reply")]
-    public async Task ARefusedConnectionTest_SavesNothing_AndSaysWhatToFix(ChatFailureKind kind, int? status, string expected)
+    [InlineData(ConnectionFailure.Unreachable, null, "Nothing answered at this address")]
+    [InlineData(ConnectionFailure.KeyRefused, 401, "The key was refused (HTTP 401)")]
+    [InlineData(ConnectionFailure.KeyRefused, 403, "The key was refused (HTTP 403)")]
+    [InlineData(ConnectionFailure.ProviderError, 429, "The provider reported an error (HTTP 429)")]
+    [InlineData(ConnectionFailure.ProviderError, 500, "The provider reported an error (HTTP 500)")]
+    public async Task AProviderThatRefusesToGiveItsModels_SavesNothing_AndSaysWhatToFix(ConnectionFailure failure, int? status, string expected)
     {
-        var models = new ScriptedChatModelFactory { Failure = new ChatProviderException(kind, "failed", status) };
-        using var factory = NewFactory(models);
+        using var factory = NewFactory(new ScriptedChatModelFactory(), new ScriptedModelCatalog { Failure = failure, Status = status });
         using var client = NewClient(factory);
 
-        using var response = await PostAsync(client, "Add", NewModel(name: "Typed name", model: "typed-model"));
+        using var response = await PostAsync(client, "Models", NewProvider(name: "Typed name"));
         var html = Decoded(await response.Content.ReadAsStringAsync(Token));
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
         html.ShouldContain(expected);
         html.ShouldContain("role=\"alert\"");
         html.ShouldContain("value=\"Typed name\"");
-        html.ShouldContain("value=\"typed-model\"");
         html.ShouldNotContain(Key);
         File.Exists(Path.Combine(factory.DataDirectory, "settings.json")).ShouldBeFalse();
         (await GetAsync(client)).ShouldNotContain("Typed name");
     }
 
     [Fact]
-    public async Task AnUnusablePromptsFile_IsReportedByTheConnectionTest_WithoutBeingOverwritten()
+    public async Task AnUnusablePromptsFile_IsReportedByTheConnectionTest_OfAProviderWithNoList_WithoutBeingOverwritten()
     {
-        using var factory = NewFactory(new ScriptedChatModelFactory());
+        using var factory = NewFactory(new ScriptedChatModelFactory(), new ScriptedModelCatalog { Failure = ConnectionFailure.NoModelList });
         using var client = NewClient(factory);
         var path = Path.Combine(factory.DataDirectory, "prompts.json");
         await GetAsync(client); // Starts the application, which creates prompts.json.
         await File.WriteAllTextAsync(path, "{ not json", Token);
 
-        using var response = await PostAsync(client, "Add", NewModel());
+        using var fetched = await PostAsync(client, "Models", NewProvider());
+        using var response = await PostAsync(client, "Add", new Dictionary<string, string> { ["draft"] = DraftOf(fetched), ["model"] = "typed-model" });
         var html = Decoded(await response.Content.ReadAsStringAsync(Token));
 
         html.ShouldContain("prompts.json");
@@ -299,22 +425,23 @@ public partial class SettingsPageTests
         using var factory = NewFactory(new ScriptedChatModelFactory());
         using var client = NewClient(factory);
 
-        using var response = await PostAsync(client, "Add", NewModel(), withToken: false);
+        using var response = await PostAsync(client, "Models", NewProvider(), withToken: false);
 
         response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
         File.Exists(Path.Combine(factory.DataDirectory, "settings.json")).ShouldBeFalse();
     }
 
     [Fact]
-    public async Task TheConnectionTest_AndTheKey_NeverReachTheLogs()
+    public async Task TheListOfModels_AndTheKey_NeverReachTheLogs()
     {
-        var models = new ScriptedChatModelFactory();
-        using var factory = NewFactory(models);
+        var catalog = new ScriptedModelCatalog();
+        using var factory = NewFactory(new ScriptedChatModelFactory(), catalog);
         using var client = NewClient(factory);
 
         await AddAsync(client);
-        models.Failure = new ChatProviderException(ChatFailureKind.Http, "refused", 401);
-        (await PostAsync(client, "Add", NewModel(name: "Other"))).Dispose();
+        catalog.Failure = ConnectionFailure.KeyRefused;
+        catalog.Status = 401;
+        (await PostAsync(client, "Models", NewProvider(name: "Other"))).Dispose();
 
         factory.Logs.Entries.ShouldAllBe(entry => !entry.Message.Contains(Key, StringComparison.Ordinal));
     }
@@ -327,10 +454,7 @@ public partial class SettingsPageTests
         var models = new ScriptedChatModelFactory();
         using var factory = NewFactory(models);
         using var client = NewClient(factory);
-        using var response = await PostAsync(client, "Add", NewModel(name: "Local", baseUrl: "http://localhost:11434/v1", key: string.Empty, model: "llama3.1"));
-        response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
-
-        var html = Decoded(await GetAsync(client));
+        var html = Decoded(await AddAsync(client, name: "Local", baseUrl: "http://localhost:11434/v1", key: string.Empty, model: "llama3.1"));
 
         html.ShouldContain("None saved");
         html.ShouldContain("http://localhost:11434/v1");
@@ -487,12 +611,12 @@ public partial class SettingsPageTests
     [Fact]
     public async Task ThePage_IsTranslated_NoEnglishLeftBehind()
     {
-        var models = new ScriptedChatModelFactory { Failure = new ChatProviderException(ChatFailureKind.Http, "refused", 401) };
-        using var factory = NewFactory(models);
+        var catalog = new ScriptedModelCatalog { Failure = ConnectionFailure.KeyRefused, Status = 401 };
+        using var factory = NewFactory(new ScriptedChatModelFactory(), catalog);
         using var client = NewClient(factory);
 
         var empty = Decoded(await GetAsync(client, acceptLanguage: "fr"));
-        using var refused = await PostAsync(client, "Add", NewModel(), acceptLanguage: "fr");
+        using var refused = await PostAsync(client, "Models", NewProvider(), acceptLanguage: "fr");
         var failure = Decoded(await refused.Content.ReadAsStringAsync(Token));
 
         empty.ShouldContain("<html lang=\"fr\"");

@@ -50,8 +50,9 @@ That is the only command (a plain `dotnet test` at the root runs them too, with 
 
 What the tests cover:
 
-1. **Add a language model**: a refused connection test saves nothing and keeps what was typed (not the key); a working one is saved,
-   chosen for the analysis and the chat, and the key is nowhere in the page.
+1. **Add a language model**: a provider that refuses the key when asked for its models saves nothing and keeps what was typed (not the
+   key); a working one gives a list of models, the chosen one is saved, chosen for the analysis and the chat, and the key is nowhere in
+   the page.
 2. **Analyze a book**: the library shows the analysis running with its progress, then by itself shows it analyzed; the page of the book
    shows the summary and the characters.
 3. **Chat**: the reply is seen half written and then complete (the fake model holds its reply to prove the streaming); the model is

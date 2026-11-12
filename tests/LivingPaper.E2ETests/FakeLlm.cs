@@ -66,6 +66,7 @@ internal sealed class FakeLlm : IAsyncDisposable
 
         FakeLlm? server = null;
         app.MapPost("/v1/chat/completions", context => server!.HandleAsync(context));
+        app.MapGet("/v1/models", context => server!.ListModelsAsync(context));
         await app.StartAsync();
         var address = app.Services.GetRequiredService<IServer>().Features.Get<IServerAddressesFeature>()!.Addresses.First();
         server = new FakeLlm(app, address);
@@ -137,6 +138,19 @@ internal sealed class FakeLlm : IAsyncDisposable
         await SendAsync(context, Chunk(null, "stop"));
         await SendAsync(context, Usage(120, 40));
         await SendAsync(context, "[DONE]");
+    }
+
+    // The list of models the settings page asks for before the user chooses one.
+    private Task ListModelsAsync(HttpContext context)
+    {
+        if (RefuseEverything)
+        {
+            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+            return context.Response.WriteAsync("""{"error":{"message":"Incorrect API key provided."}}""", context.RequestAborted);
+        }
+
+        context.Response.ContentType = "application/json";
+        return context.Response.WriteAsync("""{"object":"list","data":[{"id":"other-model","object":"model"},{"id":"fake-model","object":"model"}]}""", context.RequestAborted);
     }
 
     // The chat is the only request whose first message is the system prompt that starts "You play".

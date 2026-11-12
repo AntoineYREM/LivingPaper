@@ -20,7 +20,7 @@ public sealed class CharacterChatServiceTests : IDisposable
     {
         var provider = new LlmProvider("p1", "OpenAI", "https://api.openai.com/v1", "sk-chat-secret-key", "gpt-5-nano");
         _settingsRepository.Seed(LlmSettings.Restore([provider], null, "p1")); // A model for the chat, none for the analysis.
-        _settings = new LlmSettingsService(_settingsRepository, new FakeConnectionTester());
+        _settings = new LlmSettingsService(_settingsRepository, new FakeConnectionTester(), new FakeModelCatalog(), new PendingProviderStore(TimeProvider.System));
     }
 
     public void Dispose() => _settings.Dispose();

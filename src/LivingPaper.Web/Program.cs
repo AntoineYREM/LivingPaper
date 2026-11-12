@@ -33,6 +33,9 @@ builder.Services.AddSingleton<ISecretProtector, DataProtectionSecretProtector>()
 builder.Services.AddSingleton<ILlmSettingsRepository>(services =>
     new JsonLlmSettingsRepository(dataDirectory, services.GetRequiredService<ISecretProtector>()));
 builder.Services.AddSingleton<ILlmConnectionTester, LlmConnectionTester>();
+// The list of models a provider offers (PAPER-26), and the drafts kept in memory between "get the models" and "save".
+builder.Services.AddSingleton<IModelCatalog, OpenAiCompatibleModelCatalog>();
+builder.Services.AddSingleton<PendingProviderStore>();
 builder.Services.AddSingleton<LlmSettingsService>();
 
 // The books (PAPER-7): one JSON file each in data/books, and the text of a book kept in data/uploads only until its

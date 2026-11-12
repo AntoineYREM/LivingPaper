@@ -34,7 +34,8 @@ docker compose up --build
 
 Then open <http://localhost:8080>:
 
-1. Open **Settings** and add a language model (name, base URL, API key, model name). A connection test runs before it is saved.
+1. Open **Settings** and add a language model: type a name, the base URL and the API key, press **Get the models**, choose a model in
+   the list and save. The list the provider returns proves that the key works.
    Choose it for the analysis and for the chat.
 2. On the home page, **Add a book**. The analysis starts by itself; the list shows where it is.
 3. Open the book, pick a character and press **Chat**.
@@ -121,8 +122,11 @@ in English whatever the language of the book, and the chat prompt tells the AI t
 
 You bring your own language model: any OpenAI-compatible API (OpenAI, a local server such as Ollama or LM Studio,
 another vendor). Each model is a name, a base URL, an API key (optional for a local server) and a model name. A model
-is saved only after a connection test succeeds: the application sends the `llm.connectionTest` prompt of
-`data/prompts.json` and checks that a usable reply comes back. You choose one model to analyze books and one to chat;
+is added in two steps: the application asks the provider for its list of models (`GET {baseUrl}/models`), which proves that the
+address and the key work, and you choose one model in that list. While you choose, the key is kept in the memory of the server for
+15 minutes at most and is never sent back to the browser. A provider that has no such list (some local servers) falls back to
+typing the model name: it is then saved only after a connection test succeeds (the application sends the `llm.connectionTest`
+prompt of `data/prompts.json` and checks that a usable reply comes back). You choose one model to analyze books and one to chat;
 they can be the same.
 
 - **Where:** `data/settings.json` holds the models and your choices. `data/keys/` holds the keys that encrypt your API

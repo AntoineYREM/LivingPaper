@@ -16,7 +16,7 @@ public sealed class LlmSettingsServiceTests : IDisposable
     public LlmSettingsServiceTests()
     {
         _tester = new FakeConnectionTester();
-        _service = new LlmSettingsService(_repository, _tester);
+        _service = new LlmSettingsService(_repository, _tester, new FakeModelCatalog(), new PendingProviderStore(TimeProvider.System));
     }
 
     public void Dispose() => _service.Dispose();
@@ -27,7 +27,7 @@ public sealed class LlmSettingsServiceTests : IDisposable
 
     private static LlmProvider Provider(string id, string name, string key = "key") => new(id, name, "https://example.com/v1", key, "model");
 
-    private LlmSettingsService ServiceWith(FakeConnectionTester tester) => new(_repository, tester);
+    private LlmSettingsService ServiceWith(FakeConnectionTester tester) => new(_repository, tester, new FakeModelCatalog(), new PendingProviderStore(TimeProvider.System));
 
     // ---- Adding ----
 

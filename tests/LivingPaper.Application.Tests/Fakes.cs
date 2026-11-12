@@ -102,3 +102,14 @@ internal sealed class FakeConnectionTester(Func<LlmProvider, Task<ConnectionTest
         return test is null ? Task.FromResult(ConnectionTestResult.Ok()) : test(provider);
     }
 }
+
+internal sealed class FakeModelCatalog(Func<string, string, ModelListResult>? list = null) : IModelCatalog
+{
+    public List<(string BaseUrl, string ApiKey)> Asked { get; } = [];
+
+    public Task<ModelListResult> ListAsync(string baseUrl, string apiKey, CancellationToken cancellationToken)
+    {
+        Asked.Add((baseUrl, apiKey));
+        return Task.FromResult(list is null ? ModelListResult.Found(["gpt-5-nano", "gpt-5", "gpt-4o"]) : list(baseUrl, apiKey));
+    }
+}

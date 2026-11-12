@@ -12,27 +12,33 @@ public sealed class AddALanguageModel : E2ETest
     public async Task AModelThatIsRefused_IsNotSaved_ThenTheSameModelThatWorks_IsSaved_AndChosen()
     {
         await Page.GotoAsync("/Settings");
+        string html;
 
-        // The connection test fails (a wrong key): the model is not saved, and the form says why, with what was typed.
+        // The provider refuses the key when asked for its models: nothing is saved, and the form says why, with what was typed.
         Llm.RefuseEverything = true;
         await Page.Locator("#llm-name").FillAsync("My model");
         await Page.Locator("#llm-base-url").FillAsync(Llm.BaseUrl);
         await Page.Locator("#llm-api-key").FillAsync("wrong-key-not-a-secret");
-        await Page.Locator("#llm-model").FillAsync("fake-model");
-        await Page.GetByRole(AriaRole.Button, new PageGetByRoleOptions { Name = "Test and save" }).ClickAsync();
+        await Page.GetByRole(AriaRole.Button, new PageGetByRoleOptions { Name = "Get the models" }).ClickAsync();
         await Assertions.Expect(Page.GetByText("The key was refused (HTTP 401)")).ToBeVisibleAsync();
         await Assertions.Expect(Page.GetByText("No language model is saved yet")).ToBeVisibleAsync();
         await Assertions.Expect(Page.Locator("#llm-name")).ToHaveValueAsync("My model");
         await Assertions.Expect(Page.Locator("#llm-api-key")).ToHaveValueAsync(string.Empty);
 
-        // The provider works now: the same form, with the key typed again, saves the model.
+        // The provider works now: the same form, with the key typed again, lists the models; the user chooses one and saves it.
         Llm.RefuseEverything = false;
         await Page.Locator("#llm-api-key").FillAsync("right-key-not-a-secret");
-        await Page.GetByRole(AriaRole.Button, new PageGetByRoleOptions { Name = "Test and save" }).ClickAsync();
+        await Page.GetByRole(AriaRole.Button, new PageGetByRoleOptions { Name = "Get the models" }).ClickAsync();
+        await Assertions.Expect(Page.GetByText("The key works.")).ToBeVisibleAsync();
+        await Assertions.Expect(Page.Locator("#llm-model option")).ToHaveCountAsync(2);
+        html = await Page.ContentAsync();
+        html.ShouldNotContain("right-key-not-a-secret"); // Kept on the server between the two steps.
+        await Page.Locator("#llm-model").SelectOptionAsync("fake-model");
+        await Page.GetByRole(AriaRole.Button, new PageGetByRoleOptions { Name = "Save", Exact = true }).ClickAsync();
         await Assertions.Expect(Page.GetByText("My model was added.")).ToBeVisibleAsync();
 
         // The key is never shown again, in the page or in its source.
-        var html = await Page.ContentAsync();
+        html = await Page.ContentAsync();
         html.ShouldNotContain("right-key-not-a-secret");
 
         // It is chosen for the analysis and for the chat, and the choice is kept after a reload.

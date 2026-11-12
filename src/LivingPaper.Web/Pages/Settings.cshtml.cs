@@ -6,9 +6,11 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace LivingPaper.Web.Pages;
 
-// The settings page (PAPER-5): the language models, adding one (after a successful connection test), deleting one, and
-// which one analyzes books and which one chats. A key goes from the form to the server and never back: this model has no
-// property that can carry one, and a form that is shown again is shown without it.
+// The settings page (PAPER-5): the language models, adding one, deleting one, and which one analyzes books and which one
+// chats. A model is added in two steps (PAPER-26): the user types the name, the address and the key and asks for the models
+// of the provider (which proves that the key works); the server keeps that draft, key included, and the user chooses a
+// model in the list and saves it. A key goes from the form to the server and never back: this model has no property that
+// can carry one, the draft is shown by its identifier, and a form that is shown again is shown without it.
 // A change that works goes back to the page (POST, redirect, GET), so reloading never repeats it; the short message of
 // what was done travels in TempData.
 public class SettingsModel(LlmSettingsService settings, ITextLocalizer texts) : PageModel
@@ -36,38 +38,65 @@ public class SettingsModel(LlmSettingsService settings, ITextLocalizer texts) : 
 
     public TypedModel Typed { get; private set; } = new(null, null, null);
 
-    public Task<IActionResult> OnGetAsync() => GuardAsync(async token =>
+    // The second step: the provider that was asked for its models, to choose one. Null for the first step.
+    public PendingProviderView? Draft { get; private set; }
+
+    // The address carried an identifier of a draft that is gone (15 minutes, or the application restarted).
+    public bool DraftExpired { get; private set; }
+
+    public Task<IActionResult> OnGetAsync(string? draft) => GuardAsync(async token =>
     {
         View = await settings.GetAsync(token);
         Notice = TakeNotice();
+        if (draft is not null)
+        {
+            Draft = settings.GetPending(draft);
+            DraftExpired = Draft is null;
+        }
+
         return Page();
     });
 
-    public Task<IActionResult> OnPostAddAsync(string? name, string? baseUrl, string? apiKey, string? model) => GuardAsync(async token =>
+    // Step 1: the provider is asked for its models. On success the page is shown again, by redirection, with the draft.
+    public Task<IActionResult> OnPostModelsAsync(string? name, string? baseUrl, string? apiKey) => GuardAsync(async token =>
     {
-        var result = await settings.AddAsync(new LlmProviderDraft(name, baseUrl, apiKey, model), token);
+        var result = await settings.FetchModelsAsync(new LlmProviderDraft(name, baseUrl, apiKey, null), token);
+        if (result.Succeeded)
+        {
+            return RedirectToPage(null, null, new { draft = result.Pending!.Id }, "add");
+        }
+
+        View = await settings.GetAsync(token);
+        FormRefused = true;
+        Typed = new TypedModel(name, baseUrl, null);
+        ShowFieldErrors(result.Errors);
+        if (result.Failure is { } failure)
+        {
+            FormError = DescribeFailure(ConnectionTestResult.Failed(failure, result.HttpStatus));
+        }
+
+        return Page();
+    });
+
+    // Step 2: the chosen model is saved. A refused choice shows the second step again, so the user can choose again.
+    public Task<IActionResult> OnPostAddAsync(string? draft, string? model) => GuardAsync(async token =>
+    {
+        var result = await settings.AddFetchedAsync(draft, model, token);
+        if (result is null)
+        {
+            View = await settings.GetAsync(token);
+            DraftExpired = true;
+            return Page();
+        }
+
         if (result.Succeeded)
         {
             return RedirectWithNotice("added", result.Added!.Name);
         }
 
         View = await settings.GetAsync(token);
-        FormRefused = true;
-        Typed = new TypedModel(name, baseUrl, model);
-        var fieldErrors = new Dictionary<string, string>(StringComparer.Ordinal);
-        foreach (var error in result.Errors)
-        {
-            if (error.Field.Length == 0)
-            {
-                FormError = texts.Format("settings.tooMany", new { max = LlmProviderLimits.MaxProviders });
-            }
-            else
-            {
-                fieldErrors[error.Field] = DescribeFieldError(error);
-            }
-        }
-
-        FieldErrors = fieldErrors;
+        Draft = settings.GetPending(draft);
+        ShowFieldErrors(result.Errors);
         if (result.Connection is { Success: false } connection)
         {
             FormError = DescribeFailure(connection);
@@ -121,6 +150,24 @@ public class SettingsModel(LlmSettingsService settings, ITextLocalizer texts) : 
         }
     }
 
+    private void ShowFieldErrors(IReadOnlyList<FieldError> errors)
+    {
+        var fieldErrors = new Dictionary<string, string>(StringComparer.Ordinal);
+        foreach (var error in errors)
+        {
+            if (error.Field.Length == 0)
+            {
+                FormError = texts.Format("settings.tooMany", new { max = LlmProviderLimits.MaxProviders });
+            }
+            else
+            {
+                fieldErrors[error.Field] = DescribeFieldError(error);
+            }
+        }
+
+        FieldErrors = fieldErrors;
+    }
+
     private RedirectToPageResult RedirectWithNotice(string kind, string name)
     {
         TempData[NoticeKind] = kind;
@@ -153,6 +200,7 @@ public class SettingsModel(LlmSettingsService settings, ITextLocalizer texts) : 
             LlmProviderErrors.Scheme => texts["settings.error.scheme"],
             LlmProviderErrors.Credentials => texts["settings.error.credentials"],
             LlmProviderErrors.QueryOrFragment => texts["settings.error.query_or_fragment"],
+            LlmProviderErrors.NotInList => texts["settings.error.not_in_list"],
             _ => texts["settings.error.invalid"],
         };
         return texts.Format("settings.error.prefix", new { message });
@@ -173,6 +221,7 @@ public class SettingsModel(LlmSettingsService settings, ITextLocalizer texts) : 
         ConnectionFailure.ModelUnknown => texts.Format("settings.failure.modelUnknown", new { status = result.HttpStatus }),
         ConnectionFailure.ProviderError => texts.Format("settings.failure.providerError", new { status = result.HttpStatus }),
         ConnectionFailure.PromptFile => texts.Format("settings.failure.promptFile", new { detail = result.Detail }),
+        ConnectionFailure.NoModelList => texts["settings.failure.noModelList"],
         _ => texts["settings.failure.invalidResponse"],
     };
 }

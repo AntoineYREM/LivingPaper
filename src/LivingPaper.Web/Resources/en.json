@@ -44,7 +44,7 @@
   "settings.delete.confirm": "Confirm the deletion",
 
   "settings.add.title": "Add a language model",
-  "settings.add.lead": "The connection is tested first, and the model is saved only if it works.",
+  "settings.add.lead": "Type the name, the address and the key, then get the models your provider offers. That request also checks the key.",
   "settings.add.name": "Name",
   "settings.add.nameHint": "Only for you, to tell your models apart. For example OpenAI or My local model.",
   "settings.add.baseUrl": "Address",
@@ -56,6 +56,14 @@
   "settings.add.modelHint": "The name of the model as your provider writes it, for example gpt-5-nano.",
   "settings.add.submit": "Test and save",
   "settings.add.wait": "The connection test can take up to a minute with a model that thinks before answering. The page waits for the answer.",
+  "settings.add.getModels": "Get the models",
+  "settings.add.waitModels": "The provider is asked for its models: this takes a few seconds. The page waits for the answer.",
+  "settings.pick.lead": "The key works. Choose the model to use with {name}.",
+  "settings.pick.noList": "{name} does not offer a list of its models. Type the name of the model as your provider writes it: it is tested with a short request before it is saved.",
+  "settings.pick.hint": "Choose one model of the list, then save. The model is not tested again.",
+  "settings.pick.submit": "Save",
+  "settings.pick.again": "Start again",
+  "settings.draft.expired": "This draft is no longer available: it is kept for 15 minutes and forgotten when the application restarts. Start again.",
 
   "settings.choose.title": "Which model does what",
   "settings.choose.lead": "One model can do both. A cheaper one can read books while a better one chats.",
@@ -73,12 +81,14 @@
   "settings.error.scheme": "the address must start with http:// or https://.",
   "settings.error.credentials": "do not put a user name or a password in the address: use the key field.",
   "settings.error.query_or_fragment": "the address must not contain ? or #.",
+  "settings.error.not_in_list": "this model is not in the list.",
   "settings.tooMany": "There are already {max} language models. Delete one before adding another.",
 
   "settings.failure.unreachable": "Nothing answered at this address, or too slowly. Check the address, and that the server is running.",
   "settings.failure.keyRefused": "The key was refused (HTTP {status}). Check the key and try again.",
   "settings.failure.modelUnknown": "The provider does not know this model (HTTP {status}). Check the name of the model.",
   "settings.failure.invalidResponse": "The provider answered, but not with a usable reply. Check that the address is the one of an OpenAI-compatible API.",
+  "settings.failure.noModelList": "The provider has no list of its models.",
   "settings.failure.providerError": "The provider reported an error (HTTP {status}). Try again later.",
   "settings.failure.promptFile": "The prompts file cannot be used, so the connection could not be tested: {detail}",
 

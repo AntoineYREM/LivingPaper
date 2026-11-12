@@ -23,4 +23,7 @@ public static class LlmProviderErrors
 
     // Not about one field (the field is empty): the maximum number of language models is reached.
     public const string TooMany = "too_many";
+
+    // The model is not among the models the provider offered.
+    public const string NotInList = "not_in_list";
 }

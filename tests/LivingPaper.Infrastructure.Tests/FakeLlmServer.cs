@@ -54,6 +54,7 @@ internal sealed class FakeLlmServer : IAsyncDisposable
 
         var holder = new ServerHolder();
         app.MapPost("/v1/chat/completions", context => holder.Server!.HandleAsync(context));
+        app.MapGet("/v1/models", context => holder.Server!.HandleAsync(context));
         app.Map("/elsewhere/v1/chat/completions", context =>
         {
             holder.Server!.ElsewhereHits++;

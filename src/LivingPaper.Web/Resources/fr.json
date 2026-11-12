@@ -44,7 +44,7 @@
   "settings.delete.confirm": "Confirmer la suppression",
 
   "settings.add.title": "Ajouter un modèle de langage",
-  "settings.add.lead": "La connexion est d’abord testée, et le modèle n’est enregistré que si elle fonctionne.",
+  "settings.add.lead": "Saisissez le nom, l’adresse et la clé, puis récupérez les modèles que propose votre fournisseur. Cette demande vérifie aussi la clé.",
   "settings.add.name": "Nom",
   "settings.add.nameHint": "Pour vous seul, afin de distinguer vos modèles. Par exemple OpenAI ou Mon modèle local.",
   "settings.add.baseUrl": "Adresse",
@@ -56,6 +56,14 @@
   "settings.add.modelHint": "Le nom du modèle tel que votre fournisseur l’écrit, par exemple gpt-5-nano.",
   "settings.add.submit": "Tester et enregistrer",
   "settings.add.wait": "Le test de connexion peut durer jusqu’à une minute avec un modèle qui réfléchit avant de répondre. La page attend la réponse.",
+  "settings.add.getModels": "Récupérer les modèles",
+  "settings.add.waitModels": "Le fournisseur est interrogé sur ses modèles : cela prend quelques secondes. La page attend la réponse.",
+  "settings.pick.lead": "La clé fonctionne. Choisissez le modèle à utiliser avec {name}.",
+  "settings.pick.noList": "{name} ne propose pas de liste de ses modèles. Saisissez le nom du modèle comme l’écrit votre fournisseur : il est testé par une courte requête avant d’être enregistré.",
+  "settings.pick.hint": "Choisissez un modèle de la liste, puis enregistrez. Le modèle n’est pas testé de nouveau.",
+  "settings.pick.submit": "Enregistrer",
+  "settings.pick.again": "Recommencer",
+  "settings.draft.expired": "Ce brouillon n’est plus disponible : il est gardé 15 minutes et oublié au redémarrage de l’application. Recommencez.",
 
   "settings.choose.title": "Quel modèle fait quoi",
   "settings.choose.lead": "Un même modèle peut tout faire. Un modèle économique peut lire les livres pendant qu’un meilleur modèle discute.",
@@ -73,12 +81,14 @@
   "settings.error.scheme": "l’adresse doit commencer par http:// ou https://.",
   "settings.error.credentials": "ne mettez ni nom d’utilisateur ni mot de passe dans l’adresse : utilisez le champ de la clé.",
   "settings.error.query_or_fragment": "l’adresse ne doit pas contenir ? ni #.",
+  "settings.error.not_in_list": "ce modèle ne figure pas dans la liste.",
   "settings.tooMany": "Il y a déjà {max} modèles de langage. Supprimez-en un avant d’en ajouter un autre.",
 
   "settings.failure.unreachable": "Rien n’a répondu à cette adresse, ou trop lentement. Vérifiez l’adresse, et que le serveur est démarré.",
   "settings.failure.keyRefused": "La clé a été refusée (HTTP {status}). Vérifiez la clé et recommencez.",
   "settings.failure.modelUnknown": "Le fournisseur ne connaît pas ce modèle (HTTP {status}). Vérifiez le nom du modèle.",
   "settings.failure.invalidResponse": "Le fournisseur a répondu, mais pas avec une réponse utilisable. Vérifiez que l’adresse est celle d’une API compatible OpenAI.",
+  "settings.failure.noModelList": "Le fournisseur n’a pas de liste de ses modèles.",
   "settings.failure.providerError": "Le fournisseur a signalé une erreur (HTTP {status}). Réessayez plus tard.",
   "settings.failure.promptFile": "Le fichier de prompts est inutilisable, donc la connexion n’a pas pu être testée : {detail}",
 
