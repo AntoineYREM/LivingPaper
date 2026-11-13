@@ -20,7 +20,7 @@
     <link rel="stylesheet" href="~/css/components.css" asp-append-version="true" />
     @await RenderSectionAsync("Styles", required: false)
 </head>
-<body>
+<body class="@(ViewData["BodyClass"])">
     <a class="skip-link" href="#main">@skipLabel</a>
     @if (IsSectionDefined("Masthead"))
     {

@@ -171,6 +171,7 @@ public partial class ChatModel(BookService books, CharacterChatService chat, ITe
         {
             you = texts["chat.you"],
             writing = texts.Format("chat.writing", new { name }),
+            jump = texts["chat.jump"],
             name,
             maxMessages = ConversationLimits.MaxMessages,
             limitTitle = texts["chat.limit.title"],

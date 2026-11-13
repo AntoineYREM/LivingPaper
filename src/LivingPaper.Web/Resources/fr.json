@@ -211,6 +211,7 @@
   "chat.you": "Vous",
   "chat.message": "Votre message",
   "chat.send": "Envoyer",
+  "chat.jump": "Aller au dernier message",
   "chat.hint": "Entrée envoie votre message, Maj+Entrée passe à la ligne. Cette conversation n’est pas enregistrée : elle disparaît quand vous quittez cette page.",
   "chat.writing": "{name} écrit…",
   "chat.limit.title": "Limite atteinte",

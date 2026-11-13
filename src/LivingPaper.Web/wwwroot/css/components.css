@@ -488,7 +488,9 @@
   max-width: none;
 
   /* The conversation scrolls inside its own window, so the page keeps its height however long the talk gets (PAPER-42). */
-  max-height: min(60dvh, 40rem);
+  flex: 1 1 auto;
+  min-height: 10rem;
+  padding-inline-end: var(--space-3);
   overflow-y: auto;
   overscroll-behavior: contain;
   scrollbar-width: thin;
@@ -497,6 +499,67 @@
 
 .chat__log:empty {
   padding: 0;
+}
+
+/* The page of a chat is as high as the screen: a compact head, the conversation that scrolls, and the field at the foot.
+   The folio is left out and the page is not padded below. Under a very short screen the page scrolls as any other. */
+.is-chat {
+  height: 100vh;
+  height: 100dvh;
+}
+
+.is-chat main {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding-block-end: 0;
+}
+
+.is-chat main .page {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.is-chat h1 {
+  margin-block: var(--space-3) var(--space-3);
+  font-size: var(--text-xl);
+  letter-spacing: 0;
+}
+
+/* ".js .js-only" (further down) sets display: revert; this selector is a little stronger so the chat stays a flex column. */
+.js .is-chat .chat {
+  flex: 1;
+  margin-block-start: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* The warning of spoilers, in one line under the title: the full note is on the page of the book. */
+.chat-note {
+  margin: 0;
+  color: var(--color-ink-soft);
+  font-size: var(--text-sm);
+  hyphens: manual;
+}
+
+.chat-note__title {
+  font-weight: 600;
+  font-variant-caps: all-small-caps;
+  letter-spacing: var(--tracking-caps);
+  color: var(--color-ink);
+}
+
+/* Shown only when the reader has gone up in the conversation: it brings them back to the latest message. */
+.chat__jump {
+  align-self: center;
+  margin-block-end: var(--space-2);
+}
+
+.chat__jump[hidden] {
+  display: none;
 }
 
 .message {

@@ -5,16 +5,13 @@
    receives the ones it shows as JSON (chat-texts). *@
 @{
     ViewData["Title"] = T.Format("chat.title", new { name = Model.Character.Name });
+    // Without JavaScript there is no chat: the page then reads as any other (see "is-chat" in components.css).
+    ViewData["BodyClass"] = Model.ChatAvailable ? "is-chat" : null;
 }
 
 <p class="crumb"><a href="~/Book/@Model.Book.Id/Character/@Model.Character.Position">@T.Format("nav.backToSheet", new { name = Model.Character.Name })</a></p>
 <h1>@T.Format("chat.title", new { name = Model.Character.Name })</h1>
-<p class="lead" lang="en">@Model.Character.ShortDescription</p>
-
-<div class="alert" role="note">
-    <strong class="alert__title">@T["book.spoilers.title"]</strong>
-    <p>@T["book.spoilers.body"]</p>
-</div>
+<p class="chat-note"><strong class="chat-note__title">@T["book.spoilers.title"]</strong> @T["book.spoilers.body"]</p>
 
 @if (!Model.ChatAvailable)
 {
@@ -40,6 +37,7 @@
             <strong class="alert__title">@T["chat.error.title"]</strong>
             <p id="chat-error-text"></p>
         </div>
+        <button type="button" class="button button--quiet button--small chat__jump" id="chat-jump" hidden>@T["chat.jump"]</button>
         <p class="field__hint" id="chat-hint">@T["chat.hint"]</p>
         <form class="chat__composer" id="chat-form">
             <div class="field">
@@ -51,6 +49,10 @@
         @Html.AntiForgeryToken()
     </div>
     <script type="application/json" id="chat-texts">@Html.Raw(Model.ScriptTexts())</script>
+}
+
+@section Folio {
+    @* The foot of the page would only push the field of the message out of the screen. *@
 }
 
 @section Scripts {

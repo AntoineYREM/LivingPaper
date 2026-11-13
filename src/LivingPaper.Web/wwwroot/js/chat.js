@@ -15,6 +15,7 @@
   const form = document.getElementById('chat-form');
   const field = document.getElementById('chat-message');
   const sendButton = document.getElementById('chat-send');
+  const jump = document.getElementById('chat-jump');
   const errorBox = document.getElementById('chat-error');
   const errorText = document.getElementById('chat-error-text');
   const token = root.querySelector('input[name="__RequestVerificationToken"]').value;
@@ -42,11 +43,29 @@
     }));
   };
 
-  // The conversation scrolls inside its own window (PAPER-42): show its last line, and keep the field in sight.
+  // The conversation scrolls inside its own window (PAPER-42). It follows the end of the talk while the reader is at the
+  // end; a reader who went up to read is left alone, and a button takes them back to the latest message.
+  let follow = true;
+  const atEnd = () => log.scrollHeight - log.scrollTop - log.clientHeight < 48;
   const reveal = () => {
-    log.scrollTop = log.scrollHeight;
-    form.scrollIntoView({ block: 'nearest' });
+    if (follow) {
+      log.scrollTop = log.scrollHeight;
+    }
+
+    jump.hidden = follow;
   };
+
+  log.addEventListener('scroll', () => {
+    follow = atEnd();
+    jump.hidden = follow;
+  });
+
+  jump.textContent = texts.jump;
+  jump.addEventListener('click', () => {
+    follow = true;
+    reveal();
+    field.focus();
+  });
 
   const addMessage = (who, text, kind, pending) => {
     const item = document.createElement('li');
@@ -88,6 +107,7 @@
 
   const send = async (text) => {
     busy = true;
+    follow = true; // Sending is going back to the talk.
     sendButton.disabled = true;
     clearError();
     messages.push({ role: 'user', content: text });
