@@ -486,6 +486,17 @@
   padding: var(--space-5) 0;
   list-style: none;
   max-width: none;
+
+  /* The conversation scrolls inside its own window, so the page keeps its height however long the talk gets (PAPER-42). */
+  max-height: min(60dvh, 40rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-rule-strong) transparent;
+}
+
+.chat__log:empty {
+  padding: 0;
 }
 
 .message {
@@ -495,9 +506,9 @@
   margin: 0;
 }
 
-/* The composer is stuck to the foot of the screen: a message that scrolls into view must stop above it. */
+/* A message that scrolls into view keeps a little air under it, inside the window of the conversation. */
 .chat .message {
-  scroll-margin-block-end: 10rem;
+  scroll-margin-block-end: var(--space-5);
 }
 
 .message--user {
@@ -541,10 +552,8 @@
   font-style: italic;
 }
 
-/* The composer stays at the foot of the screen, on a phone above the system bar. */
+/* The composer sits right under the window of the conversation, which scrolls by itself (PAPER-42). */
 .chat__composer {
-  position: sticky;
-  bottom: 0;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   gap: var(--space-3);

@@ -35,7 +35,7 @@
     </noscript>
 
     <div class="chat js-only" id="chat" data-endpoint="@Url.Page("/Books/Chat", "Message", new { id = Model.Book.Id.ToString(), position = Model.Character.Position })" data-max-length="@ConversationLimits.MaxMessageLength">
-        <ol class="chat__log" id="chat-log" role="log" aria-live="polite" aria-label="@T.Format("chat.log", new { name = Model.Character.Name })"></ol>
+        <ol class="chat__log" id="chat-log" role="log" tabindex="0" aria-live="polite" aria-label="@T.Format("chat.log", new { name = Model.Character.Name })"></ol>
         <div class="alert alert--error" role="alert" id="chat-error" hidden>
             <strong class="alert__title">@T["chat.error.title"]</strong>
             <p id="chat-error-text"></p>
