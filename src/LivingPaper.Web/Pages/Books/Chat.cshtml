@@ -9,7 +9,7 @@
 
 <p class="crumb"><a href="~/Book/@Model.Book.Id/Character/@Model.Character.Position">@T.Format("nav.backToSheet", new { name = Model.Character.Name })</a></p>
 <h1>@T.Format("chat.title", new { name = Model.Character.Name })</h1>
-<p class="lead">@Model.Character.ShortDescription</p>
+<p class="lead" lang="en">@Model.Character.ShortDescription</p>
 
 <div class="alert" role="note">
     <strong class="alert__title">@T["book.spoilers.title"]</strong>

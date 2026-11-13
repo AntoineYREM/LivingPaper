@@ -279,6 +279,7 @@ p {
   font-style: italic;
   line-height: 1.45;
   color: var(--color-ink-soft);
+  hyphens: manual;                       /* three large italic lines: a hyphen at each line end reads badly */
 }
 
 /* Running text, set like a novel: the lines that follow the first are indented instead of spaced. */

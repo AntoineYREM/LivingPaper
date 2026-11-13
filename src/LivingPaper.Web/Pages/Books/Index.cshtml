@@ -34,7 +34,7 @@
 {
     @if (!string.IsNullOrEmpty(Model.Book.Summary))
     {
-        <p class="lead">@Model.Book.Summary</p>
+        <p class="lead" lang="en">@Model.Book.Summary</p>
     }
 
     @if (Model.Row.Warning is not null)
@@ -57,7 +57,7 @@
             {
                 <li class="cast__entry">
                     <span class="cast__name">@character.Name</span>
-                    <p class="cast__note">@character.ShortDescription</p>
+                    <p class="cast__note" lang="en">@character.ShortDescription</p>
                     <div class="cast__actions">
                         <a class="button button--small button--quiet" href="~/Book/@Model.Book.Id/Character/@character.Position" aria-label="@T.Format("book.cast.readLabel", new { name = character.Name })">@T["book.cast.read"]</a>
                         <a class="button button--small js-only" href="~/Book/@Model.Book.Id/Character/@character.Position/Chat" aria-label="@T.Format("chat.start", new { name = character.Name })">@T["chat.cast"]</a>

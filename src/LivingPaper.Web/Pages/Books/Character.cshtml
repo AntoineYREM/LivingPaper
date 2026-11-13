@@ -12,7 +12,7 @@
 
 <p class="crumb"><a href="~/Book/@Model.Book.Id">@T.Format("nav.backToBook", new { title = Model.Book.Title })</a></p>
 <h1>@Model.Character.Name</h1>
-<p class="lead">@Model.Character.ShortDescription</p>
+<p class="lead" lang="en">@Model.Character.ShortDescription</p>
 
 @if (Model.Notice is not null)
 {
@@ -29,7 +29,7 @@
 
 <section aria-labelledby="profile">
     <h2 id="profile">@T["character.profile.title"]</h2>
-    <div class="prose">
+    <div class="prose" lang="en">
         @for (var index = 0; index < Model.Paragraphs.Count; index++)
         {
             <p class="@(index == 0 ? "dropcap" : null)">@Model.Paragraphs[index]</p>

@@ -110,6 +110,25 @@ public partial class BookPageTests
         html.ShouldContain("12,345 in (2,000 cached), 678 out");
     }
 
+    // The analysis writes in English whatever the language of the interface (PAPER-44): these texts say so, or a French
+    // page would hyphenate them with French rules and a screen reader would read them with a French voice.
+    [Fact]
+    public async Task TheTextsOfTheAnalysis_AreMarkedAsEnglish_InAFrenchPage()
+    {
+        using var factory = NewFactory();
+        using var client = NewClient(factory);
+        var book = await SeedDoneAsync(factory);
+
+        var bookPage = Decoded((await GetAsync(client, "/Book/" + book.Id, "fr")).Html);
+        var sheet = Decoded((await GetAsync(client, $"/Book/{book.Id}/Character/1", "fr")).Html);
+
+        bookPage.ShouldContain("<html lang=\"fr\"");
+        bookPage.ShouldContain("<p class=\"lead\" lang=\"en\">France, 1673.");
+        bookPage.ShouldContain("<p class=\"cast__note\" lang=\"en\">");
+        sheet.ShouldContain("<p class=\"lead\" lang=\"en\">");
+        sheet.ShouldContain("<div class=\"prose\" lang=\"en\">");
+    }
+
     [Fact]
     public async Task EveryCharacter_HasAChatButton_HiddenWithoutJavaScript()
     {
