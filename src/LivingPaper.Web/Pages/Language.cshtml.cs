@@ -6,7 +6,7 @@ namespace LivingPaper.Web.Pages;
 
 // Remembers the visitor's language in a cookie and sends them back where they were. The form carries the antiforgery token
 // (Razor Pages checks it), so another site cannot switch a visitor's language.
-public class LanguageModel : PageModel
+public class LanguageModel(OfferedLanguages offered) : PageModel
 {
     private static readonly TimeSpan Memory = TimeSpan.FromDays(365);
 
@@ -15,7 +15,7 @@ public class LanguageModel : PageModel
 
     public IActionResult OnPost(string? code, string? returnUrl)
     {
-        if (!SupportedLanguages.TryFind(code, out var language))
+        if (!offered.TryFind(code, out var language))
         {
             return BadRequest();
         }

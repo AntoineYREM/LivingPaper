@@ -2,6 +2,7 @@
    (library, examples) are added here by the tickets that create those pages, so there is never a link to a page that
    does not exist. The switcher is a form that works without JavaScript; each button carries its language's own name. *@
 @using LivingPaper.Web.Localization
+@inject OfferedLanguages Offered
 @{
     var path = Context.Request.Path;
     // After a form was posted the address carries a handler (?handler=Add) that a plain visit cannot use: go back to the page only.
@@ -17,12 +18,15 @@
                 <li><a href="~/Settings" aria-current="@(path.StartsWithSegments("/Settings") ? "page" : null)">@T["nav.settings"]</a></li>
             </ul>
         </nav>
+        @if (Offered.CanSwitch)
+        {
         <form class="language" method="post" asp-page="/Language" role="group" aria-label="@T["language.label"]">
             <input type="hidden" name="returnUrl" value="@returnUrl" />
-            @foreach (var language in SupportedLanguages.All)
+            @foreach (var language in Offered.Languages)
             {
                 <button class="language__button" type="submit" name="code" value="@language.Code" lang="@language.Code" aria-label="@language.NativeName" aria-current="@(language.Code == T.Language ? "true" : null)">@language.Code.ToUpperInvariant()</button>
             }
         </form>
+        }
     </div>
 </header>

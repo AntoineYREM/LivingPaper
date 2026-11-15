@@ -141,7 +141,8 @@ name of the file and the key.
 1. Copy `Resources/en.json` to `Resources/<code>.json` (for example `de.json`) and translate every text. Keep the
    `{variables}`; add the plural forms your language needs under `.one` and `.other`.
 2. Add the language to the list in `src/LivingPaper.Web/Localization/SupportedLanguages.cs`, with its code and its own name
-   (`new("de", "Deutsch")`).
+   (`new("de", "Deutsch")`). The site only offers the languages of the `LANGUAGES` setting (English alone by default): add
+   the code to it to see the new language.
 3. If the language does not use the rule of English or French for plurals (`one` for 1, or for 0 and 1), add its rule in
    `TextLocalizer.IsSingular`.
 4. Run `dotnet test`: it tells you which key or variable is missing.

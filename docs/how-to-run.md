@@ -75,6 +75,7 @@ Everything is optional. Set these as environment variables (in Docker, under `en
 | Variable | Default | Meaning |
 |---|---|---|
 | `DATA_DIRECTORY` | `./data` (`/data` in Docker) | Where books, settings, keys and prompts are kept |
+| `LANGUAGES` | `en` | Languages of the interface, separated by commas (`en,fr`). English is always offered; the language switch is only shown when there are two or more |
 | `EXAMPLES_DIRECTORY` | `examples` next to the application | Where the example books are read from |
 | `ANALYSIS_PAGES_PER_PART` | `40` | Pages per part when a book is analyzed; lower it for a model with a small context window |
 | `ANALYSIS_PARALLEL_CALLS` | `3` | Parts read at the same time; use `1` for a small local server or strict rate limits |

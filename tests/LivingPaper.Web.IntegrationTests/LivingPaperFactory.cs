@@ -21,19 +21,21 @@ public sealed class LivingPaperFactory : WebApplicationFactory<Program>
     private readonly bool _ownsExamples;
     private readonly Action<IServiceCollection>? _configureServices;
     private readonly string? _environment;
+    private readonly string? _languages;
 
     // xUnit builds a fixture with the only public constructor, so this one takes no argument; With(...) is for the rest.
     public LivingPaperFactory()
-        : this(null, null, null, null)
+        : this(null, null, null, null, "en,fr")
     {
     }
 
-    private LivingPaperFactory(string? dataDirectory, Action<IServiceCollection>? configureServices, string? environment, string? examplesDirectory)
+    private LivingPaperFactory(string? dataDirectory, Action<IServiceCollection>? configureServices, string? environment, string? examplesDirectory, string? languages)
     {
         _ownsExamples = examplesDirectory is null;
         ExamplesDirectory = examplesDirectory ?? Path.Combine(Path.GetTempPath(), "livingpaper-web-examples-" + Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(ExamplesDirectory);
         _environment = environment;
+        _languages = languages;
         _ownsDirectory = dataDirectory is null;
         DataDirectory = dataDirectory ?? Path.Combine(Path.GetTempPath(), "livingpaper-web-tests-" + Guid.NewGuid().ToString("N"));
         _configureServices = configureServices;
@@ -43,8 +45,10 @@ public sealed class LivingPaperFactory : WebApplicationFactory<Program>
     // environment: "Production" to see what the application does outside development (tests start in "Development").
     // examplesDirectory: where the examples are read from. Each factory has its own, empty unless a test puts files in it, so the
     // tests never depend on the examples shipped with the repository (they have their own tests).
-    public static LivingPaperFactory With(string? dataDirectory = null, Action<IServiceCollection>? configureServices = null, string? environment = null, string? examplesDirectory = null) =>
-        new(dataDirectory, configureServices, environment, examplesDirectory);
+    // languages: the LANGUAGES setting. The tests offer English and French, so that the translation mechanism, kept in reserve
+    // (PAPER-57), stays tested; pass null to leave the setting out and get what the application does by default (English only).
+    public static LivingPaperFactory With(string? dataDirectory = null, Action<IServiceCollection>? configureServices = null, string? environment = null, string? examplesDirectory = null, string? languages = "en,fr") =>
+        new(dataDirectory, configureServices, environment, examplesDirectory, languages);
 
     public string DataDirectory { get; }
 
@@ -57,6 +61,11 @@ public sealed class LivingPaperFactory : WebApplicationFactory<Program>
         ArgumentNullException.ThrowIfNull(builder);
         builder.UseSetting("DATA_DIRECTORY", DataDirectory);
         builder.UseSetting("EXAMPLES_DIRECTORY", ExamplesDirectory);
+        if (_languages is not null)
+        {
+            builder.UseSetting("LANGUAGES", _languages);
+        }
+
         if (_environment is not null)
         {
             builder.UseEnvironment(_environment);

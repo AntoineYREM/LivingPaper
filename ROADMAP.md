@@ -10,7 +10,7 @@ What exists, what is next, and what is not planned. Open tasks are in the GitHub
 - My library, editable sheets, export and import of a book as a JSON file.
 - Examples: public-domain books already analyzed, readable without a key (chatting needs a model).
 - Chat with a character, streamed, in the language of the user.
-- Interface in English and French.
+- Interface in English (French translated and kept in reserve, see `LANGUAGES`).
 - Docker image and `docker compose up`.
 
 ## Possible next steps

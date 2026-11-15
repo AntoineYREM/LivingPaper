@@ -215,6 +215,8 @@ Square corners. The single radius is 2px, which only softens the edge of a contr
 
 ### Language switcher
 
+Hidden while the site offers a single language (the `LANGUAGES` setting, English alone by default). What follows applies when two or more are offered.
+
 In the running head, at the right of the brand: one small-capital button per language (`EN`, `FR`, then any language added), each carrying its own name as its accessible label ("Français", never translated) and its own `lang`. The current one is underlined and has `aria-current="true"`; the others underline on hover. It is a form that posts to `/Language` (antiforgery token, works without JavaScript) and returns the visitor to the page they were on. Targets are at least 2.75rem. Added with PAPER-13; a row of page links (`.nav`, the current page marked `aria-current="page"`) sits between the brand and the switcher; Settings is there (PAPER-5), the library and examples will join it when those pages exist.
 
 ### Buttons

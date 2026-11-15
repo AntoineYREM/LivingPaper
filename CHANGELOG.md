@@ -9,6 +9,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+- The interface is in English only for now (PAPER-57): the language switch is hidden and a browser or an old cookie asking for
+  French gets English. French stays translated and tested; the `LANGUAGES` setting (`en,fr`) brings it back, with the switch.
 - The name of the uploaded file is no longer shown (PAPER-61): not in the library, not in the examples, not on the page of a
   book. It is still kept in the JSON file of the book.
 

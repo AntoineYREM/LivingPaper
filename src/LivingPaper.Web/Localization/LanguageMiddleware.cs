@@ -11,14 +11,16 @@ public static class LanguageCookie
 // with the cookie and the browser language, so a shared cache never serves one language to a visitor who asked for another.
 public sealed class LanguageMiddleware(RequestDelegate next)
 {
-    public Task InvokeAsync(HttpContext context, LanguageContext language)
+    public Task InvokeAsync(HttpContext context, LanguageContext language, OfferedLanguages offered)
     {
         ArgumentNullException.ThrowIfNull(context);
         ArgumentNullException.ThrowIfNull(language);
+        ArgumentNullException.ThrowIfNull(offered);
 
         language.Code = LanguageResolver.Resolve(
             context.Request.Cookies[LanguageCookie.Name],
-            context.Request.Headers.AcceptLanguage.ToString());
+            context.Request.Headers.AcceptLanguage.ToString(),
+            offered);
 
         context.Response.OnStarting(() =>
         {
@@ -35,9 +37,11 @@ public sealed class LanguageMiddleware(RequestDelegate next)
 public static class LocalizationExtensions
 {
     // Loads the embedded translation files now: an invalid file stops the application at start, with its name.
-    public static IServiceCollection AddTextLocalization(this IServiceCollection services)
+    // offeredLanguages: the LANGUAGES setting (English alone when it is empty).
+    public static IServiceCollection AddTextLocalization(this IServiceCollection services, string? offeredLanguages = null)
     {
         ArgumentNullException.ThrowIfNull(services);
+        services.AddSingleton(OfferedLanguages.Parse(offeredLanguages));
         services.AddSingleton(TranslationCatalog.LoadEmbedded(typeof(TranslationCatalog).Assembly));
         services.AddScoped<LanguageContext>();
         services.AddScoped<ITextLocalizer, TextLocalizer>();
