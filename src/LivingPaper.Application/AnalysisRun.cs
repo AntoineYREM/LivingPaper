@@ -87,6 +87,8 @@ internal sealed class AnalysisRun(
     {
         await PrepareModelAsync(cancellationToken).ConfigureAwait(false);
         var text = await texts.ReadAsync(book.Id, cancellationToken).ConfigureAwait(false);
+        // The pages that Project Gutenberg wraps around a book (license, donations) are not the story: they are not read.
+        text = text is null ? null : BookBoilerplate.Strip(text);
         var parts = text is null ? [] : BookSplitter.Split(text, options.PagesPerPart, options.CharactersPerPage);
         if (parts.Count == 0)
         {

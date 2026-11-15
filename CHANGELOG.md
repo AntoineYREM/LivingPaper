@@ -15,7 +15,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   the character (new prompt `chat.story`, variable `{story}` of `chat.system`: PAPER-55). A part the model's content filter
   refused, or that gave no scenes, leaves a hole: the story is then partial (`storySummaryPartial`). The prompts ask for concrete
   events only (no commentary), named characters only, and the end of the book; a story more than a tenth over its word budget is
-  asked again, up to twice, with a tighter limit, and the shortest is kept (never cut in the middle).
+  asked again, up to twice, with a tighter limit, and the shortest is kept (never cut in the middle). The pages that Project
+  Gutenberg wraps around a book (header, license, donations) are left out of what the analysis reads, so they no longer become
+  scenes of the story; the prompt also tells the model to ignore anything that is not the story.
 - The file of a book has a `storySummary` field (PAPER-54): `schemaVersion` is 2, files of version 1 are still read and have no
   story, so their characters chat as before. An imported story is limited to 24,000 characters.
 
