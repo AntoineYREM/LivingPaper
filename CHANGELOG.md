@@ -7,6 +7,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Fixed
+
+- The interface and the documentation no longer say that LivingPaper can be tried without a key (PAPER-58): the examples can
+  be read without a key, but chatting with a character needs a model chosen for the chat.
+- The Settings page no longer promises that any provider that speaks the OpenAI API will do (PAPER-60): it asks for a provider
+  with an OpenAI-compatible chat API and names OpenAI, Ollama and LM Studio as examples.
+
 ## [0.1.0] - 2026-11-12
 
 ### Added

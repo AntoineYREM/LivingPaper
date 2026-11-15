@@ -62,7 +62,7 @@ under **CC0** ([examples/LICENSE](examples/LICENSE)): by proposing an example yo
 
 ## Proposing an example
 
-The **Examples** page shows books of the public domain that are already analyzed, so that LivingPaper can be tried without a key.
+The **Examples** page shows books of the public domain that are already analyzed, readable without a key (chatting with the characters needs a model).
 Each one is a file of the `examples/` folder, by pull request.
 
 An example is a **book of LivingPaper as it is stored**: the file `data/books/{id}.json` that the application writes when it has

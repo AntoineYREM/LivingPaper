@@ -27,7 +27,7 @@ On a phone, the same pages fit the screen:
   used shown at the end.
 - **Get the 10 main characters**, each with a short description and a personality profile that you can edit.
 - **Chat with a character**: first person, short text-message replies, streamed, in the language you write in. Nothing is stored.
-- **Try it without a key**: the **Examples** page has public-domain books that are already analyzed (*Le Malade imaginaire*,
+- **Read the examples without a key**: the **Examples** page has public-domain books that are already analyzed (*Le Malade imaginaire*,
   *L'Avare*, *Don Juan*); a model is only needed to chat.
 - **Export and import** a book as a JSON file, to move it or share it.
 - **Read and edit every prompt** in `data/prompts.json`.
@@ -235,8 +235,8 @@ into the field.
 
 ## The examples
 
-The **Examples** page shows public-domain books that are already analyzed, so you can try LivingPaper without a key: read the
-summary and the sheets, and chat with the characters once a model is chosen for the chat. Examples are read only: they cannot be
+The **Examples** page shows public-domain books that are already analyzed: you can read the
+summary and the sheets without a key, and chat with the characters once a model is chosen for the chat. Examples are read only: they cannot be
 edited, retried or deleted. **Add to my library** copies one into your library (a book titled the same as one you already have is
 refused), where you can edit its sheets like any other book.
 
