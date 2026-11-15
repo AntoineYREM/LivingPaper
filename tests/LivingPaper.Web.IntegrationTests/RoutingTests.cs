@@ -161,4 +161,31 @@ public class RoutingTests
             html.ShouldNotContain("/Book/");
         }
     }
+
+    // ---- PAPER-62: the way back ----
+
+    [Fact]
+    public async Task TheWayBackFromABook_LeadsToTheLibrary_NotToAnUnresolvedTilde()
+    {
+        using var factory = new LivingPaperFactory();
+        using var client = NewClient(factory);
+        var book = await SeedAsync(factory);
+
+        var html = (await GetAsync(client, $"/books/{book.Id}")).Html;
+
+        html.ShouldContain("<p class=\"crumb\"><a href=\"/\">Back to the library</a></p>");
+    }
+
+    [Fact]
+    public async Task NoPage_LeavesATildeInALink()
+    {
+        using var factory = new LivingPaperFactory();
+        using var client = NewClient(factory);
+        var book = await SeedAsync(factory);
+
+        foreach (var path in new[] { "/", "/add", "/import", "/examples", "/settings", $"/books/{book.Id}", $"/books/{book.Id}/characters/1", $"/books/{book.Id}/characters/1/chat" })
+        {
+            Regex.IsMatch((await GetAsync(client, path)).Html, "(?:href|src|action)=\"~").ShouldBeFalse(path);
+        }
+    }
 }

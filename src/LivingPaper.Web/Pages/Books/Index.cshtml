@@ -5,7 +5,7 @@
     ViewData["Title"] = Model.Book.Title;
 }
 
-<p class="crumb"><a href="@(Model.IsExample ? "~/examples" : "~/")">@(Model.IsExample ? T["nav.backToExamples"] : T["nav.backToLibrary"])</a></p>
+<p class="crumb"><a href="@Url.Content(Model.IsExample ? "~/examples" : "~/")">@(Model.IsExample ? T["nav.backToExamples"] : T["nav.backToLibrary"])</a></p>
 <h1>@Model.Book.Title</h1>
 
 @if (Model.IsExample)

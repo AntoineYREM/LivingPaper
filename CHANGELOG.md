@@ -19,6 +19,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- The link "Back to the library" (and "Back to the examples") on the page of a book works again (PAPER-62): it led to
+  `/books/~/` because `~/` was not resolved inside a C# expression.
 - The interface and the documentation no longer say that LivingPaper can be tried without a key (PAPER-58): the examples can
   be read without a key, but chatting with a character needs a model chosen for the chat.
 - The Settings page no longer promises that any provider that speaks the OpenAI API will do (PAPER-60): it asks for a provider

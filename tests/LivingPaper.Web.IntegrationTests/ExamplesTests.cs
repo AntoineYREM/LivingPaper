@@ -162,6 +162,19 @@ public partial class ExamplesTests
     }
 
     [Fact]
+    public async Task TheWayBackFromAnExample_LeadsToTheExamples()
+    {
+        using var factory = NewFactory();
+        var alice = Example();
+        await PutExampleAsync(factory, alice, "alice.json");
+        using var client = NewClient(factory);
+
+        var html = (await GetAsync(client, "/books/" + alice.Id)).Html;
+
+        html.ShouldContain("<p class=\"crumb\"><a href=\"/examples\">Back to the examples</a></p>"); // PAPER-62
+    }
+
+    [Fact]
     public async Task ThePage_IsTranslated()
     {
         using var factory = NewFactory();
