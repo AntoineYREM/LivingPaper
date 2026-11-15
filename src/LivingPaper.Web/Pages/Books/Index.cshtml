@@ -1,11 +1,11 @@
-@page "/Book/{id}"
+@page "/books/{id}"
 @model LivingPaper.Web.Pages.Books.IndexModel
 @* The page of a book. The words come from the translation files. *@
 @{
     ViewData["Title"] = Model.Book.Title;
 }
 
-<p class="crumb"><a href="@(Model.IsExample ? "~/Examples" : "~/")">@(Model.IsExample ? T["nav.backToExamples"] : T["nav.backToLibrary"])</a></p>
+<p class="crumb"><a href="@(Model.IsExample ? "~/examples" : "~/")">@(Model.IsExample ? T["nav.backToExamples"] : T["nav.backToLibrary"])</a></p>
 <h1>@Model.Book.Title</h1>
 
 @if (Model.IsExample)
@@ -59,8 +59,8 @@
                     <span class="cast__name">@character.Name</span>
                     <p class="cast__note" lang="en">@character.ShortDescription</p>
                     <div class="cast__actions">
-                        <a class="button button--small button--quiet" href="~/Book/@Model.Book.Id/Character/@character.Position" aria-label="@T.Format("book.cast.readLabel", new { name = character.Name })">@T["book.cast.read"]</a>
-                        <a class="button button--small js-only" href="~/Book/@Model.Book.Id/Character/@character.Position/Chat" aria-label="@T.Format("chat.start", new { name = character.Name })">@T["chat.cast"]</a>
+                        <a class="button button--small button--quiet" href="~/books/@Model.Book.Id/characters/@character.Position" aria-label="@T.Format("book.cast.readLabel", new { name = character.Name })">@T["book.cast.read"]</a>
+                        <a class="button button--small js-only" href="~/books/@Model.Book.Id/characters/@character.Position/chat" aria-label="@T.Format("chat.start", new { name = character.Name })">@T["chat.cast"]</a>
                     </div>
                 </li>
             }
@@ -77,7 +77,7 @@
                 <dt>@fact.Label</dt><dd>@fact.Value</dd>
             }
         </dl>
-        <p><a class="button button--small button--quiet" href="~/Book/@Model.Book.Id/Export" download>@T["books.export"]</a></p>
+        <p><a class="button button--small button--quiet" href="~/books/@Model.Book.Id/export" download>@T["books.export"]</a></p>
         <p class="field__hint">@T["books.export.hint"]</p>
     </section>
 }

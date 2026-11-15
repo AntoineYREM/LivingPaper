@@ -119,9 +119,9 @@ public partial class OfferedLanguagesTests
     {
         using var factory = LivingPaperFactory.With(languages: null);
         using var client = NewClient(factory);
-        var token = AntiforgeryToken().Match(await GetAsync(client, "/Settings")).Groups[1].Value;
+        var token = AntiforgeryToken().Match(await GetAsync(client, "/settings")).Groups[1].Value;
 
-        using var response = await client.PostAsync("/Language", new FormUrlEncodedContent(
+        using var response = await client.PostAsync("/language", new FormUrlEncodedContent(
             new Dictionary<string, string> { ["code"] = "fr", ["returnUrl"] = "/", ["__RequestVerificationToken"] = token }), Token);
 
         response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);

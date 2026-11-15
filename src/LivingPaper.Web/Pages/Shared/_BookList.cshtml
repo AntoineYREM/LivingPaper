@@ -9,7 +9,7 @@
     <div class="empty">
         <p class="empty__title">@T["library.empty.title"]</p>
         <p>@T["library.empty.body"]</p>
-        <p class="form__actions"><a class="button" href="~/Add">@T["library.add"]</a> <a class="button button--quiet" href="~/Import">@T["library.import"]</a></p>
+        <p class="form__actions"><a class="button" href="~/add">@T["library.add"]</a> <a class="button button--quiet" href="~/import">@T["library.import"]</a></p>
     </div>
 }
 @if (Model.Rows.Count > 0)
@@ -19,7 +19,7 @@
         {
             <li class="contents__item">
                 <div class="contents__row">
-                    <a class="contents__title" href="~/Book/@row.Book.Id">@row.Book.Title</a>
+                    <a class="contents__title" href="~/books/@row.Book.Id">@row.Book.Title</a>
                     <span class="contents__leader" aria-hidden="true"></span>
                     <span class="contents__status status @row.StatusClass">@row.Status</span>
                 </div>
@@ -44,10 +44,10 @@
                     <p class="entry__warning">@row.Warning</p>
                 }
                 <div class="contents__actions">
-                    <a class="button button--small button--quiet" href="~/Book/@row.Book.Id">@T["library.open"]</a>
+                    <a class="button button--small button--quiet" href="~/books/@row.Book.Id">@T["library.open"]</a>
                     @if (row.Book.Status == BookStatus.Done)
                     {
-                        <a class="button button--small button--quiet" href="~/Book/@row.Book.Id/Export" download aria-label="@T.Format("books.export.label", new { title = row.Book.Title })">@T["books.export"]</a>
+                        <a class="button button--small button--quiet" href="~/books/@row.Book.Id/export" download aria-label="@T.Format("books.export.label", new { title = row.Book.Title })">@T["books.export"]</a>
                     }
                     @if (row.CanRetry)
                     {

@@ -158,7 +158,7 @@ never committed.
   installed, and the Impeccable skill for critique and finishing. `PRODUCT.md` (what the product is for), `DESIGN.md`
   (the visual system) and `.impeccable/` (surface briefs, `design.json`) hold their context: read them before touching
   the interface. Colors, sizes and spaces live in `wwwroot/css/tokens.css` only; tests check contrast (AA) from it.
-- `/Design` shows every component with sample content. It exists in development only.
+- `/design` shows every component with sample content. It exists in development only.
 - Every form field has a visible label; keyboard navigation is preserved; errors are shown in the interface.
 - Every user-facing string lives in JSON translation files (`Resources/en.json`, `Resources/fr.json`: flat
   `key: text` pairs, `{name}` placeholders), loaded by a small custom `IStringLocalizer` with English as fallback.

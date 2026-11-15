@@ -25,7 +25,7 @@ public partial class DesignPageTests
         using var factory = new LivingPaperFactory();
         using var client = factory.CreateClient();
 
-        using var response = await client.GetAsync("/Design", Token);
+        using var response = await client.GetAsync("/design", Token);
         var html = await response.Content.ReadAsStringAsync(Token);
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
@@ -42,7 +42,7 @@ public partial class DesignPageTests
         using var factory = LivingPaperFactory.With(environment: "Production");
         using var client = factory.CreateClient();
 
-        using var response = await client.GetAsync("/Design", Token);
+        using var response = await client.GetAsync("/design", Token);
 
         response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
@@ -71,7 +71,7 @@ public partial class DesignPageTests
         using var factory = new LivingPaperFactory();
         using var client = factory.CreateClient();
 
-        var html = await client.GetStringAsync("/Design", Token);
+        var html = await client.GetStringAsync("/design", Token);
 
         // No script of its own and none from outside: only the flag that tells the style sheets JavaScript runs.
         Regex.Matches(html, @"<script\b[^>]*>", RegexOptions.IgnoreCase).Select(match => match.Value).ShouldAllBe(tag => tag.Contains("src=\"/js/js-flag.js\"", StringComparison.Ordinal));
@@ -85,7 +85,7 @@ public partial class DesignPageTests
         using var factory = new LivingPaperFactory();
         using var client = factory.CreateClient();
 
-        var html = await client.GetStringAsync("/Design", Token);
+        var html = await client.GetStringAsync("/design", Token);
 
         Regex.Count(html, @"<h1\b", RegexOptions.IgnoreCase).ShouldBe(1);
         html.ShouldContain("<main id=\"main\"");
@@ -97,7 +97,7 @@ public partial class DesignPageTests
     {
         using var factory = new LivingPaperFactory();
         using var client = factory.CreateClient();
-        var html = await client.GetStringAsync("/Design", Token);
+        var html = await client.GetStringAsync("/design", Token);
 
         var labelled = LabelFor().Matches(html).Select(match => match.Groups[1].Value).ToHashSet();
         var controls = FormControl().Matches(html).Select(match => match.Value)
@@ -118,7 +118,7 @@ public partial class DesignPageTests
     {
         using var factory = new LivingPaperFactory();
         using var client = factory.CreateClient();
-        var html = await client.GetStringAsync("/Design", Token);
+        var html = await client.GetStringAsync("/design", Token);
 
         Regex.Matches(html, @"<img\b[^>]*>", RegexOptions.IgnoreCase)
             .Select(match => match.Value)

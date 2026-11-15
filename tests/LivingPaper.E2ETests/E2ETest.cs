@@ -73,7 +73,7 @@ public abstract class E2ETest : IAsyncLifetime
     // Adds the fake language model in the settings and chooses it for the analysis and for the chat.
     protected async Task AddTheFakeModelAsync(string name = "Fake model")
     {
-        await Page.GotoAsync("/Settings");
+        await Page.GotoAsync("/settings");
         await Page.Locator("#llm-name").FillAsync(name);
         await Page.Locator("#llm-base-url").FillAsync(Llm.BaseUrl);
         await Page.Locator("#llm-api-key").FillAsync("test-key-not-a-secret");
@@ -91,7 +91,7 @@ public abstract class E2ETest : IAsyncLifetime
     // Sends the test EPUB from the page "Add a book". The page of the book opens.
     protected async Task SendTheTestBookAsync()
     {
-        await Page.GotoAsync("/Add");
+        await Page.GotoAsync("/add");
         await Page.Locator("#book-file").SetInputFilesAsync(new FilePayload
         {
             Name = TestEpub.FileName,
@@ -99,7 +99,7 @@ public abstract class E2ETest : IAsyncLifetime
             Buffer = TestEpub.Build(),
         });
         await Page.GetByRole(AriaRole.Button, new PageGetByRoleOptions { Name = "Add the book" }).ClickAsync();
-        await Assertions.Expect(Page).ToHaveURLAsync(new System.Text.RegularExpressions.Regex("/Book/"));
+        await Assertions.Expect(Page).ToHaveURLAsync(new System.Text.RegularExpressions.Regex("/books/"));
     }
 
     // Opens the chat of the first character of the page of a book.

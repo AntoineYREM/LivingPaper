@@ -9,6 +9,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+- The addresses are in lowercase and plural (PAPER-59): `/settings`, `/examples`, `/books/{id}`,
+  `/books/{id}/characters/{position}/chat`, `/books/{id}/export`. The old addresses (`/Settings`, `/Book/{id}/...`, any capitals)
+  are redirected for good (301), so each page has a single address; forms and the chat are not affected.
 - The interface is in English only for now (PAPER-57): the language switch is hidden and a browser or an old cookie asking for
   French gets English. French stays translated and tested; the `LANGUAGES` setting (`en,fr`) brings it back, with the switch.
 - The name of the uploaded file is no longer shown (PAPER-61): not in the library, not in the examples, not on the page of a

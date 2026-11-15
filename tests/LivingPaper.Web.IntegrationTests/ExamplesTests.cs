@@ -95,7 +95,7 @@ public partial class ExamplesTests
 
     private static async Task<HttpResponseMessage> PostFormAsync(HttpClient client, string path, Dictionary<string, string> form, string? tokenPage = null)
     {
-        form["__RequestVerificationToken"] = AntiforgeryToken().Match((await GetAsync(client, tokenPage ?? "/Examples")).Html).Groups[1].Value;
+        form["__RequestVerificationToken"] = AntiforgeryToken().Match((await GetAsync(client, tokenPage ?? "/examples")).Html).Groups[1].Value;
         return await client.PostAsync(path, new FormUrlEncodedContent(form), Token);
     }
 
@@ -111,13 +111,13 @@ public partial class ExamplesTests
         await PutExampleAsync(factory, alice, "alice.json");
         using var client = NewClient(factory);
 
-        var (status, raw) = await GetAsync(client, "/Examples");
+        var (status, raw) = await GetAsync(client, "/examples");
         var html = Decoded(raw);
 
         status.ShouldBe(HttpStatusCode.OK);
         Regex.Count(html, @"<h1\b").ShouldBe(1);
         html.IndexOf("Alice in Wonderland", StringComparison.Ordinal).ShouldBeLessThan(html.IndexOf("Zola", StringComparison.Ordinal));
-        html.ShouldContain($"href=\"/Book/{alice.Id}\"");
+        html.ShouldContain($"href=\"/books/{alice.Id}\"");
         html.ShouldContain("England, 1865. A dream.");
         html.ShouldContain("2 characters");
         html.ShouldContain("aria-label=\"Add Alice in Wonderland to my library\"");
@@ -132,7 +132,7 @@ public partial class ExamplesTests
         using var factory = NewFactory();
         using var client = NewClient(factory);
 
-        Decoded((await GetAsync(client, "/Examples")).Html).ShouldContain("No example comes with this installation.");
+        Decoded((await GetAsync(client, "/examples")).Html).ShouldContain("No example comes with this installation.");
     }
 
     [Fact]
@@ -154,10 +154,10 @@ public partial class ExamplesTests
         using var factory = NewFactory();
         using var client = NewClient(factory);
 
-        var examples = (await GetAsync(client, "/Examples")).Html;
+        var examples = (await GetAsync(client, "/examples")).Html;
         var home = Decoded((await GetAsync(client, "/", "fr")).Html);
 
-        Regex.IsMatch(examples, @"<a[^>]*href=""/Examples""[^>]*aria-current=""page""[^>]*>Examples</a>").ShouldBeTrue();
+        Regex.IsMatch(examples, @"<a[^>]*href=""/examples""[^>]*aria-current=""page""[^>]*>Examples</a>").ShouldBeTrue();
         home.ShouldContain(">Exemples</a>");
     }
 
@@ -168,7 +168,7 @@ public partial class ExamplesTests
         await PutExampleAsync(factory, Example(), "alice.json");
         using var client = NewClient(factory);
 
-        var html = Decoded((await GetAsync(client, "/Examples", "fr")).Html);
+        var html = Decoded((await GetAsync(client, "/examples", "fr")).Html);
 
         html.ShouldContain("Des livres du domaine public, déjà analysés");
         html.ShouldContain("Ajouter à ma bibliothèque");
@@ -185,7 +185,7 @@ public partial class ExamplesTests
         await File.WriteAllTextAsync(Path.Combine(factory.ExamplesDirectory, "broken.json"), "{ SECRET-LOOKING TEXT, not json", Token);
         using var client = NewClient(factory);
 
-        var html = Decoded((await GetAsync(client, "/Examples")).Html);
+        var html = Decoded((await GetAsync(client, "/examples")).Html);
 
         html.ShouldContain("Alice in Wonderland");
         factory.Logs.Entries.ShouldContain(entry => entry.Level == Microsoft.Extensions.Logging.LogLevel.Warning && entry.Message.Contains("broken.json", StringComparison.Ordinal));
@@ -203,16 +203,16 @@ public partial class ExamplesTests
         await PutExampleAsync(factory, alice, "alice.json");
         using var client = NewClient(factory);
 
-        var (status, raw) = await GetAsync(client, "/Book/" + alice.Id);
+        var (status, raw) = await GetAsync(client, "/books/" + alice.Id);
         var html = Decoded(raw);
 
         status.ShouldBe(HttpStatusCode.OK);
         html.ShouldContain("<h1>Alice in Wonderland</h1>");
         html.ShouldContain("This book is an example, and is read only.");
         html.ShouldContain("Add to my library");
-        html.ShouldContain("href=\"/Examples\"");
+        html.ShouldContain("href=\"/examples\"");
         html.ShouldContain("Back to the examples");
-        html.ShouldContain($"href=\"/Book/{alice.Id}/Character/1\"");
+        html.ShouldContain($"href=\"/books/{alice.Id}/characters/1\"");
         html.ShouldNotContain("Retry");
         html.ShouldNotContain("Delete");
     }
@@ -224,7 +224,7 @@ public partial class ExamplesTests
         var alice = Example();
         await PutExampleAsync(factory, alice, "alice.json");
         using var client = NewClient(factory);
-        var path = $"/Book/{alice.Id}/Character/1";
+        var path = $"/books/{alice.Id}/characters/1";
 
         var (status, raw) = await GetAsync(client, path);
         var html = Decoded(raw);
@@ -248,11 +248,11 @@ public partial class ExamplesTests
         using var client = NewClient(factory);
 
         using var delete = await PostFormAsync(client, "/?handler=Delete", new Dictionary<string, string> { ["id"] = alice.Id.ToString() });
-        using var retry = await PostFormAsync(client, $"/Book/{alice.Id}?handler=Retry", []);
+        using var retry = await PostFormAsync(client, $"/books/{alice.Id}?handler=Retry", []);
 
         delete.StatusCode.ShouldBe(HttpStatusCode.NotFound);
         retry.StatusCode.ShouldBe(HttpStatusCode.NotFound);
-        (await GetAsync(client, "/Examples")).Html.ShouldContain("Alice in Wonderland");
+        (await GetAsync(client, "/examples")).Html.ShouldContain("Alice in Wonderland");
     }
 
     [Fact]
@@ -264,7 +264,7 @@ public partial class ExamplesTests
         await PutExampleAsync(factory, alice, "alice.json");
         (await factory.Services.GetRequiredService<LlmSettingsService>().AddAsync(new LlmProviderDraft("OpenAI", "https://api.openai.com/v1", Key, "gpt-5-nano"), Token)).Succeeded.ShouldBeTrue();
         using var client = NewClient(factory);
-        var path = $"/Book/{alice.Id}/Character/1/Chat";
+        var path = $"/books/{alice.Id}/characters/1/chat";
 
         var (status, page) = await GetAsync(client, path);
         using var request = new HttpRequestMessage(HttpMethod.Post, path + "?handler=Message") { Content = new StringContent("""{"messages":[{"role":"user","content":"Hello"}]}""", Encoding.UTF8, "application/json") };
@@ -289,24 +289,24 @@ public partial class ExamplesTests
         await PutExampleAsync(factory, alice, "alice.json");
         using var client = NewClient(factory);
 
-        using var response = await PostFormAsync(client, "/Examples?handler=Add", new Dictionary<string, string> { ["id"] = alice.Id.ToString() });
+        using var response = await PostFormAsync(client, "/examples?handler=Add", new Dictionary<string, string> { ["id"] = alice.Id.ToString() });
         var location = response.Headers.Location!.OriginalString;
         var page = Decoded((await GetAsync(client, location)).Html);
 
         response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
         var copy = (await factory.Services.GetRequiredService<BookService>().ListAsync(Token)).Books.Single();
         copy.Id.ShouldNotBe(alice.Id);
-        location.ShouldBe("/Book/" + copy.Id);
+        location.ShouldBe("/books/" + copy.Id);
         (copy.Title, copy.Status, copy.Characters.Count).ShouldBe(("Alice in Wonderland", BookStatus.Done, 2));
         page.ShouldContain("Alice in Wonderland was added to your library.");
         page.ShouldNotContain("This book is an example");
-        (await GetAsync(client, "/")).Html.ShouldContain($"href=\"/Book/{copy.Id}\"");
+        (await GetAsync(client, "/")).Html.ShouldContain($"href=\"/books/{copy.Id}\"");
 
         // The copy is the user's: its sheets can be edited, and the example stays as it was.
-        var sheet = $"/Book/{copy.Id}/Character/1";
+        var sheet = $"/books/{copy.Id}/characters/1";
         using var edit = await PostFormAsync(client, sheet, new Dictionary<string, string> { ["name"] = "Alice, edited", ["shortDescription"] = "Changed.", ["chatProfile"] = "I am another Alice." }, tokenPage: sheet);
         edit.StatusCode.ShouldBe(HttpStatusCode.Redirect);
-        Decoded((await GetAsync(client, $"/Book/{alice.Id}/Character/1")).Html).ShouldContain("<h1>Alice</h1>");
+        Decoded((await GetAsync(client, $"/books/{alice.Id}/characters/1")).Html).ShouldContain("<h1>Alice</h1>");
     }
 
     [Fact]
@@ -316,9 +316,9 @@ public partial class ExamplesTests
         var alice = Example();
         await PutExampleAsync(factory, alice, "alice.json");
         using var client = NewClient(factory);
-        (await PostFormAsync(client, "/Examples?handler=Add", new Dictionary<string, string> { ["id"] = alice.Id.ToString() })).Dispose();
+        (await PostFormAsync(client, "/examples?handler=Add", new Dictionary<string, string> { ["id"] = alice.Id.ToString() })).Dispose();
 
-        using var again = await PostFormAsync(client, "/Examples?handler=Add", new Dictionary<string, string> { ["id"] = alice.Id.ToString() });
+        using var again = await PostFormAsync(client, "/examples?handler=Add", new Dictionary<string, string> { ["id"] = alice.Id.ToString() });
         var html = Decoded(await again.Content.ReadAsStringAsync(Token));
 
         again.StatusCode.ShouldBe(HttpStatusCode.OK);
@@ -334,7 +334,7 @@ public partial class ExamplesTests
         using var factory = NewFactory();
         using var client = NewClient(factory);
 
-        using var response = await PostFormAsync(client, "/Examples?handler=Add", new Dictionary<string, string> { ["id"] = id });
+        using var response = await PostFormAsync(client, "/examples?handler=Add", new Dictionary<string, string> { ["id"] = id });
 
         response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
@@ -347,7 +347,7 @@ public partial class ExamplesTests
         await PutExampleAsync(factory, alice, "alice.json");
         using var client = NewClient(factory);
 
-        using var response = await client.PostAsync("/Examples?handler=Add", new FormUrlEncodedContent(new Dictionary<string, string> { ["id"] = alice.Id.ToString() }), Token);
+        using var response = await client.PostAsync("/examples?handler=Add", new FormUrlEncodedContent(new Dictionary<string, string> { ["id"] = alice.Id.ToString() }), Token);
 
         response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
         (await factory.Services.GetRequiredService<BookService>().ListAsync(Token)).Books.ShouldBeEmpty();
@@ -394,7 +394,7 @@ public partial class ExamplesTests
         await PutExampleAsync(factory, alice, "alice.json");
         using var client = NewClient(factory);
 
-        var html = Decoded((await GetAsync(client, "/Book/" + alice.Id, "fr")).Html);
+        var html = Decoded((await GetAsync(client, "/books/" + alice.Id, "fr")).Html);
 
         html.ShouldContain("Ce livre est un exemple, en lecture seule.");
         html.ShouldContain("Retour aux exemples");

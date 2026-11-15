@@ -1,4 +1,4 @@
-@page "/Book/{id}/Character/{position:int}/Chat"
+@page "/books/{id}/characters/{position:int}/chat"
 @model LivingPaper.Web.Pages.Books.ChatModel
 @using LivingPaper.Application
 @* The chat with a character. It needs JavaScript (see ChatModel). The words come from the translation files; the script
@@ -9,7 +9,7 @@
     ViewData["BodyClass"] = Model.ChatAvailable ? "is-chat" : null;
 }
 
-<p class="crumb"><a href="~/Book/@Model.Book.Id/Character/@Model.Character.Position">@T.Format("nav.backToSheet", new { name = Model.Character.Name })</a></p>
+<p class="crumb"><a href="~/books/@Model.Book.Id/characters/@Model.Character.Position">@T.Format("nav.backToSheet", new { name = Model.Character.Name })</a></p>
 <h1>@T.Format("chat.title", new { name = Model.Character.Name })</h1>
 <p class="chat-note"><strong class="chat-note__title">@T["book.spoilers.title"]</strong> @T["book.spoilers.body"]</p>
 
@@ -18,7 +18,7 @@
     <div class="alert alert--warning" role="status">
         <strong class="alert__title">@T["chat.off.title"]</strong>
         <p>@T["chat.off.body"]</p>
-        <p><a href="~/Settings">@T["home.analysisOff.link"]</a></p>
+        <p><a href="~/settings">@T["home.analysisOff.link"]</a></p>
     </div>
 }
 

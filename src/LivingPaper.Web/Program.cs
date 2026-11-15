@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.DataProtection;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddRazorPages();
+// The addresses written by the pages are in lowercase (/settings, /books/{id}), see CanonicalAddressMiddleware (PAPER-59).
+builder.Services.AddRouting(options => options.LowercaseUrls = true);
 
 // The texts of the interface (Resources/*.json, embedded). An invalid file stops the application here. English only for now: the
 // LANGUAGES setting ("en,fr") brings French back (PAPER-57).
@@ -90,8 +92,10 @@ app.Logger.ExamplesLoaded(examples.Books.Count);
 
 // Serves wwwroot: the style sheets, the fonts and the images of the application, all its own (nothing from a CDN).
 app.UseStaticFiles();
+// One address per page: capitals and the old singular addresses are redirected for good (before the status pages and the routing).
+app.UseMiddleware<CanonicalAddressMiddleware>();
 // A 404 is answered by the NotFound page, in the language of the visitor, with the status 404 kept.
-app.UseStatusCodePagesWithReExecute("/NotFound");
+app.UseStatusCodePagesWithReExecute("/notfound");
 app.UseTextLocalization();
 app.MapRazorPages();
 app.MapExport();

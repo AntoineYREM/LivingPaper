@@ -11,7 +11,7 @@ public sealed class AddALanguageModel : E2ETest
     [Fact]
     public async Task AModelThatIsRefused_IsNotSaved_ThenTheSameModelThatWorks_IsSaved_AndChosen()
     {
-        await Page.GotoAsync("/Settings");
+        await Page.GotoAsync("/settings");
         string html;
 
         // The provider refuses the key when asked for its models: nothing is saved, and the form says why, with what was typed.
@@ -135,7 +135,7 @@ public sealed class TheExamples : E2ETest
     {
         await AddTheFakeModelAsync();
 
-        await Page.GotoAsync("/Examples");
+        await Page.GotoAsync("/examples");
         await Assertions.Expect(Page.GetByRole(AriaRole.Link, new PageGetByRoleOptions { Name = "Le Malade imaginaire", Exact = true })).ToBeVisibleAsync();
         await Page.GetByRole(AriaRole.Link, new PageGetByRoleOptions { Name = "Le Malade imaginaire" }).First.ClickAsync();
 

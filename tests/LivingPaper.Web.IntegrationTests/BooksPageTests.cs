@@ -63,7 +63,7 @@ public partial class BooksPageTests
             content.Add(new StringContent("true"), "replace");
         }
 
-        using var request = new HttpRequestMessage(HttpMethod.Post, "/Add") { Content = content };
+        using var request = new HttpRequestMessage(HttpMethod.Post, "/add") { Content = content };
         if (acceptLanguage is not null)
         {
             request.Headers.TryAddWithoutValidation("Accept-Language", acceptLanguage);
@@ -116,10 +116,10 @@ public partial class BooksPageTests
         using var client = NewClient(factory);
 
         var library = Decoded(await GetAsync(client));
-        var html = Decoded(await GetAsync(client, "/Add"));
+        var html = Decoded(await GetAsync(client, "/add"));
 
         library.ShouldContain("Your library is empty");
-        Regex.IsMatch(library, @"<a[^>]*href=""/Add""[^>]*>Add a book</a>").ShouldBeTrue();
+        Regex.IsMatch(library, @"<a[^>]*href=""/add""[^>]*>Add a book</a>").ShouldBeTrue();
         html.ShouldContain("enctype=\"multipart/form-data\"");
         html.ShouldContain("type=\"file\"");
         html.ShouldContain("name=\"file\"");
@@ -135,7 +135,7 @@ public partial class BooksPageTests
         using var factory = NewFactory();
         using var client = NewClient(factory);
 
-        var html = await GetAsync(client, "/Add");
+        var html = await GetAsync(client, "/add");
 
         foreach (var field in new[] { "book-file", "book-title", "book-replace" })
         {
@@ -153,10 +153,10 @@ public partial class BooksPageTests
         using var client = NewClient(factory);
         await SeedAsync(factory, book => { book.Status = BookStatus.Failed; book.ErrorCode = "NoModel"; });
 
-        foreach (var (path, minimum) in new[] { ("/", 2), ("/Add", 1) }) // The library: retry and delete. The form of the page Add.
+        foreach (var (path, minimum) in new[] { ("/", 2), ("/add", 1) }) // The library: retry and delete. The form of the page Add.
         {
             var html = await GetAsync(client, path);
-            var forms = Regex.Matches(html, @"<form\b[^>]*method=""post""[\s\S]*?</form>", RegexOptions.IgnoreCase).Select(match => match.Value).Where(form => !form.Contains("/Language", StringComparison.Ordinal)).ToList();
+            var forms = Regex.Matches(html, @"<form\b[^>]*method=""post""[\s\S]*?</form>", RegexOptions.IgnoreCase).Select(match => match.Value).Where(form => !form.Contains("/language", StringComparison.Ordinal)).ToList();
 
             forms.Count.ShouldBeGreaterThanOrEqualTo(minimum, path);
             forms.ShouldAllBe(form => form.Contains("__RequestVerificationToken", StringComparison.Ordinal), path);
@@ -169,12 +169,12 @@ public partial class BooksPageTests
         using var factory = NewFactory();
         using var client = NewClient(factory);
 
-        foreach (var path in new[] { "/", "/Add" })
+        foreach (var path in new[] { "/", "/add" })
         {
             var html = Decoded(await GetAsync(client, path));
 
             html.ShouldContain("Analysis is off", customMessage: path);
-            Regex.IsMatch(html, @"<a[^>]*href=""/Settings""[^>]*>Open the settings</a>").ShouldBeTrue(path);
+            Regex.IsMatch(html, @"<a[^>]*href=""/settings""[^>]*>Open the settings</a>").ShouldBeTrue(path);
         }
     }
 
@@ -193,7 +193,7 @@ public partial class BooksPageTests
         response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
         var books = await factory.Services.GetRequiredService<BookService>().ListAsync(Token);
         var book = books.Books.ShouldHaveSingleItem();
-        response.Headers.Location!.OriginalString.ShouldBe("/Book/" + book.Id);
+        response.Headers.Location!.OriginalString.ShouldBe("/books/" + book.Id);
         page.ShouldContain("Le Malade imaginaire was added");
         page.ShouldContain("Waiting for analysis");
         library.ShouldContain("Waiting for analysis");
@@ -461,7 +461,7 @@ public partial class BooksPageTests
 
         var book = (await factory.Services.GetRequiredService<BookService>().ListAsync(Token)).Books.Single();
         var library = Decoded(await GetAsync(client));
-        var html = Decoded(await GetAsync(client, "/Book/" + book.Id));
+        var html = Decoded(await GetAsync(client, "/books/" + book.Id));
 
         library.ShouldContain("Analyzed");
         library.ShouldContain("2 characters");

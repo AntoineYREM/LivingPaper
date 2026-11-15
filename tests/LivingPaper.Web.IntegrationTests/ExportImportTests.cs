@@ -89,7 +89,7 @@ public partial class ExportImportTests
         using var content = new MultipartFormDataContent();
         if (withToken)
         {
-            content.Add(new StringContent(AntiforgeryToken().Match((await GetAsync(client, "/Import")).Html).Groups[1].Value), "__RequestVerificationToken");
+            content.Add(new StringContent(AntiforgeryToken().Match((await GetAsync(client, "/import")).Html).Groups[1].Value), "__RequestVerificationToken");
         }
 
         if (file is not null)
@@ -104,7 +104,7 @@ public partial class ExportImportTests
             content.Add(new StringContent("true"), "replace");
         }
 
-        using var request = new HttpRequestMessage(HttpMethod.Post, "/Import") { Content = content };
+        using var request = new HttpRequestMessage(HttpMethod.Post, "/import") { Content = content };
         if (acceptLanguage is not null)
         {
             request.Headers.TryAddWithoutValidation("Accept-Language", acceptLanguage);
@@ -115,7 +115,7 @@ public partial class ExportImportTests
 
     private static async Task<byte[]> ExportBytesAsync(HttpClient client, Book book)
     {
-        using var response = await client.GetAsync($"/Book/{book.Id}/Export", Token);
+        using var response = await client.GetAsync($"/books/{book.Id}/export", Token);
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
         return await response.Content.ReadAsByteArrayAsync(Token);
     }
@@ -137,7 +137,7 @@ public partial class ExportImportTests
         var book = await SeedAsync(factory);
         using var client = NewClient(factory);
 
-        using var response = await client.GetAsync($"/Book/{book.Id}/Export", Token);
+        using var response = await client.GetAsync($"/books/{book.Id}/export", Token);
         var bytes = await response.Content.ReadAsByteArrayAsync(Token);
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
@@ -181,12 +181,12 @@ public partial class ExportImportTests
         var book = await SeedAsync(factory, made => made.Status = status);
         using var client = NewClient(factory);
 
-        (await GetAsync(client, $"/Book/{book.Id}/Export")).Status.ShouldBe(HttpStatusCode.NotFound);
+        (await GetAsync(client, $"/books/{book.Id}/export")).Status.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Theory]
-    [InlineData("/Book/nope/Export")]
-    [InlineData("/Book/0123456789abcdef0123456789abcdef/Export")]
+    [InlineData("/books/nope/export")]
+    [InlineData("/books/0123456789abcdef0123456789abcdef/export")]
     public async Task AnUnknownBook_IsAFriendly404(string path)
     {
         using var factory = NewFactory();
@@ -205,7 +205,7 @@ public partial class ExportImportTests
         var book = await SeedAsync(factory, title: "Évil \"title\" ../../etc/passwd");
         using var client = NewClient(factory);
 
-        using var response = await client.GetAsync($"/Book/{book.Id}/Export", Token);
+        using var response = await client.GetAsync($"/books/{book.Id}/export", Token);
 
         response.Content.Headers.ContentDisposition!.FileName.ShouldBe("evil-title-etc-passwd.json");
     }
@@ -219,12 +219,12 @@ public partial class ExportImportTests
         using var client = NewClient(factory);
 
         var library = Decoded((await GetAsync(client, "/")).Html);
-        var page = Decoded((await GetAsync(client, "/Book/" + done.Id)).Html);
+        var page = Decoded((await GetAsync(client, "/books/" + done.Id)).Html);
 
-        library.ShouldContain($"href=\"/Book/{done.Id}/Export\"");
-        library.ShouldNotContain($"/Book/{failed.Id}/Export");
+        library.ShouldContain($"href=\"/books/{done.Id}/export\"");
+        library.ShouldNotContain($"/books/{failed.Id}/export");
         library.ShouldContain("aria-label=\"Export Le Malade imaginaire as a JSON file\"");
-        page.ShouldContain($"href=\"/Book/{done.Id}/Export\"");
+        page.ShouldContain($"href=\"/books/{done.Id}/export\"");
         page.ShouldContain("holds no key and no setting");
     }
 
@@ -236,7 +236,7 @@ public partial class ExportImportTests
         var example = await scratch.PutAsync(new Book(BookId.New(), "Alice in Wonderland", "alice.epub", DateTimeOffset.UtcNow) { Status = BookStatus.Done }, "alice.json");
         using var client = NewClient(factory);
 
-        using var response = await client.GetAsync($"/Book/{example.Id}/Export", Token);
+        using var response = await client.GetAsync($"/books/{example.Id}/export", Token);
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
         response.Content.Headers.ContentDisposition!.FileName.ShouldBe("alice-in-wonderland.json");
@@ -278,7 +278,7 @@ public partial class ExportImportTests
         var imported = (await second.Services.GetRequiredService<BookService>().ListAsync(Token)).Books.Single();
 
         response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
-        response.Headers.Location!.OriginalString.ShouldBe("/Book/" + original.Id);
+        response.Headers.Location!.OriginalString.ShouldBe("/books/" + original.Id);
         imported.ShouldBeEquivalentTo(original);
         (await ExportBytesAsync(secondClient, imported)).ShouldBe(file); // The same file comes out again.
     }
@@ -299,7 +299,7 @@ public partial class ExportImportTests
         imported.Id.ShouldNotBe(example.Id); // The example keeps its own id: it is not hidden.
         imported.Characters.ShouldBe(example.Characters);
         imported.Title.ShouldBe(example.Title);
-        (await client.GetAsync("/Book/" + example.Id, Token)).StatusCode.ShouldBe(HttpStatusCode.OK);
+        (await client.GetAsync("/books/" + example.Id, Token)).StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 
     // ---- The import ----
@@ -311,7 +311,7 @@ public partial class ExportImportTests
         await SeedAsync(factory);
         using var client = NewClient(factory);
 
-        var (status, raw) = await GetAsync(client, "/Import");
+        var (status, raw) = await GetAsync(client, "/import");
         var html = Decoded(raw);
         var library = (await GetAsync(client, "/")).Html;
 
@@ -327,7 +327,7 @@ public partial class ExportImportTests
 
         raw.ShouldContain("__RequestVerificationToken");
         html.ShouldContain("1024 KB at most");
-        Regex.IsMatch(library, @"<a[^>]*href=""/Import""[^>]*>Import a book</a>").ShouldBeTrue();
+        Regex.IsMatch(library, @"<a[^>]*href=""/import""[^>]*>Import a book</a>").ShouldBeTrue();
     }
 
     [Fact]
@@ -531,7 +531,7 @@ public partial class ExportImportTests
         using var factory = NewFactory();
         using var client = NewClient(factory);
 
-        var page = Decoded((await GetAsync(client, "/Import", "fr")).Html);
+        var page = Decoded((await GetAsync(client, "/import", "fr")).Html);
         using var refused = await ImportAsync(client, Encoding.UTF8.GetBytes("not json"), acceptLanguage: "fr");
 
         page.ShouldContain("Importer un livre");

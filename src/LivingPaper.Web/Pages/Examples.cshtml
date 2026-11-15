@@ -31,7 +31,7 @@
         {
             <li class="contents__item">
                 <div class="contents__row">
-                    <a class="contents__title" href="~/Book/@row.Book.Id">@row.Book.Title</a>
+                    <a class="contents__title" href="~/books/@row.Book.Id">@row.Book.Title</a>
                     <span class="contents__leader" aria-hidden="true"></span>
                     <span class="contents__status status">@T["book.example.tag"]</span>
                 </div>
@@ -41,7 +41,7 @@
                 }
                 <p class="contents__meta">@row.Meta</p>
                 <div class="contents__actions">
-                    <a class="button button--small button--quiet" href="~/Book/@row.Book.Id">@T["library.open"]</a>
+                    <a class="button button--small button--quiet" href="~/books/@row.Book.Id">@T["library.open"]</a>
                     <form class="form" method="post" asp-page="/Examples" asp-page-handler="Add">
                         <input type="hidden" name="id" value="@row.Book.Id" />
                         <button type="submit" class="button button--small" aria-label="@T.Format("examples.add.label", new { title = row.Book.Title })">@T["examples.add"]</button>

@@ -204,7 +204,7 @@ Everything the analysis writes is in English, whatever the language of the book.
 
 ## The page of a book and the sheets of its characters
 
-The page of a book (`/Book/{id}`) shows, once the analysis is done, the summary of its atmosphere, a warning that characters
+The page of a book (`/books/{id}`) shows, once the analysis is done, the summary of its atmosphere, a warning that characters
 know the whole book (**spoilers**), and the characters, the most important first. While the analysis runs it shows the
 progress and, with JavaScript, opens on the characters by itself when it ends; a failed or interrupted analysis shows why,
 with **Retry**.
@@ -251,7 +251,7 @@ its characters and their sheets (the edits you made included), and how it was an
 format as the files of `data/books/` and of the examples. It holds no API key, no setting, no path of your machine and not the
 text of the book: the file is built field by field from the book, so nothing else can get in.
 
-**Import** (`/Import`, from the library) adds an analyzed book from such a file, on this installation or another one. The file is
+**Import** (`/import`, from the library) adds an analyzed book from such a file, on this installation or another one. The file is
 untrusted input and is checked before anything is kept: at most 1 MB, valid JSON of the shape of a book, a known `schemaVersion`
 (a file from a newer LivingPaper is refused with its own message), required fields, numbers in range, texts no longer than the
 limits of the analysis, sheets that follow the rules of a sheet (names distinct, no control characters). Only a book whose

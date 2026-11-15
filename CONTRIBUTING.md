@@ -129,7 +129,7 @@ interface: it is data, not interface.
 - a text has the same `{variables}` in every language, and each plural has both its forms;
 - a sentence is not left identical in English and French;
 - every key used in a view or in the code exists in `en.json`;
-- no view contains a text written in it (the design reference page `/Design`, shown in development only, is the exception);
+- no view contains a text written in it (the design reference page `/design`, shown in development only, is the exception);
 - every language of `SupportedLanguages` has its file, and every file is a supported language.
 
 If a text is missing in a language at run time, the English text is shown and a warning is logged; if it exists nowhere, the

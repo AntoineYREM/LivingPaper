@@ -148,7 +148,7 @@
             </div>
             <div class="form__actions">
                 <button type="submit" class="button" aria-describedby="@(draft.CanChooseFromList ? null : "llm-wait")">@(draft.CanChooseFromList ? T["settings.pick.submit"] : T["settings.add.submit"])</button>
-                <a class="button button--quiet" href="~/Settings#add">@T["settings.pick.again"]</a>
+                <a class="button button--quiet" href="~/settings#add">@T["settings.pick.again"]</a>
             </div>
             @if (!draft.CanChooseFromList)
             {
