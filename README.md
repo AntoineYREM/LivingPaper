@@ -2,6 +2,8 @@
 
 > Chat with the characters of your books.
 
+https://github.com/user-attachments/assets/a6644874-cca2-4a42-8805-078fd20c5fb9
+
 [![CI](https://github.com/AntoineYREM/LivingPaper/actions/workflows/ci.yml/badge.svg)](https://github.com/AntoineYREM/LivingPaper/actions/workflows/ci.yml)
 [![License: AGPL v3](https://img.shields.io/badge/license-AGPL--3.0-blue.svg)](LICENSE)
 
