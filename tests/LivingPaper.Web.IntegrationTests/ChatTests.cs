@@ -146,6 +146,11 @@ public partial class ChatTests
         raw.ShouldContain("__RequestVerificationToken");
         raw.ShouldContain("/js/chat.js");
         html.ShouldContain("class=\"chat js-only\"");
+        // The page is as high as the screen (PAPER-42): a body class, no folio, a button to go back to the latest message.
+        raw.ShouldContain("<body class=\"is-chat\">");
+        raw.ShouldNotContain("class=\"folio\"");
+        html.ShouldContain("id=\"chat-jump\"");
+        html.ShouldNotContain("class=\"lead\"");
         html.ShouldContain("<noscript>");
         html.ShouldContain("This page needs JavaScript");
         html.ShouldContain("This conversation is not saved");

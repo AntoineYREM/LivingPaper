@@ -15,6 +15,7 @@
   const form = document.getElementById('chat-form');
   const field = document.getElementById('chat-message');
   const sendButton = document.getElementById('chat-send');
+  const jump = document.getElementById('chat-jump');
   const errorBox = document.getElementById('chat-error');
   const errorText = document.getElementById('chat-error-text');
   const token = root.querySelector('input[name="__RequestVerificationToken"]').value;
@@ -42,6 +43,30 @@
     }));
   };
 
+  // The conversation scrolls inside its own window (PAPER-42). It follows the end of the talk while the reader is at the
+  // end; a reader who went up to read is left alone, and a button takes them back to the latest message.
+  let follow = true;
+  const atEnd = () => log.scrollHeight - log.scrollTop - log.clientHeight < 48;
+  const reveal = () => {
+    if (follow) {
+      log.scrollTop = log.scrollHeight;
+    }
+
+    jump.hidden = follow;
+  };
+
+  log.addEventListener('scroll', () => {
+    follow = atEnd();
+    jump.hidden = follow;
+  });
+
+  jump.textContent = texts.jump;
+  jump.addEventListener('click', () => {
+    follow = true;
+    reveal();
+    field.focus();
+  });
+
   const addMessage = (who, text, kind, pending) => {
     const item = document.createElement('li');
     item.className = `message message--${kind}${pending ? ' message--pending' : ''}`;
@@ -53,7 +78,7 @@
     setText(box, text);
     item.append(name, box);
     log.append(item);
-    item.scrollIntoView({ block: 'nearest' });
+    reveal();
     return { item, box };
   };
 
@@ -82,6 +107,7 @@
 
   const send = async (text) => {
     busy = true;
+    follow = true; // Sending is going back to the talk.
     sendButton.disabled = true;
     clearError();
     messages.push({ role: 'user', content: text });
@@ -105,7 +131,7 @@
             reply += event.text;
             theirs.item.classList.remove('message--pending');
             setText(theirs.box, reply.trimStart());
-            theirs.item.scrollIntoView({ block: 'nearest' });
+            reveal();
           } else if (event.type === 'error') {
             failure = event.code;
           } else if (event.type === 'done') {
@@ -133,7 +159,7 @@
       showError(texts.errors[failure] || texts.errors.unexpected);
     } else {
       messages.push({ role: 'assistant', content: reply.trim() });
-      theirs.item.scrollIntoView({ block: 'nearest' }); // The box has stopped growing: bring its end into view.
+      reveal(); // The box has stopped growing: bring its end into view.
     }
 
     // One more exchange would go past the limit of the conversation: it is over.

@@ -211,6 +211,7 @@
   "chat.you": "You",
   "chat.message": "Your message",
   "chat.send": "Send",
+  "chat.jump": "Go to the latest message",
   "chat.hint": "Enter sends your message, Shift+Enter starts a new line. This conversation is not saved: it disappears when you leave this page.",
   "chat.writing": "{name} is writing…",
   "chat.limit.title": "Limit reached",
