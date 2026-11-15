@@ -170,7 +170,7 @@ public partial class ExamplesTests
 
         var html = Decoded((await GetAsync(client, "/Examples", "fr")).Html);
 
-        html.ShouldContain("Des livres du domaine public déjà analysés");
+        html.ShouldContain("Des livres du domaine public, déjà analysés");
         html.ShouldContain("Ajouter à ma bibliothèque");
         html.ShouldNotContain("Add to my library");
     }

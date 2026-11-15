@@ -108,7 +108,6 @@
   "books.status.running": "Analyse en cours",
   "books.status.failed": "Analyse échouée",
   "books.status.done": "Analysé",
-  "books.file": "Fichier",
   "books.delete.button": "Supprimer",
   "books.delete.label": "Supprimer {title}",
   "books.delete.warning": "Cela supprime le livre, son analyse et ses personnages. C’est définitif.",

@@ -7,6 +7,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Changed
+
+- The name of the uploaded file is no longer shown (PAPER-61): not in the library, not in the examples, not on the page of a
+  book. It is still kept in the JSON file of the book.
+
 ### Fixed
 
 - The interface and the documentation no longer say that LivingPaper can be tried without a key (PAPER-58): the examples can

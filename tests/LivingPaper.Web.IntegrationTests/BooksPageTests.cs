@@ -197,7 +197,7 @@ public partial class BooksPageTests
         page.ShouldContain("Le Malade imaginaire was added");
         page.ShouldContain("Waiting for analysis");
         library.ShouldContain("Waiting for analysis");
-        library.ShouldContain("malade.epub");
+        library.ShouldNotContain("malade.epub"); // PAPER-61: the name of the file is never shown.
         book.Status.ShouldBe(BookStatus.Waiting);
         (await File.ReadAllTextAsync(Path.Combine(factory.DataDirectory, "uploads", book.Id + ".txt"), Token)).ShouldBe("Argan est malade.");
         (await File.ReadAllTextAsync(Path.Combine(factory.DataDirectory, "books", book.Id + ".json"), Token)).ShouldNotContain("Argan est malade");
@@ -466,6 +466,8 @@ public partial class BooksPageTests
         library.ShouldContain("Analyzed");
         library.ShouldContain("2 characters");
         library.ShouldContain("analyzed with gpt-5-nano");
+        library.ShouldNotContain("lighthouse.epub"); // PAPER-61
+        html.ShouldNotContain("lighthouse.epub");
         html.ShouldContain("gpt-5-nano (OpenAI)");
         html.ShouldContain("2 min 14 s");
         html.ShouldContain("12,345 in (2,000 cached), 678 out");

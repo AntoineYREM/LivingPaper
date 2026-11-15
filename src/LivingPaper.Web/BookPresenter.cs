@@ -49,11 +49,6 @@ public sealed class BookPresenter(BookService books, ITextLocalizer texts)
         ArgumentNullException.ThrowIfNull(book);
         var culture = CultureInfo.GetCultureInfo(texts.Language);
         var facts = new List<(string, string)>();
-        if (book.FileName.Length > 0)
-        {
-            facts.Add((texts["books.file"], book.FileName));
-        }
-
         if (book.Model is not null)
         {
             facts.Add((texts["books.model"], texts.Format("books.modelValue", new { model = book.Model, provider = book.ProviderName ?? string.Empty })));
@@ -102,7 +97,7 @@ public sealed class BookPresenter(BookService books, ITextLocalizer texts)
         bool CanRetry = false,
         bool Active = false,
         string? Meta = null) =>
-        new(book, StatusText(statusKey), statusClass, Progress, ProgressValue, ProgressMax, Problem, Warning, CanRetry, Active, Meta ?? FileOnly(book));
+        new(book, StatusText(statusKey), statusClass, Progress, ProgressValue, ProgressMax, Problem, Warning, CanRetry, Active, Meta ?? string.Empty);
 
     private string StatusText(string key) => key switch
     {
@@ -113,16 +108,9 @@ public sealed class BookPresenter(BookService books, ITextLocalizer texts)
         _ => texts["books.status.waiting"],
     };
 
-    private static string FileOnly(Book book) => book.FileName;
-
     private string DoneMeta(Book book)
     {
         var parts = new List<string>();
-        if (book.FileName.Length > 0)
-        {
-            parts.Add(book.FileName);
-        }
-
         parts.Add(texts.Plural("books.characterCount", book.Characters.Count));
         if (book.Model is not null)
         {
