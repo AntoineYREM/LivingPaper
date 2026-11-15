@@ -76,7 +76,15 @@ public sealed class BookPresenter(BookService books, ITextLocalizer texts)
     {
         if (book.ProfilesTotal > 0)
         {
-            return Make(book, "books.status.running", string.Empty, texts.Format("books.progress.profiles", new { done = book.ProfilesDone, total = book.ProfilesTotal }), book.ProfilesDone, book.ProfilesTotal, Active: true);
+            var profiles = texts.Format("books.progress.profiles", new { done = book.ProfilesDone, total = book.ProfilesTotal });
+
+            // The profiles go fast and the story and the summary go on after them: say what is being waited for.
+            var after = book.StoryTry > 1
+                ? texts.Format("books.progress.storyAgain", new { current = book.StoryTry, tries = book.StoryTries })
+                : book.StoryTry == 1
+                    ? texts.Format("books.progress.story", new { current = book.StoryTry, tries = book.StoryTries })
+                    : book.ProfilesDone >= book.ProfilesTotal ? texts["books.progress.summary"] : null;
+            return Make(book, "books.status.running", string.Empty, after is null ? profiles : $"{profiles}. {after}", book.ProfilesDone, book.ProfilesTotal, Active: true);
         }
 
         return book.PartsTotal > 0

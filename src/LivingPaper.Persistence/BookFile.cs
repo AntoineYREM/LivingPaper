@@ -45,6 +45,10 @@ internal sealed class BookFile
 
     public int ProfilesTotal { get; set; }
 
+    public int? StoryTry { get; set; }
+
+    public int? StoryTries { get; set; }
+
     public string? ErrorCode { get; set; }
 
     public string? ErrorDetail { get; set; }
@@ -85,6 +89,8 @@ internal sealed class BookFile
         PartsTotal = book.PartsTotal,
         ProfilesDone = book.ProfilesDone,
         ProfilesTotal = book.ProfilesTotal,
+        StoryTry = book.StoryTry > 0 ? book.StoryTry : null,
+        StoryTries = book.StoryTries > 0 ? book.StoryTries : null,
         ErrorCode = book.ErrorCode,
         ErrorDetail = book.ErrorDetail,
         ProviderName = book.ProviderName,
@@ -135,7 +141,7 @@ internal sealed class BookFile
             return null;
         }
 
-        if (new[] { PartsDone, PartsTotal, PartsSkipped, ProfilesDone, ProfilesTotal, InputTokens, CachedInputTokens, OutputTokens }.Any(value => value < 0)
+        if (new[] { PartsDone, PartsTotal, PartsSkipped, ProfilesDone, ProfilesTotal, StoryTry ?? 0, StoryTries ?? 0, InputTokens, CachedInputTokens, OutputTokens }.Any(value => value < 0)
             || Characters.Any(character => character is null || character.Position < 1))
         {
             reason = "a number is out of range";
@@ -152,6 +158,8 @@ internal sealed class BookFile
             PartsTotal = PartsTotal,
             ProfilesDone = ProfilesDone,
             ProfilesTotal = ProfilesTotal,
+            StoryTry = StoryTry ?? 0,
+            StoryTries = StoryTries ?? 0,
             ErrorCode = ErrorCode,
             ErrorDetail = ErrorDetail,
             ProviderName = ProviderName,

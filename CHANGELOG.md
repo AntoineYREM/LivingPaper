@@ -18,6 +18,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   asked again, up to twice, with a tighter limit, and the shortest is kept (never cut in the middle). The pages that Project
   Gutenberg wraps around a book (header, license, donations) are left out of what the analysis reads, so they no longer become
   scenes of the story; the prompt also tells the model to ignore anything that is not the story.
+- While a book is analyzed, the page says what it is waiting for after the profiles (PAPER-66): "Writing the story of the book (try 1 of 3)",
+  "The story was too long: writing it again, shorter (try 2 of 3)", or "Finishing the summary of the book", instead of staying
+  on "10 of 10 profiles written".
 - The file of a book has a `storySummary` field (PAPER-54): `schemaVersion` is 2, files of version 1 are still read and have no
   story, so their characters chat as before. An imported story is limited to 24,000 characters.
 

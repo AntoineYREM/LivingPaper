@@ -32,6 +32,12 @@ public sealed class Book(BookId id, string title, string fileName, DateTimeOffse
 
     public int ProfilesTotal { get; set; }
 
+    // While the story of the book is being written: which try it is at (1, 2, ...) out of how many at most. Both are 0 when it is
+    // not being written. The first try is the normal one; the others are made because the story was too long.
+    public int StoryTry { get; set; }
+
+    public int StoryTries { get; set; }
+
     // Set when Status is Failed. ErrorCode is a stable key the interface translates; ErrorDetail is a short technical
     // text in English, never containing a secret or a passage of the book.
     public string? ErrorCode { get; set; }

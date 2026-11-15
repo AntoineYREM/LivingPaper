@@ -112,6 +112,7 @@ internal sealed class AnalysisRun(
                 current.PartsSkipped = notes.Count(note => note is { Skipped: true });
                 current.ProfilesDone = 0;
                 current.ProfilesTotal = 0;
+                current.StoryTry = current.StoryTries = 0;
             },
             cancellationToken).ConfigureAwait(false);
         await RunAllAsync(
@@ -280,8 +281,10 @@ internal sealed class AnalysisRun(
         var budget = StoryBudget.Words(textLength, options);
         var scenes = AnalysisNotes.CombineScenes(parts, options.MaxNotesLetters);
         string? shortest = null;
-        for (var attempt = 0; attempt <= Math.Max(0, options.StoryTighteningRetries); attempt++)
+        var tries = Math.Max(0, options.StoryTighteningRetries) + 1;
+        for (var attempt = 0; attempt < tries; attempt++)
         {
+            await UpdateAsync(current => (current.StoryTry, current.StoryTries) = (attempt + 1, tries), CancellationToken.None).ConfigureAwait(false);
             var asked = (int)(budget * Math.Pow(StoryBudget.Tightening, attempt));
             var system = await RenderAsync(
                 PromptKeys.StorySummary,
@@ -323,6 +326,7 @@ internal sealed class AnalysisRun(
                 current.ErrorDetail = null;
                 current.PartsDone = current.PartsTotal;
                 current.ProfilesDone = current.ProfilesTotal;
+                current.StoryTry = current.StoryTries = 0;
                 current.FinishedAt = clock.GetUtcNow();
                 AddUsage(current);
             },

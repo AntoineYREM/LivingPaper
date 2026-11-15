@@ -308,6 +308,31 @@ public sealed class StoryAnalysisTests : IDisposable
         book.InputTokens.ShouldBe(100 * (7 + 3)); // 3 parts, the merge, 2 profiles, the summary, and 3 tries at the story.
     }
 
+    // ---- The page can say what the analysis is doing ----
+
+    [Fact]
+    public async Task WhileTheStoryIsWritten_TheBookSaysWhichTryItIsAt()
+    {
+        var seen = new List<(int Try, int Tries)>();
+        _model.Handler = (call, number) =>
+        {
+            if (call.Step == "analysis.storySummary")
+            {
+                var running = _books.Books.Values.Single();
+                seen.Add((running.StoryTry, running.StoryTries));
+                return Task.FromResult(Words(number == 1 ? 2000 : 700));
+            }
+
+            return Task.FromResult(ScriptedAnalysisModelFactory.DefaultReply(call, number).Result);
+        };
+
+        var book = await RunAsync();
+
+        seen.ShouldBe([(1, 3), (2, 3)]);
+        book.StoryTry.ShouldBe(0); // Done: nothing is being written any more.
+        book.StoryTries.ShouldBe(0);
+    }
+
     // ---- The profile no longer carries the story ----
 
     [Fact]

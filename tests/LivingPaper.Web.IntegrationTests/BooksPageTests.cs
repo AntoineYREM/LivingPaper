@@ -442,6 +442,22 @@ public partial class BooksPageTests
     }
 
     [Fact]
+    public async Task WhenTheProfilesAreDone_ThePageSaysWhatIsLeft_AndWhichTryOfTheStoryItIsAt()
+    {
+        using var factory = NewFactory();
+        using var client = NewClient(factory);
+        await SeedAsync(factory, book => { book.Status = BookStatus.Running; book.PartsTotal = 12; book.PartsDone = 12; book.ProfilesTotal = 10; book.ProfilesDone = 10; }, queued: true, title: "Summary book");
+        await SeedAsync(factory, book => { book.Status = BookStatus.Running; book.PartsTotal = 12; book.PartsDone = 12; book.ProfilesTotal = 10; book.ProfilesDone = 10; book.StoryTry = 1; book.StoryTries = 3; }, queued: true, title: "Story book");
+        await SeedAsync(factory, book => { book.Status = BookStatus.Running; book.PartsTotal = 12; book.PartsDone = 12; book.ProfilesTotal = 10; book.ProfilesDone = 10; book.StoryTry = 2; book.StoryTries = 3; }, queued: true, title: "Tight book");
+
+        var html = Decoded(await GetAsync(client));
+
+        html.ShouldContain("10 of 10 profiles written. Writing the story of the book (try 1 of 3)");
+        html.ShouldContain("10 of 10 profiles written. The story was too long: writing it again, shorter (try 2 of 3)");
+        html.ShouldContain("10 of 10 profiles written. Finishing the summary of the book");
+    }
+
+    [Fact]
     public async Task ADoneBook_ShowsItsCharactersModelDurationAndTokens()
     {
         using var factory = NewFactory();
