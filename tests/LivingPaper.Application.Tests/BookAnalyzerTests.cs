@@ -124,9 +124,9 @@ public sealed class BookAnalyzerTests : IDisposable
         book.PartsTotal.ShouldBe(3);
         book.ProfilesDone.ShouldBe(2);
         book.ProfilesTotal.ShouldBe(2);
-        book.InputTokens.ShouldBe(100 * 7);
-        book.CachedInputTokens.ShouldBe(20 * 7);
-        book.OutputTokens.ShouldBe(50 * 7);
+        book.InputTokens.ShouldBe(100 * 8);
+        book.CachedInputTokens.ShouldBe(20 * 8);
+        book.OutputTokens.ShouldBe(50 * 8);
         book.StartedAt.ShouldNotBeNull();
         book.FinishedAt.ShouldNotBeNull();
         (book.FinishedAt!.Value - book.StartedAt!.Value).ShouldBeGreaterThan(TimeSpan.FromSeconds(10));
@@ -161,7 +161,7 @@ public sealed class BookAnalyzerTests : IDisposable
 
         await RunAsync(book);
 
-        _steps.Of(book.Id).Keys.Order().ShouldBe(["merge", "part:1", "part:2", "part:3", "profile:1", "profile:2"]);
+        _steps.Of(book.Id).Keys.Order().ShouldBe(["merge", "part:1", "part:2", "part:3", "profile:1", "profile:2", "story"]);
     }
 
     [Fact]

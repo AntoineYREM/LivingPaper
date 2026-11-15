@@ -7,7 +7,8 @@ namespace LivingPaper.Application;
 // and every step saved as soon as it succeeds), so that a retry resumes where this one stopped.
 //   1. each part of the book is read; the model notes its characters (a few parts at the same time);
 //   2. the notes are merged: one character under several names becomes one, the most important are kept;
-//   3. a profile for each kept character, and the summary of the book (also a few at a time).
+//   3. a profile for each kept character, the summary of the book and the story of the book scene by scene, which the
+//      characters know when they chat (also a few at a time).
 // Everything the model writes is cut to its limit; nothing the model writes is trusted to have the right shape.
 internal sealed class AnalysisRun(
     Book book,
@@ -120,7 +121,7 @@ internal sealed class AnalysisRun(
         var allNotes = AnalysisNotes.Combine([.. notes.Select(note => note!)], options.MaxCharactersPerPart, options.MaxNotesLetters);
         var chosen = await MergeAsync(saved, allNotes, cancellationToken).ConfigureAwait(false);
 
-        // 3. The profiles and the summary.
+        // 3. The profiles, the summary and the story.
         var profiles = new string?[chosen.Count];
         for (var index = 0; index < chosen.Count; index++)
         {
@@ -128,6 +129,8 @@ internal sealed class AnalysisRun(
         }
 
         string? summary = saved.GetValueOrDefault(SummaryKey) is { Length: > 0 } storedSummary ? storedSummary : null;
+        string? story = saved.GetValueOrDefault(StoryKey) is { Length: > 0 } storedStory ? storedStory : null;
+        var partNotes = notes.Select(note => note!).ToList();
         await UpdateAsync(
             current =>
             {
@@ -143,9 +146,16 @@ internal sealed class AnalysisRun(
             work.Add(async token => summary = await WriteSummaryAsync(allNotes, token).ConfigureAwait(false));
         }
 
+        // The story is told from the scenes the parts gave. With none, there is nothing to tell: the book has no story, which the
+        // chat copes with, and that is said in StorySummaryPartial.
+        if (story is null && AnalysisNotes.HasScenes(partNotes))
+        {
+            work.Add(async token => story = await WriteStoryAsync(partNotes, text!.Length, token).ConfigureAwait(false));
+        }
+
         await RunAllAsync(work, cancellationToken).ConfigureAwait(false);
 
-        await FinishAsync(chosen, profiles!, summary!, cancellationToken).ConfigureAwait(false);
+        await FinishAsync(chosen, profiles!, summary!, story, AnalysisNotes.HasGaps(partNotes) || story is null, cancellationToken).ConfigureAwait(false);
     }
 
     private async Task PrepareModelAsync(CancellationToken cancellationToken)
@@ -176,13 +186,19 @@ internal sealed class AnalysisRun(
     private async Task<PartNotes> ReadPartAsync(int index, string part, CancellationToken cancellationToken)
     {
         var variables = Variables((PromptVariables.BookTitle, book.Title));
-        List<CharacterNote>? read = null;
+        PartRead? read = null;
         foreach (var key in new[] { PromptKeys.ReadPart, PromptKeys.ReadPartSimple })
         {
             try
             {
                 var system = await RenderAsync(key, variables, cancellationToken).ConfigureAwait(false);
-                read = await AskAsync(system, part, (string reply, out List<CharacterNote> notes) => AnalysisNotes.TryReadPart(reply, out notes), cancellationToken).ConfigureAwait(false);
+                read = await AskAsync(system, part, (string reply, out PartRead result) => AnalysisNotes.TryReadPart(reply, out result), cancellationToken).ConfigureAwait(false);
+                // The simple notes hold no scenes, whatever the model adds: the story has a hole where this part is.
+                if (key == PromptKeys.ReadPartSimple)
+                {
+                    read = read with { Scenes = null };
+                }
+
                 break;
             }
             catch (ContentFilteredException)
@@ -194,7 +210,7 @@ internal sealed class AnalysisRun(
 
         // What the model has answered was paid for: it is saved even if a neighbouring step has just failed and stopped the
         // others, so the retry does not pay for it again.
-        var notes = new PartNotes(index + 1, Skipped: read is null, read ?? []);
+        var notes = new PartNotes(index + 1, Skipped: read is null, read?.Characters ?? [], read?.Scenes);
         await steps.SaveAsync(book.Id, PartKey(index), AnalysisNotes.Serialize(notes), CancellationToken.None).ConfigureAwait(false);
         await UpdateAsync(
             current =>
@@ -254,9 +270,25 @@ internal sealed class AnalysisRun(
         return summary;
     }
 
+    // The story of the whole book, scene by scene, from the scenes of every part: at most StoryBudget words, the number depending on
+    // the length of the book.
+    private async Task<string> WriteStoryAsync(List<PartNotes> parts, int textLength, CancellationToken cancellationToken)
+    {
+        var system = await RenderAsync(
+            PromptKeys.StorySummary,
+            Variables(
+                (PromptVariables.BookTitle, book.Title),
+                (PromptVariables.MaxWords, StoryBudget.Words(textLength, options).ToString(System.Globalization.CultureInfo.InvariantCulture))),
+            cancellationToken).ConfigureAwait(false);
+        var scenes = AnalysisNotes.CombineScenes(parts, options.MaxNotesLetters);
+        var story = CharacterLimits.Clip(await AskTextStepAsync(system, scenes, cancellationToken).ConfigureAwait(false), CharacterLimits.StorySummary);
+        await steps.SaveAsync(book.Id, StoryKey, story, CancellationToken.None).ConfigureAwait(false);
+        return story;
+    }
+
     // ---- The end ----
 
-    private async Task FinishAsync(List<ChosenCharacter> chosen, string[] profiles, string summary, CancellationToken cancellationToken)
+    private async Task FinishAsync(List<ChosenCharacter> chosen, string[] profiles, string summary, string? story, bool storyPartial, CancellationToken cancellationToken)
     {
         await UpdateAsync(
             current =>
@@ -264,6 +296,8 @@ internal sealed class AnalysisRun(
                 current.Characters.Clear();
                 current.Characters.AddRange(chosen.Select((character, index) => new Character(index + 1, character.Name, character.ShortDescription, profiles[index])));
                 current.Summary = summary;
+                current.StorySummary = story;
+                current.StorySummaryPartial = storyPartial;
                 current.ProviderName = CharacterLimits.Clip(_provider.Name, BookLimits.ProviderName);
                 current.Model = CharacterLimits.Clip(_provider.Model, BookLimits.ModelName);
                 current.Status = BookStatus.Done;
@@ -473,4 +507,6 @@ internal sealed class AnalysisRun(
     private const string MergeKey = "merge";
 
     private const string SummaryKey = "summary";
+
+    private const string StoryKey = "story";
 }

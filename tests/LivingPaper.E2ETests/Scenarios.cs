@@ -109,6 +109,9 @@ public sealed class ChatWithACharacter : E2ETest
         var body = Llm.Bodies.Last(b => b.Contains("You play ", StringComparison.Ordinal));
         body.ShouldContain("Marguerite Voss");
         body.ShouldContain("Hello, who are you?");
+
+        // And the story of the book, scene by scene, that the analysis wrote: the character knows what happened.
+        body.ShouldContain("Scene 1. A storm rises over the island");
     }
 
     [Fact]

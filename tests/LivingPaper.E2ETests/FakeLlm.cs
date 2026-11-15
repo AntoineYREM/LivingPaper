@@ -23,6 +23,7 @@ internal sealed class FakeLlm : IAsyncDisposable
 
     private static readonly string[] Maggie = ["Maggie"];
     private static readonly string[] NoOtherName = [];
+    private static readonly string[] Together = ["Marguerite Voss", "Captain Alder"];
 
     private readonly WebApplication _app;
     private readonly List<string> _bodies = [];
@@ -172,6 +173,10 @@ internal sealed class FakeLlm : IAsyncDisposable
                     new { name = "Marguerite Voss", otherNames = Maggie, role = "The keeper of the lighthouse.", personality = "Stubborn, tender, afraid of the sea.", speech = "Short sentences, dry humour.", events = "She writes to her brother and keeps the light on.", importance = 9 },
                     new { name = "Captain Alder", otherNames = NoOtherName, role = "A retired sailor who brings the letters.", personality = "Gentle, talkative, proud of his past.", speech = "Sea words, long stories.", events = "He rows to the island each week.", importance = 6 },
                 },
+                scenes = new object[]
+                {
+                    new { summary = "Marguerite keeps the light on while a storm rises, and Captain Alder rows over with a letter.", present = Together },
+                },
             });
         }
 
@@ -191,6 +196,11 @@ internal sealed class FakeLlm : IAsyncDisposable
         {
             return "Marguerite speaks in short, dry sentences and hides her fear of the sea behind jokes. She keeps the light of the lighthouse, "
                 + "writes every week to her brother, and trusts only Captain Alder, who brings the letters. She knows the whole story, to the last storm.";
+        }
+
+        if (body.Contains("Write the story of the whole book, scene by scene", StringComparison.Ordinal))
+        {
+            return "Scene 1. A storm rises over the island: Marguerite keeps the light on and Captain Alder rows over with a letter. Present: Marguerite Voss, Captain Alder.";
         }
 
         if (body.Contains("summary of the atmosphere", StringComparison.Ordinal))
