@@ -9,7 +9,7 @@
   "nav.settings": "Settings",
 
   "settings.title": "Settings",
-  "settings.lead": "The language models LivingPaper talks to. You bring your own: any provider that speaks the OpenAI API will do.",
+  "settings.lead": "The language models LivingPaper talks to. You bring your own: any provider with an OpenAI-compatible chat API, such as OpenAI or a local server like Ollama or LM Studio.",
 
   "settings.alert.done": "Done",
   "settings.alert.error": "Error",
@@ -108,7 +108,6 @@
   "books.status.running": "Analysis in progress",
   "books.status.failed": "Analysis failed",
   "books.status.done": "Analyzed",
-  "books.file": "File",
   "books.delete.button": "Delete",
   "books.delete.label": "Delete {title}",
   "books.delete.warning": "This deletes the book, its analysis and its characters. It cannot be undone.",
@@ -235,7 +234,7 @@
   "nav.examples": "Examples",
   "nav.backToExamples": "Back to the examples",
   "examples.title": "Examples",
-  "examples.lead": "Public-domain books already analyzed, so that you can try LivingPaper without a key. Read them, chat with their characters (once a model is chosen for the chat) or add one to your library to make it yours.",
+  "examples.lead": "Public-domain books, already analyzed. Read them without a key, chat with their characters once a model is chosen for the chat, or add one to your library to make it yours.",
   "examples.empty.title": "No example comes with this installation.",
   "examples.empty.body": "The examples are the files of the examples folder. CONTRIBUTING.md tells how to propose one.",
   "examples.add": "Add to my library",

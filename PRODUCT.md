@@ -41,7 +41,7 @@ as plain JSON files, open source, no account.)
   books and one to chat.
 - Books and analyses are JSON files in a `data/` directory. The book file is deleted after a successful analysis.
 - Analysis runs in the background, one book at a time, and can take minutes. Progress, tokens used and duration are shown.
-- Interface in English and French from the start. Everything the analysis writes is in English whatever the book's
+- Interface in English only for now (French is translated and kept in reserve). Everything the analysis writes is in English whatever the book's
   language; the chat answers in the language the user writes in.
 
 ## Capabilities and Constraints
@@ -85,5 +85,5 @@ Terminology: "book", "character", "profile", "analysis", "model" (a configured l
 
 - WCAG AA contrast at minimum, full keyboard navigation, visible labels on every form field, errors shown next to the
   field and in words, `prefers-reduced-motion` respected, text that can be enlarged without breaking the layout.
-- Two languages from the start (English and French): no layout may depend on English text lengths.
+- Two languages are kept working (English and French, French in reserve): no layout may depend on English text lengths.
 - Supported browsers: recent Chrome, Edge, Firefox and Safari, on phone and desktop.

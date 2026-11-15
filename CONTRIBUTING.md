@@ -62,7 +62,7 @@ under **CC0** ([examples/LICENSE](examples/LICENSE)): by proposing an example yo
 
 ## Proposing an example
 
-The **Examples** page shows books of the public domain that are already analyzed, so that LivingPaper can be tried without a key.
+The **Examples** page shows books of the public domain that are already analyzed, readable without a key (chatting with the characters needs a model).
 Each one is a file of the `examples/` folder, by pull request.
 
 An example is a **book of LivingPaper as it is stored**: the file `data/books/{id}.json` that the application writes when it has
@@ -129,7 +129,7 @@ interface: it is data, not interface.
 - a text has the same `{variables}` in every language, and each plural has both its forms;
 - a sentence is not left identical in English and French;
 - every key used in a view or in the code exists in `en.json`;
-- no view contains a text written in it (the design reference page `/Design`, shown in development only, is the exception);
+- no view contains a text written in it (the design reference page `/design`, shown in development only, is the exception);
 - every language of `SupportedLanguages` has its file, and every file is a supported language.
 
 If a text is missing in a language at run time, the English text is shown and a warning is logged; if it exists nowhere, the
@@ -141,7 +141,8 @@ name of the file and the key.
 1. Copy `Resources/en.json` to `Resources/<code>.json` (for example `de.json`) and translate every text. Keep the
    `{variables}`; add the plural forms your language needs under `.one` and `.other`.
 2. Add the language to the list in `src/LivingPaper.Web/Localization/SupportedLanguages.cs`, with its code and its own name
-   (`new("de", "Deutsch")`).
+   (`new("de", "Deutsch")`). The site only offers the languages of the `LANGUAGES` setting (English alone by default): add
+   the code to it to see the new language.
 3. If the language does not use the rule of English or French for plurals (`one` for 1, or for 0 and 1), add its rule in
    `TextLocalizer.IsSingular`.
 4. Run `dotnet test`: it tells you which key or variable is missing.

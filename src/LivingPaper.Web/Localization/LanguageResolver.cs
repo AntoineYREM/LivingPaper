@@ -9,17 +9,30 @@ public static class LanguageResolver
     // A browser sends a few hundred bytes. Anything longer is read only up to here, so a hostile header costs nothing.
     private const int MaxHeaderLength = 2048;
 
-    public static string Resolve(string? cookieValue, string? acceptLanguage)
+    // Among every language that has a translation file.
+    public static string Resolve(string? cookieValue, string? acceptLanguage) =>
+        Resolve(cookieValue, acceptLanguage, OfferedLanguages.Parse(string.Join(',', SupportedLanguages.All.Select(language => language.Code))));
+
+    // Among the languages the site offers (the LANGUAGES setting): a cookie or a browser asking for another one is ignored.
+    public static string Resolve(string? cookieValue, string? acceptLanguage, OfferedLanguages offered)
     {
-        if (SupportedLanguages.TryFind(cookieValue, out var chosen))
+        ArgumentNullException.ThrowIfNull(offered);
+        return Resolve(cookieValue, acceptLanguage, offered.TryFind);
+    }
+
+    private delegate bool Find(string? code, out LanguageInfo language);
+
+    private static string Resolve(string? cookieValue, string? acceptLanguage, Find find)
+    {
+        if (find(cookieValue, out var chosen))
         {
             return chosen.Code;
         }
 
-        return FromBrowser(acceptLanguage) ?? SupportedLanguages.Default.Code;
+        return FromBrowser(acceptLanguage, find) ?? SupportedLanguages.Default.Code;
     }
 
-    private static string? FromBrowser(string? header)
+    private static string? FromBrowser(string? header, Find find)
     {
         if (string.IsNullOrWhiteSpace(header))
         {
@@ -33,7 +46,7 @@ public static class LanguageResolver
         {
             position++;
             if (TryRead(entry, out var tag, out var quality)
-                && SupportedLanguages.TryFind(tag.Split('-')[0], out var language))
+                && find(tag.Split('-')[0], out var language))
             {
                 best.Add((quality, position, language.Code));
             }

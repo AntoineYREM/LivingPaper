@@ -1,4 +1,4 @@
-@page "/Book/{id}/Character/{position:int}"
+@page "/books/{id}/characters/{position:int}"
 @model LivingPaper.Web.Pages.Books.CharacterModel
 @* The sheet of a character. The words come from the translation files. *@
 @{
@@ -10,7 +10,7 @@
     var profileError = ErrorOf("chatProfile");
 }
 
-<p class="crumb"><a href="~/Book/@Model.Book.Id">@T.Format("nav.backToBook", new { title = Model.Book.Title })</a></p>
+<p class="crumb"><a href="~/books/@Model.Book.Id">@T.Format("nav.backToBook", new { title = Model.Book.Title })</a></p>
 <h1>@Model.Character.Name</h1>
 <p class="lead" lang="en">@Model.Character.ShortDescription</p>
 
@@ -37,7 +37,7 @@
     </div>
 </section>
 
-<p><a class="button js-only" href="~/Book/@Model.Book.Id/Character/@Model.Character.Position/Chat">@T.Format("chat.start", new { name = Model.Character.Name })</a></p>
+<p><a class="button js-only" href="~/books/@Model.Book.Id/characters/@Model.Character.Position/chat">@T.Format("chat.start", new { name = Model.Character.Name })</a></p>
 
 <hr class="ornament" />
 

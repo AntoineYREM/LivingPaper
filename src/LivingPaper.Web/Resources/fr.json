@@ -9,7 +9,7 @@
   "nav.settings": "Paramètres",
 
   "settings.title": "Paramètres",
-  "settings.lead": "Les modèles de langage avec lesquels LivingPaper dialogue. Vous apportez les vôtres : tout fournisseur qui parle l’API d’OpenAI convient.",
+  "settings.lead": "Les modèles de langage avec lesquels LivingPaper dialogue. Vous apportez les vôtres : tout fournisseur doté d’une API de chat compatible OpenAI, comme OpenAI ou un serveur local tel qu’Ollama ou LM Studio.",
 
   "settings.alert.done": "Fait",
   "settings.alert.error": "Erreur",
@@ -108,7 +108,6 @@
   "books.status.running": "Analyse en cours",
   "books.status.failed": "Analyse échouée",
   "books.status.done": "Analysé",
-  "books.file": "Fichier",
   "books.delete.button": "Supprimer",
   "books.delete.label": "Supprimer {title}",
   "books.delete.warning": "Cela supprime le livre, son analyse et ses personnages. C’est définitif.",
@@ -235,7 +234,7 @@
   "nav.examples": "Exemples",
   "nav.backToExamples": "Retour aux exemples",
   "examples.title": "Exemples",
-  "examples.lead": "Des livres du domaine public déjà analysés, pour essayer LivingPaper sans clé. Lisez-les, discutez avec leurs personnages (dès qu’un modèle est choisi pour le chat) ou ajoutez-en un à votre bibliothèque pour le faire vôtre.",
+  "examples.lead": "Des livres du domaine public, déjà analysés. Lisez-les sans clé, discutez avec leurs personnages dès qu’un modèle est choisi pour le chat, ou ajoutez-en un à votre bibliothèque pour le faire vôtre.",
   "examples.empty.title": "Aucun exemple n’est fourni avec cette installation.",
   "examples.empty.body": "Les exemples sont les fichiers du dossier examples. CONTRIBUTING.md explique comment en proposer un.",
   "examples.add": "Ajouter à ma bibliothèque",

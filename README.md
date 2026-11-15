@@ -11,7 +11,7 @@ own API key for any OpenAI-compatible provider (OpenAI, another vendor, or a mod
 
 ## Screenshots
 
-The shipped examples, in the interface (English; French is one click away). Black ink on white paper, like a printed novel.
+The shipped examples, in the interface. Black ink on white paper, like a printed novel.
 
 | The examples | The characters of a book | Chat with a character |
 |---|---|---|
@@ -27,11 +27,11 @@ On a phone, the same pages fit the screen:
   used shown at the end.
 - **Get the 10 main characters**, each with a short description and a personality profile that you can edit.
 - **Chat with a character**: first person, short text-message replies, streamed, in the language you write in. Nothing is stored.
-- **Try it without a key**: the **Examples** page has public-domain books that are already analyzed (*Le Malade imaginaire*,
+- **Read the examples without a key**: the **Examples** page has public-domain books that are already analyzed (*Le Malade imaginaire*,
   *L'Avare*, *Don Juan*); a model is only needed to chat.
 - **Export and import** a book as a JSON file, to move it or share it.
 - **Read and edit every prompt** in `data/prompts.json`.
-- **English and French** interface.
+- **English** interface. French is translated and kept in reserve: add it to the `LANGUAGES` setting to bring it back.
 - **Your data stays with you**: plain JSON files in a folder, API keys encrypted at rest, book text deleted after the analysis.
 
 ## Quick start (Docker)
@@ -204,7 +204,7 @@ Everything the analysis writes is in English, whatever the language of the book.
 
 ## The page of a book and the sheets of its characters
 
-The page of a book (`/Book/{id}`) shows, once the analysis is done, the summary of its atmosphere, a warning that characters
+The page of a book (`/books/{id}`) shows, once the analysis is done, the summary of its atmosphere, a warning that characters
 know the whole book (**spoilers**), and the characters, the most important first. While the analysis runs it shows the
 progress and, with JavaScript, opens on the characters by itself when it ends; a failed or interrupted analysis shows why,
 with **Retry**.
@@ -235,8 +235,8 @@ into the field.
 
 ## The examples
 
-The **Examples** page shows public-domain books that are already analyzed, so you can try LivingPaper without a key: read the
-summary and the sheets, and chat with the characters once a model is chosen for the chat. Examples are read only: they cannot be
+The **Examples** page shows public-domain books that are already analyzed: you can read the
+summary and the sheets without a key, and chat with the characters once a model is chosen for the chat. Examples are read only: they cannot be
 edited, retried or deleted. **Add to my library** copies one into your library (a book titled the same as one you already have is
 refused), where you can edit its sheets like any other book.
 
@@ -251,7 +251,7 @@ its characters and their sheets (the edits you made included), and how it was an
 format as the files of `data/books/` and of the examples. It holds no API key, no setting, no path of your machine and not the
 text of the book: the file is built field by field from the book, so nothing else can get in.
 
-**Import** (`/Import`, from the library) adds an analyzed book from such a file, on this installation or another one. The file is
+**Import** (`/import`, from the library) adds an analyzed book from such a file, on this installation or another one. The file is
 untrusted input and is checked before anything is kept: at most 1 MB, valid JSON of the shape of a book, a known `schemaVersion`
 (a file from a newer LivingPaper is refused with its own message), required fields, numbers in range, texts no longer than the
 limits of the analysis, sheets that follow the rules of a sheet (names distinct, no control characters). Only a book whose

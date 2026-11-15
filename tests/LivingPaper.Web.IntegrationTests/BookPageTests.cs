@@ -91,7 +91,7 @@ public partial class BookPageTests
         using var client = NewClient(factory);
         var book = await SeedDoneAsync(factory);
 
-        var (status, raw) = await GetAsync(client, "/Book/" + book.Id);
+        var (status, raw) = await GetAsync(client, "/books/" + book.Id);
         var html = Decoded(raw);
 
         status.ShouldBe(HttpStatusCode.OK);
@@ -102,8 +102,8 @@ public partial class BookPageTests
         html.ShouldContain("Characters know the whole book, ending included.");
         html.IndexOf("Argan", StringComparison.Ordinal).ShouldBeLessThan(html.IndexOf("Toinette", StringComparison.Ordinal));
         html.ShouldContain("The imaginary invalid.");
-        html.ShouldContain($"href=\"/Book/{book.Id}/Character/1\"");
-        html.ShouldContain($"href=\"/Book/{book.Id}/Character/2\"");
+        html.ShouldContain($"href=\"/books/{book.Id}/characters/1\"");
+        html.ShouldContain($"href=\"/books/{book.Id}/characters/2\"");
         html.ShouldContain("aria-label=\"Read the sheet of Argan\"");
         html.ShouldContain("gpt-5-nano (OpenAI)");
         html.ShouldContain("2 min 14 s");
@@ -119,8 +119,8 @@ public partial class BookPageTests
         using var client = NewClient(factory);
         var book = await SeedDoneAsync(factory);
 
-        var bookPage = Decoded((await GetAsync(client, "/Book/" + book.Id, "fr")).Html);
-        var sheet = Decoded((await GetAsync(client, $"/Book/{book.Id}/Character/1", "fr")).Html);
+        var bookPage = Decoded((await GetAsync(client, "/books/" + book.Id, "fr")).Html);
+        var sheet = Decoded((await GetAsync(client, $"/books/{book.Id}/characters/1", "fr")).Html);
 
         bookPage.ShouldContain("<html lang=\"fr\"");
         bookPage.ShouldContain("<p class=\"lead\" lang=\"en\">France, 1673.");
@@ -136,12 +136,12 @@ public partial class BookPageTests
         using var client = NewClient(factory);
         var book = await SeedDoneAsync(factory);
 
-        var cast = (await GetAsync(client, "/Book/" + book.Id)).Html;
+        var cast = (await GetAsync(client, "/books/" + book.Id)).Html;
         var sheet = (await GetAsync(client, SheetPath(book))).Html;
 
-        Regex.IsMatch(cast, $@"<a[^>]*class=""button button--small js-only""[^>]*href=""/Book/{book.Id}/Character/1/Chat""").ShouldBeTrue();
-        Regex.IsMatch(cast, $@"href=""/Book/{book.Id}/Character/2/Chat""").ShouldBeTrue();
-        Regex.IsMatch(sheet, $@"<a[^>]*class=""button js-only""[^>]*href=""/Book/{book.Id}/Character/1/Chat""[^>]*>Chat with Argan</a>").ShouldBeTrue();
+        Regex.IsMatch(cast, $@"<a[^>]*class=""button button--small js-only""[^>]*href=""/books/{book.Id}/characters/1/chat""").ShouldBeTrue();
+        Regex.IsMatch(cast, $@"href=""/books/{book.Id}/characters/2/chat""").ShouldBeTrue();
+        Regex.IsMatch(sheet, $@"<a[^>]*class=""button js-only""[^>]*href=""/books/{book.Id}/characters/1/chat""[^>]*>Chat with Argan</a>").ShouldBeTrue();
         cast.ShouldContain("/js/js-flag.js");
     }
 
@@ -152,7 +152,7 @@ public partial class BookPageTests
         using var client = NewClient(factory);
         var book = await SeedDoneAsync(factory, done => done.PartsSkipped = 1);
 
-        Decoded((await GetAsync(client, "/Book/" + book.Id)).Html).ShouldContain("A part of the book was refused by the content filter");
+        Decoded((await GetAsync(client, "/books/" + book.Id)).Html).ShouldContain("A part of the book was refused by the content filter");
     }
 
     [Fact]
@@ -162,14 +162,14 @@ public partial class BookPageTests
         using var client = NewClient(factory);
         var book = await SeedAsync(factory, running => { running.Status = BookStatus.Running; running.PartsTotal = 8; running.PartsDone = 3; }, queued: true);
 
-        var (_, raw) = await GetAsync(client, "/Book/" + book.Id);
+        var (_, raw) = await GetAsync(client, "/books/" + book.Id);
         var html = Decoded(raw);
-        var (_, fragment) = await GetAsync(client, $"/Book/{book.Id}?handler=Progress");
+        var (_, fragment) = await GetAsync(client, $"/books/{book.Id}?handler=Progress");
 
         html.ShouldContain("Analysis in progress");
         html.ShouldContain("3 of 8 parts read");
         html.ShouldContain("You can leave this page");
-        html.ShouldContain($"data-refresh-url=\"/Book/{book.Id}?handler=Progress\"");
+        html.ShouldContain($"data-refresh-url=\"/books/{book.Id}?handler=Progress\"");
         html.ShouldContain("/js/book.js");
         html.ShouldNotContain("The characters");
         fragment.ShouldNotContain("<html");
@@ -184,7 +184,7 @@ public partial class BookPageTests
         using var client = NewClient(factory);
         var book = await SeedDoneAsync(factory);
 
-        var (status, fragment) = await GetAsync(client, $"/Book/{book.Id}?handler=Progress");
+        var (status, fragment) = await GetAsync(client, $"/books/{book.Id}?handler=Progress");
 
         status.ShouldBe(HttpStatusCode.OK);
         fragment.ShouldContain("data-state=\"stopped\"");
@@ -208,7 +208,7 @@ public partial class BookPageTests
         using var factory = NewFactory();
         using var client = NewClient(factory);
         var book = await SeedAsync(factory, failed => { failed.Status = BookStatus.Failed; failed.ErrorCode = "NoModel"; });
-        var path = "/Book/" + book.Id;
+        var path = "/books/" + book.Id;
 
         var html = Decoded((await GetAsync(client, path)).Html);
         using var retry = await PostAsync(client, $"{path}?handler=Retry", [], tokenPage: path);
@@ -231,19 +231,19 @@ public partial class BookPageTests
         using var client = NewClient(factory);
         var done = await SeedDoneAsync(factory);
 
-        using var first = await PostAsync(client, $"/Book/{done.Id}?handler=Retry", [], tokenPage: "/");
-        using var second = await PostAsync(client, "/Book/0123456789abcdef0123456789abcdef?handler=Retry", [], tokenPage: "/");
+        using var first = await PostAsync(client, $"/books/{done.Id}?handler=Retry", [], tokenPage: "/");
+        using var second = await PostAsync(client, "/books/0123456789abcdef0123456789abcdef?handler=Retry", [], tokenPage: "/");
 
         first.StatusCode.ShouldBe(HttpStatusCode.NotFound);
         second.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Theory]
-    [InlineData("/Book/nope")]
-    [InlineData("/Book/0123456789abcdef0123456789abcdef")]
-    [InlineData("/Book/..%2F..%2Fetc")]
-    [InlineData("/Book/0123456789abcdef0123456789abcdef/Character/1")]
-    [InlineData("/Book/0123456789abcdef0123456789abcdef?handler=Progress")]
+    [InlineData("/books/nope")]
+    [InlineData("/books/0123456789abcdef0123456789abcdef")]
+    [InlineData("/books/..%2F..%2Fetc")]
+    [InlineData("/books/0123456789abcdef0123456789abcdef/characters/1")]
+    [InlineData("/books/0123456789abcdef0123456789abcdef?handler=Progress")]
     public async Task ABookThatIsNotThere_IsAFriendly404_NotAnEmptyPage(string path)
     {
         using var factory = NewFactory();
@@ -289,7 +289,7 @@ public partial class BookPageTests
         using var client = NewClient(factory);
 
         var home = (await GetAsync(client, "/")).Html;
-        var settings = (await GetAsync(client, "/Settings")).Html;
+        var settings = (await GetAsync(client, "/settings")).Html;
         var french = Decoded((await GetAsync(client, "/", "fr")).Html);
 
         Regex.IsMatch(home, @"<a[^>]*href=""/""[^>]*aria-current=""page""[^>]*>Library</a>").ShouldBeTrue();
@@ -305,7 +305,7 @@ public partial class BookPageTests
         using var client = NewClient(factory);
         var book = await SeedDoneAsync(factory, done => done.Characters[0] = new Character(2, "<script>alert(1)</script>", "d", "p"));
 
-        var (_, raw) = await GetAsync(client, "/Book/" + book.Id, "fr");
+        var (_, raw) = await GetAsync(client, "/books/" + book.Id, "fr");
         var html = Decoded(raw);
 
         html.ShouldContain("Divulgâcheurs");
@@ -330,7 +330,7 @@ public partial class BookPageTests
         html.ShouldContain("class=\"contents\"");
         foreach (var book in new[] { done, failed, waiting })
         {
-            html.ShouldContain($"href=\"/Book/{book.Id}\"");
+            html.ShouldContain($"href=\"/books/{book.Id}\"");
         }
 
         html.ShouldContain("Analyzed");
@@ -354,7 +354,7 @@ public partial class BookPageTests
 
     // ---- The sheet of a character ----
 
-    private static string SheetPath(Book book, int position = 1) => $"/Book/{book.Id}/Character/{position}";
+    private static string SheetPath(Book book, int position = 1) => $"/books/{book.Id}/characters/{position}";
 
     [Fact]
     public async Task TheSheet_ShowsTheDescriptionAndTheProfileInParagraphs_FirstWithADropCap()
@@ -372,7 +372,7 @@ public partial class BookPageTests
         html.ShouldContain("The imaginary invalid.");
         Regex.IsMatch(html, @"<p class=""dropcap"">I am Argan\.</p>").ShouldBeTrue();
         html.ShouldContain("<p>I am afraid to die.</p>");
-        html.ShouldContain($"href=\"/Book/{book.Id}\"");
+        html.ShouldContain($"href=\"/books/{book.Id}\"");
         html.ShouldContain("Spoilers");
     }
 

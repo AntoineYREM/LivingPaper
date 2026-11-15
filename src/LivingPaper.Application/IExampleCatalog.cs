@@ -2,8 +2,8 @@ using LivingPaper.Domain;
 
 namespace LivingPaper.Application;
 
-// The example books shipped with the application: public-domain books already analyzed, so the application can be tried
-// without a key. Read only: nothing here can be changed or deleted from the interface. Each one is in the format of a book
+// The example books shipped with the application: public-domain books already analyzed, readable without a key (the chat
+// needs a model). Read only: nothing here can be changed or deleted from the interface. Each one is in the format of a book
 // of the library (and of an export), and is checked like any book read from a file.
 public interface IExampleCatalog
 {

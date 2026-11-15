@@ -89,7 +89,7 @@ public partial class ChatTests
         return book;
     }
 
-    private static string ChatPath(Book book, int position = 2) => $"/Book/{book.Id}/Character/{position}/Chat";
+    private static string ChatPath(Book book, int position = 2) => $"/books/{book.Id}/characters/{position}/chat";
 
     private static string Messages(params (string Role, string Content)[] messages) =>
         JsonSerializer.Serialize(new { messages = messages.Select(message => new { role = message.Role, content = message.Content }) });
@@ -138,7 +138,7 @@ public partial class ChatTests
         Regex.Count(html, @"<h1\b").ShouldBe(1);
         html.ShouldContain("<h1>Chat with Toinette</h1>");
         html.ShouldContain("Spoilers");
-        html.ShouldContain($"data-endpoint=\"/Book/{book.Id}/Character/2/Chat?handler=Message\"");
+        html.ShouldContain($"data-endpoint=\"/books/{book.Id}/characters/2/chat?handler=Message\"");
         html.ShouldContain("data-max-length=\"4000\"");
         html.ShouldContain("maxlength=\"4000\"");
         html.ShouldContain("for=\"chat-message\"");
@@ -204,14 +204,14 @@ public partial class ChatTests
         var html = WebUtility.HtmlDecode(await client.GetStringAsync(ChatPath(book), Token));
 
         html.ShouldContain("Chat is off");
-        Regex.IsMatch(html, @"<a[^>]*href=""/Settings""").ShouldBeTrue();
+        Regex.IsMatch(html, @"<a[^>]*href=""/settings""").ShouldBeTrue();
         html.ShouldNotContain("id=\"chat-form\"");
         html.ShouldNotContain("chat-texts");
     }
 
     [Theory]
-    [InlineData("/Book/nope/Character/1/Chat")]
-    [InlineData("/Book/0123456789abcdef0123456789abcdef/Character/1/Chat")]
+    [InlineData("/books/nope/characters/1/chat")]
+    [InlineData("/books/0123456789abcdef0123456789abcdef/characters/1/chat")]
     public async Task AnUnknownBook_IsA404(string path)
     {
         using var factory = NewFactory(new StreamingChatFactory());

@@ -7,6 +7,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Changed
+
+- The addresses are in lowercase and plural (PAPER-59): `/settings`, `/examples`, `/books/{id}`,
+  `/books/{id}/characters/{position}/chat`, `/books/{id}/export`. The old addresses (`/Settings`, `/Book/{id}/...`, any capitals)
+  are redirected for good (301), so each page has a single address; forms and the chat are not affected.
+- The interface is in English only for now (PAPER-57): the language switch is hidden and a browser or an old cookie asking for
+  French gets English. French stays translated and tested; the `LANGUAGES` setting (`en,fr`) brings it back, with the switch.
+- The name of the uploaded file is no longer shown (PAPER-61): not in the library, not in the examples, not on the page of a
+  book. It is still kept in the JSON file of the book.
+
+### Fixed
+
+- The link "Back to the library" (and "Back to the examples") on the page of a book works again (PAPER-62): it led to
+  `/books/~/` because `~/` was not resolved inside a C# expression.
+- The interface and the documentation no longer say that LivingPaper can be tried without a key (PAPER-58): the examples can
+  be read without a key, but chatting with a character needs a model chosen for the chat.
+- The Settings page no longer promises that any provider that speaks the OpenAI API will do (PAPER-60): it asks for a provider
+  with an OpenAI-compatible chat API and names OpenAI, Ollama and LM Studio as examples.
+
 ## [0.1.0] - 2026-11-12
 
 ### Added

@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace LivingPaper.Web.Pages;
 
-// The examples: public-domain books already analyzed, shipped with the application so it can be tried without a key. They are
+// The examples: public-domain books already analyzed, shipped with the application and readable without a key (the chat needs a model). They are
 // read only: they open on the same pages as a book of the library, without what changes a book, and the only thing that can be
 // done with one is to copy it into the library, where it becomes a book like any other.
 public class ExamplesModel(BookService books, BookPresenter presenter, ITextLocalizer texts) : PageModel

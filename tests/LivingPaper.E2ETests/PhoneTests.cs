@@ -24,7 +24,7 @@ public sealed class OnAPhone : E2ETest
         await Page.GotoAsync("/");
         await ShouldFitAsync("library");
 
-        await Page.GotoAsync("/Examples");
+        await Page.GotoAsync("/examples");
         await ShouldFitAsync("examples");
 
         await Page.GetByRole(AriaRole.Link, new PageGetByRoleOptions { Name = "Le Malade imaginaire" }).First.ClickAsync();

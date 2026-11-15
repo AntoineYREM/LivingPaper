@@ -45,7 +45,7 @@ public partial class LanguageSwitchTests
             form["__RequestVerificationToken"] = token;
         }
 
-        return await client.PostAsync("/Language", new FormUrlEncodedContent(form), Token);
+        return await client.PostAsync("/language", new FormUrlEncodedContent(form), Token);
     }
 
     // ---- From the browser ----
@@ -114,7 +114,7 @@ public partial class LanguageSwitchTests
         var html = await GetAsync(client, "/", "fr");
 
         html.ShouldContain("method=\"post\"");
-        html.ShouldContain("action=\"/Language\"");
+        html.ShouldContain("action=\"/language\"");
         html.ShouldContain("__RequestVerificationToken");
         Regex.IsMatch(html, @"<button[^>]*value=""fr""[^>]*aria-current=""true""[^>]*>FR</button>|<button[^>]*aria-current=""true""[^>]*value=""fr""[^>]*>FR</button>").ShouldBeTrue("the current language is marked");
         var decoded = WebUtility.HtmlDecode(html); // Razor writes "ç" as an HTML entity.
@@ -194,7 +194,7 @@ public partial class LanguageSwitchTests
     }
 
     [Theory]
-    [InlineData("/Design?x=1", "/Design?x=1")]
+    [InlineData("/design?x=1", "/design?x=1")]
     [InlineData("/", "/")]
     [InlineData("", "/")]
     [InlineData("https://evil.example/", "/")]
@@ -220,7 +220,7 @@ public partial class LanguageSwitchTests
         using var factory = new LivingPaperFactory();
         using var client = NewClient(factory);
 
-        using var response = await client.GetAsync("/Language", Token);
+        using var response = await client.GetAsync("/language", Token);
 
         response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
         response.Headers.Location?.OriginalString.ShouldBe("/");

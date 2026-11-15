@@ -60,7 +60,7 @@ public partial class SettingsPageTests
     private static HttpClient NewClient(LivingPaperFactory factory) =>
         factory.CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false, HandleCookies = true });
 
-    private static async Task<string> GetAsync(HttpClient client, string path = "/Settings", string? acceptLanguage = null)
+    private static async Task<string> GetAsync(HttpClient client, string path = "/settings", string? acceptLanguage = null)
     {
         using var request = new HttpRequestMessage(HttpMethod.Get, path);
         if (acceptLanguage is not null)
@@ -79,7 +79,7 @@ public partial class SettingsPageTests
             form["__RequestVerificationToken"] = AntiforgeryToken().Match(await GetAsync(client)).Groups[1].Value;
         }
 
-        using var request = new HttpRequestMessage(HttpMethod.Post, "/Settings?handler=" + handler) { Content = new FormUrlEncodedContent(form) };
+        using var request = new HttpRequestMessage(HttpMethod.Post, "/settings?handler=" + handler) { Content = new FormUrlEncodedContent(form) };
         if (acceptLanguage is not null)
         {
             request.Headers.TryAddWithoutValidation("Accept-Language", acceptLanguage);
@@ -116,7 +116,7 @@ public partial class SettingsPageTests
         using var factory = NewFactory(new ScriptedChatModelFactory());
         using var client = NewClient(factory);
 
-        using var response = await client.GetAsync("/Settings", Token);
+        using var response = await client.GetAsync("/settings", Token);
         var html = await response.Content.ReadAsStringAsync(Token);
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
@@ -214,7 +214,7 @@ public partial class SettingsPageTests
         using var factory = NewFactory(new ScriptedChatModelFactory());
         using var client = NewClient(factory);
 
-        var onGet = Decoded(await GetAsync(client, "/Settings?draft=0123456789abcdef0123456789abcdef"));
+        var onGet = Decoded(await GetAsync(client, "/settings?draft=0123456789abcdef0123456789abcdef"));
         using var onPost = await PostAsync(client, "Add", new Dictionary<string, string> { ["draft"] = "0123456789abcdef0123456789abcdef", ["model"] = "gpt-5" });
         var afterPost = Decoded(await onPost.Content.ReadAsStringAsync(Token));
 
@@ -271,7 +271,7 @@ public partial class SettingsPageTests
         using var client = NewClient(factory);
         var html = await AddAsync(client);
 
-        var forms = Regex.Matches(html, @"<form\b[^>]*method=""post""[\s\S]*?</form>", RegexOptions.IgnoreCase).Select(match => match.Value).Where(form => !form.Contains("/Language", StringComparison.Ordinal)).ToList();
+        var forms = Regex.Matches(html, @"<form\b[^>]*method=""post""[\s\S]*?</form>", RegexOptions.IgnoreCase).Select(match => match.Value).Where(form => !form.Contains("/language", StringComparison.Ordinal)).ToList();
 
         forms.Count.ShouldBeGreaterThanOrEqualTo(3); // Get the models, delete, choose.
         forms.ShouldAllBe(form => form.Contains("__RequestVerificationToken", StringComparison.Ordinal));
@@ -290,7 +290,7 @@ public partial class SettingsPageTests
         using var response = await PostAsync(client, "Add", new Dictionary<string, string> { ["draft"] = DraftOf(fetched), ["model"] = "gpt-5-nano" });
 
         response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
-        response.Headers.Location?.OriginalString.ShouldStartWith("/Settings");
+        response.Headers.Location?.OriginalString.ShouldStartWith("/settings");
         var html = Decoded(await GetAsync(client, response.Headers.Location!.OriginalString));
         html.ShouldContain("OpenAI was added");
         html.ShouldContain("https://api.openai.com/v1");
@@ -596,7 +596,7 @@ public partial class SettingsPageTests
         await File.WriteAllTextAsync(path, "{ SECRET-LOOKING TEXT, not json", Token);
         using var client = NewClient(factory);
 
-        using var response = await client.GetAsync("/Settings", Token);
+        using var response = await client.GetAsync("/settings", Token);
         var html = Decoded(await response.Content.ReadAsStringAsync(Token));
 
         response.StatusCode.ShouldBe(HttpStatusCode.InternalServerError);
@@ -636,8 +636,8 @@ public partial class SettingsPageTests
         var english = await GetAsync(client, "/");
         var french = Decoded(await GetAsync(client, "/", "fr"));
 
-        Regex.IsMatch(english, @"<a[^>]*href=""/Settings""[^>]*>Settings</a>").ShouldBeTrue();
-        Regex.IsMatch(french, @"<a[^>]*href=""/Settings""[^>]*>Paramètres</a>").ShouldBeTrue();
+        Regex.IsMatch(english, @"<a[^>]*href=""/settings""[^>]*>Settings</a>").ShouldBeTrue();
+        Regex.IsMatch(french, @"<a[^>]*href=""/settings""[^>]*>Paramètres</a>").ShouldBeTrue();
     }
 
     [Fact]
@@ -646,8 +646,8 @@ public partial class SettingsPageTests
         using var factory = NewFactory(new ScriptedChatModelFactory());
         using var client = NewClient(factory);
 
-        Regex.IsMatch(await GetAsync(client), @"<a[^>]*href=""/Settings""[^>]*aria-current=""page""").ShouldBeTrue();
-        Regex.IsMatch(await GetAsync(client, "/"), @"<a[^>]*href=""/Settings""[^>]*aria-current=""page""").ShouldBeFalse();
+        Regex.IsMatch(await GetAsync(client), @"<a[^>]*href=""/settings""[^>]*aria-current=""page""").ShouldBeTrue();
+        Regex.IsMatch(await GetAsync(client, "/"), @"<a[^>]*href=""/settings""[^>]*aria-current=""page""").ShouldBeFalse();
     }
 
     [Fact]
@@ -656,7 +656,7 @@ public partial class SettingsPageTests
         using var factory = NewFactory(new ScriptedChatModelFactory());
         using var client = NewClient(factory);
 
-        (await GetAsync(client)).ShouldContain("value=\"/Settings\"");
+        (await GetAsync(client)).ShouldContain("value=\"/settings\"");
     }
 
     // ---- The texts ----

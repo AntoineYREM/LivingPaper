@@ -30,9 +30,10 @@ decision records in `docs/decisions/`.
 - Background analysis: book summary (era, place, tone) and the 10 most important characters, each with a name,
   a short description and a personality profile.
 - "My library" page (books the user analyzed) and "Examples" page (read-only, public-domain books shipped
-  already analyzed so the app can be tried without a key).
+  already analyzed: they can be read without a key, chatting with their characters needs an LLM chosen for the chat).
 - Chat with a character: first person, short SMS-like replies, streamed. Conversations are not stored.
-- UI available in English and French from the start (JSON translation files).
+- UI in **English only** for now. The translation mechanism (JSON translation files) and `fr.json` are kept in reserve:
+  the language switch is hidden and the available languages come from the configuration (`en` alone by default).
 
 **Out of V0** (planned for later): portraits, group image, video, daily budget, user accounts or site password, in-app reading,
 OCR for scanned PDFs, saved conversations.
@@ -67,7 +68,8 @@ OCR for scanned PDFs, saved conversations.
   the duration are shown at the end. It runs in a hosted `BackgroundService`, one book at a time, with progress stored
   in the database. An analysis with no progress for 10 minutes is marked as interrupted and can be retried.
 - **AI:** all AI calls go through a port in `Application` (`IChatModel`) implemented by one adapter that speaks the
-  OpenAI-compatible Chat Completions API, so any compatible provider works (OpenAI, local servers, other vendors).
+  OpenAI-compatible Chat Completions API, so a provider with a compatible chat API works (OpenAI, local servers such as
+  Ollama or LM Studio). Only providers that were tested are named in the interface and the docs.
   A provider is `{ id, name, baseUrl, apiKey, model }`. Adding one asks the provider for its models first (a connection test when it has no list). Transient
   failures are retried 3 times with growing delays. The port is faked in tests.
 - **Data:** one JSON file per book (`data/books/{id}.json`) holding metadata, analysis status, book summary and
@@ -156,12 +158,13 @@ never committed.
   installed, and the Impeccable skill for critique and finishing. `PRODUCT.md` (what the product is for), `DESIGN.md`
   (the visual system) and `.impeccable/` (surface briefs, `design.json`) hold their context: read them before touching
   the interface. Colors, sizes and spaces live in `wwwroot/css/tokens.css` only; tests check contrast (AA) from it.
-- `/Design` shows every component with sample content. It exists in development only.
+- `/design` shows every component with sample content. It exists in development only.
 - Every form field has a visible label; keyboard navigation is preserved; errors are shown in the interface.
 - Every user-facing string lives in JSON translation files (`Resources/en.json`, `Resources/fr.json`: flat
   `key: text` pairs, `{name}` placeholders), loaded by a small custom `IStringLocalizer` with English as fallback.
-  Never hard-code text in views or code. A test fails when a key is missing in a language. English is the source;
-  adding a language means copying `en.json` and translating it.
+  Never hard-code text in views or code. A test fails when a key is missing in a language. English is the source and the
+  only language offered for now; `fr.json` is kept up to date. Adding a language means copying `en.json`, translating
+  it and adding the language to the configured list.
 - No decorative animation; respect `prefers-reduced-motion`.
 - Support recent Chrome, Edge, Firefox and Safari.
 
