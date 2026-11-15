@@ -81,8 +81,10 @@ analyzed a book (it is also the format of an export). To make one:
    the sheets are written in your own words (the analysis does that, but a model sometimes quotes: read them). The file holds no
    key, no address and no path of your machine (it never does: look anyway).
 5. **Run `dotnet test`.** One test reads every file of `examples/` with the same validation as an imported book (schema, sizes,
-   lengths of the texts) and refuses a file that is not an analyzed book with at least one character, or that has the same id or
-   title as another example. A file that fails these rules is ignored by the application, with a warning in its logs.
+   lengths of the texts) and refuses a file that is not an analyzed book with at least one character and the story of the book
+   (`storySummary`, not partial), or that has the same id or title as another example. A file that fails these rules is ignored by the application, with a warning in its logs.
+
+Examples analyzed before the story of the book existed are kept in `examples/archive/`, which the application does not read.
 
 The files are copied next to the application and into the Docker image. The examples are read only in the application: nobody can
 change them or delete them, but anyone can add one to their library, where it becomes an ordinary book.

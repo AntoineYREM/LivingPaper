@@ -25,10 +25,11 @@ On a phone, the same pages fit the screen:
 
 - **Add a book** (EPUB or PDF): it is analyzed in the background, with progress, a retry that does not pay twice, and the tokens
   used shown at the end.
-- **Get the 10 main characters**, each with a short description and a personality profile that you can edit.
+- **Get the 10 main characters**, each with a short description and a personality profile that you can edit, and the **story of
+  the book scene by scene**, which every character knows when it chats.
 - **Chat with a character**: first person, short text-message replies, streamed, in the language you write in. Nothing is stored.
-- **Read the examples without a key**: the **Examples** page has public-domain books that are already analyzed (*Le Malade imaginaire*,
-  *L'Avare*, *Don Juan*); a model is only needed to chat.
+- **Read the examples without a key**: the **Examples** page has public-domain books that are already analyzed; a model is only
+  needed to chat.
 - **Export and import** a book as a JSON file, to move it or share it.
 - **Read and edit every prompt** in `data/prompts.json`.
 - **English** interface. French is translated and kept in reserve: add it to the `LANGUAGES` setting to bring it back.
@@ -181,10 +182,13 @@ the books shows where it is ("3 of 12 parts read", then "4 of 10 profiles writte
 script; without it, reload the page). The language model used is the one you chose for analysis in the settings.
 
 1. **The book is read in parts** of about 40 pages (a PDF by real pages, an EPUB by about 2,000 letters a page), and the
-   model notes the characters of each part.
+   model notes the characters of each part and lists its scenes (what happens, and who is there).
 2. **The notes are merged**: a character called by several names becomes one, and the 10 most important are kept.
    A very long book never overflows the model: past about 150,000 letters of notes, each part keeps fewer characters.
-3. **One profile per character** and **a short summary of the atmosphere** (era, place, tone) are written.
+3. **One profile per character** (200 to 400 words: personality, way of speaking, relationships), **a short summary of the
+   atmosphere** (era, place, tone) and **the story of the whole book, scene by scene** are written. The story takes between 800
+   and 3,000 words, more for a longer book, and says who is present in each scene. If the model's content filter refused a part,
+   or it gave no scenes for it, the story is **partial**: it is written from the other parts.
 
 Everything the analysis writes is in English, whatever the language of the book. The prompts are in `data/prompts.json`.
 
@@ -210,7 +214,7 @@ progress and, with JavaScript, opens on the characters by itself when it ends; a
 with **Retry**.
 
 Each character has a **sheet**: a short description and a personality profile, which you can **edit** and save. Name, short
-description and profile are validated on the server (100, 600 and 3,000 characters at most; a name must differ from the other
+description and profile are validated on the server (100, 600 and 4,000 characters at most; a name must differ from the other
 characters of the book). The chat always uses the texts saved here, so a sheet you correct is the sheet the character plays.
 A sheet can only be edited once the analysis of its book is done.
 
@@ -229,7 +233,9 @@ into the field.
 - **Limits**, checked on the server (a request that breaks them is refused with 400): at most 100 messages, 4,000 characters a
   message, roles `user` and `assistant` only, the last message being yours.
 - **The prompt** is `chat.system` in `data/prompts.json` (in English, with the book, the name and the profile of the character
-  as saved on its sheet). The text of the messages and of the replies is never written to the logs.
+  as saved on its sheet). The character also knows **the story of the book**, scene by scene, from the beginning to the end
+  (spoilers included): the prompt `chat.story` gives it, where `{story}` stands in `chat.system`, and it is left out for a book
+  analyzed before the story existed. The character speaks of the scenes where it is present as its own memories. The text of the messages and of the replies is never written to the logs.
 - **The chat needs JavaScript** (the reply streams in as NDJSON lines through `fetch`); without it the chat buttons are hidden.
   With no model chosen for the chat, the page says so and links to the settings.
 

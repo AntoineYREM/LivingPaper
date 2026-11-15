@@ -140,7 +140,7 @@ public abstract class E2ETest : IAsyncLifetime
     private static string ArtifactsDirectory() =>
         Environment.GetEnvironmentVariable("E2E_ARTIFACTS") is { Length: > 0 } path ? path : Path.Combine(AppContext.BaseDirectory, "e2e-artifacts");
 
-    // The application, started for real: its data are a temporary folder, its examples are those of the repository.
+    // The application, started for real: its data are a temporary folder, its examples are the fixture of the tests (Fixtures/examples).
     private sealed class AppFactory(string dataDirectory) : WebApplicationFactory<global::Program>
     {
         protected override void ConfigureWebHost(IWebHostBuilder builder)
@@ -150,16 +150,7 @@ public abstract class E2ETest : IAsyncLifetime
             builder.UseEnvironment("Production");
         }
 
-        private static string ExamplesDirectory()
-        {
-            var directory = new DirectoryInfo(AppContext.BaseDirectory);
-            while (directory is not null && !Directory.Exists(Path.Combine(directory.FullName, "examples")))
-            {
-                directory = directory.Parent;
-            }
-
-            return directory is null ? throw new InvalidOperationException("The examples folder of the repository was not found.") : Path.Combine(directory.FullName, "examples");
-        }
+        private static string ExamplesDirectory() => Path.Combine(AppContext.BaseDirectory, "examples-fixture");
     }
 }
 

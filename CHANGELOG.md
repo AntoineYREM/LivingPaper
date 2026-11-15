@@ -7,8 +7,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Added
+
+- The characters know the story of the book (PAPER-51, see `docs/decisions/0007-story-of-the-book-scene-by-scene.md`). The
+  analysis lists the scenes of each part (what happens, who is present: PAPER-53), writes the story of the whole book scene by
+  scene in 800 to 3,000 words according to the length of the book (new prompt `analysis.storySummary`), and the chat gives it to
+  the character (new prompt `chat.story`, variable `{story}` of `chat.system`: PAPER-55). A part the model's content filter
+  refused, or that gave no scenes, leaves a hole: the story is then partial (`storySummaryPartial`).
+- The file of a book has a `storySummary` field (PAPER-54): `schemaVersion` is 2, files of version 1 are still read and have no
+  story, so their characters chat as before. An imported story is limited to 24,000 characters.
+
 ### Changed
 
+- The profile of a character is 200 to 400 words (it was 150 to 300) and no longer retells the story, which has its own text
+  (PAPER-52). Its limit is 4,000 characters (it was 3,000). Prompts already in `data/prompts.json` are never overwritten: the new
+  prompts (`analysis.storySummary`, `chat.story`) are added, but `analysis.readPart`, `analysis.characterProfile` and `chat.system`
+  keep their old text until you copy the new one from `prompts.default.json`; until then the story is partial or left out of the chat.
+- The three examples of version 0.1 are archived in `examples/archive/`, which the application does not read (PAPER-56): they have
+  no story. The Examples page is empty until new examples, analyzed with this version, are added.
 - The addresses are in lowercase and plural (PAPER-59): `/settings`, `/examples`, `/books/{id}`,
   `/books/{id}/characters/{position}/chat`, `/books/{id}/export`. The old addresses (`/Settings`, `/Book/{id}/...`, any capitals)
   are redirected for good (301), so each page has a single address; forms and the chat are not affected.

@@ -57,6 +57,21 @@ public sealed class JsonExampleCatalogTests : IDisposable
     }
 
     [Fact]
+    public async Task AFolderInsideTheExamples_IsNotRead_SoArchivedExamplesAreLeftOut()
+    {
+        await WriteExampleAsync(Analyzed("Zola"), "zola.json");
+        var archive = Path.Combine(_examples, "archive");
+        Directory.CreateDirectory(archive);
+        var old = await WriteExampleAsync(Analyzed("Archived"), "archived.json");
+        File.Move(old, Path.Combine(archive, "archived.json"));
+
+        var listing = await NewCatalog().ListAsync(Token);
+
+        listing.Books.Select(book => book.Title).ShouldBe(["Zola"]);
+        listing.Unreadable.ShouldBeEmpty();
+    }
+
+    [Fact]
     public async Task GetByIdFindsAnExample_AndAnUnknownIdIsNull()
     {
         var book = Analyzed("Le Malade imaginaire");
