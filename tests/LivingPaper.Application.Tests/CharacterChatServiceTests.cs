@@ -60,7 +60,55 @@ public sealed class CharacterChatServiceTests : IDisposable
 
         var system = _models.Sent.Single()[0];
         system.Role.ShouldBe(ChatRole.System);
-        system.Content.ShouldBe("[chat.system] bookTitle=Le Malade imaginaire characterName=Toinette profile=I am Toinette. I speak plainly.");
+        system.Content.ShouldBe("[chat.system] bookTitle=Le Malade imaginaire characterName=Toinette profile=I am Toinette. I speak plainly. story=");
+    }
+
+    // ---- The story of the book (PAPER-55) ----
+
+    [Fact]
+    public async Task ABookWithAStory_GivesItToTheCharacter_ThroughTheStorySectionOfThePrompt()
+    {
+        _book.StorySummary = "Scene 1. Argan refuses. Present: Argan, Toinette.";
+
+        await ReplyAsync();
+
+        var system = _models.Sent.Single()[0].Content;
+        system.ShouldBe("[chat.system] bookTitle=Le Malade imaginaire characterName=Toinette profile=I am Toinette. I speak plainly. story=[chat.story] bookTitle=Le Malade imaginaire characterName=Toinette storySummary=Scene 1. Argan refuses. Present: Argan, Toinette.");
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public async Task ABookWithoutAStory_ChatsAsBefore_WithNoStorySectionAndNoLeftoverVariable(string? story)
+    {
+        _book.StorySummary = story;
+
+        await ReplyAsync();
+
+        _models.Sent.Single()[0].Content.ShouldEndWith("profile=I am Toinette. I speak plainly. story=");
+        _models.Sent.Single()[0].Content.ShouldNotContain("[chat.story]");
+    }
+
+    [Fact]
+    public async Task APartialStory_IsGivenAsItIs()
+    {
+        _book.StorySummary = "Scene 1. Argan refuses.";
+        _book.StorySummaryPartial = true;
+
+        await ReplyAsync();
+
+        _models.Sent.Single()[0].Content.ShouldContain("storySummary=Scene 1. Argan refuses.");
+    }
+
+    [Fact]
+    public async Task AStoryThatLooksLikeAVariable_IsNeverReadAsOne()
+    {
+        _book.StorySummary = "Scene 1. {profile} {story} {characterName}";
+
+        await ReplyAsync();
+
+        _models.Sent.Single()[0].Content.ShouldContain("storySummary=Scene 1. {profile} {story} {characterName}");
     }
 
     [Fact]
@@ -78,7 +126,7 @@ public sealed class CharacterChatServiceTests : IDisposable
 
         _models.Sent.Single().Select(message => (message.Role, message.Content)).ShouldBe(
         [
-            (ChatRole.System, "[chat.system] bookTitle=Le Malade imaginaire characterName=Toinette profile=I am Toinette. I speak plainly."),
+            (ChatRole.System, "[chat.system] bookTitle=Le Malade imaginaire characterName=Toinette profile=I am Toinette. I speak plainly. story="),
             (ChatRole.User, "One"),
             (ChatRole.Assistant, "Two"),
             (ChatRole.User, "Three"),

@@ -55,7 +55,7 @@ public sealed class JsonBookArchive : IBookArchive
             return Refused(ImportRejection.NewerVersion);
         }
 
-        if (file.SchemaVersion != BookFile.CurrentSchemaVersion)
+        if (file.SchemaVersion < BookFile.OldestSchemaVersion)
         {
             return Refused(ImportRejection.UnknownVersion);
         }

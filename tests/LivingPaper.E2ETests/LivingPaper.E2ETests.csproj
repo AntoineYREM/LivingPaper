@@ -16,6 +16,12 @@
     <ProjectReference Include="..\..\src\LivingPaper.Web\LivingPaper.Web.csproj" />
   </ItemGroup>
 
+  <!-- The example the scenarios open: a book analyzed with the story of the book, kept here so the tests do not depend on the
+       examples of the repository, which come and go. -->
+  <ItemGroup>
+    <Content Include="Fixtures\examples\*.json" Link="examples-fixture\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
   <ItemGroup>
     <Using Include="Xunit" />
   </ItemGroup>

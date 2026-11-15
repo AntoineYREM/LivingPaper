@@ -8,9 +8,17 @@ namespace LivingPaper.Application;
 // What the model noted about one character in one part of the book.
 internal sealed record CharacterNote(string Name, string[] OtherNames, string Role, string Personality, string Speech, string Events, int Importance);
 
+// A moment of the story noted in one part: what happens, and who is there.
+internal sealed record SceneNote(string Summary, string[] Present);
+
+// What the model answered for one part: the characters, and the scenes when it gave them (null: it gave none, so the story will
+// have a hole there).
+internal sealed record PartRead(List<CharacterNote> Characters, List<SceneNote>? Scenes);
+
 // The notes of one part, as they are saved in the step "part:N". Skipped: the model's content filter refused the part
-// even with simple notes, so it was left out; that is saved too, so a retry does not ask again.
-internal sealed record PartNotes(int Part, bool Skipped, List<CharacterNote> Characters);
+// even with simple notes, so it was left out; that is saved too, so a retry does not ask again. Scenes: null when the part gave
+// none (simple notes, a skipped part, a reply without scenes, or notes saved before the scenes existed).
+internal sealed record PartNotes(int Part, bool Skipped, List<CharacterNote> Characters, List<SceneNote>? Scenes = null);
 
 // A character chosen by the merge.
 internal sealed record ChosenCharacter(string Name, string ShortDescription);
@@ -23,6 +31,11 @@ internal static class AnalysisNotes
     // Each text noted about a character is cut to this many letters, so the notes of a long book stay small.
     private const int NoteFieldLetters = 500;
 
+    // The same for a scene, and for how many scenes a part may give.
+    private const int SceneLetters = 600;
+    private const int MaxScenesPerPart = 40;
+    private const int MaxPresentPerScene = 15;
+
     private static readonly JsonSerializerOptions StoredOptions = new(JsonSerializerDefaults.Web)
     {
         Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
@@ -30,15 +43,17 @@ internal static class AnalysisNotes
 
     private static readonly JsonDocumentOptions ReadOptions = new() { AllowTrailingCommas = true, CommentHandling = JsonCommentHandling.Skip };
 
-    // The notes of a part: an object with a "characters" array (which may be empty: a part without characters is fine).
-    public static bool TryReadPart(string reply, out List<CharacterNote> notes)
+    // The notes of a part: an object with a "characters" array (which may be empty: a part without characters is fine) and, when
+    // the model followed the prompt, a "scenes" array (an array of the wrong shape counts as no scenes).
+    public static bool TryReadPart(string reply, out PartRead read)
     {
-        notes = [];
-        if (!TryReadCharacters(reply, out var items))
+        read = new PartRead([], null);
+        if (!TryReadCharacters(reply, out var items, out var sceneItems))
         {
             return false;
         }
 
+        var notes = new List<CharacterNote>();
         foreach (var item in items)
         {
             var name = Text(item, "name", CharacterLimits.Name);
@@ -55,15 +70,27 @@ internal static class AnalysisNotes
             }
         }
 
+        read = new PartRead(notes, sceneItems is null ? null : ReadScenes(sceneItems));
         return true;
     }
+
+    // A scene with no text is dropped; the names present are cut, kept once, and limited.
+    private static List<SceneNote> ReadScenes(List<JsonElement> items) =>
+    [
+        .. items
+            .Select(item => new SceneNote(
+                Text(item, "summary", SceneLetters),
+                [.. Texts(item, "present").Select(name => CharacterLimits.Clip(name, CharacterLimits.Name)).Where(name => name.Length > 0).Distinct(StringComparer.OrdinalIgnoreCase).Take(MaxPresentPerScene)]))
+            .Where(scene => scene.Summary.Length > 0)
+            .Take(MaxScenesPerPart),
+    ];
 
     // The merge: an object with a "characters" array of names and short descriptions. A character with no name or no
     // description is dropped; a name that comes twice (whatever its case) is kept once, the first being the most important.
     public static bool TryReadMerge(string reply, int max, out List<ChosenCharacter> chosen)
     {
         chosen = [];
-        if (!TryReadCharacters(reply, out var items))
+        if (!TryReadCharacters(reply, out var items, out _))
         {
             return false;
         }
@@ -121,9 +148,40 @@ internal static class AnalysisNotes
         return json;
     }
 
-    private static bool TryReadCharacters(string reply, out List<JsonElement> items)
+    // The scenes of every part as the story step receives them, in JSON. Past maxLetters, each scene is told in fewer letters, so a
+    // very long book cannot overflow the model's context. A part with no scene is left out.
+    public static string CombineScenes(IReadOnlyList<PartNotes> parts, int maxLetters)
+    {
+        var json = string.Empty;
+        foreach (var letters in new[] { SceneLetters, 300, 200, 120, 60 })
+        {
+            json = Serialize(new
+            {
+                parts = parts.Where(part => part.Scenes is { Count: > 0 }).Select(part => new
+                {
+                    part = part.Part,
+                    scenes = part.Scenes!.Select(scene => new { summary = CharacterLimits.Clip(scene.Summary, letters), present = scene.Present }),
+                }),
+            });
+            if (json.Length <= maxLetters)
+            {
+                break;
+            }
+        }
+
+        return json;
+    }
+
+    // Some parts gave no scenes: the story then has holes. True too when no part gave any.
+    public static bool HasGaps(IReadOnlyList<PartNotes> parts) => parts.Any(part => part.Scenes is null) || !HasScenes(parts);
+
+    public static bool HasScenes(IReadOnlyList<PartNotes> parts) => parts.Any(part => part.Scenes is { Count: > 0 });
+
+    // items: the characters. scenes: the scenes, or null when the reply has no "scenes" array.
+    private static bool TryReadCharacters(string reply, out List<JsonElement> items, out List<JsonElement>? scenes)
     {
         items = [];
+        scenes = null;
         var first = reply.IndexOf('{', StringComparison.Ordinal);
         var last = reply.LastIndexOf('}');
         if (first < 0 || last <= first)
@@ -139,16 +197,21 @@ internal static class AnalysisNotes
                 return false;
             }
 
+            var found = false;
             foreach (var property in document.RootElement.EnumerateObject())
             {
                 if (string.Equals(property.Name, "characters", StringComparison.OrdinalIgnoreCase) && property.Value.ValueKind == JsonValueKind.Array)
                 {
                     items = [.. property.Value.EnumerateArray().Where(item => item.ValueKind == JsonValueKind.Object).Select(item => item.Clone())];
-                    return true;
+                    found = true;
+                }
+                else if (string.Equals(property.Name, "scenes", StringComparison.OrdinalIgnoreCase) && property.Value.ValueKind == JsonValueKind.Array)
+                {
+                    scenes = [.. property.Value.EnumerateArray().Where(item => item.ValueKind == JsonValueKind.Object).Select(item => item.Clone())];
                 }
             }
 
-            return false;
+            return found;
         }
         catch (JsonException)
         {

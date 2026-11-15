@@ -368,23 +368,37 @@ public partial class ExamplesTests
 
     // ---- The examples that come with the repository ----
 
+    // The folder of the repository, not a copy of it next to the build: the one that holds the license of the examples.
+    private static string ExamplesOfTheRepository() => Path.GetDirectoryName(RepositoryFiles.Find(Path.Combine("examples", "LICENSE")))!;
+
     [Fact]
     public async Task TheExamplesOfTheRepository_AreAllValid_AndFollowTheRulesOfAnExample()
     {
-        var directory = RepositoryFiles.Find("examples");
+        var directory = ExamplesOfTheRepository();
 
         var listing = await new JsonExampleCatalog(directory).ListAsync(Token);
 
         listing.Unreadable.ShouldBeEmpty("an example of the repository does not follow the rules: see CONTRIBUTING.md");
-        listing.Books.ShouldNotBeEmpty("the repository ships at least one example");
         listing.Books.Select(book => book.Title).Distinct(StringComparer.OrdinalIgnoreCase).Count().ShouldBe(listing.Books.Count);
         foreach (var book in listing.Books)
         {
             book.Summary.ShouldNotBeNullOrWhiteSpace(book.Title);
+            book.StorySummary.ShouldNotBeNullOrWhiteSpace(book.Title + ": an example holds the story of the book, scene by scene (PAPER-56)");
+            book.StorySummaryPartial.ShouldBeFalse(book.Title + ": an example is analyzed in full");
             book.Characters.Count.ShouldBeGreaterThanOrEqualTo(1, book.Title);
             book.Characters.ShouldAllBe(character => character.ChatProfile.Length > 0, book.Title);
             book.FindLimitViolations().ShouldBeEmpty(book.Title);
         }
+    }
+
+    [Fact]
+    public void TheArchivedExamples_AreKeptInTheirFolder_AndAreNotShipped()
+    {
+        var examples = ExamplesOfTheRepository();
+
+        Directory.GetFiles(Path.Combine(examples, "archive"), "*.json").ShouldNotBeEmpty();
+        Directory.GetFiles(examples, "*.json").Where(file => File.ReadAllText(file).Contains("\"schemaVersion\": 1", StringComparison.Ordinal))
+            .ShouldBeEmpty("an example without the story of the book belongs in examples/archive");
     }
 
     [Fact]

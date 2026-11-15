@@ -284,11 +284,15 @@ public partial class ExportImportTests
     }
 
     [Fact]
-    public async Task TheExampleOfTheRepository_ExportedAndImported_RoundTrips()
+    public async Task AnArchivedExampleOfTheRepository_ExportedAndImported_RoundTrips()
     {
-        var shipped = await new JsonExampleCatalog(RepositoryFiles.Find("examples")).ListAsync(Token);
+        // A real analysis of a real book, in the format of version 1 (no story): it is still read, exported and imported.
+        var examples = Path.Combine(Path.GetTempPath(), "livingpaper-export-examples-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(examples);
+        File.Copy(RepositoryFiles.Find(Path.Combine("examples", "archive", "le-malade-imaginaire.json")), Path.Combine(examples, "le-malade-imaginaire.json"));
+        var shipped = await new JsonExampleCatalog(examples).ListAsync(Token);
         var example = shipped.Books[0];
-        using var factory = NewFactory(RepositoryFiles.Find("examples"));
+        using var factory = NewFactory(examples);
         using var client = NewClient(factory);
 
         var file = await ExportBytesAsync(client, example);
@@ -300,6 +304,7 @@ public partial class ExportImportTests
         imported.Characters.ShouldBe(example.Characters);
         imported.Title.ShouldBe(example.Title);
         (await client.GetAsync("/books/" + example.Id, Token)).StatusCode.ShouldBe(HttpStatusCode.OK);
+        Directory.Delete(examples, recursive: true);
     }
 
     // ---- The import ----
@@ -420,7 +425,7 @@ public partial class ExportImportTests
             return Decoded(await response.Content.ReadAsStringAsync(Token));
         }
 
-        (await MessageOf(map => map["schemaVersion"] = 2)).ShouldContain("exported by a newer LivingPaper");
+        (await MessageOf(map => map["schemaVersion"] = 3)).ShouldContain("exported by a newer LivingPaper");
         (await MessageOf(map => map["schemaVersion"] = 0)).ShouldContain("version of the format that this LivingPaper does not know");
         (await MessageOf(map => map.Remove("title"))).ShouldContain("not a valid book");
         (await MessageOf(map => map["title"] = new string('t', BookLimits.Title + 1))).ShouldContain("longer than allowed: title");

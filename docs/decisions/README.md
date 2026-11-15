@@ -12,3 +12,4 @@ to this list. A decision is never rewritten: a later note replaces it and says s
 | [0004](0004-no-authentication-in-v0.md) | No authentication in version 0 | Accepted |
 | [0005](0005-english-for-data-and-prompts.md) | English for the data and the prompts, the user's language for the chat | Accepted |
 | [0006](0006-agpl-and-cla.md) | AGPL-3.0 and a contributor license agreement | Accepted |
+| [0007](0007-story-of-the-book-scene-by-scene.md) | The characters know the story of the book, scene by scene | Accepted |

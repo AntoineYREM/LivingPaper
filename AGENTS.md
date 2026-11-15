@@ -27,8 +27,9 @@ decision records in `docs/decisions/`.
 - Books and analyses are stored as JSON files: easy to export and import.
 - Add a book (EPUB or PDF) and delete a book. The book file is deleted after a successful analysis, so
   re-analyzing (other LLM, edited prompt) means uploading the book again and ticking "Replace".
-- Background analysis: book summary (era, place, tone) and the 10 most important characters, each with a name,
-  a short description and a personality profile.
+- Background analysis: book summary (era, place, tone), the story of the whole book scene by scene (800 to 3,000 words
+  according to the length of the book, with who is present in each scene) and the 10 most important characters, each with a
+  name, a short description and a personality profile (200 to 400 words). The characters know the whole story when they chat.
 - "My library" page (books the user analyzed) and "Examples" page (read-only, public-domain books shipped
   already analyzed: they can be read without a key, chatting with their characters needs an LLM chosen for the chat).
 - Chat with a character: first person, short SMS-like replies, streamed. Conversations are not stored.
@@ -73,7 +74,8 @@ OCR for scanned PDFs, saved conversations.
   A provider is `{ id, name, baseUrl, apiKey, model }`. Adding one asks the provider for its models first (a connection test when it has no list). Transient
   failures are retried 3 times with growing delays. The port is faked in tests.
 - **Data:** one JSON file per book (`data/books/{id}.json`) holding metadata, analysis status, book summary and
-  characters. The book text itself is never stored. Every file has a `schemaVersion`. Writes are atomic (temp
+  characters and the story of the book. The book text itself is never stored. Every file has a `schemaVersion` (2; version 1
+  is still read). Writes are atomic (temp
   file then rename). Imported JSON is untrusted input: validate schema, sizes and text lengths before accepting.
   Storage sits behind a port (`IBookRepository`) so another backend can be added later.
 - **Language of data:** everything the analysis writes into JSON (book summary, character descriptions,
@@ -81,7 +83,7 @@ OCR for scanned PDFs, saved conversations.
   shared. The chat prompt tells the LLM to answer the user **in the user's own language** (the language they write
   in). Prompts sent to the LLM are written in English.
 - **Prompts:** no prompt is hard-coded. All prompts (read a part, merge characters, character profile, book
-  summary, chat system prompt, connection test) live in `data/prompts.json`, which users can read and edit by
+  summary, story of the book, chat system prompt, chat story section, connection test) live in `data/prompts.json`, which users can read and edit by
   hand. Defaults are versioned in the repository (`prompts.default.json`) and copied in full to `data/` on first
   start. Prompts are re-read on every analysis and chat message (no restart needed). On update, missing keys are
   added but existing prompts are never overwritten. An invalid file is an explicit error, never a silent

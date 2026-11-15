@@ -58,12 +58,14 @@ Every port is faked in the tests: **no test calls a real AI provider.**
 
 - **Add a book**: the page checks the file by content and size, `BookService` reads the text at once (so a problem shows
   immediately), saves the book as *Waiting* and hands it to the scheduler.
-- **Analysis** (background): read the book in parts, note the characters of each part, merge them into the 10 most important,
-  write one profile per character and a short summary. Each step is saved, so a failure resumes where it stopped. At the end
+- **Analysis** (background): read the book in parts, note the characters and the scenes of each part, merge the characters into
+  the 10 most important, write one profile per character, a short summary and the story of the whole book scene by scene (which
+  the characters know when they chat). Each step is saved, so a failure resumes where it stopped. At the end
   the stored text is deleted.
 - **Chat**: the browser sends the conversation (nothing is stored), the server checks it, builds the prompt from the saved sheet
-  and streams the model's reply back as NDJSON.
-- **Export / import**: a book is a JSON file with a `schemaVersion`; an import is validated like any untrusted input.
+  and the story of the book (`chat.story`, when the book has one) and streams the model's reply back as NDJSON.
+- **Export / import**: a book is a JSON file with a `schemaVersion` (2 since the story of the book, `storySummary`; version 1
+  is still read); an import is validated like any untrusted input.
 
 ## Where the data lives
 

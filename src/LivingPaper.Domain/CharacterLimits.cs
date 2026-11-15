@@ -7,7 +7,11 @@ public static class CharacterLimits
     public const int Name = 100;
     public const int ShortDescription = 600;
     public const int Summary = 500;
-    public const int ChatProfile = 3000;
+    public const int ChatProfile = 4000;
+
+    // The story of the book, scene by scene, written by the analysis: at most 3000 words (about 7 letters a word with the
+    // names and the spaces), with room to spare.
+    public const int StorySummary = 24000;
 
     // Cuts after the last whole word that fits, so the text never ends in the middle of a word.
     public static string Clip(string text, int max)

@@ -158,6 +158,8 @@ public sealed class BookService(
             var copy = new Book(BookId.New(), example.Title, example.FileName, now)
             {
                 Summary = example.Summary,
+                StorySummary = example.StorySummary,
+                StorySummaryPartial = example.StorySummaryPartial,
                 Status = BookStatus.Done,
                 PartsDone = example.PartsDone,
                 PartsTotal = example.PartsTotal,
@@ -278,6 +280,11 @@ public sealed class BookService(
             return (ImportRejection.Invalid, "summary");
         }
 
+        if ((book.StorySummary ?? string.Empty).Any(character => char.IsControl(character) && character is not ('\n' or '\r' or '\t')))
+        {
+            return (ImportRejection.Invalid, "storySummary");
+        }
+
         if (book.Characters.Select(character => character.Position).Distinct().Count() != book.Characters.Count)
         {
             return (ImportRejection.Invalid, "characters: two have the same position");
@@ -304,6 +311,8 @@ public sealed class BookService(
         var copy = new Book(id, source.Title.Trim(), CleanFileName(source.FileName), source.SentAt)
         {
             Summary = source.Summary,
+            StorySummary = source.StorySummary,
+            StorySummaryPartial = source.StorySummaryPartial,
             Status = BookStatus.Done,
             PartsDone = source.PartsDone,
             PartsTotal = source.PartsTotal,

@@ -10,7 +10,11 @@ public static class PromptKeys
     public const string MergeCharacters = "analysis.mergeCharacters";
     public const string CharacterProfile = "analysis.characterProfile";
     public const string BookSummary = "analysis.bookSummary";
+    // The story of the whole book, scene by scene, from the scenes noted in every part (PAPER-53).
+    public const string StorySummary = "analysis.storySummary";
     public const string ChatSystem = "chat.system";
+    // The section of the chat prompt that gives the story to the character; left out for a book that has no story.
+    public const string ChatStory = "chat.story";
     public const string ConnectionTest = "llm.connectionTest";
 
     private static readonly Dictionary<string, string[]> Variables = new(StringComparer.Ordinal)
@@ -20,7 +24,9 @@ public static class PromptKeys
         [MergeCharacters] = [PromptVariables.BookTitle, PromptVariables.MaxCharacters],
         [CharacterProfile] = [PromptVariables.BookTitle, PromptVariables.CharacterName, PromptVariables.ShortDescription],
         [BookSummary] = [PromptVariables.BookTitle],
-        [ChatSystem] = [PromptVariables.BookTitle, PromptVariables.CharacterName, PromptVariables.Profile],
+        [StorySummary] = [PromptVariables.BookTitle, PromptVariables.MaxWords],
+        [ChatSystem] = [PromptVariables.BookTitle, PromptVariables.CharacterName, PromptVariables.Profile, PromptVariables.Story],
+        [ChatStory] = [PromptVariables.BookTitle, PromptVariables.CharacterName, PromptVariables.StorySummary],
         [ConnectionTest] = [],
     };
 

@@ -85,7 +85,16 @@ internal sealed class ScriptedAnalysisModelFactory : IChatModelFactory
     public static string Note(string name, int importance = 8) =>
         $$"""{"name":"{{name}}","otherNames":[],"role":"{{name}} acts.","personality":"personality of {{name}}","speech":"speech of {{name}}","events":"events of {{name}}","importance":{{importance}}}""";
 
-    public static string PartReply(params string[] names) => "{\"characters\":[" + string.Join(',', names.Select(name => Note(name))) + "]}";
+    // The scenes of a part: one, with every character present. The summary names the first one so a test can follow it.
+    public static string Scene(string summary, params string[] present) =>
+        $$"""{"summary":"{{summary}}","present":[{{string.Join(',', present.Select(name => $"\"{name}\""))}}]}""";
+
+    // A part answered like a good model: the characters and one scene.
+    public static string PartReply(params string[] names) =>
+        "{\"characters\":[" + string.Join(',', names.Select(name => Note(name))) + "],\"scenes\":[" + Scene("A scene happens.", names) + "]}";
+
+    // A part with no scenes (a model that ignores that part of the prompt).
+    public static string PartReplyWithoutScenes(params string[] names) => "{\"characters\":[" + string.Join(',', names.Select(name => Note(name))) + "]}";
 
     public static string MergeReply(params string[] names) =>
         "{\"characters\":[" + string.Join(',', names.Select(name => $$"""{"name":"{{name}}","shortDescription":"{{name}} is in the story."}""")) + "]}";
@@ -97,6 +106,7 @@ internal sealed class ScriptedAnalysisModelFactory : IChatModelFactory
         "analysis.mergeCharacters" => MergeReply("Argan", "Toinette"),
         "analysis.characterProfile" => "I am " + NameOf(call.System) + ". My profile.",
         "analysis.bookSummary" => "France, 1673. A satirical comedy.",
+        "analysis.storySummary" => "Scene 1. A scene happens. Present: Argan, Toinette.",
         _ => "?",
     });
 

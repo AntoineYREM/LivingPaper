@@ -8,7 +8,10 @@ namespace LivingPaper.Persistence;
 // without changing the business model. Everything read from a file is untrusted: ToBook() validates it.
 internal sealed class BookFile
 {
-    public const int CurrentSchemaVersion = 1;
+    // 2 added the story of the book (storySummary). A file of version 1 has none and is still read.
+    public const int CurrentSchemaVersion = 2;
+
+    public const int OldestSchemaVersion = 1;
 
     public static readonly JsonSerializerOptions JsonOptions = new()
     {
@@ -27,6 +30,11 @@ internal sealed class BookFile
 
     public string? Summary { get; set; }
 
+    public string? StorySummary { get; set; }
+
+    // Written only when true (null otherwise), so a book without holes carries no extra field.
+    public bool? StorySummaryPartial { get; set; }
+
     public string? Status { get; set; }
 
     public int PartsDone { get; set; }
@@ -36,6 +44,10 @@ internal sealed class BookFile
     public int ProfilesDone { get; set; }
 
     public int ProfilesTotal { get; set; }
+
+    public int? StoryTry { get; set; }
+
+    public int? StoryTries { get; set; }
 
     public string? ErrorCode { get; set; }
 
@@ -70,11 +82,15 @@ internal sealed class BookFile
         Title = book.Title,
         FileName = book.FileName,
         Summary = book.Summary,
+        StorySummary = book.StorySummary,
+        StorySummaryPartial = book.StorySummaryPartial ? true : null,
         Status = book.Status.ToString(),
         PartsDone = book.PartsDone,
         PartsTotal = book.PartsTotal,
         ProfilesDone = book.ProfilesDone,
         ProfilesTotal = book.ProfilesTotal,
+        StoryTry = book.StoryTry > 0 ? book.StoryTry : null,
+        StoryTries = book.StoryTries > 0 ? book.StoryTries : null,
         ErrorCode = book.ErrorCode,
         ErrorDetail = book.ErrorDetail,
         ProviderName = book.ProviderName,
@@ -101,7 +117,7 @@ internal sealed class BookFile
     public Book? ToBook(BookId expectedId, out string reason)
     {
         reason = string.Empty;
-        if (SchemaVersion != CurrentSchemaVersion)
+        if (SchemaVersion is < OldestSchemaVersion or > CurrentSchemaVersion)
         {
             reason = $"unsupported schemaVersion {SchemaVersion}";
             return null;
@@ -125,7 +141,7 @@ internal sealed class BookFile
             return null;
         }
 
-        if (new[] { PartsDone, PartsTotal, PartsSkipped, ProfilesDone, ProfilesTotal, InputTokens, CachedInputTokens, OutputTokens }.Any(value => value < 0)
+        if (new[] { PartsDone, PartsTotal, PartsSkipped, ProfilesDone, ProfilesTotal, StoryTry ?? 0, StoryTries ?? 0, InputTokens, CachedInputTokens, OutputTokens }.Any(value => value < 0)
             || Characters.Any(character => character is null || character.Position < 1))
         {
             reason = "a number is out of range";
@@ -135,11 +151,15 @@ internal sealed class BookFile
         var book = new Book(id, Title, FileName, SentAt.Value)
         {
             Summary = Summary,
+            StorySummary = StorySummary,
+            StorySummaryPartial = StorySummaryPartial == true,
             Status = Enum.Parse<BookStatus>(Status!),
             PartsDone = PartsDone,
             PartsTotal = PartsTotal,
             ProfilesDone = ProfilesDone,
             ProfilesTotal = ProfilesTotal,
+            StoryTry = StoryTry ?? 0,
+            StoryTries = StoryTries ?? 0,
             ErrorCode = ErrorCode,
             ErrorDetail = ErrorDetail,
             ProviderName = ProviderName,

@@ -16,6 +16,15 @@ public sealed record AnalysisOptions
     // The number of characters kept: the {maxCharacters} of the merge prompt.
     public int MaxCharacters { get; init; } = 10;
 
+    // The story of the book, scene by scene, takes between these many words: a short play stays short, a long novel is told in more
+    // detail (see StoryBudget).
+    public int MinStoryWords { get; init; } = 800;
+
+    public int MaxStoryWords { get; init; } = 3000;
+
+    // A story over its budget is asked again this many times, each time with a tighter limit; the shortest is kept.
+    public int StoryTighteningRetries { get; init; } = 2;
+
     // A reply that cannot be read is asked for again this many times before the analysis stops.
     public int InvalidReplyRetries { get; init; } = 2;
 

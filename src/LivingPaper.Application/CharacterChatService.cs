@@ -94,6 +94,18 @@ public sealed class CharacterChatService(LlmSettingsService settings, IChatModel
     {
         try
         {
+            // The story section only exists for a book that has a story: an older book chats as before, with no empty section.
+            var story = string.IsNullOrWhiteSpace(book.StorySummary)
+                ? string.Empty
+                : await prompts.RenderAsync(
+                    PromptKeys.ChatStory,
+                    new Dictionary<string, string>
+                    {
+                        [PromptVariables.BookTitle] = book.Title,
+                        [PromptVariables.CharacterName] = character.Name,
+                        [PromptVariables.StorySummary] = book.StorySummary,
+                    },
+                    cancellationToken).ConfigureAwait(false);
             return await prompts.RenderAsync(
                 PromptKeys.ChatSystem,
                 new Dictionary<string, string>
@@ -101,6 +113,7 @@ public sealed class CharacterChatService(LlmSettingsService settings, IChatModel
                     [PromptVariables.BookTitle] = book.Title,
                     [PromptVariables.CharacterName] = character.Name,
                     [PromptVariables.Profile] = character.ChatProfile,
+                    [PromptVariables.Story] = story,
                 },
                 cancellationToken).ConfigureAwait(false);
         }
