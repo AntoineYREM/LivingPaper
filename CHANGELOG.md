@@ -13,7 +13,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   analysis lists the scenes of each part (what happens, who is present: PAPER-53), writes the story of the whole book scene by
   scene in 800 to 3,000 words according to the length of the book (new prompt `analysis.storySummary`), and the chat gives it to
   the character (new prompt `chat.story`, variable `{story}` of `chat.system`: PAPER-55). A part the model's content filter
-  refused, or that gave no scenes, leaves a hole: the story is then partial (`storySummaryPartial`).
+  refused, or that gave no scenes, leaves a hole: the story is then partial (`storySummaryPartial`). The prompts ask for concrete
+  events only (no commentary), named characters only, and the end of the book; a story more than a tenth over its word budget is
+  asked again, up to twice, with a tighter limit, and the shortest is kept (never cut in the middle).
 - The file of a book has a `storySummary` field (PAPER-54): `schemaVersion` is 2, files of version 1 are still read and have no
   story, so their characters chat as before. An imported story is limited to 24,000 characters.
 

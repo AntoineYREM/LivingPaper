@@ -11,6 +11,19 @@ public static class StoryBudget
     // One more word of story for each this many words of the book.
     private const int BookWordsPerStoryWord = 50;
 
+    // A model does not count its words exactly: up to this much over the budget is accepted.
+    public const double Tolerance = 1.1;
+
+    // A story over the budget is asked again with a limit this much tighter each time (the model tends to write more than it is told).
+    public const double Tightening = 0.8;
+
+    // How many words a text has: the pieces separated by spaces or line breaks.
+    public static int CountWords(string text)
+    {
+        ArgumentNullException.ThrowIfNull(text);
+        return text.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries).Length;
+    }
+
     public static int Words(int textLength, AnalysisOptions options)
     {
         ArgumentNullException.ThrowIfNull(options);

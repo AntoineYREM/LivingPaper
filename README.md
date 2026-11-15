@@ -187,7 +187,7 @@ script; without it, reload the page). The language model used is the one you cho
    A very long book never overflows the model: past about 150,000 letters of notes, each part keeps fewer characters.
 3. **One profile per character** (200 to 400 words: personality, way of speaking, relationships), **a short summary of the
    atmosphere** (era, place, tone) and **the story of the whole book, scene by scene** are written. The story takes between 800
-   and 3,000 words, more for a longer book, and says who is present in each scene. If the model's content filter refused a part,
+   and 3,000 words, more for a longer book (a story that goes over is asked again, shorter), and says who is present in each scene. If the model's content filter refused a part,
    or it gave no scenes for it, the story is **partial**: it is written from the other parts.
 
 Everything the analysis writes is in English, whatever the language of the book. The prompts are in `data/prompts.json`.

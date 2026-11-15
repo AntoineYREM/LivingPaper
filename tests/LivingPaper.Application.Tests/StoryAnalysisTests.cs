@@ -251,6 +251,63 @@ public sealed class StoryAnalysisTests : IDisposable
         story.ShouldNotContain("Person 16");
     }
 
+    // ---- The word limit is kept ----
+
+    private static string Words(int count) => string.Join(' ', Enumerable.Repeat("fact", count));
+
+    [Fact]
+    public async Task AStoryWithinTheBudget_IsAskedOnce()
+    {
+        _model.Handler = (call, number) => Task.FromResult(call.Step == "analysis.storySummary" ? Words(850) : ScriptedAnalysisModelFactory.DefaultReply(call, number).Result); // 10% over 800 is tolerated.
+
+        var book = await RunAsync();
+
+        _model.CallsOf("analysis.storySummary").ShouldBe(1);
+        book.StorySummary!.Split(' ').Length.ShouldBe(850);
+    }
+
+    [Fact]
+    public async Task AStoryThatGoesOverTheBudget_IsAskedAgainWithATighterLimit_AndTheShorterOneIsKept()
+    {
+        _model.Handler = (call, number) => Task.FromResult(call.Step == "analysis.storySummary"
+            ? Words(number == 1 ? 2000 : 700)
+            : ScriptedAnalysisModelFactory.DefaultReply(call, number).Result);
+
+        var book = await RunAsync();
+
+        var asked = _model.Calls.Where(call => call.Step == "analysis.storySummary").ToList();
+        asked.Count.ShouldBe(2);
+        asked[0].System.ShouldContain("maxWords=800");
+        asked[1].System.ShouldContain("maxWords=640");
+        book.StorySummary!.Split(' ').Length.ShouldBe(700);
+        book.Status.ShouldBe(BookStatus.Done);
+    }
+
+    [Fact]
+    public async Task AModelThatNeverObeysTheLimit_IsAskedThreeTimesAtMost_AndItsShortestStoryIsKept_NeverCutInTheMiddle()
+    {
+        _model.Handler = (call, number) => Task.FromResult(call.Step == "analysis.storySummary"
+            ? Words(number switch { 1 => 3000, 2 => 2000, _ => 2500 })
+            : ScriptedAnalysisModelFactory.DefaultReply(call, number).Result);
+
+        var book = await RunAsync();
+
+        _model.CallsOf("analysis.storySummary").ShouldBe(3);
+        _model.Calls.Where(call => call.Step == "analysis.storySummary").Select(call => call.System.Split(' ')[^1]).ShouldBe(["maxWords=800", "maxWords=640", "maxWords=512"]);
+        book.StorySummary!.Split(' ').Length.ShouldBe(2000);
+        book.Status.ShouldBe(BookStatus.Done);
+    }
+
+    [Fact]
+    public async Task EveryTryOfTheStory_PaysItsTokens()
+    {
+        _model.Handler = (call, number) => Task.FromResult(call.Step == "analysis.storySummary" ? Words(3000) : ScriptedAnalysisModelFactory.DefaultReply(call, number).Result);
+
+        var book = await RunAsync();
+
+        book.InputTokens.ShouldBe(100 * (7 + 3)); // 3 parts, the merge, 2 profiles, the summary, and 3 tries at the story.
+    }
+
     // ---- The profile no longer carries the story ----
 
     [Fact]
@@ -265,6 +322,16 @@ public sealed class StoryAnalysisTests : IDisposable
 
 public class StoryBudgetTests
 {
+    [Theory]
+    [InlineData("", 0)]
+    [InlineData("   ", 0)]
+    [InlineData("one", 1)]
+    [InlineData("Scene 1.  A  man\nwalks. Present: Argan.", 7)]
+    public void CountWords_CountsTheWordsSeparatedByAnySpace(string text, int expected)
+    {
+        StoryBudget.CountWords(text).ShouldBe(expected);
+    }
+
     private static readonly AnalysisOptions Options = new();
 
     [Theory]

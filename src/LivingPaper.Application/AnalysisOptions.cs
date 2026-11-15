@@ -22,6 +22,9 @@ public sealed record AnalysisOptions
 
     public int MaxStoryWords { get; init; } = 3000;
 
+    // A story over its budget is asked again this many times, each time with a tighter limit; the shortest is kept.
+    public int StoryTighteningRetries { get; init; } = 2;
+
     // A reply that cannot be read is asked for again this many times before the analysis stops.
     public int InvalidReplyRetries { get; init; } = 2;
 

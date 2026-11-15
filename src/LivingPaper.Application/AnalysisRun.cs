@@ -270,20 +270,36 @@ internal sealed class AnalysisRun(
         return summary;
     }
 
-    // The story of the whole book, scene by scene, from the scenes of every part: at most StoryBudget words, the number depending on
-    // the length of the book.
+    // The story of the whole book, scene by scene, from the scenes of every part: about StoryBudget words, the number depending on the
+    // length of the book. A model often writes more than it is told: a story over the budget is asked again, with a tighter limit
+    // each time, and the shortest is kept. It is never cut in the middle: the end of the book would be lost.
     private async Task<string> WriteStoryAsync(List<PartNotes> parts, int textLength, CancellationToken cancellationToken)
     {
-        var system = await RenderAsync(
-            PromptKeys.StorySummary,
-            Variables(
-                (PromptVariables.BookTitle, book.Title),
-                (PromptVariables.MaxWords, StoryBudget.Words(textLength, options).ToString(System.Globalization.CultureInfo.InvariantCulture))),
-            cancellationToken).ConfigureAwait(false);
+        var budget = StoryBudget.Words(textLength, options);
         var scenes = AnalysisNotes.CombineScenes(parts, options.MaxNotesLetters);
-        var story = CharacterLimits.Clip(await AskTextStepAsync(system, scenes, cancellationToken).ConfigureAwait(false), CharacterLimits.StorySummary);
-        await steps.SaveAsync(book.Id, StoryKey, story, CancellationToken.None).ConfigureAwait(false);
-        return story;
+        string? shortest = null;
+        for (var attempt = 0; attempt <= Math.Max(0, options.StoryTighteningRetries); attempt++)
+        {
+            var asked = (int)(budget * Math.Pow(StoryBudget.Tightening, attempt));
+            var system = await RenderAsync(
+                PromptKeys.StorySummary,
+                Variables((PromptVariables.BookTitle, book.Title), (PromptVariables.MaxWords, asked.ToString(System.Globalization.CultureInfo.InvariantCulture))),
+                cancellationToken).ConfigureAwait(false);
+            var story = await AskTextStepAsync(system, scenes, cancellationToken).ConfigureAwait(false);
+            if (shortest is null || StoryBudget.CountWords(story) < StoryBudget.CountWords(shortest))
+            {
+                shortest = story;
+            }
+
+            if (StoryBudget.CountWords(story) <= budget * StoryBudget.Tolerance)
+            {
+                break;
+            }
+        }
+
+        var kept = CharacterLimits.Clip(shortest!, CharacterLimits.StorySummary);
+        await steps.SaveAsync(book.Id, StoryKey, kept, CancellationToken.None).ConfigureAwait(false);
+        return kept;
     }
 
     // ---- The end ----

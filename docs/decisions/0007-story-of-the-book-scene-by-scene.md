@@ -16,7 +16,11 @@ Asked about a precise scene, the character improvised.
   whole book, scene by scene**, shared by all the characters. Each scene says who is present, so a character speaks of a scene it
   lived as a memory, and of the others as something it learned.
 - The story takes **800 to 3,000 words**, growing with the length of the book (the story is sent to the model with every message of a
-  chat: it must stay affordable, also with a small local model).
+  chat: it must stay affordable, also with a small local model). A model often writes more than it is told, so a story more than a
+  tenth over the budget is asked again with a limit 20% tighter, up to twice, and the shortest is kept; it is never cut in the
+  middle, which would lose the end of the book.
+- The prompts ask for **concrete events** (who does what, what changes), not commentary, for **named characters** only in each
+  scene, and for **the end of the book**, because a small model drifts to vague, thematic scenes and stops before the end.
 - The **profile** keeps who the character is (personality, voice, relationships, what it knows): 200 to 400 words, without the
   events.
 - A part that gave no scenes (the content filter refused it, only simple notes were possible, or the model forgot the scenes) is
