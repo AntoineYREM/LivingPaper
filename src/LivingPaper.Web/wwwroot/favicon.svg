@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <title>LivingPaper</title>
+  <rect width="64" height="64" fill="#fff"/>
+  <path d="M32 19C25 14.5 15 14.5 7 17.5V49C15 46 25 46 32 50.5Z" fill="#000"/>
+  <path d="M32 19C39 14.5 49 14.5 57 17.5V49C49 46 39 46 32 50.5Z" fill="#000"/>
+  <path d="M32 21V48" stroke="#fff" stroke-width="2.4"/>
+  <g stroke="#fff" stroke-width="2" stroke-linecap="butt">
+    <path d="M13 24.5C17 23.3 21.500 23.500 26.500 25.500"/>
+    <path d="M13 31C17 29.800 21.500 30 26.500 32"/>
+    <path d="M13 37.500C17 36.300 21.500 36.500 26.500 38.500"/>
+    <path d="M37.500 25.500C42.500 23.500 47 23.300 51 24.500"/>
+    <path d="M37.500 32C42.500 30 47 29.800 51 31"/>
+    <path d="M37.500 38.500C42.500 36.500 47 36.300 51 37.500"/>
+  </g>
+</svg>
