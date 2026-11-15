@@ -8,7 +8,10 @@ namespace LivingPaper.Persistence;
 // without changing the business model. Everything read from a file is untrusted: ToBook() validates it.
 internal sealed class BookFile
 {
-    public const int CurrentSchemaVersion = 1;
+    // 2 added the story of the book (storySummary). A file of version 1 has none and is still read.
+    public const int CurrentSchemaVersion = 2;
+
+    public const int OldestSchemaVersion = 1;
 
     public static readonly JsonSerializerOptions JsonOptions = new()
     {
@@ -26,6 +29,11 @@ internal sealed class BookFile
     public string? FileName { get; set; }
 
     public string? Summary { get; set; }
+
+    public string? StorySummary { get; set; }
+
+    // Written only when true (null otherwise), so a book without holes carries no extra field.
+    public bool? StorySummaryPartial { get; set; }
 
     public string? Status { get; set; }
 
@@ -70,6 +78,8 @@ internal sealed class BookFile
         Title = book.Title,
         FileName = book.FileName,
         Summary = book.Summary,
+        StorySummary = book.StorySummary,
+        StorySummaryPartial = book.StorySummaryPartial ? true : null,
         Status = book.Status.ToString(),
         PartsDone = book.PartsDone,
         PartsTotal = book.PartsTotal,
@@ -101,7 +111,7 @@ internal sealed class BookFile
     public Book? ToBook(BookId expectedId, out string reason)
     {
         reason = string.Empty;
-        if (SchemaVersion != CurrentSchemaVersion)
+        if (SchemaVersion is < OldestSchemaVersion or > CurrentSchemaVersion)
         {
             reason = $"unsupported schemaVersion {SchemaVersion}";
             return null;
@@ -135,6 +145,8 @@ internal sealed class BookFile
         var book = new Book(id, Title, FileName, SentAt.Value)
         {
             Summary = Summary,
+            StorySummary = StorySummary,
+            StorySummaryPartial = StorySummaryPartial == true,
             Status = Enum.Parse<BookStatus>(Status!),
             PartsDone = PartsDone,
             PartsTotal = PartsTotal,

@@ -40,12 +40,13 @@ public class BookTests
         {
             Summary = new string('s', CharacterLimits.Summary + 1),
             ErrorDetail = new string('e', BookLimits.ErrorDetail + 1),
+            StorySummary = new string('x', CharacterLimits.StorySummary + 1),
         };
         book.Characters.Add(new Character(1, new string('n', CharacterLimits.Name + 1), new string('d', CharacterLimits.ShortDescription + 1), new string('p', CharacterLimits.ChatProfile + 1)));
 
         book.FindLimitViolations().ShouldBe(
         [
-            "title", "fileName", "summary", "errorDetail",
+            "title", "fileName", "summary", "storySummary", "errorDetail",
             "characters[0].name", "characters[0].shortDescription", "characters[0].chatProfile",
         ]);
     }
