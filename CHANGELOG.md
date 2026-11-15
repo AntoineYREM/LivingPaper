@@ -7,7 +7,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-11-16
+
 ### Added
+
+- Five examples in the new format, with the story of the book (PAPER-67), analyzed with gpt-5-mini: Alice's Adventures in
+  Wonderland, Around the World in Eighty Days, Cyrano de Bergerac, The Jungle Book and Madame Bovary. The story of Madame Bovary
+  is cut at its scene 80 and does not tell the end of the book: it is to be redone (PAPER-64).
 
 - The characters know the story of the book (PAPER-51, see `docs/decisions/0007-story-of-the-book-scene-by-scene.md`). The
   analysis lists the scenes of each part (what happens, who is present: PAPER-53), writes the story of the whole book scene by
@@ -32,7 +38,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   prompts (`analysis.storySummary`, `chat.story`) are added, but `analysis.readPart`, `analysis.characterProfile` and `chat.system`
   keep their old text until you copy the new one from `prompts.default.json`; until then the story is partial or left out of the chat.
 - The three examples of version 0.1 are archived in `examples/archive/`, which the application does not read (PAPER-56): they have
-  no story. The Examples page is empty until new examples, analyzed with this version, are added.
+  no story.
 - The addresses are in lowercase and plural (PAPER-59): `/settings`, `/examples`, `/books/{id}`,
   `/books/{id}/characters/{position}/chat`, `/books/{id}/export`. The old addresses (`/Settings`, `/Book/{id}/...`, any capitals)
   are redirected for good (301), so each page has a single address; forms and the chat are not affected.
