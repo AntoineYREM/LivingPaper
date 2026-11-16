@@ -7,6 +7,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Added
+
+- The release workflow creates the GitHub Release when a tag `v*` is pushed (PAPER-73), with the notes of that version taken from
+  this file (`.github/scripts/changelog-section.py`). It fails when the version has no section here.
+
 ## [0.2.0] - 2026-11-16
 
 ### Added
