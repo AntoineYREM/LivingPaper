@@ -1,6 +1,7 @@
 name: Release
 
-# Pushing a tag such as v0.1.0 publishes the Docker image to GitHub Container Registry (GHCR).
+# Pushing a tag such as v0.1.0 publishes the Docker image to GitHub Container Registry (GHCR), then creates the GitHub Release
+# (the page "Releases" of the repository) with the notes of that version from CHANGELOG.md.
 on:
   push:
     tags: ["v*"]
@@ -53,3 +54,23 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+  # The notes are the section of the version in CHANGELOG.md: the job fails if there is none, so a release never goes out
+  # without notes. It runs once the image is published, so a release is never announced for an image that does not exist.
+  github-release:
+    needs: publish-image
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # create the release with the GITHUB_TOKEN: no secret is stored
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Notes of the version, from the changelog
+        run: python3 -I .github/scripts/changelog-section.py "${GITHUB_REF_NAME#v}" > release-notes.md
+
+      - name: Create the GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # The tag is passed through the environment, never written into the script.
+          TAG: ${{ github.ref_name }}
+        run: gh release create "$TAG" --verify-tag --title "LivingPaper ${TAG#v}" --notes-file release-notes.md
