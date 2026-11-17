@@ -7,8 +7,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-11-17
+
 ### Changed
 
+- **A book is at the address of its title** (PAPER-75, decision 0008): `/books/cyrano-de-bergerac` instead of 32 random characters. A
+  number is added when the address is taken (`cyrano-de-bergerac-2`, for example a copy of an example). The examples have their
+  slug as `id`. A book that is replaced keeps its address. The old addresses are not redirected.
+- **Migration at start**: the books of an existing library are renamed (file, steps, waiting text). **Back up the `data/` volume
+  before updating.** The format of the files is `schemaVersion` 3; versions 1 and 2 are still read, and an imported file with an old
+  identifier gets the address of its title.
+- A stray file such as `notes.json` in `data/books/` is now listed as unreadable, because its name could be an address.
 - The README is shorter (PAPER-74): the detailed reference (prompts, models and keys, books, analysis, chat, examples, export and
   import) moved to `docs/reference.md`. The README gains a release badge, a "Try the examples" section and the published Docker
   image in the quick start.
