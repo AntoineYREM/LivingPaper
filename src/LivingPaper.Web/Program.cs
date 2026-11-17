@@ -90,6 +90,13 @@ foreach (var ignored in examples.Unreadable)
 
 app.Logger.ExamplesLoaded(examples.Books.Count);
 
+// 0.3.0: books that still have a random identifier get the address of their title (before any page or analysis can use them).
+foreach (var (from, to) in await BookAddressMigration.RunAsync(
+    Path.Combine(dataDirectory, "books"), Path.Combine(dataDirectory, "uploads"), examples.Books.Select(book => book.Id.ToString()), app.Lifetime.ApplicationStopping))
+{
+    app.Logger.BookAddressChanged(from, to);
+}
+
 // Serves wwwroot: the style sheets, the fonts and the images of the application, all its own (nothing from a CDN).
 app.UseStaticFiles();
 // One address per page: capitals and the old singular addresses are redirected for good (before the status pages and the routing).

@@ -9,7 +9,8 @@ namespace LivingPaper.Persistence;
 internal sealed class BookFile
 {
     // 2 added the story of the book (storySummary). A file of version 1 has none and is still read.
-    public const int CurrentSchemaVersion = 2;
+    // 3: the id is a slug of the title (cyrano-de-bergerac) instead of 32 hexadecimal characters. Files of version 1 and 2 are still read.
+    public const int CurrentSchemaVersion = 3;
 
     public const int OldestSchemaVersion = 1;
 

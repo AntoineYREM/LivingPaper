@@ -220,7 +220,7 @@ public sealed class BookServiceTests : IDisposable
 
         second.Succeeded.ShouldBeTrue();
         second.Replaced.ShouldBeTrue();
-        second.Added!.Id.ShouldNotBe(first.Id);
+        second.Added!.Id.ShouldBe(first.Id); // The book keeps its address.
         second.Added.Status.ShouldBe(BookStatus.Waiting);
         second.Added.Characters.ShouldBeEmpty();
         _books.Books.Keys.ShouldBe([second.Added.Id]);
@@ -541,6 +541,84 @@ public sealed class BookServiceTests : IDisposable
         book.Characters.Select(character => character.Name).ShouldBe(["Argan the first", "Toinette the second"]);
     }
 
+    // ---- Addresses made of the title ----
+
+    [Fact]
+    public async Task ANewBook_GetsTheSlugOfItsTitleAsItsAddress()
+    {
+        var result = await AddAsync(title: "Cyrano de Bergerac");
+
+        result.Added!.Id.ToString().ShouldBe("cyrano-de-bergerac");
+    }
+
+    [Fact]
+    public async Task ABookWhoseSlugIsTheOneOfAnExample_GetsANumber_SoTheExampleIsNotHidden()
+    {
+        var example = new Book(BookId.FromTitle("Cyrano de Bergerac", _ => false), "Cyrano de Bergerac", "c.epub", Now) { Status = BookStatus.Done };
+        example.Characters.Add(new Character(1, "Cyrano", "A poet.", "I am Cyrano."));
+        using var service = WithExamples(example);
+
+        var added = (await service.AddAsync(Bytes(), "c.epub", "Cyrano de Bergerac", replace: false, Token)).Added!;
+        var copy = (await service.AddExampleAsync(example.Id, Token));
+
+        added.Id.ToString().ShouldBe("cyrano-de-bergerac-2");
+        copy.Rejection.ShouldBe(ExampleRejection.Duplicate);
+        (await service.FindAsync(example.Id, Token))!.IsExample.ShouldBeTrue();
+    }
+
+    [Fact]
+    public async Task AnExampleAddedToTheLibrary_GetsANumberedAddress()
+    {
+        var example = new Book(BookId.FromTitle("Cyrano de Bergerac", _ => false), "Cyrano de Bergerac", "c.epub", Now) { Status = BookStatus.Done };
+        example.Characters.Add(new Character(1, "Cyrano", "A poet.", "I am Cyrano."));
+        using var service = WithExamples(example);
+
+        var copy = (await service.AddExampleAsync(example.Id, Token)).Added!;
+
+        copy.Id.ToString().ShouldBe("cyrano-de-bergerac-2");
+    }
+
+    [Fact]
+    public async Task AFileThatCannotBeRead_KeepsItsName_SoANewBookDoesNotOverwriteIt()
+    {
+        _books.Unreadable.Add(new UnreadableBook("lighthouse.json", "the file is not valid JSON for a book"));
+
+        var added = (await AddAsync(title: "Lighthouse")).Added!;
+
+        added.Id.ToString().ShouldBe("lighthouse-2");
+    }
+
+    [Fact]
+    public async Task ImportingAFileFromBeforeTheSlugs_GivesItTheAddressOfItsTitle()
+    {
+        var (_, original, file) = await ExportedAsync();
+        var other = new InMemoryBookRepository();
+        using var service = new BookService(other, new InMemoryBookTextStore(), _extractor, new FakeAnalysisScheduler(), _clock, new AnalysisOptions(), null, _archive);
+        original.Id.IsOldIdentifier.ShouldBeTrue();
+
+        var imported = (await service.ImportAsync(Stream(file), replace: false, Token)).Imported!;
+
+        imported.Id.IsOldIdentifier.ShouldBeFalse();
+        imported.Id.ToString().ShouldBe(BookId.FromTitle(original.Title, _ => false).ToString());
+    }
+
+    [Fact]
+    public async Task ImportingAFileWhoseSlugIsFree_KeepsItsAddress()
+    {
+        var (service, original, file) = await ExportedAsync();
+        service.Dispose();
+        var slug = BookId.FromTitle("The very same book", _ => false);
+        var renamed = new Book(slug, original.Title, original.FileName, original.SentAt) { Status = BookStatus.Done };
+        renamed.Characters.AddRange(original.Characters);
+        var other = new InMemoryBookRepository();
+        using var target = new BookService(other, new InMemoryBookTextStore(), _extractor, new FakeAnalysisScheduler(), _clock, new AnalysisOptions(), null, _archive);
+        var exported = _archive.Export(renamed);
+
+        var imported = (await target.ImportAsync(Stream(exported), replace: false, Token)).Imported!;
+
+        imported.Id.ShouldBe(slug);
+    }
+
     // ---- The examples ----
 
     private static Book Example(string title = "Alice in Wonderland")
@@ -780,7 +858,7 @@ public sealed class BookServiceTests : IDisposable
     }
 
     [Fact]
-    public async Task ImportingAnExportInAnOtherLibrary_AddsTheSameBook_WithItsId_AndNothingToAnalyze()
+    public async Task ImportingAnExportInAnOtherLibrary_AddsTheSameBook_UnderTheAddressOfItsTitle_AndNothingToAnalyze()
     {
         var (_, original, file) = await ExportedAsync();
         var other = new InMemoryBookRepository();
@@ -794,7 +872,7 @@ public sealed class BookServiceTests : IDisposable
         result.Rejection.ShouldBeNull();
         result.Replaced.ShouldBeFalse();
         var imported = other.Books.Values.Single();
-        imported.Id.ShouldBe(original.Id);
+        imported.Id.ToString().ShouldBe(BookId.FromTitle(original.Title, _ => false).ToString());
         (imported.Title, imported.Status, imported.Characters.Count).ShouldBe((original.Title, BookStatus.Done, 2));
         imported.Characters.ShouldBe(original.Characters);
         otherScheduler.Queued.ShouldBeEmpty();
@@ -858,7 +936,7 @@ public sealed class BookServiceTests : IDisposable
         var result = await service.ImportAsync(Stream(file), replace: true, Token);
 
         result.Replaced.ShouldBeTrue();
-        _books.Books.Keys.ShouldBe([original.Id]);
+        _books.Books.Keys.Single().ToString().ShouldBe(BookId.FromTitle(original.Title, _ => false).ToString());
         service.Dispose();
     }
 

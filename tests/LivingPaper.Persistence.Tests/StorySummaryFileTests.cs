@@ -89,9 +89,9 @@ public sealed class StorySummaryFileTests : IDisposable
         var book = Analyzed();
         await _repository.SaveAsync(book, Token);
         var path = Path.Combine(_temp.BooksPath, book.Id + ".json");
-        await File.WriteAllTextAsync(path, (await File.ReadAllTextAsync(path, Token)).Replace("\"schemaVersion\": 2", "\"schemaVersion\": 3", StringComparison.Ordinal), Token);
+        await File.WriteAllTextAsync(path, (await File.ReadAllTextAsync(path, Token)).Replace("\"schemaVersion\": 3", "\"schemaVersion\": 4", StringComparison.Ordinal), Token);
 
-        (await Should.ThrowAsync<BookUnreadableException>(() => _repository.GetAsync(book.Id, Token))).Message.ShouldContain("schemaVersion 3");
+        (await Should.ThrowAsync<BookUnreadableException>(() => _repository.GetAsync(book.Id, Token))).Message.ShouldContain("schemaVersion 4");
     }
 
     // ---- The export and the import ----
