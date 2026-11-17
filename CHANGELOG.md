@@ -7,6 +7,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Changed
+
+- The README is shorter (PAPER-74): the detailed reference (prompts, models and keys, books, analysis, chat, examples, export and
+  import) moved to `docs/reference.md`. The README gains a release badge, a "Try the examples" section and the published Docker
+  image in the quick start.
+
 ### Added
 
 - The release workflow creates the GitHub Release when a tag `v*` is pushed (PAPER-73), with the notes of that version taken from
