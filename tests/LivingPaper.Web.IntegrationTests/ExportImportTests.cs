@@ -48,10 +48,10 @@ public partial class ExportImportTests
 
     private static string Decoded(string html) => WebUtility.HtmlDecode(html);
 
-    private static async Task<Book> SeedAsync(LivingPaperFactory factory, Action<Book>? more = null, string title = "Le Malade imaginaire")
+    private static async Task<Book> SeedAsync(LivingPaperFactory factory, Action<Book>? more = null, string title = "Le Malade imaginaire", string? address = null)
     {
         await factory.Services.GetRequiredService<BookAnalysisWorker>().Recovered;
-        var book = new Book(BookId.New(), title, "malade.pdf", DateTimeOffset.UtcNow.AddDays(-2))
+        var book = new Book(address is null ? BookId.FromTitle(title, _ => false) : BookId.TryParse(address, out var chosen) ? chosen : throw new ArgumentException(address), title, "malade.pdf", DateTimeOffset.UtcNow.AddDays(-2))
         {
             Status = BookStatus.Done,
             Summary = "France, 1673. Une comédie.",
@@ -425,7 +425,7 @@ public partial class ExportImportTests
             return Decoded(await response.Content.ReadAsStringAsync(Token));
         }
 
-        (await MessageOf(map => map["schemaVersion"] = 3)).ShouldContain("exported by a newer LivingPaper");
+        (await MessageOf(map => map["schemaVersion"] = 4)).ShouldContain("exported by a newer LivingPaper");
         (await MessageOf(map => map["schemaVersion"] = 0)).ShouldContain("version of the format that this LivingPaper does not know");
         (await MessageOf(map => map.Remove("title"))).ShouldContain("not a valid book");
         (await MessageOf(map => map["title"] = new string('t', BookLimits.Title + 1))).ShouldContain("longer than allowed: title");
@@ -504,7 +504,7 @@ public partial class ExportImportTests
         var other = await SeedAsync(source);
         var file = await ExportBytesAsync(NewClient(source), other);
         using var factory = NewFactory();
-        var mine = await SeedAsync(factory); // Same title, another id.
+        var mine = await SeedAsync(factory, address: "my-own-address"); // Same title, another id.
         using var client = NewClient(factory);
 
         using var asked = await ImportAsync(client, file);

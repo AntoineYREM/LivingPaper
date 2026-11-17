@@ -90,7 +90,7 @@ public sealed class JsonBookRepositoryTests : IDisposable
         File.Exists(FileOf(book.Id)).ShouldBeTrue();
         var text = await File.ReadAllTextAsync(FileOf(book.Id), Token);
         using var json = JsonDocument.Parse(text);
-        json.RootElement.GetProperty("schemaVersion").GetInt32().ShouldBe(2);
+        json.RootElement.GetProperty("schemaVersion").GetInt32().ShouldBe(3);
         json.RootElement.GetProperty("id").GetString().ShouldBe(book.Id.ToString());
         json.RootElement.GetProperty("status").GetString().ShouldBe("Done");
         text.ShouldContain("\n");
@@ -252,12 +252,23 @@ public sealed class JsonBookRepositoryTests : IDisposable
         await File.WriteAllTextAsync(Path.Combine(_temp.BooksPath, book.Id + ".steps.json"), "{}", Token);
         await File.WriteAllTextAsync(Path.Combine(_temp.BooksPath, book.Id + ".json.abc.tmp"), "{", Token);
         await File.WriteAllTextAsync(Path.Combine(_temp.BooksPath, "notes.txt"), "hello", Token);
-        await File.WriteAllTextAsync(Path.Combine(_temp.BooksPath, "readme.json"), "{}", Token);
+        await File.WriteAllTextAsync(Path.Combine(_temp.BooksPath, "Readme.json"), "{}", Token);
 
         var listing = await _repository.ListAsync(Token);
 
         listing.Books.Select(item => item.Id).ShouldBe([book.Id]);
         listing.Unreadable.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public async Task List_ReportsAFileWhoseNameCouldBeAnAddress_ButWhichIsNotABook()
+    {
+        Directory.CreateDirectory(_temp.BooksPath);
+        await File.WriteAllTextAsync(Path.Combine(_temp.BooksPath, "notes.json"), "{}", Token);
+
+        var listing = await _repository.ListAsync(Token);
+
+        listing.Unreadable.Select(file => file.StorageName).ShouldBe(["notes.json"]);
     }
 
     [Fact]

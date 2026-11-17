@@ -105,7 +105,7 @@ Everything the analysis writes is in English, whatever the language of the book.
 
 ## The page of a book and the sheets of its characters
 
-The page of a book (`/books/{id}`) shows, once the analysis is done, the summary of its atmosphere, a warning that characters
+The page of a book (`/books/{id}`, where the id is the slug of its title: `/books/cyrano-de-bergerac`) shows, once the analysis is done, the summary of its atmosphere, a warning that characters
 know the whole book (**spoilers**), and the characters, the most important first. While the analysis runs it shows the
 progress and, with JavaScript, opens on the characters by itself when it ends; a failed or interrupted analysis shows why,
 with **Retry**.
@@ -160,9 +160,9 @@ untrusted input and is checked before anything is kept: at most 1 MB, valid JSON
 limits of the analysis, sheets that follow the rules of a sheet (names distinct, no control characters). Only a book whose
 analysis is done, with at least one character, can be imported, and nothing is analyzed.
 
-- **The identifier of the file is kept** when it is free, so importing a file again updates the same book. If a book of your
+- **The address of the file is kept** when it is free, so importing a file again updates the same book. If a book of your
   library already has that identifier or the same title, the import is refused with an explanation; **tick "Replace" and choose
   the file again** to confirm: the old book, its analysis and its edited sheets are then deleted. A file whose identifier is that of
-  an example gets a new one, so the example stays where it is.
+  an example, or that comes from before the readable addresses (0.3.0), gets the address of its title, so the example stays where it is.
 - A file you export and import again gives the same book.
 

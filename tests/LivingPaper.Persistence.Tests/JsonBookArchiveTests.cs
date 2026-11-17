@@ -141,7 +141,7 @@ public class JsonBookArchiveTests
     }
 
     [Theory]
-    [InlineData(3)]
+    [InlineData(4)]
     [InlineData(99)]
     [InlineData(int.MaxValue)]
     public void ANewerVersion_IsRefusedWithItsOwnReason(int version) =>
@@ -174,7 +174,7 @@ public class JsonBookArchiveTests
     }
 
     [Theory]
-    [InlineData("not-an-id")]
+    [InlineData("Not An Id")]
     [InlineData("")]
     [InlineData("00000000000000000000000000000000")]
     [InlineData("../../etc/passwd")]

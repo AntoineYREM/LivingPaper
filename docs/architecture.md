@@ -64,8 +64,8 @@ Every port is faked in the tests: **no test calls a real AI provider.**
   the stored text is deleted.
 - **Chat**: the browser sends the conversation (nothing is stored), the server checks it, builds the prompt from the saved sheet
   and the story of the book (`chat.story`, when the book has one) and streams the model's reply back as NDJSON.
-- **Export / import**: a book is a JSON file with a `schemaVersion` (2 since the story of the book, `storySummary`; version 1
-  is still read); an import is validated like any untrusted input.
+- **Export / import**: a book is a JSON file with a `schemaVersion` (3 since the readable addresses, see decision 0008; 2 added the story of the book, `storySummary`; versions 1
+  and 2 are still read); an import is validated like any untrusted input.
 
 ## Where the data lives
 
