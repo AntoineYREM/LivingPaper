@@ -8,6 +8,9 @@ internal sealed class InMemoryBookRepository : IBookRepository
 {
     public Dictionary<BookId, Book> Books { get; } = [];
 
+    // Files that exist but cannot be read: listed as such.
+    public List<UnreadableBook> Unreadable { get; } = [];
+
     public Exception? SaveFailure { get; set; }
 
     // Called at every save: a test counts the writes.
@@ -37,7 +40,7 @@ internal sealed class InMemoryBookRepository : IBookRepository
         await Task.Yield();
         lock (Books)
         {
-            return new BookListing([.. Books.Values.OrderByDescending(book => book.SentAt)], []);
+            return new BookListing([.. Books.Values.OrderByDescending(book => book.SentAt)], [.. Unreadable]);
         }
     }
 

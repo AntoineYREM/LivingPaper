@@ -76,7 +76,7 @@ analyzed a book (it is also the format of an export). To make one:
    default prompts if you can: the examples show what the application does out of the box. Read the characters and the sheets:
    fix what is wrong with the editing form of the sheet, and analyze again with a better model if the result is poor.
 3. **Take the file**: the **Export** button of the book gives it (or `data/books/{id}.json`). Copy it to `examples/{a-readable-name}.json` (for example `alice-in-wonderland.json`).
-   The name of the file is free, the `id` written in it must be unique among the examples.
+   The name of the file is free, but the `id` written in it is the address of the example (`/books/{id}`): make it the slug of the title (`alice-in-wonderland`), and unique among the examples.
 4. **Check that it holds nothing from the book**: no passage of the text, no quotation longer than a few words. The summary and
    the sheets are written in your own words (the analysis does that, but a model sometimes quotes: read them). The file holds no
    key, no address and no path of your machine (it never does: look anyway).

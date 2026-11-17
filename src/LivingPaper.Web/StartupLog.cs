@@ -10,6 +10,10 @@ internal static partial class StartupLog
     [LoggerMessage(Level = LogLevel.Warning, Message = "The example {File} is ignored: {Reason}.")]
     public static partial void ExampleIgnored(this ILogger logger, string file, string reason);
 
+    // Titles are not logged, only the identifiers.
+    [LoggerMessage(Level = LogLevel.Information, Message = "The address of the book {From} is now {To}.")]
+    public static partial void BookAddressChanged(this ILogger logger, string from, string to);
+
     [LoggerMessage(Level = LogLevel.Information, Message = "{Count} example(s) loaded.")]
     public static partial void ExamplesLoaded(this ILogger logger, int count);
 }

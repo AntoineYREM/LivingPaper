@@ -75,7 +75,15 @@ public sealed class BookService(
             }
 
             var now = clock.GetUtcNow();
-            var book = new Book(BookId.New(), bookTitle, safeName, now);
+            // The books that "Replace" deletes give their addresses back: a book analyzed again keeps its address.
+            var book = new Book(await NewIdAsync(bookTitle, existing.Select(old => old.Id), cancellationToken).ConfigureAwait(false), bookTitle, safeName, now);
+            var sameAddress = existing.Where(old => old.Id == book.Id).ToList();
+            foreach (var old in sameAddress)
+            {
+                // Same file names: the old book, its text and its steps must be gone before the new ones are written.
+                await DeleteCoreAsync(old.Id, cancellationToken).ConfigureAwait(false);
+            }
+
             await texts.SaveAsync(book.Id, read.Text, cancellationToken).ConfigureAwait(false);
             try
             {
@@ -89,7 +97,7 @@ public sealed class BookService(
             }
 
             // The new book is saved first: if something fails now, the user has two books instead of none.
-            foreach (var old in existing)
+            foreach (var old in existing.Except(sameAddress))
             {
                 await DeleteCoreAsync(old.Id, cancellationToken).ConfigureAwait(false);
             }
@@ -155,7 +163,7 @@ public sealed class BookService(
             }
 
             var now = clock.GetUtcNow();
-            var copy = new Book(BookId.New(), example.Title, example.FileName, now)
+            var copy = new Book(await NewIdAsync(example.Title, [], cancellationToken).ConfigureAwait(false), example.Title, example.FileName, now)
             {
                 Summary = example.Summary,
                 StorySummary = example.StorySummary,
@@ -235,8 +243,13 @@ public sealed class BookService(
                 return new ImportBookResult(null, ImportRejection.Conflict, null, [.. conflicts.Select(book => book.Title)], Replaced: false);
             }
 
+            // The address of the file is kept when it is free, so importing a file again updates the same book. A file from before the
+            // slugs (a random identifier) or one that holds the address of an example gets the address of its title.
             var isExampleId = examples is not null && await examples.GetAsync(parsed.Book.Id, cancellationToken).ConfigureAwait(false) is not null;
-            var imported = CleanedCopy(parsed.Book, isExampleId ? BookId.New() : parsed.Book.Id);
+            var id = parsed.Book.Id.IsOldIdentifier || isExampleId
+                ? await NewIdAsync(parsed.Book.Title, conflicts.Select(conflict => conflict.Id), cancellationToken).ConfigureAwait(false)
+                : parsed.Book.Id;
+            var imported = CleanedCopy(parsed.Book, id);
             foreach (var conflict in conflicts)
             {
                 await DeleteCoreAsync(conflict.Id, cancellationToken).ConfigureAwait(false);
@@ -479,6 +492,23 @@ public sealed class BookService(
     }
 
     public void Dispose() => _lock.Dispose();
+
+    // The address of a new book: the slug of its title, with a number when a book of the library or an example already has it. The
+    // addresses in "giveBack" belong to books that are about to be deleted, so they count as free.
+    private async Task<BookId> NewIdAsync(string title, IEnumerable<BookId> giveBack, CancellationToken cancellationToken)
+    {
+        var listing = await books.ListAsync(cancellationToken).ConfigureAwait(false);
+        var taken = listing.Books.Select(book => book.Id.ToString()).ToHashSet(StringComparer.Ordinal);
+        // A file that cannot be read still holds its name: a new book must not overwrite it.
+        taken.UnionWith(listing.Unreadable.Select(file => Path.GetFileNameWithoutExtension(file.StorageName)));
+        if (examples is not null)
+        {
+            taken.UnionWith((await examples.ListAsync(cancellationToken).ConfigureAwait(false)).Books.Select(book => book.Id.ToString()));
+        }
+
+        taken.ExceptWith(giveBack.Select(id => id.ToString()));
+        return BookId.FromTitle(title, taken.Contains);
+    }
 
     private async Task<bool> DeleteCoreAsync(BookId id, CancellationToken cancellationToken)
     {

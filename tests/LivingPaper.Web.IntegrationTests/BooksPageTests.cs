@@ -284,9 +284,9 @@ public partial class BooksPageTests
         refusedHtml.ShouldContain("value=\"le malade IMAGINAIRE\""); // What was typed is shown again.
         html.ShouldContain("replaced the earlier book");
         var books = (await service.ListAsync(Token)).Books;
-        books.ShouldHaveSingleItem().Id.ShouldNotBe(firstId);
-        File.Exists(Path.Combine(factory.DataDirectory, "books", firstId + ".json")).ShouldBeFalse();
-        File.Exists(Path.Combine(factory.DataDirectory, "uploads", firstId + ".txt")).ShouldBeFalse();
+        books.ShouldHaveSingleItem().Id.ShouldBe(firstId); // The book keeps its address: /books/le-malade-imaginaire.
+        firstId.ToString().ShouldBe("le-malade-imaginaire");
+        books[0].Status.ShouldNotBe(BookStatus.Done); // It is the new book, to be analyzed again.
     }
 
     [Fact]

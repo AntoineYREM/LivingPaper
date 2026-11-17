@@ -73,9 +73,9 @@ OCR for scanned PDFs, saved conversations.
   Ollama or LM Studio). Only providers that were tested are named in the interface and the docs.
   A provider is `{ id, name, baseUrl, apiKey, model }`. Adding one asks the provider for its models first (a connection test when it has no list). Transient
   failures are retried 3 times with growing delays. The port is faked in tests.
-- **Data:** one JSON file per book (`data/books/{id}.json`) holding metadata, analysis status, book summary and
-  characters and the story of the book. The book text itself is never stored. Every file has a `schemaVersion` (2; version 1
-  is still read). Writes are atomic (temp
+- **Data:** one JSON file per book (`data/books/{id}.json`, the id being the slug of the title: `cyrano-de-bergerac`) holding metadata, analysis status, book summary and
+  characters and the story of the book. The book text itself is never stored. Every file has a `schemaVersion` (3; versions 1 and 2
+  are still read). Writes are atomic (temp
   file then rename). Imported JSON is untrusted input: validate schema, sizes and text lengths before accepting.
   Storage sits behind a port (`IBookRepository`) so another backend can be added later.
 - **Language of data:** everything the analysis writes into JSON (book summary, character descriptions,
@@ -199,7 +199,7 @@ Character profiles and the chat cover the **whole book** and may contain spoiler
 
 ## Versioning
 
-Semantic Versioning (`0.1.0`, `0.2.0`, ...). `CHANGELOG.md` is updated with each change. Pushing a `v*` tag
+Semantic Versioning (`0.1.0`, `0.3.0`, ...). `CHANGELOG.md` is updated with each change. Pushing a `v*` tag
 publishes the Docker image to GHCR. The version number is shown in the page footer.
 
 ## Contributing
