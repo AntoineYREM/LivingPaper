@@ -36,7 +36,7 @@ jobs:
       # From the tag v0.1.0: 0.1.0, 0.1 and latest, and the label org.opencontainers.image.version=0.1.0.
       # The image name is the repository name in lower case, as GHCR requires.
       - id: meta
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@v6
         with:
           images: ghcr.io/${{ github.repository }}
           tags: |
