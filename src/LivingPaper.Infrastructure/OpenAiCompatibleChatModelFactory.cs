@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 
 namespace LivingPaper.Infrastructure;
 
-// Builds the client of one of the user's language models: the HTTP adapter wrapped in the retries.
+// Builds the client of one of the user's language models: the HTTP adapter, the tracing of its calls (PAPER-75), the retries.
 // All the clients share one connection pool (one handler), which follows no redirect: a provider that answers
 // "go to another address" would otherwise receive the API key there. Not IHttpClientFactory: its default logging
 // writes the address of every request, and a base URL can carry credentials.
@@ -15,13 +15,15 @@ public sealed class OpenAiCompatibleChatModelFactory : IChatModelFactory, IDispo
 {
     private readonly ILoggerFactory _loggerFactory;
     private readonly OpenAiCompatibleOptions _options;
+    private readonly LlmTracingOptions _tracing;
     private readonly SocketsHttpHandler _handler;
 
-    public OpenAiCompatibleChatModelFactory(ILoggerFactory loggerFactory, OpenAiCompatibleOptions? options = null)
+    public OpenAiCompatibleChatModelFactory(ILoggerFactory loggerFactory, OpenAiCompatibleOptions? options = null, LlmTracingOptions? tracing = null)
     {
         ArgumentNullException.ThrowIfNull(loggerFactory);
         _loggerFactory = loggerFactory;
         _options = options ?? new OpenAiCompatibleOptions();
+        _tracing = tracing ?? new LlmTracingOptions();
         _handler = new SocketsHttpHandler
         {
             AllowAutoRedirect = false,
@@ -41,7 +43,9 @@ public sealed class OpenAiCompatibleChatModelFactory : IChatModelFactory, IDispo
         // Timeout: none. The adapter applies its own limits; HttpClient's would also cut a long streaming reply.
         // Not disposed here: the handler (the only thing that holds resources) is shared and owned by the factory.
         var client = new HttpClient(_handler, disposeHandler: false) { BaseAddress = baseAddress, Timeout = Timeout.InfiniteTimeSpan };
-        var model = new OpenAiCompatibleChatModel(client, provider, _options);
+
+        // The tracing is below the retries: each try is recorded on its own, the failed ones as errors.
+        IChatModel model = new TracingChatModel(new OpenAiCompatibleChatModel(client, provider, _options), provider, _tracing);
         return retryPassingFailures
             ? new RetryingChatModel(model, _options.RetryDelays, _loggerFactory.CreateLogger<RetryingChatModel>())
             : model;

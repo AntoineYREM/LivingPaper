@@ -25,6 +25,16 @@ builder.Services.AddSingleton<IPromptProvider>(new FilePromptProvider(dataDirect
 // model of the settings (PAPER-5) when the analysis or the chat needs one.
 builder.Services.AddSingleton<IChatModelFactory, OpenAiCompatibleChatModelFactory>();
 
+// The traces of the calls to the language models (PAPER-75): sent to Langfuse only when LANGFUSE_PUBLIC_KEY and
+// LANGFUSE_SECRET_KEY are set. Without them nothing is exported. The prompts and replies, which hold the text of the books and of the
+// conversations, are recorded only with LANGFUSE_CAPTURE_CONTENT=true.
+var langfuse = LangfuseSettings.Read(builder.Configuration);
+builder.Services.AddSingleton(new LlmTracingOptions { CaptureContent = langfuse?.CaptureContent ?? false });
+if (langfuse is not null)
+{
+    builder.Services.AddLangfuseTracing(langfuse);
+}
+
 // The API keys of the language models are encrypted before they are written to data/settings.json. The encryption keys
 // are kept in data/keys, so a restart can read them again; deleting that folder makes the saved keys unreadable (the
 // settings then say so and the models must be added again). In a container (Linux) they are not themselves encrypted:
@@ -69,6 +79,20 @@ builder.Services.AddSingleton<IAnalysisScheduler>(services => services.GetRequir
 builder.Services.AddHostedService(services => services.GetRequiredService<BookAnalysisWorker>());
 
 var app = builder.Build();
+
+if (langfuse is not null)
+{
+    // Scheme, host and port only: Authority holds no user name or password.
+    var address = $"{langfuse.Endpoint.Scheme}://{langfuse.Endpoint.Authority}";
+    if (langfuse.CaptureContent)
+    {
+        app.Logger.LangfuseTracingOnWithContent(address);
+    }
+    else
+    {
+        app.Logger.LangfuseTracingOnMetadataOnly(address);
+    }
+}
 
 try
 {

@@ -14,3 +14,4 @@ to this list. A decision is never rewritten: a later note replaces it and says s
 | [0006](0006-agpl-and-cla.md) | AGPL-3.0 and a contributor license agreement | Accepted |
 | [0007](0007-story-of-the-book-scene-by-scene.md) | The characters know the story of the book, scene by scene | Accepted |
 | [0008](0008-readable-book-addresses.md) | The address of a book is the slug of its title | Accepted |
+| [0009](0009-langfuse-tracing-over-opentelemetry.md) | Traces of the model calls go to Langfuse over OpenTelemetry, off by default | Accepted |

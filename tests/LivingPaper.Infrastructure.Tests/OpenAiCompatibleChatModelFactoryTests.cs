@@ -117,6 +117,26 @@ public sealed class OpenAiCompatibleChatModelFactoryTests : IAsyncLifetime
     }
 
     [Fact]
+    public async Task Create_GivesAClientWhoseEveryTryIsTraced_TheFailedOneAsAnError()
+    {
+        var provider = new LlmProvider("id", "Fake", _server.BaseUrl, "sk-factory-key", "traced-" + Guid.NewGuid().ToString("N"));
+        using var recorder = new ActivityRecorder(provider);
+        var calls = 0;
+        _server.Handler = context => ++calls == 1
+            ? FakeReplies.Status(context, 503, "busy")
+            : FakeReplies.StreamAsync(context, [FakeReplies.Chunk("Second try"), FakeReplies.Usage(40, 6)]);
+
+        await _factory.Create(provider).CompleteAsync(Messages, null, Token);
+
+        var generations = recorder.Generations.OrderBy(generation => generation.StartTimeUtc).ToList();
+        generations.Count.ShouldBe(2);
+        ActivityRecorder.Tag(generations[0], "langfuse.observation.level").ShouldBe("ERROR");
+        ActivityRecorder.Tag(generations[0], "langfuse.observation.status_message").ShouldBe("Http (HTTP 503)");
+        ActivityRecorder.Tag(generations[1], "langfuse.observation.level").ShouldBeNull();
+        ActivityRecorder.Tag(generations[1], "langfuse.observation.usage_details").ShouldBe("{\"input\":40,\"output\":6}");
+    }
+
+    [Fact]
     public async Task Create_GivesAClientThatGivesUpAfterThreeRetries()
     {
         _server.Handler = context => FakeReplies.Status(context, 429, "slow down");

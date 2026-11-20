@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Text.Json;
 using LivingPaper.Application;
 using LivingPaper.Domain;
@@ -612,5 +613,117 @@ public sealed class BookAnalyzerTests : IDisposable
         await RunAsync(book);
 
         $"{book.ErrorCode} {book.ErrorDetail} {book.ProviderName} {book.Model}".ShouldNotContain("sk-secret-key-123");
+    }
+
+    // ---- Tracing (PAPER-75) ----
+
+    // Listens to the application's activity source like an exporter would; the activities of one analysis are told apart by the
+    // identifier of its book, since the source is shared by every test of the process.
+    private sealed class SpanRecorder : IDisposable
+    {
+        private readonly ActivityListener _listener;
+        private readonly List<Activity> _stopped = [];
+
+        public SpanRecorder()
+        {
+            _listener = new ActivityListener
+            {
+                ShouldListenTo = source => source.Name == LlmTelemetry.SourceName,
+                Sample = (ref ActivityCreationOptions<ActivityContext> _) => ActivitySamplingResult.AllDataAndRecorded,
+                ActivityStopped = activity =>
+                {
+                    lock (_stopped)
+                    {
+                        _stopped.Add(activity);
+                    }
+                },
+            };
+            ActivitySource.AddActivityListener(_listener);
+        }
+
+        public Activity RootOf(Book book)
+        {
+            lock (_stopped)
+            {
+                return _stopped.Single(activity => activity.OperationName == "book-analysis" && activity.GetTagItem("book.id")?.ToString() == book.Id.ToString());
+            }
+        }
+
+        public List<Activity> InTraceOf(Activity root)
+        {
+            lock (_stopped)
+            {
+                return [.. _stopped.Where(activity => activity.TraceId == root.TraceId)];
+            }
+        }
+
+        public void Dispose() => _listener.Dispose();
+    }
+
+    [Fact]
+    public async Task AnAnalysis_IsOneTrace_ARootForTheBook_AndASpanForEachStep()
+    {
+        using var spans = new SpanRecorder();
+        var book = await WaitingBookAsync();
+
+        await RunAsync(book);
+
+        var root = spans.RootOf(book);
+        root.Parent.ShouldBeNull();
+        root.Status.ShouldNotBe(ActivityStatusCode.Error);
+        var steps = spans.InTraceOf(root).Where(activity => activity != root).ToList();
+        steps.ShouldAllBe(step => step.ParentId == root.Id);
+        steps.GroupBy(step => step.OperationName).ToDictionary(group => group.Key, group => group.Count())
+            .ShouldBe(new Dictionary<string, int> { ["read-part"] = 3, ["merge-characters"] = 1, ["character-profile"] = 2, ["book-summary"] = 1, ["story-summary"] = 1 }, ignoreOrder: true);
+        steps.Where(step => step.OperationName == "read-part").Select(step => step.GetTagItem("analysis.part")).Order().ShouldBe([1, 2, 3]);
+    }
+
+    [Fact]
+    public async Task TheCallsToTheModel_RunInsideTheirStep_SoTheirGenerationsHangUnderIt()
+    {
+        var current = new System.Collections.Concurrent.ConcurrentBag<(string Step, string? Span)>();
+        using var spans = new SpanRecorder();
+        _model.Handler = (call, number) =>
+        {
+            current.Add((call.Step, Activity.Current?.OperationName));
+            return ScriptedAnalysisModelFactory.DefaultReply(call, number);
+        };
+        var book = await WaitingBookAsync();
+
+        await RunAsync(book);
+
+        current.Select(item => item.Span).Distinct().Order().ShouldBe(["book-summary", "character-profile", "merge-characters", "read-part", "story-summary"]);
+        current.Where(item => item.Step == "analysis.readPart").ShouldAllBe(item => item.Span == "read-part");
+        current.Where(item => item.Step == "analysis.mergeCharacters").ShouldAllBe(item => item.Span == "merge-characters");
+        current.Where(item => item.Step == "analysis.characterProfile").ShouldAllBe(item => item.Span == "character-profile");
+        current.Where(item => item.Step == "analysis.bookSummary").ShouldAllBe(item => item.Span == "book-summary");
+        current.Where(item => item.Step == "analysis.storySummary").ShouldAllBe(item => item.Span == "story-summary");
+    }
+
+    [Fact]
+    public async Task AFailedAnalysis_MarksItsRootAsAnError_WithTheCodeOfTheFailureOnly()
+    {
+        using var spans = new SpanRecorder();
+        _model.Handler = (_, _) => throw new ChatProviderException(ChatFailureKind.Http, "refused sk-secret-key-123", 401);
+        var book = await WaitingBookAsync();
+
+        await RunAsync(book);
+
+        var root = spans.RootOf(book);
+        root.Status.ShouldBe(ActivityStatusCode.Error);
+        root.StatusDescription.ShouldBe(AnalysisFailure.ModelRefused.ToString());
+    }
+
+    [Fact]
+    public async Task TheSpansOfAnAnalysis_NeverHoldTheTextOfTheBook_NorTheKey()
+    {
+        using var spans = new SpanRecorder();
+        var book = await WaitingBookAsync(title: "The Lighthouse");
+
+        await RunAsync(book);
+
+        var everything = spans.InTraceOf(spans.RootOf(book))
+            .SelectMany(activity => activity.Tags.Select(tag => tag.Value).Append(activity.DisplayName).Append(activity.StatusDescription));
+        everything.ShouldAllBe(value => value == null || (!value.Contains("Page ", StringComparison.Ordinal) && !value.Contains("sk-secret", StringComparison.Ordinal) && !value.Contains("Argan", StringComparison.Ordinal)));
     }
 }

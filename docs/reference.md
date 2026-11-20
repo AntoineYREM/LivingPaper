@@ -54,6 +54,19 @@ they can be the same.
 **Warning: LivingPaper is for personal use and has no authentication.** Anyone who can reach the application can use
 the models and keys you saved. Do not expose it to the Internet without a reverse proxy that protects it.
 
+## Traces of the model calls (Langfuse)
+
+Optional, for people who want to see what the models are asked and what it costs. When `LANGFUSE_PUBLIC_KEY` and
+`LANGFUSE_SECRET_KEY` are set (with `LANGFUSE_BASE_URL`), every call to a language model is sent to your Langfuse as a trace over
+OpenTelemetry: the analysis of a book is one trace (a step for each part read, the merge of the characters, each profile, the
+summary and the story) and each chat reply is its own. Without the keys nothing is exported.
+
+- **By default only metadata:** model, name of the provider, tokens, duration, time to the first piece of a streamed reply, step and
+  outcome (kind of failure and HTTP status, never the message).
+- **`LANGFUSE_CAPTURE_CONTENT=true`** also sends the prompts and the replies. They contain the **text of the books and of your
+  conversations**: turn it on only for a Langfuse you control. The application logs a warning at start when it is on.
+- The keys are never logged and the application sends nothing anywhere else.
+
 ## Your books
 
 The home page is **My library**: your books, set like the contents of a book, each with its status. **Add a book** sends an

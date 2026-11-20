@@ -7,6 +7,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Added
+
+- **Langfuse tracing of the model calls** (PAPER-75, decision 0009), optional: set `LANGFUSE_BASE_URL`, `LANGFUSE_PUBLIC_KEY` and
+  `LANGFUSE_SECRET_KEY` and each analysis (a step for each part, merge, profile, summary, story) and each chat reply is traced with
+  model, tokens, duration and outcome. Off while the keys are empty. Prompts and replies, which hold the text of the books, are
+  sent only with `LANGFUSE_CAPTURE_CONTENT=true`. New dependencies: `OpenTelemetry.Extensions.Hosting` and
+  `OpenTelemetry.Exporter.OpenTelemetryProtocol` (Apache-2.0).
+
 ## [0.3.0] - 2026-11-17
 
 ### Changed

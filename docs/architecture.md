@@ -50,6 +50,7 @@ contain no data access: a page model calls the Application layer.
 | `IBookRepository`, `IAnalysisStepStore`, `IBookTextStore` | One JSON file per book, steps file, text file | Persistence |
 | `ILlmSettingsRepository`, `IPromptProvider` | `data/settings.json`, `data/prompts.json` | Persistence |
 | `IExampleCatalog`, `IBookArchive` | `examples/*.json`, export and import of a book | Persistence |
+| `IChatModel` (decorator `TracingChatModel`) | Records each model call as an OpenTelemetry activity (`LlmTelemetry.Source`); the Web project exports them to Langfuse only when configured | Infrastructure, Web |
 | `IAnalysisScheduler` | A hosted `BackgroundService` that analyzes one book at a time | Web |
 
 Every port is faked in the tests: **no test calls a real AI provider.**

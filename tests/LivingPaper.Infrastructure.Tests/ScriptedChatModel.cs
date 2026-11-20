@@ -8,6 +8,7 @@ internal sealed class ScriptedChatModel : IChatModel
 {
     private readonly Queue<Func<IAsyncEnumerable<string>>> _streams = new();
     private readonly Queue<Func<string>> _replies = new();
+    private (int Input, int CachedInput, int Output)? _reportedUsage;
 
     public int Calls { get; private set; }
 
@@ -16,6 +17,13 @@ internal sealed class ScriptedChatModel : IChatModel
     public IReadOnlyList<ChatMessage>? LastMessages { get; private set; }
 
     public ChatUsageMeter? LastUsage { get; private set; }
+
+    // Every call reports these tokens to the meter it is given, like a provider that sends its usage.
+    public ScriptedChatModel WithUsage(int input, int cachedInput, int output)
+    {
+        _reportedUsage = (input, cachedInput, output);
+        return this;
+    }
 
     public ScriptedChatModel ThenReply(string reply)
     {
@@ -61,6 +69,10 @@ internal sealed class ScriptedChatModel : IChatModel
         Calls++;
         LastMessages = messages;
         LastUsage = usage;
+        if (_reportedUsage is { } reported)
+        {
+            usage?.Add(reported.Input, reported.CachedInput, reported.Output);
+        }
     }
 
     private async IAsyncEnumerable<string> Play(IReadOnlyList<string> pieces, Exception? exception)

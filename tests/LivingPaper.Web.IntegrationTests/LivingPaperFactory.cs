@@ -22,15 +22,17 @@ public sealed class LivingPaperFactory : WebApplicationFactory<Program>
     private readonly Action<IServiceCollection>? _configureServices;
     private readonly string? _environment;
     private readonly string? _languages;
+    private readonly IReadOnlyDictionary<string, string>? _settings;
 
     // xUnit builds a fixture with the only public constructor, so this one takes no argument; With(...) is for the rest.
     public LivingPaperFactory()
-        : this(null, null, null, null, "en,fr")
+        : this(null, null, null, null, "en,fr", null)
     {
     }
 
-    private LivingPaperFactory(string? dataDirectory, Action<IServiceCollection>? configureServices, string? environment, string? examplesDirectory, string? languages)
+    private LivingPaperFactory(string? dataDirectory, Action<IServiceCollection>? configureServices, string? environment, string? examplesDirectory, string? languages, IReadOnlyDictionary<string, string>? settings)
     {
+        _settings = settings;
         _ownsExamples = examplesDirectory is null;
         ExamplesDirectory = examplesDirectory ?? Path.Combine(Path.GetTempPath(), "livingpaper-web-examples-" + Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(ExamplesDirectory);
@@ -47,8 +49,9 @@ public sealed class LivingPaperFactory : WebApplicationFactory<Program>
     // tests never depend on the examples shipped with the repository (they have their own tests).
     // languages: the LANGUAGES setting. The tests offer English and French, so that the translation mechanism, kept in reserve
     // (PAPER-57), stays tested; pass null to leave the setting out and get what the application does by default (English only).
-    public static LivingPaperFactory With(string? dataDirectory = null, Action<IServiceCollection>? configureServices = null, string? environment = null, string? examplesDirectory = null, string? languages = "en,fr") =>
-        new(dataDirectory, configureServices, environment, examplesDirectory, languages);
+    // settings: other configuration values (environment variables of the application), for example LANGFUSE_*.
+    public static LivingPaperFactory With(string? dataDirectory = null, Action<IServiceCollection>? configureServices = null, string? environment = null, string? examplesDirectory = null, string? languages = "en,fr", IReadOnlyDictionary<string, string>? settings = null) =>
+        new(dataDirectory, configureServices, environment, examplesDirectory, languages, settings);
 
     public string DataDirectory { get; }
 
@@ -64,6 +67,11 @@ public sealed class LivingPaperFactory : WebApplicationFactory<Program>
         if (_languages is not null)
         {
             builder.UseSetting("LANGUAGES", _languages);
+        }
+
+        foreach (var (name, value) in _settings ?? new Dictionary<string, string>())
+        {
+            builder.UseSetting(name, value);
         }
 
         if (_environment is not null)
