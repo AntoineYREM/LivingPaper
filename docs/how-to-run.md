@@ -85,8 +85,10 @@ Everything is optional. Set these as environment variables (in Docker, under `en
 
 A value that is not valid stops the application at start with a message that names the variable.
 
-For local development you can copy `.env.example` to `.env` (never committed). The application itself does not need it: your models
-are added in the **Settings** page.
+For local development you can copy `.env.example` to `.env` (never committed). With `dotnet run` in the Development environment the
+application reads it (in the current folder or a parent one); a variable already set in your terminal wins over the file. Outside
+development it is ignored (Docker Compose reads it on its own). The application does not need it: your models are added in the
+**Settings** page.
 
 ## Add a language model
 

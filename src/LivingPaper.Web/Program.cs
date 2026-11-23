@@ -5,6 +5,13 @@ using LivingPaper.Web;
 using LivingPaper.Web.Localization;
 using Microsoft.AspNetCore.DataProtection;
 
+// In development only, `dotnet run` takes its variables from .env (found in this or a parent folder), as Docker Compose does.
+if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development"
+    && DotEnvFile.Find(Directory.GetCurrentDirectory()) is { } dotEnv)
+{
+    DotEnvFile.Load(dotEnv);
+}
+
 // Composition root: the only place where the layers are wired together.
 var builder = WebApplication.CreateBuilder(args);
 

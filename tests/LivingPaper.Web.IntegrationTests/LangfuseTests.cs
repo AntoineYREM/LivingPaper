@@ -152,6 +152,27 @@ public class LangfuseTests
         factory.Logs.Entries.ShouldAllBe(entry => !entry.Message.Contains(Secret, StringComparison.Ordinal) && !entry.Message.Contains(Public, StringComparison.Ordinal));
     }
 
+    // ASP.NET Core opens an activity for every request, one nobody samples. A parent-based sampler would then drop the activity of a
+    // chat reply, which is started inside the request: the chat was never traced.
+    [Fact]
+    public void WithKeys_AnActivityStartedInsideARequestIsStillRecorded()
+    {
+        using var factory = LivingPaperFactory.With(settings: new Dictionary<string, string>
+        {
+            ["LANGFUSE_BASE_URL"] = "http://127.0.0.1:9",
+            ["LANGFUSE_PUBLIC_KEY"] = Public,
+            ["LANGFUSE_SECRET_KEY"] = Secret,
+        });
+        factory.Services.GetService<TracerProvider>().ShouldNotBeNull();
+        using var request = new System.Diagnostics.Activity("request").Start();
+        request.Recorded.ShouldBeFalse();
+
+        using var reply = LivingPaper.Application.LlmTelemetry.Source.StartActivity("chat-reply");
+
+        reply.ShouldNotBeNull();
+        reply.Recorded.ShouldBeTrue();
+    }
+
     [Fact]
     public void WithCaptureContentOn_TheApplicationSaysTheTextIsSent()
     {

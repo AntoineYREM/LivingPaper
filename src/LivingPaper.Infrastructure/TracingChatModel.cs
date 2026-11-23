@@ -153,6 +153,16 @@ public sealed class TracingChatModel(IChatModel inner, LlmProvider provider, Llm
             return null;
         }
 
+        // What the caller put in the baggage (the name of the trace, the session, ids) goes on the generation: Langfuse reads these
+        // tags on any span of a trace.
+        foreach (var (key, value) in parent?.Baggage ?? [])
+        {
+            if (key.StartsWith("langfuse.", StringComparison.Ordinal) || key is "book.id" or "character.position")
+            {
+                activity.SetTag(key, value);
+            }
+        }
+
         activity.SetTag("langfuse.observation.type", "generation");
         activity.SetTag("langfuse.observation.model.name", provider.Model);
         activity.SetTag("langfuse.observation.metadata.provider", provider.Name);

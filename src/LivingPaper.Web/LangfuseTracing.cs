@@ -14,6 +14,10 @@ internal static class LangfuseTracing
         services.AddOpenTelemetry()
             .ConfigureResource(resource => resource.AddService("livingpaper", serviceVersion: AppVersion.Current))
             .WithTracing(tracing => tracing
+
+                // Not the default parent-based sampler: ASP.NET Core opens an unsampled activity for every request, and under it the
+                // activity of a chat reply would be dropped.
+                .SetSampler(new AlwaysOnSampler())
                 .AddSource(LlmTelemetry.SourceName)
                 .AddOtlpExporter(exporter =>
                 {

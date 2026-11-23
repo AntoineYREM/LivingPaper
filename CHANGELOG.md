@@ -7,8 +7,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Fixed
+
+- **The chat was never traced**: ASP.NET Core's unsampled request activity made the default sampler drop the reply's span. All spans are
+  now recorded.
+
 ### Added
 
+- **A conversation with a character is one trace in Langfuse** (PAPER-75): the page sends an id (not stored) with each message, used as the
+  trace id and the session; each reply is a `chat-reply` span in it.
+- **`.env` read by `dotnet run` in development**: the file was only read by Docker Compose, so the Langfuse variables never reached a
+  locally run application. Variables already set in the terminal win.
 - **Langfuse tracing of the model calls** (PAPER-75, decision 0009), optional: set `LANGFUSE_BASE_URL`, `LANGFUSE_PUBLIC_KEY` and
   `LANGFUSE_SECRET_KEY` and each analysis (a step for each part, merge, profile, summary, story) and each chat reply is traced with
   model, tokens, duration and outcome. Off while the keys are empty. Prompts and replies, which hold the text of the books, are

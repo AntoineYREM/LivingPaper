@@ -196,6 +196,30 @@ public class TracingChatModelTests
         generation.GetTagItem("langfuse.observation.level").ShouldBeNull();
     }
 
+    // The chat page puts the name of the trace, the session and the ids in the baggage of the activity that carries the request.
+    [Fact]
+    public async Task Stream_CopiesTheLangfuseAndIdBaggageOfTheCurrentActivity_OntoTheGeneration()
+    {
+        var provider = NewProvider();
+        using var recorder = new ActivityRecorder(provider);
+        using var carrier = new Activity("carrier");
+        carrier.AddBaggage("langfuse.trace.name", "character-chat");
+        carrier.AddBaggage("langfuse.session.id", "abc");
+        carrier.AddBaggage("book.id", "cyrano");
+        carrier.AddBaggage("unrelated", "nope");
+        carrier.Start();
+        var inner = new ScriptedChatModel().ThenStream("a");
+
+        await ReadAllAsync(Tracing(inner, provider).StreamReplyAsync(Messages, null, Token));
+
+        var generation = recorder.Generations.Single();
+        generation.GetTagItem("langfuse.trace.name").ShouldBe("character-chat");
+        generation.GetTagItem("langfuse.session.id").ShouldBe("abc");
+        generation.GetTagItem("book.id").ShouldBe("cyrano");
+        generation.GetTagItem("unrelated").ShouldBeNull();
+        carrier.Stop();
+    }
+
     [Fact]
     public async Task Stream_AddsTheTokensToTheMeterOfTheCaller()
     {
