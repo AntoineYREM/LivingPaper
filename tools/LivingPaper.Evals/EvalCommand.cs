@@ -39,12 +39,29 @@ internal static class EvalCommand
             throw new EvalException(exception.Message);
         }
 
-        var prompts = new FilePromptProvider(dataDirectory);
+        var promptsPath = options.PromptsPath is null ? null : Path.GetFullPath(options.PromptsPath);
+        if (promptsPath is not null && !File.Exists(promptsPath))
+        {
+            throw new EvalException($"The prompts file {Path.GetFileName(promptsPath)} does not exist.");
+        }
+
+        var prompts = new FilePromptProvider(dataDirectory, promptsPath);
+        string promptsHash;
+        try
+        {
+            promptsHash = await prompts.ChatFingerprintAsync(cancellationToken).ConfigureAwait(false);
+        }
+        catch (PromptFileException exception)
+        {
+            throw new EvalException(exception.Message);
+        }
+
         var keys = DataProtectionProvider.Create(new DirectoryInfo(Path.Combine(dataDirectory, "keys")), builder => builder.SetApplicationName("LivingPaper"));
         var site = new JsonLlmSettingsRepository(dataDirectory, new DataProtectionSecretProtector(keys));
 
         using var factory = new OpenAiCompatibleChatModelFactory(
             NullLoggerFactory.Instance,
+            new OpenAiCompatibleOptions { MaxOutputTokens = options.MaxOutputTokens },
             tracing: new LlmTracingOptions { CaptureContent = langfuse?.CaptureContent ?? false });
         using var catalog = new OpenAiCompatibleModelCatalog();
         var tester = new LlmConnectionTester(factory, prompts);
@@ -68,7 +85,12 @@ internal static class EvalCommand
             ["judge_prompt_version"] = judgePrompt.Version,
             ["repeats"] = options.Repeats.ToString(CultureInfo.InvariantCulture),
             ["character"] = character.Name,
+            ["prompts_hash"] = promptsHash,
         };
+        if (options.Label is not null)
+        {
+            metadata["label"] = options.Label;
+        }
 
         // Langfuse is prepared before the run: a wrong key is found now, not after the cost of the run.
         using var api = langfuse is null ? null : new LangfuseApi(langfuse);
@@ -97,6 +119,7 @@ internal static class EvalCommand
         terminal.WriteLine();
         terminal.WriteLine($"{character.Name} ({book.Title}) answers with {chatProvider.Name} ({chatProvider.Model}).");
         terminal.WriteLine($"{judgeProvider.Name} ({judgeProvider.Model}) judges, prompt version {judgePrompt.Version}.");
+        terminal.WriteLine($"Chat prompts {promptsHash}{(options.Label is null ? string.Empty : $", label \"{options.Label}\"")}.");
         terminal.WriteLine($"{questions.Items.Count} questions, {options.Repeats} times each: {total} answers to grade.");
         terminal.WriteLine();
 
@@ -121,7 +144,9 @@ internal static class EvalCommand
             new RunModel(chatProvider.Name, chatProvider.Model),
             new RunJudge(judgeProvider.Name, judgeProvider.Model, judgePrompt.Version, judgePrompt.ScoreName),
             new RunTokens(chatTokens, judgeTokens),
-            results);
+            results,
+            options.Label,
+            promptsHash);
 
         // Saved before anything is sent: whatever happens next, the run is kept.
         var path = await RunStore.SaveAsync(RunsFolder(), record, cancellationToken).ConfigureAwait(false);

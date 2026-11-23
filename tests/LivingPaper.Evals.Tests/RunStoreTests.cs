@@ -22,6 +22,24 @@ public class RunStoreTests
         ]);
 
     [Fact]
+    public async Task TheLabelAndThePromptsHashAreKept_AndAnOlderFileWithoutThemStillLoads()
+    {
+        using var folder = new TempFolder();
+
+        var path = await RunStore.SaveAsync(folder.Path, Record() with { Label = "rule-no-ai", PromptsHash = "0123456789ab" }, CancellationToken.None);
+        var loaded = await RunStore.LoadAsync(path, CancellationToken.None);
+        loaded.Label.ShouldBe("rule-no-ai");
+        loaded.PromptsHash.ShouldBe("0123456789ab");
+
+        var older = await RunStore.SaveAsync(folder.Path, Record("older"), CancellationToken.None);
+        var text = await File.ReadAllTextAsync(older, CancellationToken.None);
+        await File.WriteAllTextAsync(older, text.Replace("\"label\": null,", string.Empty, StringComparison.Ordinal).Replace("\"promptsHash\": null", "\"x\": 1", StringComparison.Ordinal), CancellationToken.None);
+        var loadedOlder = await RunStore.LoadAsync(older, CancellationToken.None);
+        loadedOlder.Label.ShouldBeNull();
+        loadedOlder.PromptsHash.ShouldBeNull();
+    }
+
+    [Fact]
     public async Task SaveAsync_WritesAFileNamedAfterTheRun_AndLoadAsyncReadsItBack()
     {
         using var folder = new TempFolder();

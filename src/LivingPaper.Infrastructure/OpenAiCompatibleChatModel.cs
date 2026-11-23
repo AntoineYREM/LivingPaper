@@ -130,7 +130,8 @@ public sealed class OpenAiCompatibleChatModel : IChatModel
             _provider.Model,
             [.. messages.Select(message => new RequestMessage(message.Role.ToString().ToLowerInvariant(), message.Content))],
             Stream: true,
-            new StreamOptions(IncludeUsage: true));
+            new StreamOptions(IncludeUsage: true),
+            _options.MaxOutputTokens);
         var request = new HttpRequestMessage(HttpMethod.Post, "chat/completions") { Content = JsonContent.Create(body, options: JsonOptions) };
 
         // A local server (Ollama, LM Studio) may need no key: then no header is sent.
@@ -200,7 +201,8 @@ public sealed class OpenAiCompatibleChatModel : IChatModel
         string Model,
         IReadOnlyList<RequestMessage> Messages,
         bool Stream,
-        [property: JsonPropertyName("stream_options")] StreamOptions StreamOptions);
+        [property: JsonPropertyName("stream_options")] StreamOptions StreamOptions,
+        [property: JsonPropertyName("max_tokens"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] int? MaxTokens);
 
     private sealed record StreamOptions([property: JsonPropertyName("include_usage")] bool IncludeUsage);
 

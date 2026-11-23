@@ -20,7 +20,7 @@ Each question is asked several times (3 by default), because a model does not an
 
 | Piece | Where | State |
 |---|---|---|
-| 20 questions to Emma Bovary | `evals/bovary/questions.json` | done |
+| 40 questions to Emma Bovary, and 20 to Cyrano (a second character, to check that a finding is not specific to Emma) | `evals/bovary/questions.json`, `evals/cyrano/questions.json` | done |
 | Prompt of the judge | `evals/judge.json` | done |
 | Console tool, command `run` (report in the terminal) | `tools/LivingPaper.Evals` | done |
 | Every run kept in a file (`evals/runs/`), shareable ones in `evals/published/` | same | done |
@@ -58,7 +58,10 @@ The tool does not need the web application to be running. What it reads:
 |---|---|
 | `--repeats <n>` | Times each question is asked, 1 to 20 (default 3). |
 | `--chat <name>`, `--judge <name>` | The models, by their name on the Settings page. No question is asked. |
-| `--questions <file>`, `--judge-prompt <file>` | Other files than `evals/bovary/questions.json` and `evals/judge.json`. |
+| `--questions <file>`, `--judge-prompt <file>` | Other files than `evals/bovary/questions.json` and `evals/judge.json`. `--questions evals/cyrano/questions.json` plays the second character. |
+| `--prompts-file <file>` | Another prompts file for the chat, to try a change of prompt without touching the `prompts.json` of your data folder. |
+| `--label <text>` | A short name for the run (`rule-no-ai`), kept in the run file and shown by `compare`. |
+| `--max-tokens <n>` | A ceiling on the length of every reply (thinking included). Needed with an expensive model on OpenRouter, which sets aside the price of the longest possible reply before answering: without a ceiling, a key with a spending limit is refused (HTTP 402). Not for OpenAI's own newest models, which refuse `max_tokens`. |
 | `--local-only` | Keep the run in a file only, even when Langfuse is configured. |
 | `--help` | The list of options. |
 
@@ -80,7 +83,7 @@ commit it. See `evals/published/README.md`.
 **In Langfuse, if it is configured.** With `LANGFUSE_BASE_URL`, `LANGFUSE_PUBLIC_KEY` and `LANGFUSE_SECRET_KEY` set (shell or `.env`, as for
 the [tracing](langfuse.md)), the tool also creates, with nothing to click:
 
-- the **dataset** `madame-bovary-emma` with its 20 questions as items (found again by their ids on the next run, never duplicated);
+- the **dataset** `madame-bovary-emma` with its 40 questions as items (found again by their ids on the next run, never duplicated);
 - an **experiment** for the run, named like its file, with **one trace per answer** (the reply of the character, and the call of the judge
   below it), in the environment `experiment` so the traces of the real chat stay apart;
 - one **score** `character-fidelity` per graded answer, with the reason of the judge as its comment.
@@ -110,7 +113,7 @@ The page shows, in this order:
 - **The average by category**, over the questions both runs graded, with the difference B - A.
 - **The overall difference with a 95% interval.** The tries of a question are averaged first, then the difference of each question is
   taken (a paired comparison), and the interval is that of the mean of these differences. If the interval does not include 0, B really
-  looks better or worse than A on these questions; if it does, the difference could be noise. With 20 questions the interval is wide: a
+  looks better or worse than A on these questions; if it does, the difference could be noise. With 40 questions the interval is still wide: a
   gap of a few tenths is usually inside it. It does not cover the bias of the judge, nor the choice of the questions.
 - **The questions that differ most**, to see where to look first (the replies are in the two run files).
 - **Tokens and cost** of each run, chat and judge apart.
@@ -180,6 +183,6 @@ tools/LivingPaper.Evals/
 ## Limits to keep in mind
 
 - The judge is a language model: it can be wrong, and favor answers written by a model of its own family.
-- 20 questions are few. Differences of a few tenths between two runs can be noise; that is why each question is asked several times.
+- 40 questions are few. Differences of a few tenths between two runs can be noise; that is why each question is asked several times.
 - The tool measures one quality (staying in the role), not whether the character is interesting or faithful to the book.
 - The text of the replies is never printed in the terminal and never logged. It is kept in the run file (and sent to Langfuse when it is on).

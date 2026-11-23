@@ -143,4 +143,16 @@ public class RunComparisonTests
 
         RunComparison.Compare(a, b).Warnings.ShouldBeEmpty();
     }
+
+    [Fact]
+    public void Compare_WarnsWhenThePromptsAndTheModelsChangedTogether_ButNotWhenOnlyThePromptsDid()
+    {
+        var a = Run("a", [Graded("q1", "c", 3), Graded("q2", "c", 4)]) with { PromptsHash = "aaaaaaaaaaaa" };
+        var b = Run("b", [Graded("q1", "c", 4), Graded("q2", "c", 4)]) with { PromptsHash = "bbbbbbbbbbbb" };
+
+        RunComparison.Compare(a, b).Warnings.ShouldContain(warning => warning.Contains("chat prompts differ", StringComparison.Ordinal));
+
+        var samePrompts = b with { Chat = a.Chat };
+        RunComparison.Compare(a, samePrompts).Warnings.ShouldBeEmpty();
+    }
 }

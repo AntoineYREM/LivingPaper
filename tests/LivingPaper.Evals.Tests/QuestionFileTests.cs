@@ -34,18 +34,27 @@ public class QuestionFileTests
         set.Items[1].Input.ShouldBe("Are you an AI?");
     }
 
-    [Fact]
-    public async Task ReadAsync_ReadsTheRealFileOfTheRepository()
+    [Theory]
+    [InlineData("evals/bovary/questions.json", 40, 8, "bovary-language-")]
+    [InlineData("evals/cyrano/questions.json", 20, 4, "cyrano-language-")]
+    public async Task ReadAsync_ReadsTheRealFilesOfTheRepository(string file, int total, int perCategory, string languagePrefix)
     {
-        var path = RepoFiles.Find("evals/bovary/questions.json");
+        var set = await QuestionFile.ReadAsync(RepoFiles.Find(file)!, CancellationToken.None);
 
-        var set = await QuestionFile.ReadAsync(path!, CancellationToken.None);
+        set.Items.Count.ShouldBe(total);
+        string[] categories = ["normal", "modern-trap", "role-break-trap", "off-topic", "language"];
+        foreach (var category in categories)
+        {
+            set.Items.Count(item => item.Category == category).ShouldBe(perCategory, category);
+        }
 
-        set.Items.Count.ShouldBe(20);
-        set.Items.Select(item => item.Category).Distinct().Count().ShouldBe(5);
+        // Every question has the attitude expected written down, and the language questions say which language the reply must be in.
+        set.Items.ShouldAllBe(item => item.ExpectedOutput.Length > 0);
+        set.Items.Where(item => item.Category == "language").ShouldAllBe(item => item.Id.StartsWith(languagePrefix, StringComparison.Ordinal));
 
-        // The language questions are in other languages than English, to check that the character answers in the language of the user.
-        set.Items.Where(item => item.Category == "language").Select(item => item.Id).ShouldBe(["bovary-language-01", "bovary-language-02"]);
+        // The character is one of the book's: the run would stop at once otherwise.
+        var book = await File.ReadAllTextAsync(RepoFiles.Find($"examples/{set.BookId}.json")!, CancellationToken.None);
+        book.ShouldContain(set.Character);
     }
 
     [Theory]

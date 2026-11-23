@@ -113,6 +113,14 @@ internal sealed record RunComparison(
             warnings.Add($"The judges differ ({a.Judge.Model} and {b.Judge.Model}): a difference can come from the judge, not from the character.");
         }
 
+        // The prompts differing is the point of a test of a change of prompt, and fine when the model is the only thing that differs
+        // elsewhere; both changing at once makes a difference impossible to attribute.
+        if (a.PromptsHash is not null && b.PromptsHash is not null && a.PromptsHash != b.PromptsHash
+            && (a.Chat.Model != b.Chat.Model || a.Judge.Model != b.Judge.Model))
+        {
+            warnings.Add($"The chat prompts differ ({a.PromptsHash} and {b.PromptsHash}) and so do the models: a difference cannot be put down to one or the other.");
+        }
+
         if (a.Repeats != b.Repeats)
         {
             warnings.Add($"The questions were asked a different number of times each ({a.Repeats} and {b.Repeats}): the run with fewer tries is noisier.");

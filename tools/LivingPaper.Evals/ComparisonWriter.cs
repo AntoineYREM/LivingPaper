@@ -30,6 +30,10 @@ internal static class ComparisonWriter
     {
         writer.WriteLine($"{label}: {run.Id}");
         writer.WriteLine($"   {run.Character} answers with {run.Chat.Provider} ({run.Chat.Model}); {run.Judge.Provider} ({run.Judge.Model}) judges, prompt version {run.Judge.PromptVersion}; {run.Repeats} time(s) each.");
+        if (run.Label is not null || run.PromptsHash is not null)
+        {
+            writer.WriteLine($"   {(run.Label is null ? string.Empty : $"label \"{run.Label}\"; ")}chat prompts {run.PromptsHash ?? "unknown"}.");
+        }
     }
 
     private static void WriteCategories(TextWriter writer, RunComparison comparison)

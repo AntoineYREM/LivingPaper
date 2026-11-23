@@ -11,10 +11,15 @@ internal sealed record EvalOptions(
     string? JudgePromptPath,
     string? ChatProvider,
     string? JudgeProvider,
-    bool LocalOnly = false)
+    bool LocalOnly = false,
+    string? PromptsPath = null,
+    string? Label = null,
+    int? MaxOutputTokens = null)
 {
     public const int DefaultRepeats = 3;
     public const int MaxRepeats = 20;
+    public const int MaxLabelLength = 60;
+    public const int MaxCeiling = 200_000;
 
     public const string Usage = """
         Usage: dotnet run --project tools/LivingPaper.Evals -- run [options]
@@ -28,6 +33,10 @@ internal sealed record EvalOptions(
           --judge <name>         language model of the judge, by its name on the Settings page
           --questions <file>     another questions file (default evals/bovary/questions.json)
           --judge-prompt <file>  another judge prompt (default evals/judge.json)
+          --prompts-file <file>  another prompts file for the chat (default: prompts.json of the data folder), to try a change of prompt
+          --label <text>         a short name for this run (for example "rule-no-ai"), kept in the run file and shown by compare
+          --max-tokens <n>       ceiling on the length of every reply, thinking included (default: none). Useful with an expensive model on
+                                 OpenRouter, which sets aside the cost of the longest reply first; not for OpenAI's own newest models
           --local-only           keep the run in evals/runs/ only, even when Langfuse is configured
           --help                 this text
 
@@ -66,7 +75,7 @@ internal sealed record EvalOptions(
                 continue;
             }
 
-            if (option is not ("--repeats" or "--chat" or "--judge" or "--questions" or "--judge-prompt"))
+            if (option is not ("--repeats" or "--chat" or "--judge" or "--questions" or "--judge-prompt" or "--prompts-file" or "--label" or "--max-tokens"))
             {
                 throw new EvalException($"Unknown option '{option}'. Use --help to see the options.");
             }
@@ -89,6 +98,23 @@ internal sealed record EvalOptions(
             throw new EvalException($"--repeats must be a whole number from 1 to {MaxRepeats}.");
         }
 
+        var label = values.GetValueOrDefault("--label")?.Trim();
+        if (label is not null && (label.Length is 0 or > MaxLabelLength || label.Any(char.IsControl)))
+        {
+            throw new EvalException($"--label must be a short text of 1 to {MaxLabelLength} characters.");
+        }
+
+        int? ceiling = null;
+        if (values.TryGetValue("--max-tokens", out var ceilingText))
+        {
+            if (!int.TryParse(ceilingText, NumberStyles.None, CultureInfo.InvariantCulture, out var parsed) || parsed is < 1 or > MaxCeiling)
+            {
+                throw new EvalException($"--max-tokens must be a whole number from 1 to {MaxCeiling}.");
+            }
+
+            ceiling = parsed;
+        }
+
         return new EvalOptions(
             ShowHelp: false,
             repeats,
@@ -96,7 +122,10 @@ internal sealed record EvalOptions(
             values.GetValueOrDefault("--judge-prompt"),
             values.GetValueOrDefault("--chat") ?? Blank(environment("EVAL_CHAT_PROVIDER")),
             values.GetValueOrDefault("--judge") ?? Blank(environment("EVAL_JUDGE_PROVIDER")),
-            localOnly);
+            localOnly,
+            values.GetValueOrDefault("--prompts-file"),
+            label,
+            ceiling);
     }
 
     private static string? Blank(string? value) => string.IsNullOrWhiteSpace(value) ? null : value.Trim();

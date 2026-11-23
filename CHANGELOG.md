@@ -14,6 +14,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- **Ready for the first real runs** (PAPER-76): 40 questions for Emma (8 per category, 10 in French, 7 other languages) and 20 for Cyrano in a
+  separate file as a second character; a run file keeps a short signature of the chat prompts and an optional `--label`; `--prompts-file` tries
+  another prompts file without touching yours; `--max-tokens` sets a ceiling on the length of a reply (`OpenAiCompatibleOptions.MaxOutputTokens`, off
+  by default, the site sends none), which keeps an expensive model from being refused by an OpenRouter key that has a spending limit.
 - **Evaluation of the characters** (PAPER-76, decision 0010): `tools/LivingPaper.Evals`, a console tool that puts 20 questions to Emma
   Bovary through the real chat, has a judge model grade each reply from 1 to 5, and prints the averages by category with the tokens used.
   It chooses the models in the list of the Settings page (or adds one), and needs neither the site running nor a new dependency. The

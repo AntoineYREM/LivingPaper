@@ -41,6 +41,16 @@ public class ComparisonWriterTests
     ];
 
     [Fact]
+    public void Write_ShowsTheLabelAndThePromptsOfARunThatHasThem()
+    {
+        var a = Run("run-a", "model-a", Chat, Judge, Better) with { Label = "baseline", PromptsHash = "0123456789ab" };
+
+        var text = Write(a, Run("run-b", "model-b", Chat, Judge, Worse));
+
+        text.ShouldContain("label \"baseline\"; chat prompts 0123456789ab.");
+    }
+
+    [Fact]
     public void Write_NamesBothRunsAndTheirModels()
     {
         var text = Write(Run("run-a", "model-a", Chat, Judge, Better), Run("run-b", "model-b", Chat, Judge, Worse));

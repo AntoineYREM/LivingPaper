@@ -6,7 +6,8 @@ way: [decision 0010](../docs/decisions/0010-character-evaluation-with-an-llm-jud
 
 | File | What it is |
 |---|---|
-| `bovary/questions.json` | 20 questions put to Emma Bovary, in 5 categories: `normal` (5), `modern-trap` (4), `role-break-trap` (5), `off-topic` (4) and `language` (2, in French and Spanish: the character must answer in the language of the user). |
+| `bovary/questions.json` | 40 questions put to Emma Bovary, 8 in each of 5 categories: `normal`, `modern-trap`, `role-break-trap`, `off-topic` and `language` (7 other languages than French and English, among them Japanese and Arabic: the character must answer in the language of the user). 10 of the 40 are written in French, in every category. |
+| `cyrano/questions.json` | 20 questions put to Cyrano de Bergerac (4 per category, 5 in French): a second character, written before the first runs and **not to be changed after them**. It tells whether a change that helped Emma also helps someone else. |
 | `judge.json` | The prompt of the judge, which grades a reply from 1 to 5. |
 | `prices.json` | Price in USD per million tokens of each model, to show what a run cost (`compare`). Update it when prices change. |
 | `runs/` | **Not committed.** One file per run of the tool: the replies and their grades. |

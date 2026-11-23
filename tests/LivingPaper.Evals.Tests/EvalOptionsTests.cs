@@ -28,6 +28,26 @@ public class EvalOptionsTests
     }
 
     [Fact]
+    public void Parse_ReadsThePromptsFileTheLabelAndTheCeiling()
+    {
+        var options = Parse(["run", "--prompts-file", "other.json", "--label", " rule-no-ai ", "--max-tokens", "4096"]);
+
+        options.PromptsPath.ShouldBe("other.json");
+        options.Label.ShouldBe("rule-no-ai");
+        options.MaxOutputTokens.ShouldBe(4096);
+        Parse(["run"]).MaxOutputTokens.ShouldBeNull();
+    }
+
+    [Theory]
+    [InlineData("--max-tokens", "0")]
+    [InlineData("--max-tokens", "-5")]
+    [InlineData("--max-tokens", "lots")]
+    [InlineData("--max-tokens", "999999999")]
+    [InlineData("--label", " ")]
+    public void Parse_RefusesABadCeilingOrLabel(string option, string value) =>
+        Should.Throw<EvalException>(() => Parse(["run", option, value]));
+
+    [Fact]
     public void Parse_LocalOnlyIsAFlagWithNoValue()
     {
         Parse(["run", "--local-only"]).LocalOnly.ShouldBeTrue();
