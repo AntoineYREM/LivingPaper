@@ -172,4 +172,51 @@ public class LangfuseApiTests
         error.Message.ShouldNotContain("sk-test");
         error.Message.ShouldNotContain("refused");
     }
+
+    [Fact]
+    public async Task GetChatTimingsAsync_ReadsTheTimingsOfTheChatCalls_PageAfterPage()
+    {
+        var handler = new FakeHandler((request, _) => request.RequestUri!.Query.Contains("cursor=next-page", StringComparison.Ordinal)
+            ? (HttpStatusCode.OK, """{"data":[{"startTime":"2026-11-23T20:02:00.000Z","model":"model-b","latency":4.5,"timeToFirstToken":null}],"meta":{}}""")
+            : (HttpStatusCode.OK, """{"data":[{"startTime":"2026-11-23T20:01:00.000Z","model":"model-a","latency":2.25,"timeToFirstToken":0.5},{"startTime":"2026-11-23T20:01:30.000Z","model":"model-a","latency":null}],"meta":{"cursor":"next-page"}}"""));
+
+        var timings = await Api(handler).GetChatTimingsAsync(new DateTimeOffset(2026, 11, 23, 19, 0, 0, TimeSpan.Zero), CancellationToken.None);
+
+        timings.ShouldBe(
+        [
+            new ChatTiming(new DateTimeOffset(2026, 11, 23, 20, 1, 0, TimeSpan.Zero), "model-a", 2.25, 0.5),
+            new ChatTiming(new DateTimeOffset(2026, 11, 23, 20, 2, 0, TimeSpan.Zero), "model-b", 4.5, null),
+        ]);
+        handler.Requests.Count.ShouldBe(2);
+        var first = handler.Requests[0];
+        first.Method.ShouldBe(HttpMethod.Get);
+        first.Url.ShouldStartWith("http://langfuse.test:3000/api/public/v2/observations?");
+        first.Url.ShouldContain("type=GENERATION");
+        first.Url.ShouldContain("name=chat-reply");
+        first.Url.ShouldContain("environment=experiment");
+        first.Url.ShouldContain("fromStartTime=2026-11-23T19%3A00%3A00.0000000Z");
+        first.Authorization.ShouldNotBeNull().ShouldStartWith("Basic ");
+        handler.Requests[1].Url.ShouldContain("cursor=next-page");
+    }
+
+    [Theory]
+    [InlineData(HttpStatusCode.Unauthorized, "refused the keys")]
+    [InlineData(HttpStatusCode.NotFound, "HTTP 404")]
+    public async Task GetChatTimingsAsync_SaysWhatWentWrong_WithoutRepeatingTheAnswerOfTheServer(HttpStatusCode status, string expected)
+    {
+        var handler = new FakeHandler((_, _) => (status, "secret-in-the-answer"));
+
+        var exception = await Should.ThrowAsync<EvalException>(() => Api(handler).GetChatTimingsAsync(DateTimeOffset.UnixEpoch, CancellationToken.None));
+
+        exception.Message.ShouldContain(expected);
+        exception.Message.ShouldNotContain("secret-in-the-answer");
+    }
+
+    [Fact]
+    public async Task GetChatTimingsAsync_RefusesAnAnswerThatIsNotWhatWasExpected()
+    {
+        var handler = new FakeHandler((_, _) => (HttpStatusCode.OK, "not json"));
+
+        await Should.ThrowAsync<EvalException>(() => Api(handler).GetChatTimingsAsync(DateTimeOffset.UnixEpoch, CancellationToken.None));
+    }
 }

@@ -8,12 +8,13 @@ namespace LivingPaper.Evals;
 
 // The REST API of Langfuse, for what OpenTelemetry cannot carry: the dataset and its items, and the scores. (Langfuse has no .NET SDK.)
 // Endpoints (https://api.reference.langfuse.com): GET and POST /v2/datasets, POST /dataset-items (an item is created or updated by its
-// id), POST /scores (a list; the scores are accepted asynchronously).
+// id), POST /scores (a list; the scores are accepted asynchronously), and GET /v2/observations to read the timings of the chat calls.
 // The address and the keys are user input and secrets: redirects are not followed, there is a time limit, and an error says the status
 // and what was being done, never the answer of the server (it could repeat a key) nor the text of the exception (it holds the address).
 internal sealed class LangfuseApi : IDisposable
 {
     private const int ScoreBatchSize = 50;
+    private const int ObservationPageSize = 1000;
 
     private readonly HttpClient _client;
 
@@ -79,6 +80,29 @@ internal sealed class LangfuseApi : IDisposable
         }
     }
 
+    // The timing of every call of the model of the chat made since a date, in the environment of the experiments (the judge's calls have
+    // another name and are left out). Read page after page: Langfuse gives a cursor to ask for the next one.
+    public async Task<IReadOnlyList<ChatTiming>> GetChatTimingsAsync(DateTimeOffset since, CancellationToken cancellationToken)
+    {
+        var timings = new List<ChatTiming>();
+        string? cursor = null;
+        do
+        {
+            var url = "v2/observations?type=GENERATION"
+                + $"&name={Uri.EscapeDataString(LivingPaper.Infrastructure.TracingChatModel.StreamName)}"
+                + $"&environment={Uri.EscapeDataString(LangfuseNames.Environment)}"
+                + $"&fromStartTime={Uri.EscapeDataString(since.UtcDateTime.ToString("O", System.Globalization.CultureInfo.InvariantCulture))}"
+                + $"&limit={ObservationPageSize}&fields=core,basic,time,model"
+                + (cursor is null ? string.Empty : $"&cursor={Uri.EscapeDataString(cursor)}");
+            var answer = await SendAsync(HttpMethod.Get, url, body: null, cancellationToken).ConfigureAwait(false);
+            Require(answer.Status, "reading the timings of the answers");
+            cursor = ReadTimings(answer.Body, timings);
+        }
+        while (cursor is not null);
+
+        return timings;
+    }
+
     public void Dispose() => _client.Dispose();
 
     private async Task<(HttpStatusCode Status, string Body)> SendAsync(HttpMethod method, string relativeUrl, object? body, CancellationToken cancellationToken)
@@ -131,6 +155,38 @@ internal sealed class LangfuseApi : IDisposable
         catch (JsonException)
         {
             throw new EvalException("Langfuse answered the scores with a status 207 that could not be read.");
+        }
+    }
+
+    // Adds the timings of a page to the list and returns the cursor of the next page, or null on the last one. A call with no usable time
+    // (not finished, for example) is left out.
+    private static string? ReadTimings(string body, List<ChatTiming> timings)
+    {
+        try
+        {
+            using var document = JsonDocument.Parse(body);
+            var root = document.RootElement;
+            var count = 0;
+            foreach (var item in root.GetProperty("data").EnumerateArray())
+            {
+                count++;
+                if (item.TryGetProperty("startTime", out var start) && start.TryGetDateTimeOffset(out var startTime)
+                    && item.TryGetProperty("model", out var model) && model.ValueKind == JsonValueKind.String
+                    && item.TryGetProperty("latency", out var latency) && latency.ValueKind == JsonValueKind.Number)
+                {
+                    var firstToken = item.TryGetProperty("timeToFirstToken", out var first) && first.ValueKind == JsonValueKind.Number ? first.GetDouble() : (double?)null;
+                    timings.Add(new ChatTiming(startTime, model.GetString()!, latency.GetDouble(), firstToken));
+                }
+            }
+
+            return count > 0 && root.TryGetProperty("meta", out var meta) && meta.TryGetProperty("cursor", out var cursor) && cursor.ValueKind == JsonValueKind.String
+                && !string.IsNullOrEmpty(cursor.GetString())
+                    ? cursor.GetString()
+                    : null;
+        }
+        catch (Exception exception) when (exception is JsonException or KeyNotFoundException or InvalidOperationException)
+        {
+            throw new EvalException("Langfuse answered the timings with something unexpected.");
         }
     }
 

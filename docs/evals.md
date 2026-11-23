@@ -1,7 +1,7 @@
 # Evaluating the characters
 
 > **Status: in construction.** The command `run` works: it prints its report, keeps every run in a file, and sends it to Langfuse when
-> Langfuse is configured. The command `compare` sets two runs side by side. Measuring the judge against human grades is the next step.
+> Langfuse is configured. The command `compare` sets two runs side by side and `latency` gives the time to answer. Measuring the judge against human grades is the next step.
 
 How to measure whether a character stays in its role, and compare two prompts or two models with the same questions.
 Why it is built this way: [decision 0010](decisions/0010-character-evaluation-with-an-llm-judge.md).
@@ -26,6 +26,7 @@ Each question is asked several times (3 by default), because a model does not an
 | Every run kept in a file (`evals/runs/`), shareable ones in `evals/published/` | same | done |
 | Sending dataset, one trace per answer and the scores to Langfuse | same | done, to be checked on your Langfuse |
 | Command `compare` (two runs, tokens, cost) and the price file `evals/prices.json` | same | done |
+| Command `latency` (time to answer of each run, read from Langfuse) | same | done |
 | Command `calibrate` (judge against human grades) | same | to do |
 | First baseline on five models, with the runs and their limits | `README.md`, `evals/README.md`, `evals/published/` | done (23 November 2026) |
 
@@ -118,6 +119,22 @@ The page shows, in this order:
 - **The questions that differ most**, to see where to look first (the replies are in the two run files).
 - **Tokens and cost** of each run, chat and judge apart.
 
+## Time to answer
+
+```bash
+dotnet run --project tools/LivingPaper.Evals -- latency 20261123-191324-deepseek-deepseek-v4-1-flash 20261123-200404-anthropic-claude-opus-5-5 --out evals/published/latency.json
+```
+
+Langfuse records, for each answer of the chat, how long the model took (from the request to the end of the streamed reply) and when the first
+text arrived. The command asks Langfuse for them (it only reads; the `LANGFUSE_*` variables are needed, and the runs must have been sent to it), keeps
+the calls of the model of each run that started while the run was going, and shows the mean, the median, the slowest tenth and the mean time to
+the first text. The judge is another call and is not counted. `--out` also writes the figures as JSON, which holds no key and no text:
+`evals/published/latency.json` is what it wrote for the published runs.
+
+What it asks is `GET /api/public/v2/observations?type=GENERATION&name=chat-reply&environment=experiment&fromStartTime=<date>` (with the
+`fields` `core,basic,time,model`, page after page with the cursor), using your own keys. The figures depend on the network and on how busy the
+provider was; the tool does not hide that, and the README says where and when they were measured. A retried call counts as one more call.
+
 ### The prices
 
 `evals/prices.json` lists, for each model, the price in USD per million tokens of the input, the cached input and the output. The cost of a
@@ -163,9 +180,10 @@ tools/LivingPaper.Evals/
   CompareCommand.cs, CompareOptions.cs   the command `compare`
   RunComparison.cs      the maths: averages by category, paired differences, 95% interval, warnings
   ComparisonWriter.cs   the page of `compare`
+  LatencyCommand.cs, LatencyOptions.cs, LatencyWriter.cs, RunLatency.cs, ChatTiming.cs   the command `latency`: the time to answer of each run
   PriceList.cs          evals/prices.json and the cost of a run
   RunLocator.cs         finds a run from its id or its path
-  LangfuseApi.cs        the REST calls: dataset, items, scores
+  LangfuseApi.cs        the REST calls: dataset, items, scores, the timings of the chat calls
   LangfuseExperimentTracer.cs   the OpenTelemetry root span of each try, with the experiment attributes
   LangfuseScores.cs     the scores of a run, attached to the root spans
   ReportWriter.cs       averages by category, lowest scores, tokens

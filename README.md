@@ -76,19 +76,24 @@ local models work. Details and LM Studio: [docs/how-to-run.md](docs/how-to-run.m
 ## Do the characters stay in their role?
 
 An evaluation tool measures it: it puts 40 questions to Emma Bovary (everyday ones, and traps: a smartphone, "are you an AI?", a request for a
-recipe, a question in Japanese), has a language model grade each reply from 1 to 5, and compares two runs. First results, with the same prompts
-(grades from 1 to 5, a figure moves by about a tenth or two from one run to the next):
+recipe, a question in Japanese), has a language model grade each reply from 1 to 5, and compares two runs. The chat prompt was improved with it
+(rules on the period, on the services of an assistant, on stage directions such as "(sigh)" and on the language). Results of 23 November 2026,
+one computer, one judge (Claude Haiku 5.5); a figure moves by about a tenth or two from one run to the next:
 
-| Model | Average | Weakest point |
-|---|---|---|
-| DeepSeek V4.1 Flash | 4.35 | off-topic requests (3.9) |
-| Claude Haiku 5.5 | 4.12 | off-topic requests (3.2) |
-| Claude Opus 5.5 (one run) | 4.08 | breaking the role (2.5) |
-| GPT-5 mini | 3.58 | off-topic requests (1.9) |
-| Gemma 3 4B, local | 2.83 | off-topic requests (1.9) |
+| Model | Before the prompt change | With the current prompt | Time to answer |
+|---|---|---|---|
+| DeepSeek V4.1 Flash | 4.33 | **4.92** | 2.1 s |
+| Claude Opus 5.5 | 4.08 | **4.90** | 4.4 s |
+| ERNIE 5.5 Flash (free, preview) | not measured | **4.83** | 2.3 s |
+| GPT-5 mini | 3.57 | **4.50** | 11.6 s |
+| Claude Haiku 5.5 | 4.12 | not measured | 2.6 s |
+| Nemotron 3 Ultra (free) | not measured | 3.98 | 9.1 s |
+| LFM 3 1.7B (free) | not measured | 3.64 | 5.3 s |
+| Gemma 3 4B (on a laptop) | 2.83 | not measured | 10 to 12 s |
+| Qwen2 0.5B (on a laptop) | not measured | 1.77 | 2.4 s |
 
-The judge is itself a model, so these figures are an indication. The details, the limits and the runs are in [evals/README.md](evals/README.md), and
-how to run it yourself in [docs/evals.md](docs/evals.md).
+The judge is itself a model, so these figures are an indication; the time to answer is the mean of the chat call as Langfuse recorded it. The
+details, the limits and the runs are in [evals/README.md](evals/README.md), and how to run it yourself in [docs/evals.md](docs/evals.md).
 
 ## Warnings
 

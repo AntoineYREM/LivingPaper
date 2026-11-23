@@ -23,6 +23,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- **`latency`: the time to answer of each run** (PAPER-76): `dotnet run --project tools/LivingPaper.Evals -- latency <run> [<run> ...] [--out <file>]`
+  reads from Langfuse how long the model of the chat took (mean, median, slowest tenth) and when its first text arrived, for the calls of each
+  run, and can write them as JSON. The 18 runs of 23 November 2026 (baseline, new prompt, free and local models) are published in
+  `evals/published/` with their figures in `evals/published/latency.json`, and the README gives the results and their limits.
+
 - **First baseline of the characters** (PAPER-76): Emma Bovary on five models (DeepSeek V4.1 Flash, Haiku 5.5, Opus 5.5, GPT-5 mini, Gemma 3 4B) and
   Cyrano on one, graded by Haiku 5.5. The results, their reading and their limits are in `evals/README.md` and the README; the 9 runs are in
   `evals/published/`.

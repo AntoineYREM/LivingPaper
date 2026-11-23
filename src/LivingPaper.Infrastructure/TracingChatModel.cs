@@ -22,7 +22,7 @@ public sealed class TracingChatModel(IChatModel inner, LlmProvider provider, Llm
 
     // The analysis asks for whole replies; the chat streams: the names tell them apart in Langfuse.
     private const string CompleteName = "llm-call";
-    private const string StreamName = "chat-reply";
+    public const string StreamName = "chat-reply";
 
     public async Task<string> CompleteAsync(IReadOnlyList<ChatMessage> messages, ChatUsageMeter? usage, CancellationToken cancellationToken)
     {
