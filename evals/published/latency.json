@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "measuredAt": "2026-11-23T22:32:18.7729702Z",
+  "measuredAt": "2026-11-23T23:17:36.7866953Z",
   "source": "Langfuse: the calls named chat-reply, in the environment experiment. Seconds. The judge is not counted.",
   "runs": [
     {
@@ -235,6 +235,32 @@
       "medianSeconds": 0.84,
       "p90Seconds": 2.26,
       "meanFirstTextSeconds": 0.28,
+      "callsWithFirstText": 40
+    },
+    {
+      "runId": "20261123-230101-anthropic-claude-haiku-5-5",
+      "label": "rules-v2",
+      "model": "anthropic/claude-haiku-5.5",
+      "dataset": "madame-bovary-emma",
+      "answers": 40,
+      "calls": 40,
+      "meanSeconds": 2.46,
+      "medianSeconds": 2.32,
+      "p90Seconds": 3.33,
+      "meanFirstTextSeconds": 1.4,
+      "callsWithFirstText": 40
+    },
+    {
+      "runId": "20261123-230152-gemma3-4b",
+      "label": "rules-v2",
+      "model": "gemma3:4b",
+      "dataset": "madame-bovary-emma",
+      "answers": 40,
+      "calls": 40,
+      "meanSeconds": 11.95,
+      "medianSeconds": 10.18,
+      "p90Seconds": 17.48,
+      "meanFirstTextSeconds": 2.42,
       "callsWithFirstText": 40
     }
   ]

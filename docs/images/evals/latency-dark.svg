@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 426" width="720" height="426" role="img" aria-labelledby="title desc" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
   <title id="title">Time to answer, per model</title>
-  <desc id="desc">DeepSeek V4.1 Flash: 2.14 seconds in all, 1.38 seconds until the first text; ERNIE 5.5 Flash (free): 2.27 seconds in all, 2.19 seconds until the first text; Qwen2 0.5B (local): 2.35 seconds in all, 0.28 seconds until the first text; Claude Haiku 5.5: 2.55 seconds in all, 1.78 seconds until the first text; Claude Opus 5.5: 4.44 seconds in all, 3.22 seconds until the first text; LFM 3 1.7B (free): 5.32 seconds in all, 4.29 seconds until the first text; Nemotron 3 Ultra (free): 9.12 seconds in all, 4.42 seconds until the first text; Gemma 3 4B (local): 10.45 seconds in all, 0.79 seconds until the first text; GPT-5 mini: 11.55 seconds in all, 10.82 seconds until the first text</desc>
+  <desc id="desc">DeepSeek V4.1 Flash: 2.14 seconds in all, 1.38 seconds until the first text; ERNIE 5.5 Flash (free): 2.27 seconds in all, 2.19 seconds until the first text; Qwen2 0.5B (local): 2.35 seconds in all, 0.28 seconds until the first text; Claude Haiku 5.5: 2.46 seconds in all, 1.40 seconds until the first text; Claude Opus 5.5: 4.44 seconds in all, 3.22 seconds until the first text; LFM 3 1.7B (free): 5.32 seconds in all, 4.29 seconds until the first text; Nemotron 3 Ultra (free): 9.12 seconds in all, 4.42 seconds until the first text; GPT-5 mini: 11.55 seconds in all, 10.82 seconds until the first text; Gemma 3 4B (local): 11.95 seconds in all, 2.42 seconds until the first text</desc>
   <rect width="720" height="426" rx="10" fill="#1a1a19"/>
   <text x="24" y="32" font-size="17" fill="#f0efec" text-anchor="start" font-weight="600">Time to answer, per model</text>
   <text x="24" y="54" font-size="12" fill="#c3c2b7" text-anchor="start">Mean of the chat call as Langfuse recorded it, the judge not counted. The latest run of each model.</text>
@@ -35,9 +35,9 @@
   <rect x="209.7" y="171" width="54.93" height="16" rx="3" fill="#256abf"/>
   <text x="272.63" y="183" font-size="12" fill="#f0efec" text-anchor="start">2.35 s · first text 0.28 s</text>
   <text x="188" y="213" font-size="13" fill="#f0efec" text-anchor="end">Claude Haiku 5.5</text>
-  <rect x="200" y="201" width="48.95" height="16" rx="3" fill="#86b6ef"/>
-  <rect x="250.95" y="201" width="19.18" height="16" rx="3" fill="#256abf"/>
-  <text x="278.13" y="213" font-size="12" fill="#f0efec" text-anchor="start">2.55 s · first text 1.78 s</text>
+  <rect x="200" y="201" width="38.5" height="16" rx="3" fill="#86b6ef"/>
+  <rect x="240.5" y="201" width="27.15" height="16" rx="3" fill="#256abf"/>
+  <text x="275.65" y="213" font-size="12" fill="#f0efec" text-anchor="start">2.46 s · first text 1.40 s</text>
   <text x="188" y="243" font-size="13" fill="#f0efec" text-anchor="end">Claude Opus 5.5</text>
   <rect x="200" y="231" width="88.55" height="16" rx="3" fill="#86b6ef"/>
   <rect x="290.55" y="231" width="31.55" height="16" rx="3" fill="#256abf"/>
@@ -50,12 +50,12 @@
   <rect x="200" y="291" width="121.55" height="16" rx="3" fill="#86b6ef"/>
   <rect x="323.55" y="291" width="127.25" height="16" rx="3" fill="#256abf"/>
   <text x="458.8" y="303" font-size="12" fill="#f0efec" text-anchor="start">9.12 s · first text 4.42 s</text>
-  <text x="188" y="333" font-size="13" fill="#f0efec" text-anchor="end">Gemma 3 4B (local)</text>
-  <rect x="200" y="321" width="21.73" height="16" rx="3" fill="#86b6ef"/>
-  <rect x="223.73" y="321" width="263.65" height="16" rx="3" fill="#256abf"/>
-  <text x="495.38" y="333" font-size="12" fill="#f0efec" text-anchor="start">10.45 s · first text 0.79 s</text>
-  <text x="188" y="363" font-size="13" fill="#f0efec" text-anchor="end">GPT-5 mini</text>
-  <rect x="200" y="351" width="297.55" height="16" rx="3" fill="#86b6ef"/>
-  <rect x="499.55" y="351" width="18.08" height="16" rx="3" fill="#256abf"/>
-  <text x="525.63" y="363" font-size="12" fill="#f0efec" text-anchor="start">11.55 s · first text 10.82 s</text>
+  <text x="188" y="333" font-size="13" fill="#f0efec" text-anchor="end">GPT-5 mini</text>
+  <rect x="200" y="321" width="297.55" height="16" rx="3" fill="#86b6ef"/>
+  <rect x="499.55" y="321" width="18.08" height="16" rx="3" fill="#256abf"/>
+  <text x="525.63" y="333" font-size="12" fill="#f0efec" text-anchor="start">11.55 s · first text 10.82 s</text>
+  <text x="188" y="363" font-size="13" fill="#f0efec" text-anchor="end">Gemma 3 4B (local)</text>
+  <rect x="200" y="351" width="66.55" height="16" rx="3" fill="#86b6ef"/>
+  <rect x="268.55" y="351" width="260.08" height="16" rx="3" fill="#256abf"/>
+  <text x="536.63" y="363" font-size="12" fill="#f0efec" text-anchor="start">11.95 s · first text 2.42 s</text>
 </svg>

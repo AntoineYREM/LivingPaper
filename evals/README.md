@@ -95,11 +95,17 @@ by the command `charts` (see [docs/evals.md](../docs/evals.md)).
 | DeepSeek V4.1 Flash (3 tries) | 4.35 | **4.92** | 4.92 | 4.92 | 4.88 | 5.00 | 4.88 |
 | Claude Opus 5.5 (1 try) | 4.08 | **4.90** | 4.88 | 5.00 | 4.62 | 5.00 | 5.00 |
 | GPT-5 mini (1 try) | 3.58 | **4.50** | 5.00 | 4.50 | 4.25 | 3.88 | 4.88 |
+| Claude Haiku 5.5 (1 try) | 4.12 | **4.35** | 4.75 | 4.12 | 4.25 | 3.88 | 4.75 |
+| Gemma 3 4B, on a laptop (1 try) | 2.83 | **2.85** | 3.00 | 3.12 | 2.50 | 2.50 | 3.12 |
 | Cyrano, DeepSeek V4.1 Flash (3 tries) | 4.28 | **4.73** | 5.00 | 4.67 | 4.58 | 4.42 | 5.00 |
 
 - The first version of the rules (`rules-v1`) gave 4.35 with DeepSeek: no gain. It had fixed the off-topic and modern questions (+0.4) but
   not the stage directions, which went up from 35 to 51 answers out of 120. The reminder at the end of the prompt of version 2 brought them down to 1.
 - Opus went from 2.50 to 4.62 on role breaking: no more "I'm an AI, Claude". GPT-5 mini gained most (+0.93), mostly off-topic (1.92 to 3.88).
+- The prompt helps the models that can follow a long list of instructions: DeepSeek (+0.57), Opus (+0.82) and GPT-5 mini (+0.93). It helps Haiku
+  a little (+0.23): the stage directions are gone (none in 40 answers) and it breaks its role less, but its six grades of 2 or less are all a reply
+  in French to a question in English, which the judge caps at 2. It does not help Gemma 3 4B at all (+0.02, inside the noise): 36 of its 40
+  answers still have stage directions or asterisks, and it still says "I'm Gemma, a large language model" when asked which model it is.
 - The rules were written after reading Emma's results, without naming her questions. Cyrano, whose questions were written before and not
   changed, tells whether they hold for someone else: +0.45, with an interval that just touches 0 (20 questions).
 - The grades are now close to 5: these questions no longer tell good models apart. A harder set of questions is the next step.
@@ -114,10 +120,10 @@ gave them (`…-free`); they change or disappear, and can be slowed down when ma
 | ERNIE 5.5 Flash (Baidu, free, preview) | **4.83** | 5.00 | 4.88 | 4.75 | 4.75 | 4.75 | almost nothing |
 | Nemotron 3 Ultra (NVIDIA, free) | 3.98 | 3.38 | 4.12 | 4.50 | 4.38 | 3.50 | stage directions and markdown in 18 answers out of 40 |
 | LFM 3 1.7B (Liquid, free) | 3.64 | 4.50 | 3.62 | 2.88 | 3.62 | 3.57 | breaks its role, does the task asked, answers in the wrong language |
-| Gemma 3 4B (on a laptop, Ollama), before the new prompt | 2.83 | 3.22 | 2.96 | 2.88 | 1.87 | 3.21 | all of it |
+| Gemma 3 4B (on a laptop, Ollama) | 2.85 | 3.00 | 3.12 | 2.50 | 2.50 | 3.12 | stage directions in 36 answers out of 40, says it is Gemma, does the task asked, answers in French to Arabic |
 | Qwen2 0.5B (on a laptop, Ollama) | 1.77 | 1.75 | 1.62 | 1.88 | 1.12 | 2.50 | does not play the character at all |
 
-Gemma was measured with the old prompt (three runs of one try); with the new one it has not been run.
+Gemma has 2.85 with the new prompt and 2.83 with the old one (three runs of one try, 2.77 to 2.92): the prompt does not change it.
 
 ## Time to answer
 
@@ -130,12 +136,12 @@ for the runs you name; [`published/latency.json`](published/latency.json) holds 
 | Qwen2 0.5B (local) | 2.35 s | 0.83 s | 2.26 s | 0.28 s |
 | DeepSeek V4.1 Flash (4 runs of Emma) | 2.1 to 2.2 s | 1.9 to 2.1 s | 3.1 to 3.5 s | 1.4 to 1.6 s |
 | ERNIE 5.5 Flash (free) | 2.27 s | 2.26 s | 2.89 s | 2.19 s |
-| Claude Haiku 5.5 | 2.55 s | 2.59 s | 3.71 s | 1.78 s |
+| Claude Haiku 5.5 (2 runs) | 2.5 to 2.6 s | 2.3 to 2.6 s | 3.3 to 3.7 s | 1.4 to 1.8 s |
 | Claude Opus 5.5 (2 runs) | 4.4 to 4.7 s | 4.1 to 4.5 s | 5.8 to 6.4 s | 3.2 to 3.6 s |
 | LFM 3 1.7B (free) | 5.32 s | 4.51 s | 11.41 s | 4.29 s |
 | Nemotron 3 Ultra (free) | 9.12 s | 7.79 s | 16.77 s | 4.42 s |
 | GPT-5 mini (2 runs) | 9.0 and 11.6 s | 8.7 and 11.0 s | 11.6 and 16.5 s | 8.5 and 10.8 s |
-| Gemma 3 4B (local, 3 runs) | 10.4 to 12.2 s | 9.4 to 10.2 s | 16.6 to 19.4 s | 0.8 to 2.3 s |
+| Gemma 3 4B (local, 4 runs) | 10.4 to 12.2 s | 9.4 to 10.2 s | 16.6 to 19.4 s | 0.8 to 2.4 s |
 
 - GPT-5 mini thinks before it writes: its first text arrives almost when the answer ends, so the person waits without seeing anything.
   Gemma writes its first words fast and finishes slowly.
