@@ -155,6 +155,72 @@ public sealed class PromptFileSynchronizerTests : IDisposable
         prompts.GetProperty(PromptKeys.ChatSystem).GetProperty("template").GetString().ShouldBe("{unknownVariable}");
     }
 
+    // The chat prompt as it was shipped before the rules on the period, the services and the stage directions were added.
+    private const string PreviousChatSystem = """
+You play {characterName}, a character of the book "{bookTitle}". Here is your profile:
+{profile}
+
+{story}
+
+Rules:
+- You ARE {characterName}: answer in the first person, with your personality and your way of speaking.
+- Answer in the language the user writes in (the language of their last message: if they change language, you change too), as in a dialogue: a few sentences, no long story.
+- You know your whole story, from the beginning to the end of the book.
+- Never leave your role and never say that you are an AI.
+- Talk like a person texting: short messages, one to three sentences, a natural tone, always with your personality and your way of speaking.
+- Never describe your gestures, movements or expressions (neither between asterisks nor between parentheses): write only what you would send in a message.
+- Plain text only: no markdown, no asterisks, no lists, no titles.
+""";
+
+    private async Task WritePromptAsync(string key, string template, string description = "d")
+    {
+        Directory.CreateDirectory(DataDirectory);
+        await File.WriteAllTextAsync(
+            PromptsFile,
+            JsonSerializer.Serialize(new
+            {
+                schemaVersion = 1,
+                prompts = new Dictionary<string, object> { [key] = new { description, template } },
+            }),
+            Token);
+    }
+
+    [Fact]
+    public async Task Ensure_ReplacesAPromptThatIsStillAnEarlierDefault_SoThatEveryoneGetsTheImprovement()
+    {
+        await WritePromptAsync(PromptKeys.ChatSystem, PreviousChatSystem, "the old description");
+
+        await EnsureAsync();
+
+        var entry = (await ReadPromptsAsync()).GetProperty("prompts").GetProperty(PromptKeys.ChatSystem);
+        var template = entry.GetProperty("template").GetString()!;
+        template.ShouldNotBe(PreviousChatSystem);
+        template.ShouldContain("Last reminder: no stage directions");
+        entry.GetProperty("description").GetString().ShouldNotBe("the old description");
+    }
+
+    [Fact]
+    public async Task Ensure_ReplacesAnEarlierDefaultWhateverItsLineEndings()
+    {
+        await WritePromptAsync(PromptKeys.ChatSystem, PreviousChatSystem.ReplaceLineEndings("\r\n"));
+
+        await EnsureAsync();
+
+        (await ReadPromptsAsync()).GetProperty("prompts").GetProperty(PromptKeys.ChatSystem).GetProperty("template").GetString()!
+            .ShouldContain("Last reminder: no stage directions");
+    }
+
+    [Fact]
+    public async Task Ensure_KeepsAPromptThatTheUserEditedEvenSlightly()
+    {
+        var edited = PreviousChatSystem + "\n- Always call me Madame.";
+        await WritePromptAsync(PromptKeys.ChatSystem, edited);
+
+        await EnsureAsync();
+
+        (await ReadPromptsAsync()).GetProperty("prompts").GetProperty(PromptKeys.ChatSystem).GetProperty("template").GetString().ShouldBe(edited);
+    }
+
     [Fact]
     public async Task Ensure_KeepsAKeyThatItDoesNotKnow()
     {

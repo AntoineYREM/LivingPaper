@@ -12,6 +12,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - **The chat was never traced**: ASP.NET Core's unsampled request activity made the default sampler drop the reply's span. All spans are
   now recorded.
 
+### Changed
+
+- **The characters stay in their role better** (PAPER-76): the default `chat.system` prompt now asks the character to live in the time of its story,
+  not to act as an assistant, never to mention a prompt, a model or an author, to answer in the language of the last message, and to write no
+  stage directions such as "(sigh)". Measured on the same 40 questions, the average grade went from 4.33 to 4.92 with DeepSeek V4.1 Flash, from
+  4.08 to 4.90 with Claude Opus 5.5 and from 3.57 to 4.50 with GPT-5 mini; a second character (Cyrano) went from 4.28 to 4.73. Details and limits in
+  `evals/README.md`. A `data/prompts.json` whose chat prompt is still exactly one of the earlier defaults is updated to the new one at start-up; a
+  prompt you edited is never touched (`ReplacedDefaults`). The earlier prompts are kept in `evals/prompts/` to replay the baseline.
+
 ### Added
 
 - **First baseline of the characters** (PAPER-76): Emma Bovary on five models (DeepSeek V4.1 Flash, Haiku 5.5, Opus 5.5, GPT-5 mini, Gemma 3 4B) and

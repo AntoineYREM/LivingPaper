@@ -88,7 +88,8 @@ OCR for scanned PDFs, saved conversations.
   summary, story of the book, chat system prompt, chat story section, connection test) live in `data/prompts.json`, which users can read and edit by
   hand. Defaults are versioned in the repository (`prompts.default.json`) and copied in full to `data/` on first
   start. Prompts are re-read on every analysis and chat message (no restart needed). On update, missing keys are
-  added but existing prompts are never overwritten. An invalid file is an explicit error, never a silent
+  added, and a prompt that is still exactly an earlier shipped default (hash kept in `ReplacedDefaults`) is replaced by the new default;
+  a prompt the user edited is never overwritten. Add the hash of the previous default when a default prompt changes. An invalid file is an explicit error, never a silent
   fallback to defaults. Variables use `{name}` placeholders documented in each prompt's `description`. The
   number of characters extracted (10) is the `{maxCharacters}` variable of the merge prompt: no UI setting.
 - **Examples:** public-domain books already analyzed live in `examples/*.json` in the repository, read-only, in the

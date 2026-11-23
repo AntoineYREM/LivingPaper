@@ -17,8 +17,11 @@ default, the `data/` volume in Docker; set `DATA_DIRECTORY` to move it). Nothing
 - **If the file is wrong:** invalid JSON, a missing prompt, an empty prompt or an unknown variable stops the analysis
   or the chat with an error that names the file and the prompt. There is no silent fallback to the default prompts,
   and the file is never overwritten. The same error is written to the logs at startup.
-- **After an update:** prompts that the new version adds are appended to your file. A prompt that is already in it,
-  edited or not, is never changed.
+- **After an update:** prompts that the new version adds are appended to your file. A prompt you edited is never
+  changed. A prompt that is still exactly one of the defaults shipped earlier (you never edited it) is replaced by the
+  new default, so that an improvement of a prompt reaches everyone. The chat prompt was improved this way (rules on the period,
+  on the services of an assistant, on stage directions and on the language; see `evals/README.md`). To keep a prompt as it is
+  while still following the defaults, change at least one character of it: it then counts as edited.
 - **Back to the defaults:** delete `data/prompts.json` and restart the application. The default prompts are copied
   again.
 

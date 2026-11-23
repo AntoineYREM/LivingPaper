@@ -23,7 +23,7 @@ Open <http://localhost:8080>. The first start builds the image (a few minutes), 
   in `docker-compose.yml` to `"8080:8080"`, knowing the warning above.
 - **The container does not run as root.** The image holds no key, no book and no setting.
 - **Update**: `git pull`, then `docker compose up --build -d`. Your volume is kept, and new default prompts are added to your
-  `prompts.json` without touching yours.
+  `prompts.json`, and a prompt you never edited is replaced by its improved default. A prompt you edited is left as it is.
 - **Back up** the volume, keys included: without `/data/keys` the saved API keys cannot be read again.
 
 ### Without building: the published image
