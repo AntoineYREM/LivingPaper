@@ -28,7 +28,7 @@ Open <http://localhost:8080>. The first start builds the image (a few minutes), 
 
 ### Without building: the published image
 
-Each release publishes an image (amd64 and arm64) to GitHub Container Registry, tagged `0.3.0`, `0.3` and `latest`. Save this as
+Each release publishes an image (amd64 and arm64) to GitHub Container Registry, tagged `0.4.0`, `0.4` and `latest`. Save this as
 `docker-compose.yml` in an empty folder, next to nothing else:
 
 ```yaml
@@ -47,7 +47,7 @@ volumes:
   livingpaper-data:
 ```
 
-Then `docker compose up -d`. To update, `docker compose pull && docker compose up -d`. Pin a version (`:0.3.0`) rather than
+Then `docker compose up -d`. To update, `docker compose pull && docker compose up -d`. Pin a version (`:0.4.0`) rather than
 `latest` if you want updates only when you decide. The same warning about the port applies.
 
 ```bash
