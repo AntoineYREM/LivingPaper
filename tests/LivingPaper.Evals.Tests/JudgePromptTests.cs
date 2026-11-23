@@ -36,7 +36,8 @@ public class JudgePromptTests
     {
         var prompt = await JudgePrompt.ReadAsync(RepoFiles.Find("evals/judge.json")!, CancellationToken.None);
 
-        prompt.Version.ShouldBe("1");
+        prompt.Version.ShouldBe("2");
+        prompt.Template.ShouldContain("language of the user's message");
         prompt.ScoreName.ShouldBe("character-fidelity");
         prompt.Render("Emma", "Madame Bovary", "Q", "R").ShouldNotContain("{reply}");
     }

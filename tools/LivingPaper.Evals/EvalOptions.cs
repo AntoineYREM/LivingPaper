@@ -10,7 +10,8 @@ internal sealed record EvalOptions(
     string? QuestionsPath,
     string? JudgePromptPath,
     string? ChatProvider,
-    string? JudgeProvider)
+    string? JudgeProvider,
+    bool LocalOnly = false)
 {
     public const int DefaultRepeats = 3;
     public const int MaxRepeats = 20;
@@ -27,7 +28,11 @@ internal sealed record EvalOptions(
           --judge <name>         language model of the judge, by its name on the Settings page
           --questions <file>     another questions file (default evals/bovary/questions.json)
           --judge-prompt <file>  another judge prompt (default evals/judge.json)
+          --local-only           keep the run in evals/runs/ only, even when Langfuse is configured
           --help                 this text
+
+        Every run is saved in evals/runs/ (not committed: it holds the replies). With the LANGFUSE_* variables set (shell or .env) it
+        is also sent to Langfuse: the dataset, one trace per answer, and the grades as scores.
 
         Without --chat and --judge the tool shows the list of models and asks. In a script, name them here or with
         EVAL_CHAT_PROVIDER and EVAL_JUDGE_PROVIDER. The data folder is DATA_DIRECTORY (default ./data), the same as the site's.
@@ -50,9 +55,17 @@ internal sealed record EvalOptions(
         }
 
         var values = new Dictionary<string, string>(StringComparer.Ordinal);
+        var localOnly = false;
         for (var index = 1; index < args.Count; index += 2)
         {
             var option = args[index];
+            if (option == "--local-only")
+            {
+                localOnly = true;
+                index--;
+                continue;
+            }
+
             if (option is not ("--repeats" or "--chat" or "--judge" or "--questions" or "--judge-prompt"))
             {
                 throw new EvalException($"Unknown option '{option}'. Use --help to see the options.");
@@ -82,7 +95,8 @@ internal sealed record EvalOptions(
             values.GetValueOrDefault("--questions"),
             values.GetValueOrDefault("--judge-prompt"),
             values.GetValueOrDefault("--chat") ?? Blank(environment("EVAL_CHAT_PROVIDER")),
-            values.GetValueOrDefault("--judge") ?? Blank(environment("EVAL_JUDGE_PROVIDER")));
+            values.GetValueOrDefault("--judge") ?? Blank(environment("EVAL_JUDGE_PROVIDER")),
+            localOnly);
     }
 
     private static string? Blank(string? value) => string.IsNullOrWhiteSpace(value) ? null : value.Trim();

@@ -1,4 +1,6 @@
-namespace LivingPaper.Web;
+using Microsoft.Extensions.Configuration;
+
+namespace LivingPaper.Infrastructure;
 
 // Reads the four variables of Langfuse. Off (null) while the two keys are empty, so a .env.example with the address filled in and
 // the keys empty changes nothing. A half-filled or invalid setting stops the application at start, naming the variable, rather than
@@ -12,7 +14,8 @@ public static class LangfuseSettings
     public const string SecretKeyVariable = "LANGFUSE_SECRET_KEY";
     public const string CaptureContentVariable = "LANGFUSE_CAPTURE_CONTENT";
 
-    private const string TracesPath = "/api/public/otel/v1/traces";
+    // Where the traces go, after the address of Langfuse. The other endpoints of its API (datasets, scores) are under /api/public/.
+    public const string TracesPath = "/api/public/otel/v1/traces";
 
     public static LangfuseOptions? Read(IConfiguration configuration)
     {

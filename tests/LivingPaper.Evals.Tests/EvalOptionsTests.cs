@@ -24,7 +24,16 @@ public class EvalOptionsTests
     {
         var options = Parse(["run", "--repeats", "5", "--chat", "Strong", "--judge", "Cheap", "--questions", "q.json", "--judge-prompt", "j.json"]);
 
-        options.ShouldBe(new EvalOptions(false, 5, "q.json", "j.json", "Strong", "Cheap"));
+        options.ShouldBe(new EvalOptions(false, 5, "q.json", "j.json", "Strong", "Cheap", LocalOnly: false));
+    }
+
+    [Fact]
+    public void Parse_LocalOnlyIsAFlagWithNoValue()
+    {
+        Parse(["run", "--local-only"]).LocalOnly.ShouldBeTrue();
+        Parse(["run", "--local-only", "--repeats", "2"]).Repeats.ShouldBe(2);
+        Parse(["run", "--repeats", "2", "--local-only"]).LocalOnly.ShouldBeTrue();
+        Parse(["run"]).LocalOnly.ShouldBeFalse();
     }
 
     [Fact]

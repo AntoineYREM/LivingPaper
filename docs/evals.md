@@ -1,7 +1,7 @@
 # Evaluating the characters
 
-> **Status: in construction.** The command `run` works and prints its report in the terminal. Sending the runs to Langfuse, comparing
-> two runs and measuring the judge against human grades are the next steps, and each is marked below.
+> **Status: in construction.** The command `run` works: it prints its report, keeps every run in a file, and sends it to Langfuse when
+> Langfuse is configured. Comparing two runs and measuring the judge against human grades are the next steps, marked below.
 
 How to measure whether a character stays in its role, and compare two prompts or two models with the same questions.
 Why it is built this way: [decision 0010](decisions/0010-character-evaluation-with-an-llm-judge.md).
@@ -12,7 +12,7 @@ Why it is built this way: [decision 0010](decisions/0010-character-evaluation-wi
    a question with no link to the book.
 2. The real chat of the application answers each question.
 3. A second language model, the **judge**, grades each answer from 1 to 5 for fidelity to the character.
-4. The tool prints the averages by category and the tokens used.
+4. The tool prints the averages by category and the tokens used, keeps the run in a file, and (if you use Langfuse) sends it there.
 
 Each question is asked several times (3 by default), because a model does not answer the same way twice.
 
@@ -22,8 +22,9 @@ Each question is asked several times (3 by default), because a model does not an
 |---|---|---|
 | 20 questions to Emma Bovary | `evals/bovary/questions.json` | done |
 | Prompt of the judge | `evals/judge.json` | done |
-| Console tool, command `run` (local report) | `tools/LivingPaper.Evals` | done |
-| Sending dataset, runs and scores to Langfuse | same | to do |
+| Console tool, command `run` (report in the terminal) | `tools/LivingPaper.Evals` | done |
+| Every run kept in a file (`evals/runs/`), shareable ones in `evals/published/` | same | done |
+| Sending dataset, one trace per answer and the scores to Langfuse | same | done, to be checked on your Langfuse |
 | Command `compare` (two runs, cost) | same | to do |
 | Command `calibrate` (judge against human grades) | same | to do |
 | Results in the README | `README.md` | after the first real runs |
@@ -58,11 +59,36 @@ The tool does not need the web application to be running. What it reads:
 | `--repeats <n>` | Times each question is asked, 1 to 20 (default 3). |
 | `--chat <name>`, `--judge <name>` | The models, by their name on the Settings page. No question is asked. |
 | `--questions <file>`, `--judge-prompt <file>` | Other files than `evals/bovary/questions.json` and `evals/judge.json`. |
+| `--local-only` | Keep the run in a file only, even when Langfuse is configured. |
 | `--help` | The list of options. |
 
 For a run with no keyboard (a script, CI), name the models with the options or with `EVAL_CHAT_PROVIDER` and `EVAL_JUDGE_PROVIDER` in the
 shell or in `.env`: without a terminal, the tool never waits for an answer and says what is missing. Exit codes: `0` done, `1` nothing could
 be graded, `2` something to fix (the message says what), `130` stopped with Ctrl+C.
+
+## Where the runs go
+
+**On your disk, always.** Each run is a JSON file in `evals/runs/`, named after its id (`20261123-140512-gpt-5-mini.json`): the models
+(by the name of the Settings page, never a key or an address), the version of the judge prompt, the tokens, and every try with the text of
+the question and of the reply. That is what lets you read why an answer got a low grade and, later, grade the same answers by hand. The
+folder is **not committed**, because it holds the replies.
+
+**In the repository, when you choose.** To share a run (for the results of the README), copy its file to `evals/published/`, read it, and
+commit it. See `evals/published/README.md`.
+
+**In Langfuse, if it is configured.** With `LANGFUSE_BASE_URL`, `LANGFUSE_PUBLIC_KEY` and `LANGFUSE_SECRET_KEY` set (shell or `.env`, as for
+the [tracing](langfuse.md)), the tool also creates, with nothing to click:
+
+- the **dataset** `madame-bovary-emma` with its 20 questions as items (found again by their ids on the next run, never duplicated);
+- an **experiment** for the run, named like its file, with **one trace per answer** (the reply of the character, and the call of the judge
+  below it), in the environment `experiment` so the traces of the real chat stay apart;
+- one **score** `character-fidelity` per graded answer, with the reason of the judge as its comment.
+
+Look for them in the Datasets page of Langfuse (the dataset and its runs), and filter the traces by the environment `experiment`. The
+Evaluators page stays empty on purpose: the judge is in this tool, not in Langfuse. The text of the question and of the reply is sent
+(it is evaluation data on a public-domain book); the prompts sent to the models, which hold the story of the book, only with
+`LANGFUSE_CAPTURE_CONTENT=true`. If Langfuse cannot be used (wrong key, not running), the tool says so, **the run is saved anyway**, and the
+local file stays the reference. `--local-only` skips Langfuse.
 
 ## How to read the results
 
@@ -96,7 +122,11 @@ tools/LivingPaper.Evals/
   QuestionFile.cs       reads and checks the questions file
   JudgePrompt.cs        reads the judge file, fills the prompt
   JudgeVerdict.cs       reads the judge's answer (score and reason)
-  EvalRunner.cs         questions x repeats: answer, then grade
+  EvalRunner.cs         questions x repeats: answer, then grade (each try is traced when Langfuse is on)
+  RunRecord.cs, RunStore.cs   the file of a run, and how it is saved and read
+  LangfuseApi.cs        the REST calls: dataset, items, scores
+  LangfuseExperimentTracer.cs   the OpenTelemetry root span of each try, with the experiment attributes
+  LangfuseScores.cs     the scores of a run, attached to the root spans
   ReportWriter.cs       averages by category, lowest scores, tokens
   ProviderChooser.cs    the choice of a model in the list of the site
   ProviderAdder.cs      adding a model from the terminal
@@ -114,4 +144,4 @@ tools/LivingPaper.Evals/
 - The judge is a language model: it can be wrong, and favor answers written by a model of its own family.
 - 20 questions are few. Differences of a few tenths between two runs can be noise; that is why each question is asked several times.
 - The tool measures one quality (staying in the role), not whether the character is interesting or faithful to the book.
-- The text of the replies is printed nowhere and kept nowhere in this step: only the scores and the reasons of the judge are.
+- The text of the replies is never printed in the terminal and never logged. It is kept in the run file (and sent to Langfuse when it is on).

@@ -1,4 +1,4 @@
-﻿<Project>
+<Project>
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
@@ -10,10 +10,12 @@
          (Web) provides the implementation and stores the keys of the encryption in data/keys. -->
     <PackageVersion Include="Microsoft.AspNetCore.DataProtection.Abstractions" Version="11.0.0" />
     <!-- Reads the text of PDF books (Infrastructure). Apache License 2.0, compatible with the AGPL. Pure .NET, no native code. -->
+    <!-- IConfiguration for the reading of the LANGFUSE_* settings (Infrastructure), shared by the web application and the evaluation tool. Abstractions only. MIT. -->
+    <PackageVersion Include="Microsoft.Extensions.Configuration.Abstractions" Version="11.0.0" />
     <PackageVersion Include="PdfPig" Version="0.1.16" />
     <!-- Drives a real browser in the end-to-end tests (tests/LivingPaper.E2ETests only, never shipped). MIT license. -->
     <PackageVersion Include="Microsoft.Playwright" Version="1.64.1" />
-    <!-- Exports the traces of the language model calls to Langfuse over OTLP (Web only, and only when LANGFUSE_* is set). Langfuse has
+    <!-- Exports the traces of the language model calls to Langfuse over OTLP (Web and the evaluation tool, and only when LANGFUSE_* is set). Langfuse has
          no .NET SDK: its documented way in is OpenTelemetry. Apache License 2.0, compatible with the AGPL. -->
     <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.21.0" />
     <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.21.0" />

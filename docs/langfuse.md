@@ -3,6 +3,9 @@
 How the optional tracing of the language model calls works (PAPER-75). Why it was built this way: [decision 0009](decisions/0009-langfuse-tracing-over-opentelemetry.md).
 For users, the settings are in [how-to-run.md](how-to-run.md#configuration) and [reference.md](reference.md#traces-of-the-model-calls-langfuse).
 
+The same exporter also serves the evaluation tool of the characters, which sends its runs to Langfuse as experiments: see
+[evals.md](evals.md#where-the-runs-go).
+
 ## What it is for
 
 An analysis makes dozens of calls to a language model. Langfuse shows each one: which model, how many tokens, how long, whether it

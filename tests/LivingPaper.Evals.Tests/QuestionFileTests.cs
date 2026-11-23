@@ -42,7 +42,10 @@ public class QuestionFileTests
         var set = await QuestionFile.ReadAsync(path!, CancellationToken.None);
 
         set.Items.Count.ShouldBe(20);
-        set.Items.Select(item => item.Category).Distinct().Count().ShouldBe(4);
+        set.Items.Select(item => item.Category).Distinct().Count().ShouldBe(5);
+
+        // The language questions are in other languages than English, to check that the character answers in the language of the user.
+        set.Items.Where(item => item.Category == "language").Select(item => item.Id).ShouldBe(["bovary-language-01", "bovary-language-02"]);
     }
 
     [Theory]

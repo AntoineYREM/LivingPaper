@@ -4,15 +4,23 @@ using LivingPaper.Domain;
 using LivingPaper.Infrastructure;
 using LivingPaper.Persistence;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
+using OpenTelemetry;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 
 namespace LivingPaper.Evals;
 
 // The composition of the `run` command: the same pieces as the site (settings, prompts, examples, the chat), assembled for one run.
-// The site does not need to be running. The data folder is the site's (DATA_DIRECTORY, default ./data): the models and their encrypted
-// keys are read from it, and the prompts too, so the character is played with the prompts you edited.
+// The site does not need to be running. The data folder is the site's (see DataFolder): the models and their encrypted keys are read
+// from it, and the prompts too, so the character is played with the prompts you edited.
+// Every run is saved in evals/runs/. When Langfuse is configured (LANGFUSE_*), the run is also sent to it: the dataset, one trace per
+// try, the grades as scores. A problem with Langfuse never loses the run: it is saved first, and the tool says what went wrong.
 internal static class EvalCommand
 {
+    private const string DatasetDescription = "Questions put to a character of an example book to check that it stays in its role (LivingPaper evaluation tool).";
+
     public static async Task<int> RunAsync(EvalOptions options, ITerminal terminal, Func<string, string?> environment, CancellationToken cancellationToken)
     {
         var dataDirectory = DataFolder.Resolve(environment("DATA_DIRECTORY"), Directory.GetCurrentDirectory());
@@ -20,6 +28,7 @@ internal static class EvalCommand
 
         var questions = await QuestionFile.ReadAsync(Locate(options.QuestionsPath, "evals/bovary/questions.json", "questions file"), cancellationToken).ConfigureAwait(false);
         var judgePrompt = await JudgePrompt.ReadAsync(Locate(options.JudgePromptPath, "evals/judge.json", "judge file"), cancellationToken).ConfigureAwait(false);
+        var langfuse = options.LocalOnly ? null : ReadLangfuse();
 
         try
         {
@@ -34,7 +43,9 @@ internal static class EvalCommand
         var keys = DataProtectionProvider.Create(new DirectoryInfo(Path.Combine(dataDirectory, "keys")), builder => builder.SetApplicationName("LivingPaper"));
         var site = new JsonLlmSettingsRepository(dataDirectory, new DataProtectionSecretProtector(keys));
 
-        using var factory = new OpenAiCompatibleChatModelFactory(NullLoggerFactory.Instance);
+        using var factory = new OpenAiCompatibleChatModelFactory(
+            NullLoggerFactory.Instance,
+            tracing: new LlmTracingOptions { CaptureContent = langfuse?.CaptureContent ?? false });
         using var catalog = new OpenAiCompatibleModelCatalog();
         var tester = new LlmConnectionTester(factory, prompts);
         var pending = new PendingProviderStore(TimeProvider.System);
@@ -46,13 +57,41 @@ internal static class EvalCommand
         var chatProvider = await chooser.ChooseAsync("chat", options.ChatProvider, cancellationToken).ConfigureAwait(false);
         var judgeProvider = await chooser.ChooseAsync("judge", options.JudgeProvider, cancellationToken).ConfigureAwait(false);
 
+        var startedAt = DateTimeOffset.UtcNow;
+        var runId = RunStore.NewId(startedAt, chatProvider.Model);
+        var metadata = new Dictionary<string, string>
+        {
+            ["chat_provider"] = chatProvider.Name,
+            ["chat_model"] = chatProvider.Model,
+            ["judge_provider"] = judgeProvider.Name,
+            ["judge_model"] = judgeProvider.Model,
+            ["judge_prompt_version"] = judgePrompt.Version,
+            ["repeats"] = options.Repeats.ToString(CultureInfo.InvariantCulture),
+            ["character"] = character.Name,
+        };
+
+        // Langfuse is prepared before the run: a wrong key is found now, not after the cost of the run.
+        using var api = langfuse is null ? null : new LangfuseApi(langfuse);
+        using var tracerProvider = langfuse is null
+            ? null
+            : Sdk.CreateTracerProviderBuilder()
+                .ConfigureResource(resource => resource.AddService("livingpaper-evals", serviceVersion: typeof(EvalCommand).Assembly.GetName().Version?.ToString()))
+                .AddLangfuseExporter(langfuse)
+                .Build();
+        IExperimentTracer tracer = NoExperimentTracer.Instance;
+        if (api is not null)
+        {
+            tracer = await PrepareLangfuseAsync(api, questions, runId, metadata, terminal, cancellationToken).ConfigureAwait(false) ?? tracer;
+        }
+
         var chatMeter = new ChatUsageMeter();
         var judgeMeter = new ChatUsageMeter();
         using var chatSettings = new LlmSettingsService(new ChatOverrideSettings(site, chatProvider.Id), tester, catalog, pending);
         var chat = new CharacterChatService(chatSettings, new MeteredChatModelFactory(factory, chatMeter), prompts);
         var runner = new EvalRunner(
             new ChatServiceReplier(chat, book, character),
-            new ModelJudge(new MeteredChatModelFactory(factory, judgeMeter), judgeProvider, judgePrompt, character.Name, book.Title));
+            new ModelJudge(new MeteredChatModelFactory(factory, judgeMeter), judgeProvider, judgePrompt, character.Name, book.Title),
+            tracer);
 
         var total = questions.Items.Count * options.Repeats;
         terminal.WriteLine();
@@ -68,10 +107,103 @@ internal static class EvalCommand
             result => terminal.WriteLine($"[{++done}/{total}] {result.QuestionId}: {(result.Score?.ToString(CultureInfo.InvariantCulture) ?? result.Failure)}"),
             cancellationToken).ConfigureAwait(false);
 
+        var chatTokens = TokenUsage.From(chatMeter);
+        var judgeTokens = TokenUsage.From(judgeMeter);
+        var record = new RunRecord(
+            RunRecord.CurrentSchemaVersion,
+            runId,
+            startedAt,
+            DateTimeOffset.UtcNow,
+            questions.Dataset,
+            questions.BookId,
+            character.Name,
+            options.Repeats,
+            new RunModel(chatProvider.Name, chatProvider.Model),
+            new RunJudge(judgeProvider.Name, judgeProvider.Model, judgePrompt.Version, judgePrompt.ScoreName),
+            new RunTokens(chatTokens, judgeTokens),
+            results);
+
+        // Saved before anything is sent: whatever happens next, the run is kept.
+        var path = await RunStore.SaveAsync(RunsFolder(), record, cancellationToken).ConfigureAwait(false);
+
         var summary = ReportWriter.Summarize(results, [.. questions.Items.Select(item => item.Category).Distinct(StringComparer.Ordinal)]);
-        ReportWriter.Write(Console.Out, summary, results, TokenUsage.From(chatMeter), TokenUsage.From(judgeMeter));
+        ReportWriter.Write(Console.Out, summary, results, chatTokens, judgeTokens);
+        terminal.WriteLine();
+        terminal.WriteLine($"Run saved: {path}");
+
+        if (api is not null && tracer is not NoExperimentTracer)
+        {
+            await SendScoresAsync(api, tracerProvider!, record, terminal, cancellationToken).ConfigureAwait(false);
+        }
+
         return summary.Scored == 0 ? 1 : 0;
     }
+
+    private static LangfuseOptions? ReadLangfuse()
+    {
+        var configuration = new ConfigurationBuilder().AddEnvironmentVariables().Build();
+        try
+        {
+            return LangfuseSettings.Read(configuration);
+        }
+        catch (InvalidOperationException exception)
+        {
+            // The message names the variable, never its value. --local-only skips Langfuse.
+            throw new EvalException($"{exception.Message} (Use --local-only to run without Langfuse.)");
+        }
+    }
+
+    // Creates the dataset and its items (found again by their ids, so never duplicated). Null, with a message, when Langfuse cannot be
+    // used: the run then goes on without it.
+    private static async Task<LangfuseExperimentTracer?> PrepareLangfuseAsync(
+        LangfuseApi api,
+        QuestionSet questions,
+        string runId,
+        IReadOnlyDictionary<string, string> metadata,
+        ITerminal terminal,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var datasetId = await api.EnsureDatasetAsync(questions.Dataset, DatasetDescription, cancellationToken).ConfigureAwait(false);
+            foreach (var question in questions.Items)
+            {
+                await api.UpsertItemAsync(questions.Dataset, question, cancellationToken).ConfigureAwait(false);
+            }
+
+            terminal.WriteLine($"Langfuse: dataset {questions.Dataset} ready ({questions.Items.Count} items), experiment {runId}.");
+            return new LangfuseExperimentTracer(new ExperimentContext(runId, questions.Dataset, datasetId, DatasetDescription, metadata));
+        }
+        catch (EvalException exception)
+        {
+            terminal.WriteLine($"Langfuse will not be used for this run: {exception.Message}");
+            return null;
+        }
+    }
+
+    // The traces are sent by the exporter in the background: they are flushed first, then the scores (which point at the traces).
+    private static async Task SendScoresAsync(LangfuseApi api, TracerProvider tracerProvider, RunRecord record, ITerminal terminal, CancellationToken cancellationToken)
+    {
+        try
+        {
+            if (!tracerProvider.ForceFlush(30_000))
+            {
+                terminal.WriteLine("Langfuse: the traces were not all sent in time; the scores are sent anyway.");
+            }
+
+            var scores = LangfuseScores.From(record);
+            await api.PostScoresAsync(scores, cancellationToken).ConfigureAwait(false);
+            terminal.WriteLine($"Langfuse: {scores.Count} scores sent. Look in the Datasets / Experiments page, environment \"{LangfuseNames.Environment}\".");
+        }
+        catch (EvalException exception)
+        {
+            terminal.WriteLine($"Langfuse: the scores could not be sent ({exception.Message}). The run is saved in the file above.");
+        }
+    }
+
+    // evals/runs/ of the repository (found by going up), or ./evals/runs when the tool is run from elsewhere.
+    private static string RunsFolder() =>
+        Path.Combine(RepoFiles.Find("evals") ?? Path.Combine(Directory.GetCurrentDirectory(), "evals"), "runs");
 
     private static string Locate(string? given, string defaultRelativePath, string what)
     {

@@ -4,9 +4,11 @@ namespace LivingPaper.Evals;
 
 // Puts each question to the character, as many times as asked, and has each reply graded by the judge. One at a time: simple, and
 // kind to the rate limits of the providers. A reply or a grade that fails is recorded and the run goes on; anything else is a bug
-// and stops the run.
-internal sealed class EvalRunner(ICharacterReplier replier, IJudge judge)
+// and stops the run. Each try is traced as an item of the experiment when a tracer is given.
+internal sealed class EvalRunner(ICharacterReplier replier, IJudge judge, IExperimentTracer? tracer = null)
 {
+    private readonly IExperimentTracer _tracer = tracer ?? NoExperimentTracer.Instance;
+
     public async Task<IReadOnlyList<EvalResult>> RunAsync(
         QuestionSet questions,
         int repeats,
@@ -33,6 +35,8 @@ internal sealed class EvalRunner(ICharacterReplier replier, IJudge judge)
 
     private async Task<EvalResult> RunOneAsync(EvalQuestion question, int repeat, CancellationToken cancellationToken)
     {
+        using var item = _tracer.BeginItem(question, repeat);
+
         string reply;
         try
         {
@@ -40,17 +44,25 @@ internal sealed class EvalRunner(ICharacterReplier replier, IJudge judge)
         }
         catch (ChatReplyException exception)
         {
-            return new EvalResult(question.Id, question.Category, repeat, null, null, $"reply:{exception.Failure}");
+            var failure = $"reply:{exception.Failure}";
+            item.Complete(null, null, failure);
+            return Result(question, repeat, item, reply: null, score: null, reason: null, failure);
         }
 
         try
         {
             var verdict = await judge.GradeAsync(question.Input, reply, cancellationToken).ConfigureAwait(false);
-            return new EvalResult(question.Id, question.Category, repeat, verdict.Score, verdict.Reason, null);
+            item.Complete(reply, verdict.Score, null);
+            return Result(question, repeat, item, reply, verdict.Score, verdict.Reason, failure: null);
         }
         catch (JudgeException exception)
         {
-            return new EvalResult(question.Id, question.Category, repeat, null, null, $"judge:{exception.Code}");
+            var failure = $"judge:{exception.Code}";
+            item.Complete(reply, null, failure);
+            return Result(question, repeat, item, reply, score: null, reason: null, failure);
         }
     }
+
+    private static EvalResult Result(EvalQuestion question, int repeat, IExperimentItem item, string? reply, int? score, string? reason, string? failure) =>
+        new(question.Id, question.Category, repeat, score, reason, failure, question.Input, reply, item.TraceId, item.SpanId);
 }
