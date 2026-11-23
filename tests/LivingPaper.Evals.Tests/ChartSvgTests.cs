@@ -112,4 +112,41 @@ public class ChartSvgTests
             Parse(ChartSvg.Latency([], theme));
         }
     }
+
+    [Fact]
+    public void Value_KeepsTheLabelsOfModelsThatAreCloseApartFromEachOther()
+    {
+        ValuePoint[] close =
+        [
+            new("DeepSeek V4.1 Flash", 4.92, 0.09),
+            new("Claude Haiku 5.5", 4.35, 1.2),
+            new("GPT-5 mini", 4.50, 1.79),
+            new("Claude Opus 5.5", 4.90, 49.6),
+        ];
+
+        var document = Parse(ChartSvg.Value(close, "USD", ChartTheme.Light));
+
+        // A label is about 6.4 pixels a character; two labels that are within a text height of each other must not share any horizontal space.
+        var labels = document.Descendants()
+            .Where(element => element.Name.LocalName == "text" && element.Value.Contains(" · ", StringComparison.Ordinal))
+            .Select(element =>
+            {
+                var x = double.Parse(element.Attribute("x")!.Value, System.Globalization.CultureInfo.InvariantCulture);
+                var y = double.Parse(element.Attribute("y")!.Value, System.Globalization.CultureInfo.InvariantCulture);
+                var width = element.Value.Length * 6.4;
+                return element.Attribute("text-anchor")!.Value == "end" ? (Left: x - width, Right: x, Y: y) : (Left: x, Right: x + width, Y: y);
+            })
+            .ToList();
+        labels.Count.ShouldBe(4);
+        for (var first = 0; first < labels.Count; first++)
+        {
+            for (var second = first + 1; second < labels.Count; second++)
+            {
+                var overlap = Math.Abs(labels[first].Y - labels[second].Y) < 12 && labels[first].Left < labels[second].Right && labels[first].Right > labels[second].Left;
+                overlap.ShouldBeFalse($"labels {first} and {second} overlap");
+            }
+        }
+
+        labels.ShouldAllBe(label => label.Right <= 720);
+    }
 }

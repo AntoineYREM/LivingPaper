@@ -86,10 +86,10 @@ one computer, one judge (Claude Haiku 5.5); a figure moves by about a tenth or t
 | Claude Opus 5.5 | 4.08 | **4.90** | 4.4 s |
 | ERNIE 5.5 Flash (free, preview) | not measured | **4.83** | 2.3 s |
 | GPT-5 mini | 3.58 | **4.50** | 11.6 s |
-| Claude Haiku 5.5 | 4.12 | not measured | 2.6 s |
+| Claude Haiku 5.5 | 4.12 | 4.35 | 2.5 s |
 | Nemotron 3 Ultra (free) | not measured | 3.98 | 9.1 s |
 | LFM 3 1.7B (free) | not measured | 3.64 | 5.3 s |
-| Gemma 3 4B (on a laptop) | 2.83 | not measured | 10 to 12 s |
+| Gemma 3 4B (on a laptop) | 2.83 | 2.85 | 10 to 12 s |
 | Qwen2 0.5B (on a laptop) | not measured | 1.77 | 2.4 s |
 
 The judge is itself a model, so these figures are an indication; the time to answer is the mean of the chat call as Langfuse recorded it. The
@@ -110,7 +110,7 @@ details, the limits and the runs are in [evals/README.md](evals/README.md), and 
   <img src="docs/images/evals/latency-light.svg" alt="Bars of the time to answer per model, from 2.1 seconds for DeepSeek to 11.6 seconds for GPT-5 mini, split between the wait for the first text and the end of the reply" width="720">
 </picture>
 
-The pictures are drawn from the published runs by `dotnet run --project tools/LivingPaper.Evals -- charts`, so they always show the figures of the files. Haiku and Gemma were not run again with the current prompt, so they are not on the first two.
+The pictures are drawn from the published runs by `dotnet run --project tools/LivingPaper.Evals -- charts`, so they always show the figures of the files. The new prompt helps the models that follow a detailed instruction (DeepSeek, Opus, GPT-5 mini), Haiku a little, and a small local model not at all.
 
 ## Warnings
 

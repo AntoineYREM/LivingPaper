@@ -132,17 +132,44 @@ internal static class ChartSvg
             Text(svg, bandX + 12, Y(point.Score) + 4, $"{point.Name} · {Number(point.Score)}", 12, theme.Ink);
         }
 
-        foreach (var point in paid)
+        // The paid models are drawn from the cheapest, each label at the first place where it meets neither a label already written nor a dot:
+        // to the right of its dot, else to the left, else above (to the right, then to the left). A point near the edge has no room on the right.
+        var dots = paid.Select(point => (X: X(point.CostPer1000!.Value), Y: Y(point.Score))).ToList();
+        var labels = new List<(double Left, double Right, double Y)>();
+        foreach (var point in paid.OrderBy(point => point.CostPer1000))
         {
             var x = X(point.CostPer1000!.Value);
-            var labelOnTheLeft = x > axisRight - 130;
-            Dot(svg, x, Y(point.Score), theme.Blue, theme.Surface);
-            // A point near the right edge has its label above it, aligned to its right: it cannot run off the picture, and it does not meet the
-            // label of a neighbour at the same height.
-            Text(svg, x + (labelOnTheLeft ? 6 : 12), Y(point.Score) + (labelOnTheLeft ? -12 : 4), $"{point.Name} · {Number(point.Score)}", 12, theme.Ink, labelOnTheLeft ? "end" : "start");
+            var y = Y(point.Score);
+            Dot(svg, x, y, theme.Blue, theme.Surface);
+            var text = $"{point.Name} · {Number(point.Score)}";
+            var width = text.Length * 6.4;
+            (double X, double Y, string Anchor, double Left, double Right)[] places =
+            [
+                (x + 12, y + 4, "start", x + 12, x + 12 + width),
+                (x - 12, y + 4, "end", x - 12 - width, x - 12),
+                (x - 6, y - 12, "start", x - 6, x - 6 + width),
+                (x + 6, y - 12, "end", x + 6 - width, x + 6),
+            ];
+            var chosen = places.FirstOrDefault(place => place.Left >= plotLeft && place.Right <= Width - 8 && !Meets(place.Left, place.Right, place.Y, labels, dots));
+            if (chosen.Anchor is null)
+            {
+                chosen = places[0];
+            }
+
+            labels.Add((chosen.Left, chosen.Right, chosen.Y));
+            Text(svg, chosen.X, chosen.Y, text, 12, theme.Ink, chosen.Anchor);
         }
 
         return End(svg);
+    }
+
+    // Whether a label (its left and right ends, the baseline of its text) lies on a label already written or on a dot.
+    private static bool Meets(double left, double right, double baseline, List<(double Left, double Right, double Y)> labels, List<(double X, double Y)> dots)
+    {
+        const double margin = 4;
+        const double textHeight = 14;
+        return labels.Any(other => Math.Abs(other.Y - baseline) < textHeight && left < other.Right + margin && right > other.Left - margin)
+            || dots.Any(dot => dot.X + 7 > left && dot.X - 7 < right && dot.Y + 7 > baseline - 10 && dot.Y - 7 < baseline + 4);
     }
 
     // Time to answer: one bar per model, fastest first, in two parts: the wait until the first text, then the rest of the reply.

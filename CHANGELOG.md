@@ -23,6 +23,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- **Haiku and Gemma with the new chat prompt** (PAPER-78): the two models that had only a baseline were run again (40 questions, one try each), so the
+  five models have their grade before and after the change of prompt in the README, `evals/README.md` and the charts. Haiku 4.12 to 4.35, Gemma 3 4B
+  2.83 to 2.85: the prompt helps the models that follow a long list of instructions, and a small local model not at all. The labels of the chart of the
+  price no longer overlap when two models are close.
+
 - **`charts`: the charts of the README** (PAPER-76): `dotnet run --project tools/LivingPaper.Evals -- charts` draws, from the published runs, their
   times and `evals/prices.json`, three pictures (grade before and after the change of prompt, grade against the price, time to answer), each as
   an SVG for a light and for a dark page (`docs/images/evals/`), so GitHub shows the one that matches its theme. The price file now carries a
