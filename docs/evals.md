@@ -1,7 +1,7 @@
 # Evaluating the characters
 
 > **Status: in construction.** The command `run` works: it prints its report, keeps every run in a file, and sends it to Langfuse when
-> Langfuse is configured. Comparing two runs and measuring the judge against human grades are the next steps, marked below.
+> Langfuse is configured. The command `compare` sets two runs side by side. Measuring the judge against human grades is the next step.
 
 How to measure whether a character stays in its role, and compare two prompts or two models with the same questions.
 Why it is built this way: [decision 0010](decisions/0010-character-evaluation-with-an-llm-judge.md).
@@ -25,7 +25,7 @@ Each question is asked several times (3 by default), because a model does not an
 | Console tool, command `run` (report in the terminal) | `tools/LivingPaper.Evals` | done |
 | Every run kept in a file (`evals/runs/`), shareable ones in `evals/published/` | same | done |
 | Sending dataset, one trace per answer and the scores to Langfuse | same | done, to be checked on your Langfuse |
-| Command `compare` (two runs, cost) | same | to do |
+| Command `compare` (two runs, tokens, cost) and the price file `evals/prices.json` | same | done |
 | Command `calibrate` (judge against human grades) | same | to do |
 | Results in the README | `README.md` | after the first real runs |
 
@@ -91,9 +91,41 @@ Evaluators page stays empty on purpose: the judge is in this tool, not in Langfu
 `LANGFUSE_CAPTURE_CONTENT=true`. If Langfuse cannot be used (wrong key, not running), the tool says so, **the run is saved anyway**, and the
 local file stays the reference. `--local-only` skips Langfuse.
 
+## Comparing two runs
+
+```bash
+dotnet run --project tools/LivingPaper.Evals -- compare 20261123-173454-deepseek-deepseek-v4-1-flash 20261124-091200-gemma3-4b
+```
+
+A run is the path of its file, or its id (the name of the file in `evals/runs/` or `evals/published/`, with or without `.json`). A is the
+baseline and B the candidate: a positive difference means B did better. Nothing is sent anywhere and Langfuse is not needed: the two files
+are enough. To compare two **models**, run the tool twice with the same questions, the same judge and the same prompts, changing only the
+model of the chat (`--chat`); to compare two **prompts**, change the prompt in your data folder between the two runs.
+
+The page shows, in this order:
+
+- **Warnings**, when the comparison is not fair: not the same dataset, character or judge prompt version (grades of two versions of the
+  judge are not comparable), not the same judge model, not the same number of tries, or questions that one run did not grade (they are
+  left out, so a failure never counts as a bad score).
+- **The average by category**, over the questions both runs graded, with the difference B - A.
+- **The overall difference with a 95% interval.** The tries of a question are averaged first, then the difference of each question is
+  taken (a paired comparison), and the interval is that of the mean of these differences. If the interval does not include 0, B really
+  looks better or worse than A on these questions; if it does, the difference could be noise. With 20 questions the interval is wide: a
+  gap of a few tenths is usually inside it. It does not cover the bias of the judge, nor the choice of the questions.
+- **The questions that differ most**, to see where to look first (the replies are in the two run files).
+- **Tokens and cost** of each run, chat and judge apart.
+
+### The prices
+
+`evals/prices.json` lists, for each model, the price in USD per million tokens of the input, the cached input and the output. The cost of a
+run is `(input - cached) x input price + cached x cache price + output x output price`: the input tokens are all those of the prompt, the
+cached ones included, as the providers report them. A model that is not in the file shows `no price for <model>`, never a guess; a model
+that runs on your own computer is listed at 0. The prices change: the file says when it was updated, and the values come from the list
+of OpenRouter, so the models of another provider (a direct key, for example) need their own entry. `--prices <file>` uses another file.
+
 ## How to read the results
 
-The report looks like this (the numbers here are made up, to show the shape):
+The report of `run` looks like this (the numbers here are made up, to show the shape):
 
 ```text
 Category          Graded  Failed  Average  Lowest
@@ -125,6 +157,11 @@ tools/LivingPaper.Evals/
   JudgeVerdict.cs       reads the judge's answer (score and reason)
   EvalRunner.cs         questions x repeats: answer, then grade (each try is traced when Langfuse is on)
   RunRecord.cs, RunStore.cs   the file of a run, and how it is saved and read
+  CompareCommand.cs, CompareOptions.cs   the command `compare`
+  RunComparison.cs      the maths: averages by category, paired differences, 95% interval, warnings
+  ComparisonWriter.cs   the page of `compare`
+  PriceList.cs          evals/prices.json and the cost of a run
+  RunLocator.cs         finds a run from its id or its path
   LangfuseApi.cs        the REST calls: dataset, items, scores
   LangfuseExperimentTracer.cs   the OpenTelemetry root span of each try, with the experiment attributes
   LangfuseScores.cs     the scores of a run, attached to the root spans

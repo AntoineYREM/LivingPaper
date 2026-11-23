@@ -8,6 +8,7 @@ way: [decision 0010](../docs/decisions/0010-character-evaluation-with-an-llm-jud
 |---|---|
 | `bovary/questions.json` | 20 questions put to Emma Bovary, in 5 categories: `normal` (5), `modern-trap` (4), `role-break-trap` (5), `off-topic` (4) and `language` (2, in French and Spanish: the character must answer in the language of the user). |
 | `judge.json` | The prompt of the judge, which grades a reply from 1 to 5. |
+| `prices.json` | Price in USD per million tokens of each model, to show what a run cost (`compare`). Update it when prices change. |
 | `runs/` | **Not committed.** One file per run of the tool: the replies and their grades. |
 | `published/` | Runs chosen to be shared, committed by hand. See its README. |
 

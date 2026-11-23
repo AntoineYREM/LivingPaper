@@ -19,6 +19,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   It chooses the models in the list of the Settings page (or adds one), and needs neither the site running nor a new dependency. The
   questions (`evals/bovary/questions.json`) and the judge prompt (`evals/judge.json`) are versioned in the repository. Sending the runs
   to Langfuse, comparing two runs and measuring the judge against human grades come in the next steps; see `docs/evals.md`.
+- **`compare`: two runs side by side** (PAPER-76): `dotnet run --project tools/LivingPaper.Evals -- compare <run A> <run B>` shows the average
+  by category, the overall difference with a 95% interval (paired over the questions, so a small gap is not mistaken for a real one), the
+  questions that differ most, warnings when the runs are not comparable (other judge version, dataset...), and the tokens and cost of each
+  run from `evals/prices.json`. It reads the two files only: Langfuse is not needed.
 - **Easier to read and to diagnose a run** (PAPER-76): the run file writes accents as they are (not as unicode escapes), and keeps what the
   judge wrote when its answer was not a grade (`judgeAnswer`, only then), so a `judge:invalid-verdict` can be understood.
 - **Runs kept and sent to Langfuse** (PAPER-76): every run is saved in `evals/runs/` (ignored by git: it holds the replies); a run worth

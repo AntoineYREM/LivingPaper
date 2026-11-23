@@ -1,7 +1,7 @@
 using LivingPaper.Evals;
 using LivingPaper.Infrastructure;
 
-// The evaluation tool of the characters (decision 0010). See docs/evals.md.
+// The evaluation tool of the characters (decision 0010). See docs/evals.md. Commands: run, compare.
 // Exit codes: 0 done, 1 nothing could be graded, 2 something to fix (message shown), 130 stopped with Ctrl+C.
 using var cancellation = new CancellationTokenSource();
 Console.CancelKeyPress += (_, eventArgs) =>
@@ -12,6 +12,18 @@ Console.CancelKeyPress += (_, eventArgs) =>
 
 try
 {
+    if (args.Length > 0 && args[0] == "compare")
+    {
+        var compare = CompareOptions.Parse(args);
+        if (compare.ShowHelp)
+        {
+            Console.WriteLine(CompareOptions.Usage);
+            return 0;
+        }
+
+        return await CompareCommand.RunAsync(compare, Console.Out, cancellation.Token);
+    }
+
     // Like `dotnet run` of the site in development: variables from the .env file of the repository, those already set win.
     if (DotEnvFile.Find(Directory.GetCurrentDirectory()) is { } dotEnv)
     {
