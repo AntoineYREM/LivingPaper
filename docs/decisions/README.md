@@ -15,3 +15,4 @@ to this list. A decision is never rewritten: a later note replaces it and says s
 | [0007](0007-story-of-the-book-scene-by-scene.md) | The characters know the story of the book, scene by scene | Accepted |
 | [0008](0008-readable-book-addresses.md) | The address of a book is the slug of its title | Accepted |
 | [0009](0009-langfuse-tracing-over-opentelemetry.md) | Traces of the model calls go to Langfuse over OpenTelemetry, off by default | Accepted |
+| [0010](0010-character-evaluation-with-an-llm-judge.md) | Characters are evaluated by a command-line tool with an LLM judge, set up by code | Accepted |
