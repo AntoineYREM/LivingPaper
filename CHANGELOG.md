@@ -7,6 +7,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-11-23
+
 ### Fixed
 
 - **The chat was never traced**: ASP.NET Core's unsampled request activity made the default sampler drop the reply's span. All spans are
@@ -237,5 +239,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - The tests of the web application no longer reach the limit of file watchers (inotify) of Linux machines, and the test of a
   connection cut in the middle of a reply no longer depends on timing.
 
-[Unreleased]: https://github.com/AntoineYREM/LivingPaper/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/AntoineYREM/LivingPaper/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/AntoineYREM/LivingPaper/compare/v0.3.0...v0.4.0
 [0.1.0]: https://github.com/AntoineYREM/LivingPaper/releases/tag/v0.1.0
