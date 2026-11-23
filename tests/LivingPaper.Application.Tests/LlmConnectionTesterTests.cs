@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using LivingPaper.Application;
 using LivingPaper.Domain;
 using Shouldly;
@@ -38,6 +39,30 @@ public class LlmConnectionTesterTests
         prompts.Requests.ShouldHaveSingleItem().Key.ShouldBe(PromptKeys.ConnectionTest);
         prompts.Requests[0].Variables.ShouldBeEmpty();
         factory.Sent.ShouldHaveSingleItem().ShouldBe([new ChatMessage(ChatRole.User, "Say pong, please.")]);
+    }
+
+    [Fact]
+    public async Task Test_RunsTheCallInsideItsOwnTrace_SoItIsNotMistakenForAnAnalysis()
+    {
+        string? span = null;
+        var factory = new FakeChatModelFactory
+        {
+            Reply = (_, _) =>
+            {
+                span = Activity.Current?.OperationName;
+                return Task.FromResult("pong");
+            },
+        };
+        using var listener = new ActivityListener
+        {
+            ShouldListenTo = source => source.Name == LlmTelemetry.SourceName,
+            Sample = (ref ActivityCreationOptions<ActivityContext> _) => ActivitySamplingResult.AllDataAndRecorded,
+        };
+        ActivitySource.AddActivityListener(listener);
+
+        await NewTester(factory).TestAsync(Provider, Token);
+
+        span.ShouldBe("connection-test");
     }
 
     [Fact]

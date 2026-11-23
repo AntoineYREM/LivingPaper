@@ -5,6 +5,13 @@ using LivingPaper.Web;
 using LivingPaper.Web.Localization;
 using Microsoft.AspNetCore.DataProtection;
 
+// In development only, `dotnet run` takes its variables from .env (found in this or a parent folder), as Docker Compose does.
+if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development"
+    && DotEnvFile.Find(Directory.GetCurrentDirectory()) is { } dotEnv)
+{
+    DotEnvFile.Load(dotEnv);
+}
+
 // Composition root: the only place where the layers are wired together.
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,6 +31,16 @@ builder.Services.AddSingleton<IPromptProvider>(new FilePromptProvider(dataDirect
 // One factory for the whole application: its clients share a connection pool. It builds a client for each language
 // model of the settings (PAPER-5) when the analysis or the chat needs one.
 builder.Services.AddSingleton<IChatModelFactory, OpenAiCompatibleChatModelFactory>();
+
+// The traces of the calls to the language models (PAPER-75): sent to Langfuse only when LANGFUSE_PUBLIC_KEY and
+// LANGFUSE_SECRET_KEY are set. Without them nothing is exported. The prompts and replies, which hold the text of the books and of the
+// conversations, are recorded only with LANGFUSE_CAPTURE_CONTENT=true.
+var langfuse = LangfuseSettings.Read(builder.Configuration);
+builder.Services.AddSingleton(new LlmTracingOptions { CaptureContent = langfuse?.CaptureContent ?? false });
+if (langfuse is not null)
+{
+    builder.Services.AddLangfuseTracing(langfuse);
+}
 
 // The API keys of the language models are encrypted before they are written to data/settings.json. The encryption keys
 // are kept in data/keys, so a restart can read them again; deleting that folder makes the saved keys unreadable (the
@@ -69,6 +86,20 @@ builder.Services.AddSingleton<IAnalysisScheduler>(services => services.GetRequir
 builder.Services.AddHostedService(services => services.GetRequiredService<BookAnalysisWorker>());
 
 var app = builder.Build();
+
+if (langfuse is not null)
+{
+    // Scheme, host and port only: Authority holds no user name or password.
+    var address = $"{langfuse.Endpoint.Scheme}://{langfuse.Endpoint.Authority}";
+    if (langfuse.CaptureContent)
+    {
+        app.Logger.LangfuseTracingOnWithContent(address);
+    }
+    else
+    {
+        app.Logger.LangfuseTracingOnMetadataOnly(address);
+    }
+}
 
 try
 {

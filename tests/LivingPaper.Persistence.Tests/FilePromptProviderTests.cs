@@ -222,4 +222,42 @@ public sealed class FilePromptProviderTests : IDisposable
 
         (await _provider.RenderAsync(PromptKeys.ConnectionTest, Values(), Token)).ShouldBe("ok");
     }
+
+    [Fact]
+    public async Task ChatFingerprint_ChangesWithTheChatPromptsOnly()
+    {
+        await WriteFileAsync(FileWith((PromptKeys.ChatSystem, "You are {characterName}.")));
+        var before = await _provider.ChatFingerprintAsync(Token);
+
+        await WriteFileAsync(FileWith((PromptKeys.ChatSystem, "You are {characterName}."), (PromptKeys.ConnectionTest, "another text")));
+        (await _provider.ChatFingerprintAsync(Token)).ShouldBe(before);
+
+        await WriteFileAsync(FileWith((PromptKeys.ChatSystem, "You are {characterName}. Never break the fiction.")));
+        (await _provider.ChatFingerprintAsync(Token)).ShouldNotBe(before);
+
+        before.Length.ShouldBe(12);
+    }
+
+    [Fact]
+    public async Task ChatFingerprint_IgnoresTheKindOfLineEnding()
+    {
+        await WriteFileAsync(FileWith((PromptKeys.ChatSystem, "Line one\nLine two")));
+        var unix = await _provider.ChatFingerprintAsync(Token);
+
+        await WriteFileAsync(FileWith((PromptKeys.ChatSystem, "Line one\r\nLine two")));
+
+        (await _provider.ChatFingerprintAsync(Token)).ShouldBe(unix);
+    }
+
+    [Fact]
+    public async Task AFileGivenByPath_IsUsedInsteadOfTheOneOfTheDataFolder()
+    {
+        await WriteFileAsync(FileWith((PromptKeys.ConnectionTest, "from the data folder")));
+        var other = Path.Combine(_temp.Path, "other-prompts.json");
+        await File.WriteAllTextAsync(other, FileWith((PromptKeys.ConnectionTest, "from the other file")), Token);
+
+        var provider = new FilePromptProvider(_temp.Path, other);
+
+        (await provider.RenderAsync(PromptKeys.ConnectionTest, Values(), Token)).ShouldBe("from the other file");
+    }
 }

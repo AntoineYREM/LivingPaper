@@ -495,3 +495,6 @@ data/
 .impeccable/build/
 .impeccable/mocks/
 .impeccable/live/
+
+# Runs of the evaluation tool (tools/LivingPaper.Evals): they hold the text of the replies. A run worth sharing is copied to evals/published/.
+evals/runs/

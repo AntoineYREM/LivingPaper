@@ -24,7 +24,7 @@ public partial class ChatModel(BookService books, CharacterChatService chat, ITe
 
     public sealed record IncomingMessage(string? Role, string? Content);
 
-    public sealed record IncomingConversation(List<IncomingMessage>? Messages);
+    public sealed record IncomingConversation(List<IncomingMessage>? Messages, string? ConversationId);
 
     public Book Book { get; private set; } = null!;
 
@@ -75,6 +75,8 @@ public partial class ChatModel(BookService books, CharacterChatService chat, ITe
             return StatusCode(StatusCodes.Status409Conflict);
         }
 
+        // One trace for the whole conversation in Langfuse (null, and a no-op, when tracing is off).
+        using var span = ChatTelemetry.StartMessage(incoming?.ConversationId, Book.Id.ToString(), position);
         await StreamReplyAsync(conversation!, cancellationToken);
         return new EmptyResult();
     }

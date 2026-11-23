@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Runtime.ExceptionServices;
 using LivingPaper.Domain;
 
@@ -37,6 +38,10 @@ internal sealed class AnalysisRun(
     // found interrupted when the application starts again, which is how a retry gets it back.
     public async Task<AnalysisFailure?> ExecuteAsync(CancellationToken cancellationToken)
     {
+        // The trace of the analysis (PAPER-75): this root, a span for each step, and under them the calls to the model. Only
+        // the identifier of the book, step numbers and the code of a failure: never a title, a name or a passage of the book.
+        using var run = LlmTelemetry.Source.StartActivity("book-analysis");
+        run?.SetTag("book.id", book.Id.ToString());
         await UpdateAsync(
             current =>
             {
@@ -71,6 +76,7 @@ internal sealed class AnalysisRun(
             await heartbeat.ConfigureAwait(false);
         }
 
+        run?.SetStatus(ActivityStatusCode.Error, failure.Failure.ToString());
         await UpdateAsync(
             current =>
             {
@@ -188,6 +194,8 @@ internal sealed class AnalysisRun(
 
     private async Task<PartNotes> ReadPartAsync(int index, string part, CancellationToken cancellationToken)
     {
+        using var span = LlmTelemetry.Source.StartActivity("read-part");
+        span?.SetTag("analysis.part", index + 1);
         var variables = Variables((PromptVariables.BookTitle, book.Title));
         PartRead? read = null;
         foreach (var key in new[] { PromptKeys.ReadPart, PromptKeys.ReadPartSimple })
@@ -237,6 +245,7 @@ internal sealed class AnalysisRun(
             return already;
         }
 
+        using var span = LlmTelemetry.Source.StartActivity("merge-characters");
         var system = await RenderAsync(
             PromptKeys.MergeCharacters,
             Variables((PromptVariables.BookTitle, book.Title), (PromptVariables.MaxCharacters, options.MaxCharacters.ToString(System.Globalization.CultureInfo.InvariantCulture))),
@@ -255,6 +264,8 @@ internal sealed class AnalysisRun(
 
     private async Task<string> WriteProfileAsync(int index, ChosenCharacter character, string allNotes, CancellationToken cancellationToken)
     {
+        using var span = LlmTelemetry.Source.StartActivity("character-profile");
+        span?.SetTag("analysis.character", index + 1);
         var system = await RenderAsync(
             PromptKeys.CharacterProfile,
             Variables((PromptVariables.BookTitle, book.Title), (PromptVariables.CharacterName, character.Name), (PromptVariables.ShortDescription, character.ShortDescription)),
@@ -267,6 +278,7 @@ internal sealed class AnalysisRun(
 
     private async Task<string> WriteSummaryAsync(string allNotes, CancellationToken cancellationToken)
     {
+        using var span = LlmTelemetry.Source.StartActivity("book-summary");
         var system = await RenderAsync(PromptKeys.BookSummary, Variables((PromptVariables.BookTitle, book.Title)), cancellationToken).ConfigureAwait(false);
         var summary = CharacterLimits.Clip(await AskTextStepAsync(system, allNotes, cancellationToken).ConfigureAwait(false), CharacterLimits.Summary);
         await steps.SaveAsync(book.Id, SummaryKey, summary, CancellationToken.None).ConfigureAwait(false);
@@ -278,6 +290,7 @@ internal sealed class AnalysisRun(
     // each time, and the shortest is kept. It is never cut in the middle: the end of the book would be lost.
     private async Task<string> WriteStoryAsync(List<PartNotes> parts, int textLength, CancellationToken cancellationToken)
     {
+        using var span = LlmTelemetry.Source.StartActivity("story-summary");
         var budget = StoryBudget.Words(textLength, options);
         var scenes = AnalysisNotes.CombineScenes(parts, options.MaxNotesLetters);
         string? shortest = null;

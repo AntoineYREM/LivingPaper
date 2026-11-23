@@ -12,6 +12,11 @@ services:
       # Books, settings, encrypted keys and prompts survive "docker compose down" and rebuilds.
       # "docker compose down -v" deletes them.
       - livingpaper-data:/data
+    # Optional Langfuse tracing of the model calls, see docs/how-to-run.md. A Langfuse on this computer is reached at host.docker.internal.
+    # environment:
+    #   LANGFUSE_BASE_URL: http://host.docker.internal:3000
+    #   LANGFUSE_PUBLIC_KEY: pk-lf-...
+    #   LANGFUSE_SECRET_KEY: sk-lf-...
     extra_hosts:
       # Lets a model that runs on this computer (Ollama, LM Studio) be reached at http://host.docker.internal:<port>, also on Linux.
       - "host.docker.internal:host-gateway"

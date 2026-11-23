@@ -20,6 +20,8 @@
   const errorText = document.getElementById('chat-error-text');
   const token = root.querySelector('input[name="__RequestVerificationToken"]').value;
   const messages = [];
+  // Names this conversation for the traces of the server (32 hex digits): nothing is stored, the id only lives as long as the page.
+  const conversationId = Array.from(crypto.getRandomValues(new Uint8Array(16)), (byte) => byte.toString(16).padStart(2, '0')).join('');
   let busy = false;
 
   const errorTitle = errorBox.querySelector('.alert__title');
@@ -121,7 +123,7 @@
       const response = await fetch(root.dataset.endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', RequestVerificationToken: token },
-        body: JSON.stringify({ messages }),
+        body: JSON.stringify({ messages, conversationId }),
       });
       if (!response.ok || !response.body) {
         failure = response.status === 404 ? 'notFound' : response.status === 409 ? 'noModel' : 'refused';

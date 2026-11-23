@@ -104,6 +104,17 @@ public sealed class OpenAiCompatibleChatModelTests : IAsyncLifetime
     }
 
     [Fact]
+    public async Task Complete_SendsAnOutputCeilingOnlyWhenOneIsConfigured()
+    {
+        _server.Handler = context => FakeReplies.TextAsync(context, "Hi");
+
+        await NewModel(new OpenAiCompatibleOptions { MaxOutputTokens = 4096 }).CompleteAsync(Messages, null, Token);
+
+        using var body = _server.Requests.Single().Json();
+        body.RootElement.GetProperty("max_tokens").GetInt32().ShouldBe(4096);
+    }
+
+    [Fact]
     public async Task Complete_SendsAssistantMessagesWithTheAssistantRole()
     {
         _server.Handler = context => FakeReplies.TextAsync(context, "Hi");

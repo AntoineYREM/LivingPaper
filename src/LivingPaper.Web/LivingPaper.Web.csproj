@@ -8,6 +8,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="OpenTelemetry.Extensions.Hosting" />
+    <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" />
+  </ItemGroup>
+
+  <ItemGroup>
     <!-- The translation files (Resources/en.json, fr.json) are embedded in the application: nothing to find on disk. -->
     <Content Remove="Resources\*.json" />
     <EmbeddedResource Include="Resources\*.json" LogicalName="Resources.%(Filename)%(Extension)" />

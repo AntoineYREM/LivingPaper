@@ -26,6 +26,8 @@ public sealed class LlmConnectionTester(IChatModelFactory factory, IPromptProvid
             return ConnectionTestResult.Failed(ConnectionFailure.PromptFile, detail: exception.Message);
         }
 
+        // Its own trace (PAPER-75): the call is not part of any analysis or chat.
+        using var span = LlmTelemetry.Source.StartActivity("connection-test");
         using var limit = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         limit.CancelAfter(timeout ?? DefaultTimeout);
         try

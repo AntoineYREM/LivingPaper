@@ -7,6 +7,64 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Fixed
+
+- **The chat was never traced**: ASP.NET Core's unsampled request activity made the default sampler drop the reply's span. All spans are
+  now recorded.
+
+### Changed
+
+- **The characters stay in their role better** (PAPER-76): the default `chat.system` prompt now asks the character to live in the time of its story,
+  not to act as an assistant, never to mention a prompt, a model or an author, to answer in the language of the last message, and to write no
+  stage directions such as "(sigh)". Measured on the same 40 questions, the average grade went from 4.35 to 4.92 with DeepSeek V4.1 Flash, from
+  4.08 to 4.90 with Claude Opus 5.5 and from 3.58 to 4.50 with GPT-5 mini; a second character (Cyrano) went from 4.28 to 4.73. Details and limits in
+  `evals/README.md`. A `data/prompts.json` whose chat prompt is still exactly one of the earlier defaults is updated to the new one at start-up; a
+  prompt you edited is never touched (`ReplacedDefaults`). The earlier prompts are kept in `evals/prompts/` to replay the baseline.
+
+### Added
+
+- **`charts`: the charts of the README** (PAPER-76): `dotnet run --project tools/LivingPaper.Evals -- charts` draws, from the published runs, their
+  times and `evals/prices.json`, three pictures (grade before and after the change of prompt, grade against the price, time to answer), each as
+  an SVG for a light and for a dark page (`docs/images/evals/`), so GitHub shows the one that matches its theme. The price file now carries a
+  display name for each model.
+
+- **`latency`: the time to answer of each run** (PAPER-76): `dotnet run --project tools/LivingPaper.Evals -- latency <run> [<run> ...] [--out <file>]`
+  reads from Langfuse how long the model of the chat took (mean, median, slowest tenth) and when its first text arrived, for the calls of each
+  run, and can write them as JSON. The 18 runs of 23 November 2026 (baseline, new prompt, free and local models) are published in
+  `evals/published/` with their figures in `evals/published/latency.json`, and the README gives the results and their limits.
+
+- **First baseline of the characters** (PAPER-76): Emma Bovary on five models (DeepSeek V4.1 Flash, Haiku 5.5, Opus 5.5, GPT-5 mini, Gemma 3 4B) and
+  Cyrano on one, graded by Haiku 5.5. The results, their reading and their limits are in `evals/README.md` and the README; the 9 runs are in
+  `evals/published/`.
+- **Ready for the first real runs** (PAPER-76): 40 questions for Emma (8 per category, 10 in French, 7 other languages) and 20 for Cyrano in a
+  separate file as a second character; a run file keeps a short signature of the chat prompts and an optional `--label`; `--prompts-file` tries
+  another prompts file without touching yours; `--max-tokens` sets a ceiling on the length of a reply (`OpenAiCompatibleOptions.MaxOutputTokens`, off
+  by default, the site sends none), which keeps an expensive model from being refused by an OpenRouter key that has a spending limit.
+- **Evaluation of the characters** (PAPER-76, decision 0010): `tools/LivingPaper.Evals`, a console tool that puts 20 questions to Emma
+  Bovary through the real chat, has a judge model grade each reply from 1 to 5, and prints the averages by category with the tokens used.
+  It chooses the models in the list of the Settings page (or adds one), and needs neither the site running nor a new dependency. The
+  questions (`evals/bovary/questions.json`) and the judge prompt (`evals/judge.json`) are versioned in the repository. Sending the runs
+  to Langfuse, comparing two runs and measuring the judge against human grades come in the next steps; see `docs/evals.md`.
+- **`compare`: two runs side by side** (PAPER-76): `dotnet run --project tools/LivingPaper.Evals -- compare <run A> <run B>` shows the average
+  by category, the overall difference with a 95% interval (paired over the questions, so a small gap is not mistaken for a real one), the
+  questions that differ most, warnings when the runs are not comparable (other judge version, dataset...), and the tokens and cost of each
+  run from `evals/prices.json`. It reads the two files only: Langfuse is not needed.
+- **Easier to read and to diagnose a run** (PAPER-76): the run file writes accents as they are (not as unicode escapes), and keeps what the
+  judge wrote when its answer was not a grade (`judgeAnswer`, only then), so a `judge:invalid-verdict` can be understood.
+- **Runs kept and sent to Langfuse** (PAPER-76): every run is saved in `evals/runs/` (ignored by git: it holds the replies); a run worth
+  sharing is copied to `evals/published/`. With the `LANGFUSE_*` variables set, the tool also creates the dataset in Langfuse, one trace
+  per answer (an experiment, environment `experiment`) and the grades as scores; `--local-only` skips it. The configuration of the exporter
+  moved from `Web` to `Infrastructure` to be shared (one package added there: `Microsoft.Extensions.Configuration.Abstractions`, MIT).
+- **A conversation with a character is one trace in Langfuse** (PAPER-75): the page sends an id (not stored) with each message, used as the
+  trace id and the session; each reply is a `chat-reply` span in it.
+- **`.env` read by `dotnet run` in development**: the file was only read by Docker Compose, so the Langfuse variables never reached a
+  locally run application. Variables already set in the terminal win.
+- **Langfuse tracing of the model calls** (PAPER-75, decision 0009), optional: set `LANGFUSE_BASE_URL`, `LANGFUSE_PUBLIC_KEY` and
+  `LANGFUSE_SECRET_KEY` and each analysis (a step for each part, merge, profile, summary, story) and each chat reply is traced with
+  model, tokens, duration and outcome. Off while the keys are empty. Prompts and replies, which hold the text of the books, are
+  sent only with `LANGFUSE_CAPTURE_CONTENT=true`. New dependencies: `OpenTelemetry.Extensions.Hosting` and
+  `OpenTelemetry.Exporter.OpenTelemetryProtocol` (Apache-2.0).
+
 ## [0.3.0] - 2026-11-17
 
 ### Changed

@@ -16,4 +16,11 @@ internal static partial class StartupLog
 
     [LoggerMessage(Level = LogLevel.Information, Message = "{Count} example(s) loaded.")]
     public static partial void ExamplesLoaded(this ILogger logger, int count);
+
+    // PAPER-75. The address only (scheme, host, port): never the keys, which the address does not hold either.
+    [LoggerMessage(Level = LogLevel.Information, Message = "Langfuse tracing is on: the calls to the language models are traced to {Address}. Prompts and replies are not recorded.")]
+    public static partial void LangfuseTracingOnMetadataOnly(this ILogger logger, string address);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Langfuse tracing is on and LANGFUSE_CAPTURE_CONTENT is true: the prompts and replies of the calls, which hold the text of the books and of the conversations, are sent to {Address}.")]
+    public static partial void LangfuseTracingOnWithContent(this ILogger logger, string address);
 }

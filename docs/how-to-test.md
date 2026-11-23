@@ -28,6 +28,7 @@ dotnet test --project tests/LivingPaper.Application.Tests -- --filter-method "*E
 | `LivingPaper.Infrastructure.Tests` | The OpenAI-compatible client against a fake HTTP server, EPUB and PDF reading, encryption |
 | `LivingPaper.Persistence.Tests` | JSON files: atomic writes, tolerant reading, prompts, examples, export format |
 | `LivingPaper.Web.IntegrationTests` | The pages and endpoints through `WebApplicationFactory`, with a temporary data directory; translations; contrast of the design tokens |
+| `LivingPaper.Evals.Tests` | The evaluation tool of the characters (`tools/LivingPaper.Evals`): the questions and judge files, the runner, the report, the choice of models, with fakes |
 | `LivingPaper.E2ETests` | Four journeys and a phone pass in a real Chromium (Playwright), against the application on a real port and a fake language model |
 
 **No test calls a real AI provider**, and none reads your `.env`. The tests of the web application start a host per test, each with

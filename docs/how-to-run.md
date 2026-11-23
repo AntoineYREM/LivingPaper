@@ -23,7 +23,7 @@ Open <http://localhost:8080>. The first start builds the image (a few minutes), 
   in `docker-compose.yml` to `"8080:8080"`, knowing the warning above.
 - **The container does not run as root.** The image holds no key, no book and no setting.
 - **Update**: `git pull`, then `docker compose up --build -d`. Your volume is kept, and new default prompts are added to your
-  `prompts.json` without touching yours.
+  `prompts.json`, and a prompt you never edited is replaced by its improved default. A prompt you edited is left as it is.
 - **Back up** the volume, keys included: without `/data/keys` the saved API keys cannot be read again.
 
 ### Without building: the published image
@@ -79,11 +79,16 @@ Everything is optional. Set these as environment variables (in Docker, under `en
 | `EXAMPLES_DIRECTORY` | `examples` next to the application | Where the example books are read from |
 | `ANALYSIS_PAGES_PER_PART` | `40` | Pages per part when a book is analyzed; lower it for a model with a small context window |
 | `ANALYSIS_PARALLEL_CALLS` | `3` | Parts read at the same time; use `1` for a small local server or strict rate limits |
+| `LANGFUSE_BASE_URL` | none | Address of your Langfuse (`http://localhost:3000`). Required once the two keys are set; there is no default, so nothing is sent to the cloud by surprise |
+| `LANGFUSE_PUBLIC_KEY`, `LANGFUSE_SECRET_KEY` | empty | Keys of a Langfuse project. Tracing is **off** while they are empty; setting only one stops the application at start |
+| `LANGFUSE_CAPTURE_CONTENT` | `false` | `true` also records the prompts and replies, which hold the text of your books and chats (see [reference](reference.md#traces-of-the-model-calls-langfuse)) |
 
 A value that is not valid stops the application at start with a message that names the variable.
 
-For local development you can copy `.env.example` to `.env` (never committed). The application itself does not need it: your models
-are added in the **Settings** page.
+For local development you can copy `.env.example` to `.env` (never committed). With `dotnet run` in the Development environment the
+application reads it (in the current folder or a parent one); a variable already set in your terminal wins over the file. Outside
+development it is ignored (Docker Compose reads it on its own). The application does not need it: your models are added in the
+**Settings** page.
 
 ## Add a language model
 

@@ -17,8 +17,11 @@ default, the `data/` volume in Docker; set `DATA_DIRECTORY` to move it). Nothing
 - **If the file is wrong:** invalid JSON, a missing prompt, an empty prompt or an unknown variable stops the analysis
   or the chat with an error that names the file and the prompt. There is no silent fallback to the default prompts,
   and the file is never overwritten. The same error is written to the logs at startup.
-- **After an update:** prompts that the new version adds are appended to your file. A prompt that is already in it,
-  edited or not, is never changed.
+- **After an update:** prompts that the new version adds are appended to your file. A prompt you edited is never
+  changed. A prompt that is still exactly one of the defaults shipped earlier (you never edited it) is replaced by the
+  new default, so that an improvement of a prompt reaches everyone. The chat prompt was improved this way (rules on the period,
+  on the services of an assistant, on stage directions and on the language; see `evals/README.md`). To keep a prompt as it is
+  while still following the defaults, change at least one character of it: it then counts as edited.
 - **Back to the defaults:** delete `data/prompts.json` and restart the application. The default prompts are copied
   again.
 
@@ -53,6 +56,19 @@ they can be the same.
 
 **Warning: LivingPaper is for personal use and has no authentication.** Anyone who can reach the application can use
 the models and keys you saved. Do not expose it to the Internet without a reverse proxy that protects it.
+
+## Traces of the model calls (Langfuse)
+
+Optional, for people who want to see what the models are asked and what it costs. When `LANGFUSE_PUBLIC_KEY` and
+`LANGFUSE_SECRET_KEY` are set (with `LANGFUSE_BASE_URL`), every call to a language model is sent to your Langfuse as a trace over
+OpenTelemetry: the analysis of a book is one trace (a step for each part read, the merge of the characters, each profile, the
+summary and the story) and each chat reply is its own. Without the keys nothing is exported.
+
+- **By default only metadata:** model, name of the provider, tokens, duration, time to the first piece of a streamed reply, step and
+  outcome (kind of failure and HTTP status, never the message).
+- **`LANGFUSE_CAPTURE_CONTENT=true`** also sends the prompts and the replies. They contain the **text of the books and of your
+  conversations**: turn it on only for a Langfuse you control. The application logs a warning at start when it is on.
+- The keys are never logged and the application sends nothing anywhere else.
 
 ## Your books
 

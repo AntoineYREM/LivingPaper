@@ -73,6 +73,45 @@ With Ollama, add a model in **Settings** with the base URL `http://host.docker.i
 be the container itself), any text as the key, and the name of a model you pulled. Private addresses are allowed on purpose so that
 local models work. Details and LM Studio: [docs/how-to-run.md](docs/how-to-run.md#add-a-language-model).
 
+## Do the characters stay in their role?
+
+An evaluation tool measures it: it puts 40 questions to Emma Bovary (everyday ones, and traps: a smartphone, "are you an AI?", a request for a
+recipe, a question in Japanese), has a language model grade each reply from 1 to 5, and compares two runs. The chat prompt was improved with it
+(rules on the period, on the services of an assistant, on stage directions such as "(sigh)" and on the language). Results of 23 November 2026,
+one computer, one judge (Claude Haiku 5.5); a figure moves by about a tenth or two from one run to the next:
+
+| Model | Before the prompt change | With the current prompt | Time to answer |
+|---|---|---|---|
+| DeepSeek V4.1 Flash | 4.35 | **4.92** | 2.1 s |
+| Claude Opus 5.5 | 4.08 | **4.90** | 4.4 s |
+| ERNIE 5.5 Flash (free, preview) | not measured | **4.83** | 2.3 s |
+| GPT-5 mini | 3.58 | **4.50** | 11.6 s |
+| Claude Haiku 5.5 | 4.12 | not measured | 2.6 s |
+| Nemotron 3 Ultra (free) | not measured | 3.98 | 9.1 s |
+| LFM 3 1.7B (free) | not measured | 3.64 | 5.3 s |
+| Gemma 3 4B (on a laptop) | 2.83 | not measured | 10 to 12 s |
+| Qwen2 0.5B (on a laptop) | not measured | 1.77 | 2.4 s |
+
+The judge is itself a model, so these figures are an indication; the time to answer is the mean of the chat call as Langfuse recorded it. The
+details, the limits and the runs are in [evals/README.md](evals/README.md), and how to run it yourself in [docs/evals.md](docs/evals.md).
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/images/evals/quality-dark.svg">
+  <img src="docs/images/evals/quality-light.svg" alt="Dots on a scale from 3 to 5 showing, for DeepSeek V4.1 Flash, Claude Opus 5.5, GPT-5 mini and Cyrano with DeepSeek, the average grade before and after the change of prompt: all rise to between 4.5 and 4.92" width="720">
+</picture>
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/images/evals/value-dark.svg">
+  <img src="docs/images/evals/value-light.svg" alt="Grade against the price of 1,000 replies: ERNIE 5.5 Flash, Nemotron 3 Ultra, LFM 3 and Qwen2 are free or local, DeepSeek costs about 0.09 USD, GPT-5 mini 1.79 USD and Claude Opus 49.63 USD with DeepSeek and Opus both at about 4.9" width="720">
+</picture>
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/images/evals/latency-dark.svg">
+  <img src="docs/images/evals/latency-light.svg" alt="Bars of the time to answer per model, from 2.1 seconds for DeepSeek to 11.6 seconds for GPT-5 mini, split between the wait for the first text and the end of the reply" width="720">
+</picture>
+
+The pictures are drawn from the published runs by `dotnet run --project tools/LivingPaper.Evals -- charts`, so they always show the figures of the files. Haiku and Gemma were not run again with the current prompt, so they are not on the first two.
+
 ## Warnings
 
 - **LivingPaper has no authentication.** Anyone who can reach it can use the API keys you saved. It is made for personal use on
