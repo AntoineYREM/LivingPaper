@@ -16,12 +16,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - **The characters stay in their role better** (PAPER-76): the default `chat.system` prompt now asks the character to live in the time of its story,
   not to act as an assistant, never to mention a prompt, a model or an author, to answer in the language of the last message, and to write no
-  stage directions such as "(sigh)". Measured on the same 40 questions, the average grade went from 4.33 to 4.92 with DeepSeek V4.1 Flash, from
-  4.08 to 4.90 with Claude Opus 5.5 and from 3.57 to 4.50 with GPT-5 mini; a second character (Cyrano) went from 4.28 to 4.73. Details and limits in
+  stage directions such as "(sigh)". Measured on the same 40 questions, the average grade went from 4.35 to 4.92 with DeepSeek V4.1 Flash, from
+  4.08 to 4.90 with Claude Opus 5.5 and from 3.58 to 4.50 with GPT-5 mini; a second character (Cyrano) went from 4.28 to 4.73. Details and limits in
   `evals/README.md`. A `data/prompts.json` whose chat prompt is still exactly one of the earlier defaults is updated to the new one at start-up; a
   prompt you edited is never touched (`ReplacedDefaults`). The earlier prompts are kept in `evals/prompts/` to replay the baseline.
 
 ### Added
+
+- **`charts`: the charts of the README** (PAPER-76): `dotnet run --project tools/LivingPaper.Evals -- charts` draws, from the published runs, their
+  times and `evals/prices.json`, three pictures (grade before and after the change of prompt, grade against the price, time to answer), each as
+  an SVG for a light and for a dark page (`docs/images/evals/`), so GitHub shows the one that matches its theme. The price file now carries a
+  display name for each model.
 
 - **`latency`: the time to answer of each run** (PAPER-76): `dotnet run --project tools/LivingPaper.Evals -- latency <run> [<run> ...] [--out <file>]`
   reads from Langfuse how long the model of the chat took (mean, median, slowest tenth) and when its first text arrived, for the calls of each

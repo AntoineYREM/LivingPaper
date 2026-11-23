@@ -1,7 +1,7 @@
 using LivingPaper.Evals;
 using LivingPaper.Infrastructure;
 
-// The evaluation tool of the characters (decision 0010). See docs/evals.md. Commands: run, compare, latency.
+// The evaluation tool of the characters (decision 0010). See docs/evals.md. Commands: run, compare, latency, charts.
 // Exit codes: 0 done, 1 nothing could be graded, 2 something to fix (message shown), 130 stopped with Ctrl+C.
 using var cancellation = new CancellationTokenSource();
 Console.CancelKeyPress += (_, eventArgs) =>
@@ -22,6 +22,18 @@ try
         }
 
         return await CompareCommand.RunAsync(compare, Console.Out, cancellation.Token);
+    }
+
+    if (args.Length > 0 && args[0] == "charts")
+    {
+        var charts = ChartsOptions.Parse(args);
+        if (charts.ShowHelp)
+        {
+            Console.WriteLine(ChartsOptions.Usage);
+            return 0;
+        }
+
+        return await ChartsCommand.RunAsync(charts, Console.Out, cancellation.Token);
     }
 
     if (args.Length > 0 && args[0] == "latency")

@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 332" width="720" height="332" role="img" aria-labelledby="title desc" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
+  <title id="title">Average grade before and after the change of prompt</title>
+  <desc id="desc">DeepSeek V4.1 Flash: 4.35 before, 4.92 after; Claude Opus 5.5: 4.08 before, 4.90 after; GPT-5 mini: 3.58 before, 4.50 after; DeepSeek V4.1 Flash · Cyrano: 4.28 before, 4.73 after</desc>
+  <rect width="720" height="332" rx="10" fill="#fcfcfb"/>
+  <text x="24" y="32" font-size="17" fill="#0b0b0b" text-anchor="start" font-weight="600">Average grade before and after the change of prompt</text>
+  <text x="24" y="54" font-size="12" fill="#52514e" text-anchor="start">Grade from 1 to 5 given by the judge, mean of the answers. The axis starts at 3.</text>
+  <circle cx="28" cy="78" r="6" fill="#8e8d87" stroke="#fcfcfb" stroke-width="2"/>
+  <text x="40" y="82" font-size="12" fill="#52514e" text-anchor="start">with the first prompt</text>
+  <circle cx="190" cy="78" r="6" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"/>
+  <text x="202" y="82" font-size="12" fill="#52514e" text-anchor="start">with the current prompt</text>
+  <line x1="200" y1="96" x2="200" y2="276" stroke="#e3e2de" stroke-width="1"/>
+  <text x="200" y="296" font-size="11" fill="#52514e" text-anchor="middle">3.0</text>
+  <line x1="315" y1="96" x2="315" y2="276" stroke="#e3e2de" stroke-width="1"/>
+  <text x="315" y="296" font-size="11" fill="#52514e" text-anchor="middle">3.5</text>
+  <line x1="430" y1="96" x2="430" y2="276" stroke="#e3e2de" stroke-width="1"/>
+  <text x="430" y="296" font-size="11" fill="#52514e" text-anchor="middle">4.0</text>
+  <line x1="545" y1="96" x2="545" y2="276" stroke="#e3e2de" stroke-width="1"/>
+  <text x="545" y="296" font-size="11" fill="#52514e" text-anchor="middle">4.5</text>
+  <line x1="660" y1="96" x2="660" y2="276" stroke="#e3e2de" stroke-width="1"/>
+  <text x="660" y="296" font-size="11" fill="#52514e" text-anchor="middle">5.0</text>
+  <text x="186" y="126" font-size="13" fill="#0b0b0b" text-anchor="end">DeepSeek V4.1 Flash</text>
+  <line x1="510.5" y1="122" x2="640.83" y2="122" stroke="#8e8d87" stroke-width="2"/>
+  <circle cx="510.5" cy="122" r="6" fill="#8e8d87" stroke="#fcfcfb" stroke-width="2"/>
+  <circle cx="640.83" cy="122" r="6" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"/>
+  <text x="498.5" y="126" font-size="12" fill="#0b0b0b" text-anchor="end">4.35</text>
+  <text x="652.83" y="126" font-size="12" fill="#0b0b0b" text-anchor="start" font-weight="600">4.92</text>
+  <text x="186" y="170" font-size="13" fill="#0b0b0b" text-anchor="end">Claude Opus 5.5</text>
+  <line x1="447.25" y1="166" x2="637" y2="166" stroke="#8e8d87" stroke-width="2"/>
+  <circle cx="447.25" cy="166" r="6" fill="#8e8d87" stroke="#fcfcfb" stroke-width="2"/>
+  <circle cx="637" cy="166" r="6" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"/>
+  <text x="435.25" y="170" font-size="12" fill="#0b0b0b" text-anchor="end">4.08</text>
+  <text x="649" y="170" font-size="12" fill="#0b0b0b" text-anchor="start" font-weight="600">4.90</text>
+  <text x="186" y="214" font-size="13" fill="#0b0b0b" text-anchor="end">GPT-5 mini</text>
+  <line x1="334.49" y1="210" x2="545" y2="210" stroke="#8e8d87" stroke-width="2"/>
+  <circle cx="334.49" cy="210" r="6" fill="#8e8d87" stroke="#fcfcfb" stroke-width="2"/>
+  <circle cx="545" cy="210" r="6" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"/>
+  <text x="322.49" y="214" font-size="12" fill="#0b0b0b" text-anchor="end">3.58</text>
+  <text x="557" y="214" font-size="12" fill="#0b0b0b" text-anchor="start" font-weight="600">4.50</text>
+  <text x="186" y="258" font-size="13" fill="#0b0b0b" text-anchor="end">DeepSeek V4.1 Flash · Cyrano</text>
+  <line x1="495.17" y1="254" x2="598.67" y2="254" stroke="#8e8d87" stroke-width="2"/>
+  <circle cx="495.17" cy="254" r="6" fill="#8e8d87" stroke="#fcfcfb" stroke-width="2"/>
+  <circle cx="598.67" cy="254" r="6" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"/>
+  <text x="483.17" y="258" font-size="12" fill="#0b0b0b" text-anchor="end">4.28</text>
+  <text x="610.67" y="258" font-size="12" fill="#0b0b0b" text-anchor="start" font-weight="600">4.73</text>
+</svg>

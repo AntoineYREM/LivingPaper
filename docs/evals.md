@@ -27,6 +27,7 @@ Each question is asked several times (3 by default), because a model does not an
 | Sending dataset, one trace per answer and the scores to Langfuse | same | done, to be checked on your Langfuse |
 | Command `compare` (two runs, tokens, cost) and the price file `evals/prices.json` | same | done |
 | Command `latency` (time to answer of each run, read from Langfuse) | same | done |
+| Command `charts` (three pictures of the README, drawn from the published files) | same, `docs/images/evals/` | done |
 | Command `calibrate` (judge against human grades) | same | to do |
 | First baseline on five models, with the runs and their limits | `README.md`, `evals/README.md`, `evals/published/` | done (23 November 2026) |
 
@@ -135,6 +136,27 @@ What it asks is `GET /api/public/v2/observations?type=GENERATION&name=chat-reply
 `fields` `core,basic,time,model`, page after page with the cursor), using your own keys. The figures depend on the network and on how busy the
 provider was; the tool does not hide that, and the README says where and when they were measured. A retried call counts as one more call.
 
+## The charts
+
+```bash
+dotnet run --project tools/LivingPaper.Evals -- charts
+```
+
+Draws the three pictures of the README in `docs/images/evals/`, each as an SVG for a light page (`-light`) and for a dark one (`-dark`); the
+README shows the one that matches the theme of GitHub with a `<picture>` tag. It reads only files of the repository (the runs of
+`evals/published/`, `evals/published/latency.json`, `evals/prices.json`): nothing is sent anywhere and Langfuse is not needed. So a figure on a
+picture is the one of the files, and publishing a new run and running the command again is enough to update them.
+
+- **Before and after**: for each model (and character) that has runs with both prompts, the mean grade with the prompt of
+  `evals/prompts/baseline.json` and with the current default prompt, told apart by the signature kept in the run files.
+- **Grade against the price**: the models run with the current prompt on the main dataset; the price of 1,000 replies is worked out from the
+  tokens of the chat and `prices.json`. A free or local model (price 0) stands in a band on the left, as it has no place on a logarithmic axis;
+  a model with no price is left out and the command says so.
+- **Time to answer**: the latest run of each model, from `latency.json`, in two parts (until the first text, then until the end).
+
+The name written for a model is the `name` of its entry in `prices.json`. The colors are the first two of the palette of the dataviz skill,
+checked for color-blind readers and for contrast in both themes.
+
 ### The prices
 
 `evals/prices.json` lists, for each model, the price in USD per million tokens of the input, the cached input and the output. The cost of a
@@ -181,6 +203,7 @@ tools/LivingPaper.Evals/
   RunComparison.cs      the maths: averages by category, paired differences, 95% interval, warnings
   ComparisonWriter.cs   the page of `compare`
   LatencyCommand.cs, LatencyOptions.cs, LatencyWriter.cs, RunLatency.cs, ChatTiming.cs   the command `latency`: the time to answer of each run
+  ChartsCommand.cs, ChartData.cs, ChartSvg.cs, LatencyFile.cs   the command `charts`: the figures, then the SVG pictures
   PriceList.cs          evals/prices.json and the cost of a run
   RunLocator.cs         finds a run from its id or its path
   LangfuseApi.cs        the REST calls: dataset, items, scores, the timings of the chat calls

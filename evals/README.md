@@ -87,13 +87,14 @@ The baseline showed three habits to correct: stage directions such as "(sigh)" (
 task it is asked (a recipe, a function) and one that breaks its role. The prompt of the chat got five rules for them (the period, no assistant
 services, no mention of a prompt or an author, the language of the last message, a last reminder against stage directions). The prompts before
 and after are in [`prompts/`](prompts/) (`baseline.json`, `rules-v1.json`; the new default is in `src/LivingPaper.Persistence/prompts.default.json`).
-The runs and their prompt signature are in [`published/`](published/).
+The runs and their prompt signature are in [`published/`](published/). The charts of the [README](../README.md) are drawn from them
+by the command `charts` (see [docs/evals.md](../docs/evals.md)).
 
 | Model | Before | After | Normal | Modern trap | Role break | Off-topic | Language |
 |---|---|---|---|---|---|---|---|
-| DeepSeek V4.1 Flash (3 tries) | 4.33 | **4.92** | 4.92 | 4.92 | 4.88 | 5.00 | 4.88 |
+| DeepSeek V4.1 Flash (3 tries) | 4.35 | **4.92** | 4.92 | 4.92 | 4.88 | 5.00 | 4.88 |
 | Claude Opus 5.5 (1 try) | 4.08 | **4.90** | 4.88 | 5.00 | 4.62 | 5.00 | 5.00 |
-| GPT-5 mini (1 try) | 3.57 | **4.50** | 5.00 | 4.50 | 4.25 | 3.88 | 4.88 |
+| GPT-5 mini (1 try) | 3.58 | **4.50** | 5.00 | 4.50 | 4.25 | 3.88 | 4.88 |
 | Cyrano, DeepSeek V4.1 Flash (3 tries) | 4.28 | **4.73** | 5.00 | 4.67 | 4.58 | 4.42 | 5.00 |
 
 - The first version of the rules (`rules-v1`) gave 4.35 with DeepSeek: no gain. It had fixed the off-topic and modern questions (+0.4) but

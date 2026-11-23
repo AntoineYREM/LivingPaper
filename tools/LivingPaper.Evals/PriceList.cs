@@ -3,10 +3,10 @@ using System.Text.Json;
 namespace LivingPaper.Evals;
 
 // USD (or another currency) per million tokens, for the input, the cached input and the output of a model.
-internal sealed record ModelPrice(double Input, double? CachedInput, double Output);
+internal sealed record ModelPrice(double Input, double? CachedInput, double Output, string? Name = null);
 
 // The prices of the models (evals/prices.json), kept in the repository because they decide what a run costs and nobody should have to
-// look them up again. They change: the file says when it was updated, and a model that is not in it simply has no cost shown, never a
+// look them up again, with the name to show for each model. They change: the file says when it was updated, and a model that is not in it simply has no cost shown, never a
 // guessed one. A model that runs on your own computer is listed at 0.
 internal sealed class PriceList(string currency, IReadOnlyDictionary<string, ModelPrice> models)
 {
@@ -54,11 +54,14 @@ internal sealed class PriceList(string currency, IReadOnlyDictionary<string, Mod
                 throw new EvalException($"The price of a model in {name} must be a number that is not negative.");
             }
 
-            models[model] = new ModelPrice(price.Input, price.CachedInput, price.Output);
+            models[model] = new ModelPrice(price.Input, price.CachedInput, price.Output, string.IsNullOrWhiteSpace(price.Name) ? null : price.Name.Trim());
         }
 
         return new PriceList(file.Currency.Trim(), models);
     }
+
+    // The name to show for a model (the charts): the one written in the price file, or the id of the model when it has none.
+    public string NameOf(string model) => models.TryGetValue(model, out var price) && price.Name is { } name ? name : model;
 
     // The tokens of a run at the price of the model. The input tokens are all the tokens of the prompt, those found in the provider's
     // cache included (as the providers report them): the cached ones are billed at the cache price, the others at the normal one.
@@ -78,5 +81,5 @@ internal sealed class PriceList(string currency, IReadOnlyDictionary<string, Mod
 
     private sealed record FileContent(int SchemaVersion, string? Currency, string? Updated, Dictionary<string, PriceContent?>? Models);
 
-    private sealed record PriceContent(double Input, double? CachedInput, double Output);
+    private sealed record PriceContent(double Input, double? CachedInput, double Output, string? Name = null);
 }
