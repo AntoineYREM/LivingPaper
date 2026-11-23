@@ -1,6 +1,6 @@
 using Shouldly;
 
-namespace LivingPaper.Web.IntegrationTests;
+namespace LivingPaper.Infrastructure.Tests;
 
 // The .env file of local development, read by `dotnet run` (which does not read it by itself).
 public class DotEnvFileTests : IDisposable

@@ -55,6 +55,8 @@ OCR for scanned PDFs, saved conversations.
     LivingPaper.Infrastructure/  adapters: OpenAI-compatible client, EPUB/PDF parsing, encryption
     LivingPaper.Persistence/     JSON file storage (adapters)
     LivingPaper.Web/             Razor Pages, HTTP endpoints, composition root
+  tools/
+    LivingPaper.Evals/           console tool: evaluates the characters with an LLM judge (docs/evals.md)
   tests/
     LivingPaper.Domain.Tests/
     LivingPaper.Application.Tests/

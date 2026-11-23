@@ -14,6 +14,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- **Evaluation of the characters** (PAPER-76, decision 0010): `tools/LivingPaper.Evals`, a console tool that puts 20 questions to Emma
+  Bovary through the real chat, has a judge model grade each reply from 1 to 5, and prints the averages by category with the tokens used.
+  It chooses the models in the list of the Settings page (or adds one), and needs neither the site running nor a new dependency. The
+  questions (`evals/bovary/questions.json`) and the judge prompt (`evals/judge.json`) are versioned in the repository. Sending the runs
+  to Langfuse, comparing two runs and measuring the judge against human grades come in the next steps; see `docs/evals.md`.
 - **A conversation with a character is one trace in Langfuse** (PAPER-75): the page sends an id (not stored) with each message, used as the
   trace id and the session; each reply is a `chat-reply` span in it.
 - **`.env` read by `dotnet run` in development**: the file was only read by Docker Compose, so the Langfuse variables never reached a

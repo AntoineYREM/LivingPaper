@@ -1,4 +1,4 @@
-namespace LivingPaper.Web;
+namespace LivingPaper.Infrastructure;
 
 // `dotnet run` does not read .env (only Docker Compose does), so in development the application reads it itself. A variable already
 // set in the real environment wins over the file.

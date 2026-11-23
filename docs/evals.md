@@ -1,7 +1,7 @@
 # Evaluating the characters
 
-> **Status: in construction.** This page describes the target. The data (`evals/`) and decision 0010 exist; the tool
-> (`tools/LivingPaper.Evals`) is built step by step and each section below says what is already there.
+> **Status: in construction.** The command `run` works and prints its report in the terminal. Sending the runs to Langfuse, comparing
+> two runs and measuring the judge against human grades are the next steps, and each is marked below.
 
 How to measure whether a character stays in its role, and compare two prompts or two models with the same questions.
 Why it is built this way: [decision 0010](decisions/0010-character-evaluation-with-an-llm-judge.md).
@@ -12,7 +12,7 @@ Why it is built this way: [decision 0010](decisions/0010-character-evaluation-wi
    a question with no link to the book.
 2. The real chat of the application answers each question.
 3. A second language model, the **judge**, grades each answer from 1 to 5 for fidelity to the character.
-4. The tool prints the averages by category and, if Langfuse is set up, sends the traces and the scores there.
+4. The tool prints the averages by category and the tokens used.
 
 Each question is asked several times (3 by default), because a model does not answer the same way twice.
 
@@ -22,37 +22,96 @@ Each question is asked several times (3 by default), because a model does not an
 |---|---|---|
 | 20 questions to Emma Bovary | `evals/bovary/questions.json` | done |
 | Prompt of the judge | `evals/judge.json` | done |
-| Description of the files | `evals/README.md` | done |
-| Console tool, command `run` | `tools/LivingPaper.Evals` | to do |
+| Console tool, command `run` (local report) | `tools/LivingPaper.Evals` | done |
 | Sending dataset, runs and scores to Langfuse | same | to do |
-| Command `compare` (two runs, tokens, cost) | same | to do |
+| Command `compare` (two runs, cost) | same | to do |
 | Command `calibrate` (judge against human grades) | same | to do |
 | Results in the README | `README.md` | after the first real runs |
 
-## How to run it (target)
+## How to run it
 
-The tool does not need the web application to be running. It needs:
-
-- **Models**: the same list as the Settings page (`data/settings.json`). At start the tool asks which model plays the character,
-  which one is the judge, and lets you add a model. With no keyboard (CI), set `EVAL_CHAT_PROVIDER` and `EVAL_JUDGE_PROVIDER` in
-  `.env` (the names given in Settings) instead.
-- **Same data folder as the site** (`DATA_DIRECTORY`), because the keys are encrypted with the keys of that folder. A site in Docker
-  keeps its data in a volume the tool cannot read unless the folder is shared; in that case add the models from the tool.
-- **Langfuse (optional)**: `LANGFUSE_BASE_URL`, `LANGFUSE_PUBLIC_KEY`, `LANGFUSE_SECRET_KEY` as for the
-  [tracing](langfuse.md). Without them the report is only printed.
+From the repository, with a model for the character and a model for the judge already saved on the Settings page (or added from the tool):
 
 ```bash
-dotnet run --project tools/LivingPaper.Evals -- run     # target command, not available yet
+dotnet run --project tools/LivingPaper.Evals -- run --repeats 1     # 20 answers and 20 grades: a first, cheap try
+dotnet run --project tools/LivingPaper.Evals -- run                 # 3 times each: 60 answers and 60 grades
 ```
+
+**Cost:** every answer and every grade is a call to your language models, so a run costs tokens. The report shows how many.
+
+The tool does not need the web application to be running. What it reads:
+
+- **The models**: the same list as the Settings page (`settings.json` of the data folder). At start the tool shows the list and asks
+  which model plays the character and which one judges. Choose **Add a language model** to add one (same steps as the page: name,
+  address, key, then the models the provider offers); it then appears on the Settings page too. What the site chose for its own chat
+  and analysis is never changed.
+- **The data folder**: `DATA_DIRECTORY`, by default `./data` of the folder you run the command from. It must be **the site's**, because the
+  keys in `settings.json` are encrypted with the keys of that folder, and the prompts are read from it too (the character is played with
+  the prompts you edited). The tool prints the folder it uses. For a site run with `dotnet run`, that is `src/LivingPaper.Web/data`;
+  for a site in Docker, the data is in a Docker volume that the tool cannot read, so add the models from the tool instead.
+- **The book**: `examples/madame-bovary.json`, found by going up from the current folder (`EXAMPLES_DIRECTORY` to move it).
+
+### Options
+
+| Option | Meaning |
+|---|---|
+| `--repeats <n>` | Times each question is asked, 1 to 20 (default 3). |
+| `--chat <name>`, `--judge <name>` | The models, by their name on the Settings page. No question is asked. |
+| `--questions <file>`, `--judge-prompt <file>` | Other files than `evals/bovary/questions.json` and `evals/judge.json`. |
+| `--help` | The list of options. |
+
+For a run with no keyboard (a script, CI), name the models with the options or with `EVAL_CHAT_PROVIDER` and `EVAL_JUDGE_PROVIDER` in the
+shell or in `.env`: without a terminal, the tool never waits for an answer and says what is missing. Exit codes: `0` done, `1` nothing could
+be graded, `2` something to fix (the message says what), `130` stopped with Ctrl+C.
 
 ## How to read the results
 
+The report looks like this (the numbers here are made up, to show the shape):
+
+```text
+Category          Graded  Failed  Average  Lowest
+normal                15       0     4.60       4
+modern-trap           15       0     3.80       2
+...
+Average: 4.05 (60 graded, 0 failed)
+
+Lowest scores (2 or less), with the reason of the judge:
+  bovary-role-04 (try 2): 1 - Mentions a system prompt.
+```
+
 - **Score**: 1 (fully out of the role) to 5 (fully in the role), with a one-sentence reason from the judge.
 - **By category**: `normal` questions should be near 5. The three trap categories show where the character breaks.
+- **Failed** answers are counted apart and never averaged: `reply:<code>` when the character could not answer (the model is down, it
+  refused, a content filter), `judge:<code>` when the judge's answer was not a grade.
+- **Tokens** are shown for the chat and for the judge, as the provider reports them (a provider that reports nothing shows 0).
 - **Comparing two runs** only makes sense with the same questions and the same version of the judge (`evals/judge.json`).
+
+## How it is built
+
+```text
+tools/LivingPaper.Evals/
+  Program.cs            entry point, exit codes
+  EvalOptions.cs        the command line
+  EvalCommand.cs        assembles the pieces (settings, prompts, examples, chat) for one run
+  QuestionFile.cs       reads and checks the questions file
+  JudgePrompt.cs        reads the judge file, fills the prompt
+  JudgeVerdict.cs       reads the judge's answer (score and reason)
+  EvalRunner.cs         questions x repeats: answer, then grade
+  ReportWriter.cs       averages by category, lowest scores, tokens
+  ProviderChooser.cs    the choice of a model in the list of the site
+  ProviderAdder.cs      adding a model from the terminal
+  ChatOverrideSettings.cs, ChatServiceReplier.cs, ModelJudge.cs, MeteredChatModelFactory.cs
+```
+
+- The character answers through `CharacterChatService`, the code of the site's chat. The tool gives it the site's settings with only the
+  model of the chat replaced, in memory: `ChatOverrideSettings` never writes anything.
+- Each question is a conversation of its own (one message), so questions do not influence each other.
+- The judge receives the question and the reply, never the prompt the character had.
+- The tests (`tests/LivingPaper.Evals.Tests`) use fake models: none calls a real provider.
 
 ## Limits to keep in mind
 
 - The judge is a language model: it can be wrong, and favor answers written by a model of its own family.
 - 20 questions are few. Differences of a few tenths between two runs can be noise; that is why each question is asked several times.
 - The tool measures one quality (staying in the role), not whether the character is interesting or faithful to the book.
+- The text of the replies is printed nowhere and kept nowhere in this step: only the scores and the reasons of the judge are.

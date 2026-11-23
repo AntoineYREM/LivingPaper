@@ -1,0 +1,108 @@
+using LivingPaper.Application;
+using Shouldly;
+
+namespace LivingPaper.Evals.Tests;
+
+public class EvalRunnerTests
+{
+    private static readonly QuestionSet Questions = new(
+        "d",
+        "madame-bovary",
+        "Emma Bovary",
+        [new EvalQuestion("q-1", "normal", "Hello?", "x"), new EvalQuestion("q-2", "trap", "Are you an AI?", "x")]);
+
+    private sealed class Replier(Func<string, string> reply) : ICharacterReplier
+    {
+        public List<string> Asked { get; } = [];
+
+        public Task<string> ReplyAsync(string question, CancellationToken cancellationToken)
+        {
+            Asked.Add(question);
+            return Task.FromResult(reply(question));
+        }
+    }
+
+    private sealed class Judge(Func<string, string, JudgeVerdict> grade) : IJudge
+    {
+        public Task<JudgeVerdict> GradeAsync(string question, string reply, CancellationToken cancellationToken) =>
+            Task.FromResult(grade(question, reply));
+    }
+
+    [Fact]
+    public async Task RunAsync_AsksEachQuestionOnceForEachRepeatAndGradesTheReply()
+    {
+        var replier = new Replier(question => "answer to " + question);
+        var judge = new Judge((question, reply) => new JudgeVerdict(reply == "answer to Hello?" ? 5 : 2, "reason"));
+
+        var results = await new EvalRunner(replier, judge).RunAsync(Questions, repeats: 2, onResult: null, CancellationToken.None);
+
+        replier.Asked.ShouldBe(["Hello?", "Hello?", "Are you an AI?", "Are you an AI?"]);
+        results.Count.ShouldBe(4);
+        results.Select(result => (result.QuestionId, result.Repeat, result.Score)).ShouldBe(
+            [("q-1", 1, 5), ("q-1", 2, 5), ("q-2", 1, 2), ("q-2", 2, 2)]);
+        results[0].Category.ShouldBe("normal");
+        results[0].Reason.ShouldBe("reason");
+        results[0].Failure.ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task RunAsync_ReportsEachResultAsItComes()
+    {
+        var seen = new List<string>();
+
+        await new EvalRunner(new Replier(_ => "r"), new Judge((_, _) => new JudgeVerdict(3, string.Empty)))
+            .RunAsync(Questions, 1, result => seen.Add(result.QuestionId), CancellationToken.None);
+
+        seen.ShouldBe(["q-1", "q-2"]);
+    }
+
+    private sealed class FailingReplier : ICharacterReplier
+    {
+        public Task<string> ReplyAsync(string question, CancellationToken cancellationToken) =>
+            question == "Hello?" ? throw new ChatReplyException(ChatFailure.ModelUnreachable) : Task.FromResult("fine");
+    }
+
+    [Fact]
+    public async Task RunAsync_RecordsAFailedReplyAndGoesOn()
+    {
+        var results = await new EvalRunner(new FailingReplier(), new Judge((_, _) => new JudgeVerdict(4, string.Empty)))
+            .RunAsync(Questions, 1, null, CancellationToken.None);
+
+        results[0].Score.ShouldBeNull();
+        results[0].Failure.ShouldBe("reply:ModelUnreachable");
+        results[1].Score.ShouldBe(4);
+    }
+
+    private sealed class FailingJudge : IJudge
+    {
+        public Task<JudgeVerdict> GradeAsync(string question, string reply, CancellationToken cancellationToken) =>
+            throw new JudgeException("invalid-verdict");
+    }
+
+    [Fact]
+    public async Task RunAsync_RecordsAFailedJudgementAndGoesOn()
+    {
+        var results = await new EvalRunner(new Replier(_ => "r"), new FailingJudge()).RunAsync(Questions, 1, null, CancellationToken.None);
+
+        results.ShouldAllBe(result => result.Score == null && result.Failure == "judge:invalid-verdict");
+    }
+
+    [Fact]
+    public async Task RunAsync_StopsWhenCancelled()
+    {
+        using var source = new CancellationTokenSource();
+        await source.CancelAsync();
+
+        var act = () => new EvalRunner(new Replier(_ => "r"), new Judge((_, _) => new JudgeVerdict(3, string.Empty))).RunAsync(Questions, 1, null, source.Token);
+
+        await Should.ThrowAsync<OperationCanceledException>(act);
+    }
+
+    [Fact]
+    public async Task RunAsync_RefusesLessThanOneRepeat()
+    {
+        var act = () => new EvalRunner(new Replier(_ => "r"), new Judge((_, _) => new JudgeVerdict(3, string.Empty))).RunAsync(Questions, 0, null, CancellationToken.None);
+
+        await Should.ThrowAsync<ArgumentOutOfRangeException>(act);
+    }
+}

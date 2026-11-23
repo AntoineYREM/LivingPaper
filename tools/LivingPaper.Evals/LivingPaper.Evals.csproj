@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Part of .NET, no package: gives the tool the same Data Protection as the web application, to read the keys saved in settings.json. -->
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\LivingPaper.Domain\LivingPaper.Domain.csproj" />
+    <ProjectReference Include="..\..\src\LivingPaper.Application\LivingPaper.Application.csproj" />
+    <ProjectReference Include="..\..\src\LivingPaper.Infrastructure\LivingPaper.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\LivingPaper.Persistence\LivingPaper.Persistence.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="LivingPaper.Evals.Tests" />
+  </ItemGroup>
+
+</Project>
