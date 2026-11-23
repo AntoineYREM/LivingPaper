@@ -27,7 +27,7 @@ Each question is asked several times (3 by default), because a model does not an
 | Sending dataset, one trace per answer and the scores to Langfuse | same | done, to be checked on your Langfuse |
 | Command `compare` (two runs, tokens, cost) and the price file `evals/prices.json` | same | done |
 | Command `calibrate` (judge against human grades) | same | to do |
-| Results in the README | `README.md` | after the first real runs |
+| First baseline on five models, with the runs and their limits | `README.md`, `evals/README.md`, `evals/published/` | done (23 November 2026) |
 
 ## How to run it
 

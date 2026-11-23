@@ -73,6 +73,23 @@ With Ollama, add a model in **Settings** with the base URL `http://host.docker.i
 be the container itself), any text as the key, and the name of a model you pulled. Private addresses are allowed on purpose so that
 local models work. Details and LM Studio: [docs/how-to-run.md](docs/how-to-run.md#add-a-language-model).
 
+## Do the characters stay in their role?
+
+An evaluation tool measures it: it puts 40 questions to Emma Bovary (everyday ones, and traps: a smartphone, "are you an AI?", a request for a
+recipe, a question in Japanese), has a language model grade each reply from 1 to 5, and compares two runs. First results, with the same prompts
+(grades from 1 to 5, a figure moves by about a tenth or two from one run to the next):
+
+| Model | Average | Weakest point |
+|---|---|---|
+| DeepSeek V4.1 Flash | 4.35 | off-topic requests (3.9) |
+| Claude Haiku 5.5 | 4.12 | off-topic requests (3.2) |
+| Claude Opus 5.5 (one run) | 4.08 | breaking the role (2.5) |
+| GPT-5 mini | 3.58 | off-topic requests (1.9) |
+| Gemma 3 4B, local | 2.83 | off-topic requests (1.9) |
+
+The judge is itself a model, so these figures are an indication. The details, the limits and the runs are in [evals/README.md](evals/README.md), and
+how to run it yourself in [docs/evals.md](docs/evals.md).
+
 ## Warnings
 
 - **LivingPaper has no authentication.** Anyone who can reach it can use the API keys you saved. It is made for personal use on
