@@ -26,6 +26,6 @@ internal sealed class ModelJudge(IChatModelFactory factory, LlmProvider provider
             throw new JudgeException("model-error");
         }
 
-        return JudgeVerdict.TryParse(answer) ?? throw new JudgeException("invalid-verdict");
+        return JudgeVerdict.TryParse(answer) ?? throw new JudgeException("invalid-verdict", answer);
     }
 }

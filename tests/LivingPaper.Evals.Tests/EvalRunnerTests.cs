@@ -79,6 +79,20 @@ public class EvalRunnerTests
             throw new JudgeException("invalid-verdict");
     }
 
+    private sealed class JudgeWithAnUnreadableAnswer : IJudge
+    {
+        public Task<JudgeVerdict> GradeAsync(string question, string reply, CancellationToken cancellationToken) =>
+            throw new JudgeException("invalid-verdict", "What the judge wrote.");
+    }
+
+    [Fact]
+    public async Task RunAsync_KeepsWhatTheJudgeWroteWhenItCannotBeRead()
+    {
+        var results = await new EvalRunner(new Replier(_ => "r"), new JudgeWithAnUnreadableAnswer()).RunAsync(Questions, 1, null, CancellationToken.None);
+
+        results.ShouldAllBe(result => result.Failure == "judge:invalid-verdict" && result.JudgeAnswer == "What the judge wrote." && result.Reply == "r");
+    }
+
     [Fact]
     public async Task RunAsync_RecordsAFailedJudgementAndGoesOn()
     {

@@ -19,6 +19,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   It chooses the models in the list of the Settings page (or adds one), and needs neither the site running nor a new dependency. The
   questions (`evals/bovary/questions.json`) and the judge prompt (`evals/judge.json`) are versioned in the repository. Sending the runs
   to Langfuse, comparing two runs and measuring the judge against human grades come in the next steps; see `docs/evals.md`.
+- **Easier to read and to diagnose a run** (PAPER-76): the run file writes accents as they are (not as unicode escapes), and keeps what the
+  judge wrote when its answer was not a grade (`judgeAnswer`, only then), so a `judge:invalid-verdict` can be understood.
 - **Runs kept and sent to Langfuse** (PAPER-76): every run is saved in `evals/runs/` (ignored by git: it holds the replies); a run worth
   sharing is copied to `evals/published/`. With the `LANGFUSE_*` variables set, the tool also creates the dataset in Langfuse, one trace
   per answer (an experiment, environment `experiment`) and the grades as scores; `--local-only` skips it. The configuration of the exporter

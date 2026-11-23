@@ -70,7 +70,8 @@ be graded, `2` something to fix (the message says what), `130` stopped with Ctrl
 
 **On your disk, always.** Each run is a JSON file in `evals/runs/`, named after its id (`20261123-140512-gpt-5-mini.json`): the models
 (by the name of the Settings page, never a key or an address), the version of the judge prompt, the tokens, and every try with the text of
-the question and of the reply. That is what lets you read why an answer got a low grade and, later, grade the same answers by hand. The
+the question and of the reply (accents are written as they are, so a French reply is readable in the file; when the judge answers with something
+that is not a grade, what it wrote is kept too, in `judgeAnswer`). That is what lets you read why an answer got a low grade and, later, grade the same answers by hand. The
 folder is **not committed**, because it holds the replies.
 
 **In the repository, when you choose.** To share a run (for the results of the README), copy its file to `evals/published/`, read it, and

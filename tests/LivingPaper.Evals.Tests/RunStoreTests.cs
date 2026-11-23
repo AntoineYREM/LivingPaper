@@ -16,7 +16,10 @@ public class RunStoreTests
         new RunModel("OpenAI", "gpt-5-mini"),
         new RunJudge("Other", "judge-model", "1", "character-fidelity"),
         new RunTokens(new TokenUsage(1200, 300, 90), new TokenUsage(800, 0, 40)),
-        [new EvalResult("q-1", "normal", 1, 4, "One slip.", null, "Hello?", "Bonjour.", "trace", "span")]);
+        [
+            new EvalResult("q-1", "normal", 1, 4, "One slip.", null, "Hello?", "Bonjour.", "trace", "span"),
+            new EvalResult("q-2", "normal", 1, null, null, "judge:invalid-verdict", "Hi?", "Hello.", "trace-2", "span-2", "What the judge wrote."),
+        ]);
 
     [Fact]
     public async Task SaveAsync_WritesAFileNamedAfterTheRun_AndLoadAsyncReadsItBack()
@@ -46,6 +49,24 @@ public class RunStoreTests
         var text = await File.ReadAllTextAsync(path, TestContext.Current.CancellationToken);
         text.ShouldContain("Bonjour.");
         text.ShouldContain("Hello?");
+    }
+
+    [Fact]
+    public async Task SaveAsync_WritesAccentsAsTheyAreSoTheFileCanBeRead()
+    {
+        using var folder = new TempFolder();
+        var record = Record() with
+        {
+            Results = [new EvalResult("q-1", "language", 1, 5, "Réponse en français.", null, "Racontez-moi votre première rencontre.", "C'était un jour de marché, où l'on s'ennuie.", "t", "s")],
+        };
+
+        var path = await RunStore.SaveAsync(folder.Path, record, CancellationToken.None);
+
+        var text = await File.ReadAllTextAsync(path, TestContext.Current.CancellationToken);
+        text.ShouldContain("première rencontre");
+        text.ShouldContain("C'était un jour de marché");
+        text.ShouldNotContain("\\u00");
+        (await RunStore.LoadAsync(path, CancellationToken.None)).Results.ShouldBe(record.Results);
     }
 
     [Fact]

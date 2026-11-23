@@ -36,6 +36,27 @@ public class JudgeAndMeterTests
 
         error.Code.ShouldBe("invalid-verdict");
         error.Message.ShouldNotContain("refuse");
+
+        // The answer is kept apart from the message, so the run file can show what the judge wrote.
+        error.RawAnswer.ShouldBe("I refuse to grade.");
+    }
+
+    [Fact]
+    public async Task GradeAsync_CutsAVeryLongAnswerThatCannotBeRead()
+    {
+        var judge = Judge(() => new string('x', JudgeException.MaxRawAnswerLength + 500), out _);
+
+        var error = await Should.ThrowAsync<JudgeException>(() => judge.GradeAsync("Hi?", "Hello.", CancellationToken.None));
+
+        error.RawAnswer!.Length.ShouldBe(JudgeException.MaxRawAnswerLength);
+    }
+
+    [Fact]
+    public async Task GradeAsync_KeepsNoAnswerForAFailureThatIsNotAboutTheAnswer()
+    {
+        var filtered = new ModelJudge(new FakeChatModelFactory(_ => new RefusingModel(new ContentFilteredException())), Provider, Prompt, "E", "B");
+
+        (await Should.ThrowAsync<JudgeException>(() => filtered.GradeAsync("q", "r", CancellationToken.None))).RawAnswer.ShouldBeNull();
     }
 
     private sealed class RefusingModel(Exception error) : IChatModel

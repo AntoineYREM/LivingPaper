@@ -11,7 +11,13 @@ internal static class RunStore
 
     private const int MaxModelSlugLength = 40;
 
-    private static readonly JsonSerializerOptions Options = new(JsonSerializerDefaults.Web) { WriteIndented = true };
+    // Accents and apostrophes are written as they are, not as unicode escapes: the file is read by people, and the replies are often in
+    // French. Relaxed escaping is fine here because the file is never put in a web page.
+    private static readonly JsonSerializerOptions Options = new(JsonSerializerDefaults.Web)
+    {
+        WriteIndented = true,
+        Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+    };
 
     // The time (UTC) and the model: sorted by name, they are sorted by date, and the model is readable in a list of files.
     public static string NewId(DateTimeOffset startedAt, string chatModel) =>

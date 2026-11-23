@@ -59,10 +59,11 @@ internal sealed class EvalRunner(ICharacterReplier replier, IJudge judge, IExper
         {
             var failure = $"judge:{exception.Code}";
             item.Complete(reply, null, failure);
-            return Result(question, repeat, item, reply, score: null, reason: null, failure);
+            return Result(question, repeat, item, reply, score: null, reason: null, failure, exception.RawAnswer);
         }
     }
 
-    private static EvalResult Result(EvalQuestion question, int repeat, IExperimentItem item, string? reply, int? score, string? reason, string? failure) =>
-        new(question.Id, question.Category, repeat, score, reason, failure, question.Input, reply, item.TraceId, item.SpanId);
+    private static EvalResult Result(
+        EvalQuestion question, int repeat, IExperimentItem item, string? reply, int? score, string? reason, string? failure, string? judgeAnswer = null) =>
+        new(question.Id, question.Category, repeat, score, reason, failure, question.Input, reply, item.TraceId, item.SpanId, judgeAnswer);
 }
