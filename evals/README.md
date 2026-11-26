@@ -8,6 +8,9 @@ way: [decision 0010](../docs/decisions/0010-character-evaluation-with-an-llm-jud
 |---|---|
 | `bovary/questions.json` | 40 questions put to Emma Bovary, 8 in each of 5 categories: `normal`, `modern-trap`, `role-break-trap`, `off-topic` and `language` (7 other languages than French and English, among them Japanese and Arabic: the character must answer in the language of the user). 10 of the 40 are written in French, in every category. |
 | `cyrano/questions.json` | 20 questions put to Cyrano de Bergerac (4 per category, 5 in French): a second character, written before the first runs and **not to be changed after them**. It tells whether a change that helped Emma also helps someone else. |
+| `bovary/factual.json` | 26 factual questions on the French text of *Madame Bovary*, with their answers (see [experiments](../docs/experiments/passages-of-the-book.md)). |
+| `alice/factual.json`, `cyrano/factual.json`, `bovary/factual-en.json` | 20 factual questions each on the English text of the shipped examples. |
+| `accuracy-judge.json` | The prompt of the judge of facts, which compares a reply with the expected answer. |
 | `judge.json` | The prompt of the judge, which grades a reply from 1 to 5. |
 | `prompts/` | The chat prompts before the change of 23 November 2026 (`baseline.json`) and its first attempt (`rules-v1.json`), to replay the baseline with `--prompts-file`. |
 | `prices.json` | Price in USD per million tokens of each model, to show what a run cost (`compare`). Update it when prices change. |

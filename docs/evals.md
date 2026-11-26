@@ -73,7 +73,7 @@ The tool does not need the web application to be running. What it reads:
 | `--embedding <name>` | Search the passages with this model for vectorization (its name on the Settings page). Without it, the character gets the whole story. Needs `--book-data`. |
 | `--embedding-url <url>` | The address of a server that asks for no key (a local one): `--embedding` is then the name of its model, and nothing needs to be saved on the Settings page. |
 | `--query-mode <mode>` | `recent` (default), `rewrite` or `last`: how the search is written (`RAG_QUERY_MODE` for the site). |
-| `--passages <n>` | Passages given to the character, 1 to 10 (default 5, `RAG_PASSAGES`). |
+| `--passages <n>` | Passages given to the character, 1 to 10 (default 3, `RAG_PASSAGES`). |
 | `--help` | The list of options. |
 
 For a run with no keyboard (a script, CI), name the models with the options or with `EVAL_CHAT_PROVIDER` and `EVAL_JUDGE_PROVIDER` in the
@@ -83,6 +83,11 @@ be graded, `2` something to fix (the message says what), `130` stopped with Ctrl
 ## Facts and passages
 
 What was measured with these questions, and what was decided: [experiments on the passages](experiments/passages-of-the-book.md).
+
+Three more sets ask 20 factual questions each on the shipped examples, in their English text: `evals/alice/factual.json`,
+`evals/cyrano/factual.json` and `evals/bovary/factual-en.json`. To search their passages, `--book-data` needs a library that
+holds the books **under the same ids** as the question files (adding an example from the interface gives its copy a new id, so
+the library has to be prepared apart).
 
 The judge of the role cannot see an invented fact: it knows only the question and the reply. The **factual questions**
 (`evals/bovary/factual.json`) give the right answer, and a second judge (`evals/accuracy-judge.json`, score `factual-accuracy`)

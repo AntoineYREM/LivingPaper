@@ -21,7 +21,7 @@ public class RetrievalReportTests
     public void Parse_ReadsTheSearchOptions_WithTheDefaultsOfTheApplication()
     {
         Parse("--book-data", "work", "--embedding", "My vectors").Retrieval
-            .ShouldBe(new RetrievalOptions("My vectors", null, QueryMode.Recent, 5));
+            .ShouldBe(new RetrievalOptions("My vectors", null, QueryMode.Recent, 3));
         Parse("--book-data", "work", "--embedding", "bge-m3", "--embedding-url", "http://localhost:11434/v1", "--query-mode", "Recent", "--passages", "5")
             .Retrieval.ShouldBe(new RetrievalOptions("bge-m3", "http://localhost:11434/v1", QueryMode.Recent, 5));
     }

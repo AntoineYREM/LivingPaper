@@ -80,7 +80,7 @@ Everything is optional. Set these as environment variables (in Docker, under `en
 | `ANALYSIS_PAGES_PER_PART` | `40` | Pages per part when a book is analyzed; lower it for a model with a small context window |
 | `ANALYSIS_PARALLEL_CALLS` | `3` | Parts read at the same time; use `1` for a small local server or strict rate limits |
 | `RAG_QUERY_MODE` | `recent` | For a book indexed with a model for vectorization: how the chat searches its passages. `recent`: your message and the three before it, as they are; `rewrite`: the chat model writes the search first (one more call a message: slower, and it costs more); `last`: your message alone |
-| `RAG_PASSAGES` | `5` | How many passages the character gets with each message, from 1 to 10. 3 makes the prompt about 1,000 tokens shorter, and the answer is found less often |
+| `RAG_PASSAGES` | `3` | How many passages the character gets with each message, from 1 to 10. 5 makes the prompt about 900 to 1,000 tokens longer, and holds the expected passage a little more often |
 | `LANGFUSE_BASE_URL` | none | Address of your Langfuse (`http://localhost:3000`). Required once the two keys are set; there is no default, so nothing is sent to the cloud by surprise |
 | `LANGFUSE_PUBLIC_KEY`, `LANGFUSE_SECRET_KEY` | empty | Keys of a Langfuse project. Tracing is **off** while they are empty; setting only one stops the application at start |
 | `LANGFUSE_CAPTURE_CONTENT` | `false` | `true` also records the prompts and replies, which hold the text of your books and chats (see [reference](reference.md#traces-of-the-model-calls-langfuse)) |

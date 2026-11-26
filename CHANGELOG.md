@@ -15,6 +15,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   OpenAI-compatible `POST /embeddings`, local or online). The model is tried when it is chosen. It turns the passages of a book
   into vectors, so that the chat can find them ([specification](docs/specs/rag.md), decision 0011).
 
+- **Three passages by default** (PAPER-91), after 60 more questions on the three examples with two models (see the experiments): their
+  grades showed no clear difference between 3 and 5 passages, and 3 make the prompt about a quarter shorter than 5.
+  `RAG_PASSAGES=5` gives the earlier number.
 - **Examples with the passages of their book** (PAPER-89): *Alice's Adventures in Wonderland*, *Cyrano de Bergerac* and
   *Madame Bovary*, analyzed again from their English text (Project Gutenberg) with DeepSeek V4.1 Flash, with their passages
   and `bge-m3` vectors: with that model, indexing one computes nothing. A few sentences of the analyses were corrected by hand
@@ -31,7 +34,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - **Factual evaluation and measured defaults** (PAPER-87): 26 factual questions on *Madame Bovary* with their expected
   answers, a judge of accuracy, and options of the evaluation tool to search the passages of an indexed book (`--book-data`,
   `--embedding`, `--query-mode`, `--passages`), with what was searched and found kept and reported. From the measures
-  ([experiments](docs/experiments/passages-of-the-book.md)), the chat now searches the recent messages as they are and gives
+  ([experiments](docs/experiments/passages-of-the-book.md)), the chat searches the recent messages as they are and first gave
   the character 5 passages (before: a query written by the chat model, and 3).
 - **The chat uses the passages of the book** (PAPER-86): for an indexed book, the character gets the short plot and the
   passages that answer the message in place of the whole story. `RAG_QUERY_MODE` and `RAG_PASSAGES` tune the

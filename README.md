@@ -81,9 +81,9 @@ local models work. Details and LM Studio: [docs/how-to-run.md](docs/how-to-run.m
 
 By default a character knows the book through its story, scene by scene. With a **model for vectorization** (an embedding model),
 LivingPaper also keeps the book cut into passages, and gives the character the passages that answer your message: it can then
-quote details that a summary loses. On 26 [factual questions](docs/experiments/passages-of-the-book.md) about *Madame Bovary*,
-the average went from 3.73 to 4.13 out of 5 with these settings; with so few questions and one book, this gain could still be
-chance.
+quote details that a summary loses. On 60 [questions about precise facts](docs/experiments/passages-of-the-book.md) of the
+three examples, the average went from 3.72 to 4.30 out of 5 with DeepSeek V4.1 Flash, and from 3.48 to 4.28 with ERNIE 5.5
+Flash. The gain was large on the long novel and uncertain on the short books; the prompt was shorter only for the long one.
 
 1. Choose a **multilingual** model, so that you can write in your language about a book in another. We use and recommend
    **`bge-m3`** (free on your computer: `ollama pull bge-m3`).

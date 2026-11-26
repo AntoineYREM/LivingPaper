@@ -23,7 +23,8 @@ Compared with the full story, on *Madame Bovary*:
 
 **Measured on 26 November 2026** (PAPER-87, [experiments](../experiments/passages-of-the-book.md)): criterion 1 is met by the
 four settings tried, beyond chance only for rewriting with 5 passages; criterion 2 is met (3,497 tokens at most); criterion 3
-is met by the default setting (4.86 with the story, 4.90 with the passages).
+is met by the default setting of that day, recent messages and 5 passages (4.86 with the story, 4.90 with the passages). The
+role was not measured again with the present default of 3 passages.
 
 ### Out of scope
 
@@ -180,8 +181,8 @@ For each message:
 
 ### Context of the model
 
-The chat with passages is designed for a model with a context of **at least 8,192 tokens**: a system prompt of about 4,600
-tokens at most with the 5 passages of the default (3,500 with 3), and the rest for the conversation (still up to 20 messages)
+The chat with passages is designed for a model with a context of **at least 8,192 tokens**: a system prompt of about 3,500
+tokens at most with the 3 passages of the default (4,600 with 5), and the rest for the conversation (still up to 20 messages)
 and the reply. The documentation says so, and that some local servers start with less (Ollama uses 4,096 by default on a 4 GB
 graphics card).
 
@@ -193,7 +194,7 @@ graphics card).
 | `recent` (default) | The user's message and the previous ones (3 previous) |
 | `last` | The user's message only |
 
-Environment variables `RAG_QUERY_MODE` (default `recent`) and `RAG_PASSAGES` (default `5`, 1 to 10). No setting
+Environment variables `RAG_QUERY_MODE` (default `recent`) and `RAG_PASSAGES` (default `3`, 1 to 10). No setting
 in the interface.
 
 ### Failures
@@ -211,7 +212,8 @@ The rewriting adds one model call before the first word of each reply.
 
 The defaults were `rewrite` and 3 passages until the measures of PAPER-87
 ([experiments](../experiments/passages-of-the-book.md)): rewriting made replies about nine times slower for a gain that was not
-shown, and 5 passages hold the expected one more often than 3.
+shown, and 5 passages held the expected one more often than 3. The number went back to **3** after a second measure on three
+books and two models: no clear difference of grades between 3 and 5, for a prompt about a quarter shorter.
 
 ## 8. Export and import
 

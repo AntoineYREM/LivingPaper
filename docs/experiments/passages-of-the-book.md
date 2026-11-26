@@ -15,12 +15,16 @@ questions, one computer for the local models (Windows, 4 GB graphics card, 16 GB
 2. **What counts is finding the right passage.** Found: about 4.7, and no grade of 2 or less. Missed: 3.0 to 3.6.
 3. **Writing the search with the chat model is not worth it by default:** about 9 times slower, about 2.5 times the cost, failed
    13 times in 104, and its advantage with 5 passages (+0.13) can be chance.
-4. **Defaults since PAPER-87:** the recent messages searched as they are (`RAG_QUERY_MODE=recent`), 5 passages
-   (`RAG_PASSAGES=5`).
+4. **Defaults:** the recent messages searched as they are (`RAG_QUERY_MODE=recent`), and **3 passages**
+   (`RAG_PASSAGES=3`) since the [second measure](#three-books-and-two-models); 5 from PAPER-87 until then.
 5. **The role is kept:** 4.86 with the story, 4.90 with the default passages.
 6. **Passages make the prompt a third to a half shorter, but do not always save time or money:** a provider that caches an
    unchanged prompt makes the whole story cheap, and in one small test a local model answered more slowly with passages.
 7. **The headers and the scenes stay as they are:** no length of header did clearly better.
+8. **The gain holds on three books and two models** for questions about precise facts, beyond chance over the 60 questions. It
+   is large on the long novel, uncertain on the short books, and the prompt is shorter than with the story only for the long one.
+9. **A character that does not find the answer makes one up:** of 52 wrong replies read, only 2 plainly said they did not
+   remember.
 
 ## Before the feature
 
@@ -186,6 +190,71 @@ and their grades were not measured in French.
 
 The two local studies (headers, French) were made with throwaway scripts that are not in the repository.
 
+## Three books and two models
+
+The first measure used one book and one model. This one asks whether it holds elsewhere.
+
+### Setup
+
+- **Books:** the three shipped examples, in English, with the passages and `bge-m3` vectors they ship.
+- **Questions:** 20 a book (`evals/alice/factual.json`, `evals/cyrano/factual.json`, `evals/bovary/factual-en.json`), one
+  from each of 20 passages at evenly spaced places (for *Madame Bovary*, over the part where Emma lives). Written while reading
+  those passages, before any search or reply, and not reviewed by a second person.
+- **Characters:** DeepSeek V4.1 Flash and ERNIE 5.5 Flash (a free preview), default prompts (signature `f2eac269a13f`),
+  recent messages searched. **One try** a question. **Judge:** `evals/accuracy-judge.json`, Claude Haiku 5.5.
+- 360 replies, all graded. One series of DeepSeek was run again after a call stayed unanswered for several minutes.
+- **Cost:** about 0.17 USD.
+
+### Grades
+
+| Model | Whole story | 5 passages | 3 passages |
+|---|---|---|---|
+| DeepSeek V4.1 Flash | 3.72 | 4.35 (+0.63, +0.21 to +1.06) | 4.30 (+0.58, +0.14 to +1.02) |
+| ERNIE 5.5 Flash | 3.48 | 4.40 (+0.92, +0.43 to +1.40) | 4.28 (+0.80, +0.33 to +1.27) |
+| Prompt, average tokens (DeepSeek, ERNIE) | 3,420, 3,385 | 4,009, 3,981 | 3,096, 3,073 |
+| Reply, median time | 2.0 s, 2.2 s | 1.5 s, 1.9 s | 1.4 s, 1.9 s |
+
+3 passages against 5, on the same questions: -0.05 (-0.28 to +0.18) with DeepSeek, -0.12 (-0.34 to +0.10) with ERNIE.
+
+### Book by book
+
+20 questions a book: a trend, not a measure.
+
+| Book | Model | Story | 5 passages | 3 passages | Gain with 3 (95% interval) | Prompt: story, 3 passages |
+|---|---|---|---|---|---|---|
+| *Alice* | DeepSeek | 4.55 | 4.85 | 4.75 | +0.20 (-0.34 to +0.74) | 2,429, 3,059 |
+| *Alice* | ERNIE | 4.25 | 4.95 | 4.95 | +0.70 (+0.17 to +1.23) | 2,396, 3,026 |
+| *Cyrano* | DeepSeek | 3.50 | 3.95 | 3.85 | +0.35 (-0.67 to +1.37) | 3,218, 3,324 |
+| *Cyrano* | ERNIE | 3.25 | 4.10 | 3.80 | +0.55 (-0.54 to +1.64) | 3,205, 3,301 |
+| *Madame Bovary* | DeepSeek | 3.10 | 4.25 | 4.30 | +1.20 (+0.48 to +1.92) | 4,612, 2,906 |
+| *Madame Bovary* | ERNIE | 2.95 | 4.15 | 4.10 | +1.15 (+0.31 to +1.99) | 4,553, 2,892 |
+
+A short book has a short story: the passages then make the prompt longer.
+
+### The search
+
+| Setting | Right passage found, of 60 | Grade when found | When missed |
+|---|---|---|---|
+| DeepSeek, 5 passages | 48 | 4.65 | 3.17 |
+| DeepSeek, 3 passages | 46 | 4.74 | 2.86 |
+| ERNIE, 5 passages | 48 | 4.75 | 3.00 |
+| ERNIE, 3 passages | 46 | 4.76 | 2.71 |
+
+When the passage is missed, the passages can do worse than the story (asked what he planted as a flag, Cyrano gets 5 with the
+story and 1 with passages, with DeepSeek). No reply graded 2 or less had received the expected passage.
+
+### Wrong replies: making up or admitting
+
+The 52 replies graded 2 or less, read and sorted by hand (replies graded 3 were not):
+
+| | DeepSeek | ERNIE | Together |
+|---|---|---|---|
+| States something false with no doubt, sometimes denying what the question takes for granted | 21 | 22 | 43 |
+| Voices a doubt, then makes something up | 2 | 5 | 7 |
+| Says it does not remember | 1 | 1 | 2 |
+
+The chat prompt tells the character "You know your whole story" and never what to do when it does not find the answer.
+
 ## Limits
 
 - One famous book. DeepSeek knows it, and sometimes answered right without the right passage: a lesser-known book could show
@@ -194,7 +263,9 @@ The two local studies (headers, French) were made with throwaway scripts that ar
 - The judge was not compared with human grades. One of its low grades was checked and was wrong, because of the question: the
   expected answer of the song held only its first lines, and a reply quoting the next ones got 1 (written search, 3 passages,
   undervalued by about 0.07). The expected answer was corrected **after** these runs.
-- Role questions were only asked with the default passages, and no local model was measured on the factual questions.
+- Role questions were only asked with 5 passages, and no local model was measured on the factual questions.
+- The second measure asks about precise details, each held by one passage: where a summary is weak and a search strong. General
+  questions about a book were not asked. Its questions share words with their passage, which helps the search.
 
 ## Ideas not tried
 
@@ -202,3 +273,5 @@ The two local studies (headers, French) were made with throwaway scripts that ar
 - Scene summaries that keep notable objects, or finer scenes, for the questions that are always missed.
 - Placing the passages at the end of the system prompt, so that a server can reuse the unchanged beginning.
 - A lesser-known book.
+- A rule in the chat prompt that lets the character say, in its own voice, that it does not remember, measured on the same
+  questions with a grade that tells an admission from an invention.

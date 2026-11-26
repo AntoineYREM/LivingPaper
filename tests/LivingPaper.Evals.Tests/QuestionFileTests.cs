@@ -1,4 +1,5 @@
 using LivingPaper.Application;
+using LivingPaper.Persistence;
 using Shouldly;
 
 namespace LivingPaper.Evals.Tests;
@@ -55,6 +56,28 @@ public class QuestionFileTests
         // The character is one of the book's: the run would stop at once otherwise.
         var book = await File.ReadAllTextAsync(RepoFiles.Find($"examples/{set.BookId}.json")!, CancellationToken.None);
         book.ShouldContain(set.Character);
+    }
+
+    // The factual questions on the shipped examples: each answer is held by a passage of the example, so that a new analysis
+    // of an example that lost one is noticed.
+    [Theory]
+    [InlineData("evals/alice/factual.json")]
+    [InlineData("evals/cyrano/factual.json")]
+    [InlineData("evals/bovary/factual-en.json")]
+    public async Task TheFactualQuestionsOnTheExamples_HaveTheirPhrasesInTheirPassages(string file)
+    {
+        var set = await QuestionFile.ReadAsync(RepoFiles.Find(file)!, CancellationToken.None);
+        var example = new JsonBookArchive().Parse(
+            await File.ReadAllBytesAsync(RepoFiles.Find($"examples/{set.BookId}.json")!, CancellationToken.None));
+
+        set.Items.Count.ShouldBe(20);
+        example.Book!.Characters.ShouldContain(character => character.Name == set.Character);
+        set.Items.ShouldAllBe(item => item.ExpectedOutput.Length > 0);
+        foreach (var item in set.Items)
+        {
+            item.PassageQuotes.ShouldNotBeNull(item.Id)
+                .ShouldContain(quote => example.Passages!.Passages.Any(passage => PassageQuotes.Appears(quote, passage.Text)), item.Id);
+        }
     }
 
     [Theory]

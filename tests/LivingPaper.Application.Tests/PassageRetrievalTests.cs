@@ -225,7 +225,7 @@ public sealed class PassageRetrievalTests : IDisposable
 
     // The defaults were chosen on measures (docs/experiments/passages-of-the-book.md).
     [Fact]
-    public async Task ByDefault_TheRecentMessagesAreSearchedAsTheyAre_AndFivePassagesAreAskedFor()
+    public async Task ByDefault_TheRecentMessagesAreSearchedAsTheyAre_AndThreePassagesAreAskedFor()
     {
         await IndexBookAsync();
         _options = new RagOptions();
@@ -239,7 +239,7 @@ public sealed class PassageRetrievalTests : IDisposable
         await ChatAsync(Conversation);
 
         Query.ShouldBe("two\nthree\nfour\nDo you remember the ball?");
-        asked.ShouldBe(5);
+        asked.ShouldBe(3);
         _models.Rewrites.ShouldBeEmpty();
     }
 
