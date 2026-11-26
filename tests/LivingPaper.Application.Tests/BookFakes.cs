@@ -102,6 +102,15 @@ internal sealed class InMemoryExampleCatalog(params Book[] examples) : IExampleC
 
     public Task<Book?> GetAsync(BookId id, CancellationToken cancellationToken) =>
         Task.FromResult(examples.FirstOrDefault(book => book.Id == id));
+
+    // The passages of the examples that have some.
+    public Dictionary<BookId, PassageSet> Passages { get; } = [];
+
+    public Task<int> CountPassagesAsync(BookId id, CancellationToken cancellationToken) =>
+        Task.FromResult(Passages.GetValueOrDefault(id)?.Passages.Count ?? 0);
+
+    public Task<PassageSet?> GetPassagesAsync(BookId id, CancellationToken cancellationToken) =>
+        Task.FromResult(Passages.GetValueOrDefault(id));
 }
 
 // An archive that does not know a file format: it remembers the books it exported, and gives them back when it is handed the
@@ -110,12 +119,27 @@ internal sealed class FakeBookArchive : IBookArchive
 {
     private readonly Dictionary<string, Book> _exported = [];
     private readonly Dictionary<string, ArchiveParseResult> _scripted = [];
+    private readonly Dictionary<string, PassageSet> _passages = [];
+
+    // What the next export with passages says it left out.
+    public ExportOmission Omission { get; set; }
+
+    // The sets of passages that were exported.
+    public List<PassageSet> ExportedPassages { get; } = [];
 
     public byte[] Export(Book book)
     {
         var key = "exported:" + Guid.NewGuid().ToString("N");
         _exported[key] = Copy(book); // As a file: what the book was when it was exported.
         return System.Text.Encoding.UTF8.GetBytes(key);
+    }
+
+    public ArchivedBook ExportWithPassages(Book book, PassageSet passages)
+    {
+        var content = Export(book);
+        ExportedPassages.Add(passages);
+        _passages[System.Text.Encoding.UTF8.GetString(content)] = passages;
+        return new ArchivedBook(content, Omission);
     }
 
     public ArchiveParseResult Parse(byte[] content)
@@ -127,7 +151,7 @@ internal sealed class FakeBookArchive : IBookArchive
         }
 
         return _exported.TryGetValue(key, out var book)
-            ? new ArchiveParseResult(Copy(book), null)
+            ? new ArchiveParseResult(Copy(book), null, Passages: _passages.GetValueOrDefault(key))
             : new ArchiveParseResult(null, ImportRejection.NotJson);
     }
 

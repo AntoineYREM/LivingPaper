@@ -31,8 +31,22 @@ public enum ImportRejection
     Conflict,
 }
 
-// The result of reading a file to import: the book, or why not.
-public sealed record ArchiveParseResult(Book? Book, ImportRejection? Rejection, string? Detail = null);
+// The result of reading a file to import: the book, with its passages when the file holds some, or why not.
+public sealed record ArchiveParseResult(Book? Book, ImportRejection? Rejection, string? Detail = null, PassageSet? Passages = null);
+
+// What was left out of a file so that it stays within the size that can be imported.
+public enum ExportOmission
+{
+    None,
+
+    // The passages are there, to be indexed again by whoever imports them.
+    Vectors,
+
+    // Even without vectors the file was too large: only the book is there.
+    Passages,
+}
+
+public sealed record ArchivedBook(byte[] Content, ExportOmission Omitted);
 
 // The file format of an exported book: the same as a book of the library (data/books/{id}.json) and of an example. A port so the
 // use cases do not know the file format, and so it can be faked.
@@ -42,7 +56,11 @@ public interface IBookArchive
     // no setting, no path of the machine, no text of the book.
     byte[] Export(Book book);
 
+    // The same file with the passages of the book, which are pieces of its text, and their vectors. Too large to be
+    // imported, it leaves the vectors out, then the passages.
+    ArchivedBook ExportWithPassages(Book book, PassageSet passages);
+
     // Reads a file that someone sent: untrusted input, validated before anything is accepted (size, JSON, schemaVersion, required
-    // fields, ranges, lengths of the texts). Never throws for a bad file: the result says why.
+    // fields, ranges, lengths of the texts, passages and vectors). Never throws for a bad file: the result says why.
     ArchiveParseResult Parse(byte[] content);
 }

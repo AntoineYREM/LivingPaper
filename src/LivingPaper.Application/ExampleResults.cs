@@ -15,7 +15,7 @@ public enum ExampleRejection
 }
 
 // The outcome of adding an example to the library: the copy, or the reason it was refused.
-public sealed record AddExampleResult(Book? Added, ExampleRejection? Rejection)
+public sealed record AddExampleResult(Book? Added, ExampleRejection? Rejection, bool PassagesDropped = false)
 {
     public bool Succeeded => Added is not null;
 }

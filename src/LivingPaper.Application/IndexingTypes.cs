@@ -16,6 +16,9 @@ public enum IndexFailure
     // The file of the passages cannot be written or read.
     IndexUnusable,
     Unexpected,
+
+    // The vectors that came with a file are not those the model chosen makes of the same text.
+    VectorsDiffer,
 }
 
 public enum PassagesState
@@ -30,6 +33,10 @@ public enum PassagesState
     Outdated,
     Indexing,
     Indexed,
+
+    // The vectors came with a file and have not been found to be those of the model chosen.
+    Unchecked,
+    Checking,
 }
 
 // What a book says about its passages. Model: the one that made the vectors, if any. Done and Total: while indexing.

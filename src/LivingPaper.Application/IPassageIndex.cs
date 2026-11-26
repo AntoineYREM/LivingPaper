@@ -15,6 +15,15 @@ public interface IPassageIndex
     // made them. Replaces earlier vectors. Throws ArgumentException when they do not match the passages.
     Task SaveVectorsAsync(BookKey book, string embeddingModel, IReadOnlyList<float[]> vectors, CancellationToken cancellationToken);
 
+    // The same for vectors that came with a file: the chat does not use them until MarkCheckedAsync, which says that the
+    // model chosen here makes the same ones.
+    Task SaveUncheckedVectorsAsync(BookKey book, string embeddingModel, IReadOnlyList<float[]> vectors, CancellationToken cancellationToken);
+
+    Task MarkCheckedAsync(BookKey book, CancellationToken cancellationToken);
+
+    // In the order of the passages; empty when the book has no vectors.
+    Task<IReadOnlyList<float[]>> GetVectorsAsync(BookKey book, CancellationToken cancellationToken);
+
     // Null when the book has no passages.
     Task<PassageIndexState?> GetStateAsync(BookKey book, CancellationToken cancellationToken);
 

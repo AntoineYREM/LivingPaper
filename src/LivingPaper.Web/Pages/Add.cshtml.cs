@@ -7,8 +7,9 @@ namespace LivingPaper.Web.Pages;
 
 // Sending a book (PAPER-7). A book that is accepted takes the user to its page, where the analysis shows its progress and then
 // the characters. The file and the text of a book never go in a log.
-// The request may be a little larger than the largest book (the form carries other fields too); anything bigger is
-// refused by the server before it is read, so a huge upload cannot fill the disk.
+// The request may be a little larger than the largest book (the form carries other fields too); anything bigger is never
+// read into the form, so a huge upload cannot fill the disk: the form comes back and says so.
+[RefuseOversizedUpload(MaxRequestBytes)]
 [RequestSizeLimit(MaxRequestBytes)]
 [RequestFormLimits(MultipartBodyLengthLimit = MaxRequestBytes)]
 public class AddModel(BookService books, LlmSettingsService settings, ITextLocalizer texts) : PageModel
@@ -30,7 +31,16 @@ public class AddModel(BookService books, LlmSettingsService settings, ITextLocal
 
     public static int MaxMegabytes => (int)(BookService.MaxBookBytes / (1024 * 1024));
 
-    public async Task OnGetAsync() => await LoadAsync(HttpContext.RequestAborted);
+    // refused: set when a file was too large to be read at all (see RefuseOversizedUploadAttribute).
+    public async Task OnGetAsync(string? refused)
+    {
+        await LoadAsync(HttpContext.RequestAborted);
+        if (refused == RefuseOversizedUploadAttribute.TooLarge)
+        {
+            FormRefused = true;
+            FileError = Describe(BookRejection.TooLarge);
+        }
+    }
 
     public async Task<IActionResult> OnPostAsync(IFormFile? file, string? title, bool replace)
     {

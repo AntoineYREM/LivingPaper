@@ -13,6 +13,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   OpenAI-compatible `POST /embeddings`, local or online). The model is tried when it is chosen. It is not used yet: it prepares
   the passages of the book in the chat ([specification](docs/specs/rag.md), decision 0011).
 
+- **Passages travel with a book** (PAPER-88): the export of a book with passages holds them, their scenes and their vectors,
+  with a warning that the file holds the text of the book; a file may now be 30 MB at most (1 MB without passages), and leaves
+  the vectors out rather than go over. An import validates them (a wrong file is refused whole) and checks in the background
+  that the vectors are those of your model before they are used. An example shipped with passages can be indexed from its page,
+  and keeps them when added to the library. `data/rag.db` is brought up to date by itself.
+- **A clear message for a file that is far too large** (PAPER-88): on "Add a book" and "Import a book", an upload too large
+  to be read brings the form back with the reason, instead of a bare error of the server.
 - **Factual evaluation and measured defaults** (PAPER-87): 26 factual questions on *Madame Bovary* with their expected
   answers, a judge of accuracy, and options of the evaluation tool to search the passages of an indexed book (`--book-data`,
   `--embedding`, `--query-mode`, `--passages`), with what was searched and found kept and reported. From the measures

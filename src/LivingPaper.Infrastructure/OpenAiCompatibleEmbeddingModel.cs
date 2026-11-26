@@ -14,7 +14,7 @@ namespace LivingPaper.Infrastructure;
 public sealed class OpenAiCompatibleEmbeddingModel : IEmbeddingModel
 {
     // Far above the largest vectors of today's models (a few thousand numbers).
-    public const int MaxDimensions = 16_384;
+    public const int MaxDimensions = PassageLimits.VectorSize;
 
     public const int MaxResponseBytes = 32 * 1024 * 1024;
 

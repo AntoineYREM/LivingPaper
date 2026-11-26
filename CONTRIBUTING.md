@@ -75,11 +75,13 @@ analyzed a book (it is also the format of an export). To make one:
 2. **Analyze it with the application**, with a language model of your choice, and wait for the status "Analyzed". Keep the
    default prompts if you can: the examples show what the application does out of the box. Read the characters and the sheets:
    fix what is wrong with the editing form of the sheet, and analyze again with a better model if the result is poor.
-3. **Take the file**: the **Export** button of the book gives it (or `data/books/{id}.json`). Copy it to `examples/{a-readable-name}.json` (for example `alice-in-wonderland.json`).
+3. **Take the file**: the **Export** button of the book gives it (`data/books/{id}.json` is the same without the passages). Copy it to `examples/{a-readable-name}.json` (for example `alice-in-wonderland.json`).
    The name of the file is free, but the `id` written in it is the address of the example (`/books/{id}`): make it the slug of the title (`alice-in-wonderland`), and unique among the examples.
-4. **Check that it holds nothing from the book**: no passage of the text, no quotation longer than a few words. The summary and
-   the sheets are written in your own words (the analysis does that, but a model sometimes quotes: read them). The file holds no
-   key, no address and no path of your machine (it never does: look anyway).
+4. **Check what it holds from the book.** The summary and the sheets are written in your own words (the analysis does that, but
+   a model sometimes quotes: read them). A file **with passages** (`passageIndex`, from an analysis with a model for
+   vectorization) holds the whole text: propose it only if the book **and the translation** you analyzed are in the public
+   domain, with vectors made by `bge-m3`. Without passages, the file must hold no passage of the text and no quotation longer
+   than a few words. The file holds no key, no address and no path of your machine (it never does: look anyway).
 5. **Run `dotnet test`.** One test reads every file of `examples/` with the same validation as an imported book (schema, sizes,
    lengths of the texts) and refuses a file that is not an analyzed book with at least one character and the story of the book
    (`storySummary`, not partial), or that has the same id or title as another example. A file that fails these rules is ignored by the application, with a warning in its logs.

@@ -161,44 +161,63 @@ internal sealed class ScriptedAnalysisModelFactory : IChatModelFactory
 // A scheduler that remembers what it was given: the worker of the application is replaced by this in the tests of the service.
 internal sealed class FakeAnalysisScheduler : IAnalysisScheduler
 {
-    private readonly List<BookId> _queued = [];
+    private readonly List<(BookShelf Shelf, BookId Id)> _queued = [];
 
-    public IReadOnlyList<BookId> Queued => _queued;
+    // The books of the library waiting here.
+    public IReadOnlyList<BookId> Queued => [.. _queued.Where(entry => entry.Shelf == BookShelf.Library).Select(entry => entry.Id)];
 
     public List<BookId> Cancelled { get; } = [];
 
-    public bool Enqueue(BookId bookId)
-    {
-        if (_queued.Contains(bookId))
-        {
-            return false;
-        }
-
-        _queued.Add(bookId);
-        return true;
-    }
-
-    // The books queued to have their passages indexed.
+    // The books queued to have their passages indexed, those of the examples apart.
     public List<BookId> Indexing { get; } = [];
 
-    public bool EnqueueIndexing(BookId bookId)
+    public List<BookId> IndexingExamples { get; } = [];
+
+    // The books queued to have the vectors of their file checked.
+    public List<BookId> Checks { get; } = [];
+
+    public bool Enqueue(BookId bookId) => Add(BookShelf.Library, bookId);
+
+    public bool EnqueueIndexing(BookId bookId, BookShelf shelf = BookShelf.Library)
     {
-        if (!Enqueue(bookId))
+        if (!Add(shelf, bookId))
         {
             return false;
         }
 
-        Indexing.Add(bookId);
+        (shelf == BookShelf.Library ? Indexing : IndexingExamples).Add(bookId);
         return true;
     }
 
-    public bool IsQueued(BookId bookId) => _queued.Contains(bookId);
+    public bool EnqueueCheck(BookId bookId)
+    {
+        if (!Add(BookShelf.Library, bookId))
+        {
+            return false;
+        }
+
+        Checks.Add(bookId);
+        return true;
+    }
+
+    public bool IsQueued(BookId bookId, BookShelf shelf = BookShelf.Library) => _queued.Contains((shelf, bookId));
 
     public Task CancelAsync(BookId bookId, CancellationToken cancellationToken)
     {
         Cancelled.Add(bookId);
-        _queued.Remove(bookId);
+        _queued.Remove((BookShelf.Library, bookId));
         return Task.CompletedTask;
+    }
+
+    private bool Add(BookShelf shelf, BookId bookId)
+    {
+        if (_queued.Contains((shelf, bookId)))
+        {
+            return false;
+        }
+
+        _queued.Add((shelf, bookId));
+        return true;
     }
 }
 

@@ -43,6 +43,10 @@
                 {
                     <p class="entry__warning">@row.Warning</p>
                 }
+                @if (Model.HoldingPassages.Contains(row.Book.Id))
+                {
+                    <p class="contents__meta">@T["books.export.passages"]</p>
+                }
                 <div class="contents__actions">
                     <a class="button button--small button--quiet" href="~/books/@row.Book.Id">@T["library.open"]</a>
                     @if (row.Book.Status == BookStatus.Done)

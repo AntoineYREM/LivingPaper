@@ -331,7 +331,7 @@ public partial class ExportImportTests
         }
 
         raw.ShouldContain("__RequestVerificationToken");
-        html.ShouldContain("1024 KB at most");
+        html.ShouldContain("30 MB at most");
         Regex.IsMatch(library, @"<a[^>]*href=""/import""[^>]*>Import a book</a>").ShouldBeTrue();
     }
 
@@ -407,7 +407,7 @@ public partial class ExportImportTests
 
         using var response = await ImportAsync(client, big);
 
-        Decoded(await response.Content.ReadAsStringAsync(Token)).ShouldContain("larger than 1024 KB");
+        Decoded(await response.Content.ReadAsStringAsync(Token)).ShouldContain("larger than a book of LivingPaper can be: 30 MB");
     }
 
     [Fact]

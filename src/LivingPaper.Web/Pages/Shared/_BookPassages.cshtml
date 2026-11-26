@@ -5,7 +5,7 @@
     <p>@Model.Text</p>
     @if (Model.Active)
     {
-        <progress class="progress" value="@Model.Done" max="@Model.Total" aria-label="@T.Format("book.passages.label", new { title = Model.Book.Title })">@Model.Progress</progress>
+        <progress class="progress" value="@Model.Done" max="@Model.Total" aria-label="@T.Format(Model.Total is null ? "book.passages.checkingLabel" : "book.passages.label", new { title = Model.Book.Title })">@Model.Progress</progress>
         <p class="field__hint">@T["book.progress.leave"]</p>
     }
     @if (Model.Problem is not null)

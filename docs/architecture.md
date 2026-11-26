@@ -72,6 +72,10 @@ Every port is faked in the tests: **no test calls a real AI provider.**
   indexed book, `PassageRetriever` vectorizes the recent messages (or a query the chat model writes, with
   `RAG_QUERY_MODE=rewrite`) and takes the closest passages,
   which replace the story (`chat.passages`, with the short plot); any failure falls back, with a notice.
+- **Passages that travel** (PAPER-88): the file of an export or of an example also holds the passages and vectors
+  (`passageIndex`, `PassageSet` in the application; the books of the library keep theirs in `rag.db`). Vectors that come with a
+  file are kept as not checked, and `BookIndexer` verifies them with one passage before the chat may use them. The same queue
+  indexes books, indexes examples (apart, by `BookShelf`) and checks vectors.
 - **Export / import**: a book is a JSON file with a `schemaVersion` (4 added the summary of the plot, `plotSummary`; 3 the readable addresses, see decision 0008; 2 added the story of the book, `storySummary`; versions 1
   and 2 are still read); an import is validated like any untrusted input.
 

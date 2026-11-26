@@ -94,8 +94,8 @@ EPUB or a PDF (20 MB at most) and takes you to the page of the book; you can del
   the same title is refused unless you tick "Replace", which deletes the earlier book and its analysis.
 - **Where it goes:** `data/books/{id}.json` holds the book (title, status, and later its summary and characters), and
   `data/uploads/{id}.txt` holds its text until the analysis has finished successfully, then it is deleted. The text of a
-  book is never in the book's JSON file, never in an export and never in the logs. Deleting a book deletes all of it,
-  its passages included.
+  book is never in the book's JSON file and never in the logs; an export holds it only as the passages below. Deleting a
+  book deletes all of it, its passages included.
 - **Passages** are kept only when a model for vectorization is chosen at the time of the analysis: the book, cut into
   passages of about 1,500 characters with their scenes, goes to `data/rag.db` before the text is deleted.
   Re-analyzing a book (another model, an edited prompt) means sending it again and ticking "Replace".
@@ -136,10 +136,14 @@ where its passages are, while a model for vectorization is chosen:
 | Indexed, with the name of the model | Nothing |
 | Not indexed yet, with the reason of the failure | **Retry indexing** |
 | To be re-indexed (you chose another model) | **Re-index**; nothing is recomputed by itself |
-| No passages (analyzed without a model for vectorization) | Send the book again with "Replace" |
+| Checking the vectors of the file (just after an import) | Wait: the page refreshes by itself |
+| The vectors are not checked yet (imported with no model chosen, or the model could not be reached) | **Index the passages** or **Retry indexing** |
+| To be re-indexed (the vectors that came with the book are not those your model makes) | **Re-index** |
+| No passages (analyzed without a model for vectorization, or imported without them) | Send the book again with "Replace" |
 
 An indexing asked from the page runs in the background; the book can be read and its characters chatted with meanwhile.
-Examples are not indexed yet.
+An **example** shipped with passages shows the same box and an **Index the passages** button: the vectors it comes with are
+used when your model makes the same ones, else new ones are computed. The example itself is never changed.
 
 Everything the analysis writes is in English, whatever the language of the book. The prompts are in `data/prompts.json`.
 
@@ -212,11 +216,18 @@ folder. See `CONTRIBUTING.md` to propose one.
 
 **Export** (on the page of an analyzed book, and in the library) downloads the book as a `.json` file: its title, its summary,
 its characters and their sheets (the edits you made included), and how it was analyzed (model, tokens, dates). It is the same
-format as the files of `data/books/` and of the examples. It holds no API key, no setting, no path of your machine and not the
-text of the book: the file is built field by field from the book, so nothing else can get in.
+format as the files of `data/books/` and of the examples. It holds no API key, no setting and no path of your machine: the
+file is built field by field from the book, so nothing else can get in.
+
+**A book with passages is exported with them** (there is nothing to tick), so the file then **holds the text of the book**,
+which may be protected by copyright: the page and the library say so next to the button. It also holds the vectors and the name
+and size of the model that made them (`passageIndex`: each vector is written in base64, as 32-bit little-endian floats). For a
+long novel with `bge-m3` this makes a file of about 4 MB, instead of about 50 KB. A file over 30 MB could not be imported: the
+export then leaves the vectors out (and the passages if that is not enough), and the page of the book says it.
 
 **Import** (`/import`, from the library) adds an analyzed book from such a file, on this installation or another one. The file is
-untrusted input and is checked before anything is kept: at most 1 MB, valid JSON of the shape of a book, a known `schemaVersion`
+untrusted input and is checked before anything is kept: at most 30 MB with passages (1 MB for the rest of the book, or for a file
+without passages), valid JSON of the shape of a book, a known `schemaVersion`
 (a file from a newer LivingPaper is refused with its own message), required fields, numbers in range, texts no longer than the
 limits of the analysis, sheets that follow the rules of a sheet (names distinct, no control characters). Only a book whose
 analysis is done, with at least one character, can be imported, and nothing is analyzed.
@@ -226,4 +237,14 @@ analysis is done, with at least one character, can be imported, and nothing is a
   the file again** to confirm: the old book, its analysis and its edited sheets are then deleted. A file whose identifier is that of
   an example, or that comes from before the readable addresses (0.3.0), gets the address of its title, so the example stays where it is.
 - A file you export and import again gives the same book.
+- **A file that is far too large** to be read at all (here, or a book on "Add a book") brings the form back with the limit.
+- **Passages and vectors are checked like the rest**: numbers in order, lengths, names, the number and size of the vectors,
+  finite values. A file with anything wrong is refused whole, and the message names the field.
+- **Vectors are used only after a check**, made in the background just after the import: the model chosen for vectorization must
+  have the same name (a `:latest` suffix is ignored) and make, for the first passage, a vector of the same size and nearly the
+  same direction (cosine similarity of at least 0.99). Else the book is to be re-indexed, when you ask. With no model for
+  vectorization, the passages and vectors are kept, and checked when you press **Index the passages**.
+- Where passages cannot be kept (SQLite or its extension cannot be loaded, or `rag.db` cannot be used), the book is imported
+  without them, and the page says so.
+- **Add to my library** on an example keeps its passages in the same way.
 

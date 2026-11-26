@@ -23,9 +23,10 @@ public sealed class PassageRetriever(
     private const int MessageLetters = 1000;
 
     // Null when the chat goes as without passages: no model for vectorization, or a book that is not indexed with it. Its
-    // page then says so; the chat says nothing.
+    // page then says so; the chat says nothing. shelf: a book of the library or an example.
     public async Task<Retrieval?> FindAsync(
-        Book book, Character character, IReadOnlyList<ChatMessage> conversation, LlmProvider chat, CancellationToken cancellationToken)
+        Book book, BookShelf shelf, Character character, IReadOnlyList<ChatMessage> conversation, LlmProvider chat,
+        CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(book);
         ArgumentNullException.ThrowIfNull(character);
@@ -36,12 +37,12 @@ public sealed class PassageRetriever(
             return null;
         }
 
-        var key = new BookKey(BookShelf.Library, book.Id.ToString());
+        var key = new BookKey(shelf, book.Id.ToString());
         LlmProvider provider;
         try
         {
             if (await settings.GetEmbeddingProviderAsync(cancellationToken).ConfigureAwait(false) is not { } chosen
-                || await index.GetStateAsync(key, cancellationToken).ConfigureAwait(false) is not { EmbeddingModel: { } model }
+                || await index.GetStateAsync(key, cancellationToken).ConfigureAwait(false) is not { EmbeddingModel: { } model, Unchecked: false }
                 || !EmbeddingModelNames.Same(model, chosen.Model))
             {
                 return null;

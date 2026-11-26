@@ -2,8 +2,9 @@
 
 **Status:** validated on 26 November 2026. Implemented so far: the model for vectorization (section 3,
 PAPER-81), the cutting into passages (section 4, PAPER-82), the analysis (section 5, PAPER-84), the index with its
-indexing (section 6, PAPER-83 and PAPER-85), the chat (sections 7 and 10, PAPER-86) and the evaluation (section 11,
-PAPER-87). Why: [decision 0011](../decisions/0011-passages-of-the-book-in-the-chat.md).
+indexing (section 6, PAPER-83 and PAPER-85), the chat (sections 7 and 10, PAPER-86), the evaluation (section 11,
+PAPER-87), and export, import and the index of the examples (sections 8 and 9, PAPER-88; the shipped examples get their
+passages in PAPER-89). Why: [decision 0011](../decisions/0011-passages-of-the-book-in-the-chat.md).
 
 ## 1. Goal
 
@@ -237,10 +238,16 @@ A vector is only usable with the model that made it. Imported vectors are reused
 If one fails, the book is **to be re-indexed**: new vectors are computed from the passages when the user asks. An import keeps
 passages and vectors even without an embedding model; the check then runs when the user presses **Index**.
 
+With a model chosen, the check runs **in the background just after the import**; the user waits for nothing, and the page of the
+book shows it. The test passage is the first one. Until the check succeeds, the chat uses the full story. Where the index
+cannot be used, the book is imported **without its passages**, and the page says so. Adding an example to the library keeps its
+passages the same way (the vectors of its index when it was indexed here, which need no check).
+
 ### Untrusted input
 
 Passages and vectors of an imported file are validated before accepting: number and length of the passages, numbering,
-names, number and size of the vectors, finite values, and total size.
+names, number and size of the vectors, finite values, and total size. A file with anything wrong is **refused whole**, naming the
+field.
 
 ## 9. Examples
 
@@ -250,7 +257,8 @@ names, number and size of the vectors, finite values, and total size.
 - An example with passages shows an **Index** button when an embedding model is chosen. It reuses the shipped vectors when
   they match (section 8), so a user of `bge-m3` computes nothing; otherwise it computes new ones. Until then, the chat uses the
   full story.
-- The examples stay read-only. Their index is kept apart from a library book with the same address.
+- The examples stay read-only. Their index is kept apart from a library book with the same address. An index made from passages
+  that a newer version of the application changed is removed at start.
 
 ## 10. Observability
 

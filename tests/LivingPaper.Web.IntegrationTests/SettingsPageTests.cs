@@ -815,6 +815,13 @@ public partial class SettingsPageTests
         public Task<IReadOnlyList<FoundPassage>> SearchAsync(BookKey book, float[] query, int count, CancellationToken cancellationToken) => throw new NotSupportedException();
 
         public Task DeleteAsync(BookKey book, CancellationToken cancellationToken) => throw new NotSupportedException();
+
+        public Task SaveUncheckedVectorsAsync(BookKey book, string embeddingModel, IReadOnlyList<float[]> vectors, CancellationToken cancellationToken) =>
+            throw new NotSupportedException();
+
+        public Task MarkCheckedAsync(BookKey book, CancellationToken cancellationToken) => throw new NotSupportedException();
+
+        public Task<IReadOnlyList<float[]>> GetVectorsAsync(BookKey book, CancellationToken cancellationToken) => throw new NotSupportedException();
     }
 
     [Fact]

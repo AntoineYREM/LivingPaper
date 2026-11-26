@@ -36,10 +36,6 @@ internal static partial class AnalysisNotes
     // The same for a scene, and for how many scenes a part may give. The prompt asks for a sentence or two, but a model often
     // writes much more for a busy scene: a short limit would cut its end, and the end of the book with the last one
     // (PAPER-64). This one only stops a model that runs away.
-    private const int SceneLetters = 1500;
-    private const int MaxScenesPerPart = 40;
-    private const int MaxPresentPerScene = 15;
-
     private static readonly JsonSerializerOptions StoredOptions = new(JsonSerializerDefaults.Web)
     {
         Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
@@ -89,13 +85,13 @@ internal static partial class AnalysisNotes
                 string Clean(string text) => passages is null ? text : Marker().Replace(text, " ").Trim();
                 var range = Range(item, passages);
                 return new SceneNote(
-                    Clean(Text(item, "summary", SceneLetters)),
-                    [.. Texts(item, "present").Select(name => CharacterLimits.Clip(Clean(name), CharacterLimits.Name)).Where(name => name.Length > 0).Distinct(StringComparer.OrdinalIgnoreCase).Take(MaxPresentPerScene)],
+                    Clean(Text(item, "summary", PassageLimits.SceneLetters)),
+                    [.. Texts(item, "present").Select(name => CharacterLimits.Clip(Clean(name), CharacterLimits.Name)).Where(name => name.Length > 0).Distinct(StringComparer.OrdinalIgnoreCase).Take(PassageLimits.NamesPerScene)],
                     range?.First,
                     range?.Last);
             })
             .Where(scene => scene.Summary.Length > 0)
-            .Take(MaxScenesPerPart),
+            .Take(PassageLimits.ScenesPerPassage),
     ];
 
     // The passages a scene covers. A number outside the part, a reversed range or a missing end: none, and the passages the
@@ -188,7 +184,7 @@ internal static partial class AnalysisNotes
     public static string CombineScenes(IReadOnlyList<PartNotes> parts, int maxLetters)
     {
         var json = string.Empty;
-        foreach (var letters in new[] { SceneLetters, 1000, 600, 300, 200, 120, 60 })
+        foreach (var letters in new[] { PassageLimits.SceneLetters, 1000, 600, 300, 200, 120, 60 })
         {
             json = Serialize(new
             {

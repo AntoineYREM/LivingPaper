@@ -15,6 +15,9 @@ public class IndexModel(BookService books, LlmSettingsService settings, BookPres
 
     public IReadOnlyList<UnreadableBook> Unreadable { get; private set; } = [];
 
+    // The books whose export holds pieces of their text: the list warns next to their button.
+    public IReadOnlySet<BookId> HoldingPassages { get; private set; } = new HashSet<BookId>();
+
     // False when no model is chosen to analyze books (or it cannot be told): the page warns that books will wait.
     public bool AnalysisOff { get; private set; }
 
@@ -72,6 +75,16 @@ public class IndexModel(BookService books, LlmSettingsService settings, BookPres
         var listing = await books.ListAsync(cancellationToken);
         Rows = [.. listing.Books.Select(presenter.Describe)];
         Unreadable = listing.Unreadable;
+        var holding = new HashSet<BookId>();
+        foreach (var book in listing.Books)
+        {
+            if (await books.HoldsPassagesAsync(book.Id, cancellationToken))
+            {
+                holding.Add(book.Id);
+            }
+        }
+
+        HoldingPassages = holding;
         try
         {
             AnalysisOff = !(await settings.GetAsync(cancellationToken)).IsAnalysisEnabled;

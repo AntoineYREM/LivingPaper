@@ -10,7 +10,8 @@ internal sealed class BookFile
 {
     // 2 added the story of the book (storySummary). A file of version 1 has none and is still read.
     // 3: the id is a slug of the title (cyrano-de-bergerac) instead of 32 hexadecimal characters. Files of version 1 and 2 are still read.
-    // 4 added the short summary of the plot (plotSummary). Files of versions 1 to 3 have none and are still read.
+    // 4 added the short summary of the plot (plotSummary), and the passages of the book in the file of an export or of an
+    // example (passageIndex). Files of versions 1 to 3 have none and are still read.
     public const int CurrentSchemaVersion = 4;
 
     public const int OldestSchemaVersion = 1;
@@ -87,6 +88,9 @@ internal sealed class BookFile
     public DateTimeOffset? FinishedAt { get; set; }
 
     public List<CharacterFile>? Characters { get; set; }
+
+    // Only in the file of an export or of an example: the books of the library keep their passages in data/rag.db.
+    public PassageIndexFile? PassageIndex { get; set; }
 
     public static BookFile From(Book book) => new()
     {

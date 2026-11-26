@@ -13,4 +13,10 @@ public interface IExampleCatalog
 
     // Null when there is no example with this id.
     Task<Book?> GetAsync(BookId id, CancellationToken cancellationToken);
+
+    // How many passages the example is shipped with; 0 for none, or no such example.
+    Task<int> CountPassagesAsync(BookId id, CancellationToken cancellationToken);
+
+    // The passages of the example and their vectors, read from its file each time (they are large); null for none.
+    Task<PassageSet?> GetPassagesAsync(BookId id, CancellationToken cancellationToken);
 }

@@ -90,7 +90,7 @@ public partial class ChatModel(BookService books, CharacterChatService chat, ITe
         try
         {
             var notices = new Queue<ChatNotice>();
-            await foreach (var piece in chat.ReplyAsync(Book, Character, conversation, notices.Enqueue, cancellationToken))
+            await foreach (var piece in chat.ReplyAsync(Book, Character, conversation, Shelf, notices.Enqueue, cancellationToken))
             {
                 while (notices.TryDequeue(out var notice))
                 {
@@ -155,6 +155,9 @@ public partial class ChatModel(BookService books, CharacterChatService chat, ITe
         return conversation;
     }
 
+    // Where the book is, which tells where its passages are.
+    private BookShelf Shelf { get; set; }
+
     private async Task<bool> LoadAsync(string? id, int position)
     {
         if (!BookId.TryParse(id, out var bookId))
@@ -162,7 +165,8 @@ public partial class ChatModel(BookService books, CharacterChatService chat, ITe
             return false;
         }
 
-        var book = (await books.FindAsync(bookId, HttpContext.RequestAborted))?.Book; // The library, or else an example.
+        var found = await books.FindAsync(bookId, HttpContext.RequestAborted); // The library, or else an example.
+        var book = found?.Book;
         var character = book?.Characters.Find(candidate => candidate.Position == position);
         if (book is null || character is null || book.Status != BookStatus.Done)
         {
@@ -170,6 +174,7 @@ public partial class ChatModel(BookService books, CharacterChatService chat, ITe
         }
 
         Book = book;
+        Shelf = found!.IsExample ? BookShelf.Examples : BookShelf.Library;
         Character = character;
         return true;
     }

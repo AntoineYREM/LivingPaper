@@ -35,6 +35,8 @@ decision records in `docs/decisions/`.
   the 10 most important characters, each with a name, a short description and a personality profile (200 to 400 words). The
   characters know the whole story when they chat. With a model for vectorization, the passages of the book are kept with their
   scenes and turned into vectors; the page of the book shows their state, with retry and re-index (see `docs/specs/rag.md`).
+  Exports and examples carry the passages and vectors (30 MB at most, with a copyright warning); imported vectors are used only
+  after a check with one passage, and an example is indexed on demand.
 - "My library" page (books the user analyzed) and "Examples" page (read-only, public-domain books shipped
   already analyzed: they can be read without a key, chatting with their characters needs an LLM chosen for the chat).
 - Chat with a character: first person, short SMS-like replies, streamed. Conversations are not stored. For a book indexed
@@ -86,7 +88,8 @@ OCR for scanned PDFs, saved conversations.
 - **Data:** one JSON file per book (`data/books/{id}.json`, the id being the slug of the title: `cyrano-de-bergerac`) holding metadata, analysis status, book summary and
   characters, the story of the book and the short summary of its plot. The book text itself is never stored, except as the passages
   kept when a model for vectorization is chosen (below). Every file has a `schemaVersion` (4; versions 1 to 3 are still read). Writes are atomic (temp
-  file then rename). Imported JSON is untrusted input: validate schema, sizes and text lengths before accepting.
+  file then rename). Imported JSON is untrusted input: validate schema, sizes, text lengths, passages and vectors before
+  accepting.
   Storage sits behind a port (`IBookRepository`) so another backend can be added later. The only database is `data/rag.db`
   (SQLite with the sqlite-vec extension, behind `IPassageIndex`): the passages of books and their vectors, optional, never the
   source of truth for a book (see `docs/specs/rag.md`).

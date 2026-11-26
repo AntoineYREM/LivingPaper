@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Globalization;
 using System.Text;
 using LivingPaper.Domain;
@@ -25,13 +26,20 @@ public sealed class BookService(
     // The largest book file accepted: 20 MB.
     public const long MaxBookBytes = 20L * 1024 * 1024;
 
-    // The largest file of an exported book that is accepted for import: 1 MB, as large as a book file read from the disk.
-    public const long MaxImportBytes = 1_048_576;
+    // The largest file of an exported book that is accepted for import, with its passages and vectors: 30 MB. The book
+    // itself stays within the limit of a book file read from the disk, which the archive checks.
+    public const long MaxImportBytes = 30L * 1024 * 1024;
 
     // The title of a book whose file and sender give none.
     public const string UntitledBook = "Untitled book";
 
+    // Above this estimate of its passages and vectors, a file is built to know whether the export will leave some out.
+    private const long ExportToCheckBytes = MaxImportBytes / 2;
+
     private readonly SemaphoreSlim _lock = new(1, 1);
+
+    // What is known of the indexing of each example, which is never changed itself. Lost at a restart, as the queue is.
+    private readonly ConcurrentDictionary<BookId, Book> _exampleIndexing = new();
 
     public Task<BookListing> ListAsync(CancellationToken cancellationToken) => books.ListAsync(cancellationToken);
 
@@ -189,7 +197,9 @@ public sealed class BookService(
             };
             copy.Characters.AddRange(example.Characters);
             await books.SaveAsync(copy, cancellationToken).ConfigureAwait(false);
-            return new AddExampleResult(copy, null);
+            var (set, isChecked) = await PassagesToCopyAsync(exampleId).ConfigureAwait(false);
+            var kept = await KeepPassagesAsync(copy.Id, set, isChecked).ConfigureAwait(false);
+            return new AddExampleResult(copy, null, PassagesDropped: !kept);
         }
         finally
         {
@@ -204,7 +214,107 @@ public sealed class BookService(
     {
         var format = archive ?? throw new InvalidOperationException("No archive is configured: books cannot be exported.");
         var found = await FindAsync(id, cancellationToken).ConfigureAwait(false);
-        return found is { Book.Status: BookStatus.Done } ? new ExportFile(FileNameOf(found.Book.Title), format.Export(found.Book)) : null;
+        if (found is not { Book.Status: BookStatus.Done })
+        {
+            return null;
+        }
+
+        var name = FileNameOf(found.Book.Title);
+        if (await PassagesOfAsync(found, cancellationToken).ConfigureAwait(false) is not { } set)
+        {
+            return new ExportFile(name, format.Export(found.Book));
+        }
+
+        var file = format.ExportWithPassages(found.Book, set);
+        return new ExportFile(name, file.Content, file.Omitted);
+    }
+
+    // Whether the export of a book holds pieces of its text: its page then warns about it. Cheap enough for a list.
+    public async Task<bool> HoldsPassagesAsync(BookId id, CancellationToken cancellationToken)
+    {
+        if (await FindAsync(id, cancellationToken).ConfigureAwait(false) is not { Book.Status: BookStatus.Done } found)
+        {
+            return false;
+        }
+
+        return found.IsExample
+            ? await examples!.CountPassagesAsync(id, cancellationToken).ConfigureAwait(false) > 0
+            : await LibraryStateAsync(id, cancellationToken).ConfigureAwait(false) is not null;
+    }
+
+    // The same, with what the export will leave out so that the file can be imported. Only a book that may not fit has its
+    // file built to know.
+    public async Task<ExportDescription> DescribeExportAsync(BookId id, CancellationToken cancellationToken)
+    {
+        if (!await HoldsPassagesAsync(id, cancellationToken).ConfigureAwait(false))
+        {
+            return new ExportDescription(false, ExportOmission.None);
+        }
+
+        // About 8,000 bytes of text and scenes a passage at most in practice, and less than 6 for each number of a vector.
+        var state = await LibraryStateAsync(id, cancellationToken).ConfigureAwait(false);
+        if (state is null || state.Passages * (8000L + (state.VectorSize * 6L)) <= ExportToCheckBytes)
+        {
+            return new ExportDescription(true, ExportOmission.None);
+        }
+
+        var file = await ExportAsync(id, cancellationToken).ConfigureAwait(false);
+        return new ExportDescription(true, file?.Omitted ?? ExportOmission.None);
+    }
+
+    // Null when the book has none to give: an index that cannot be used does not keep a book from being exported.
+    private async Task<PassageSet?> PassagesOfAsync(BookLookup found, CancellationToken cancellationToken)
+    {
+        if (found.IsExample)
+        {
+            return await examples!.GetPassagesAsync(found.Book.Id, cancellationToken).ConfigureAwait(false);
+        }
+
+        return await IndexedPassagesAsync(new BookKey(BookShelf.Library, found.Book.Id.ToString()), cancellationToken).ConfigureAwait(false);
+    }
+
+    private async Task<PassageSet?> IndexedPassagesAsync(BookKey key, CancellationToken cancellationToken)
+    {
+        if (passages is null || passages.Check() is not null)
+        {
+            return null;
+        }
+
+        try
+        {
+            var kept = await passages.GetPassagesAsync(key, cancellationToken).ConfigureAwait(false);
+            if (kept.Count == 0)
+            {
+                return null;
+            }
+
+            var state = await passages.GetStateAsync(key, cancellationToken).ConfigureAwait(false);
+            var vectors = await passages.GetVectorsAsync(key, cancellationToken).ConfigureAwait(false);
+            return state?.EmbeddingModel is { } model && vectors.Count == kept.Count
+                ? new PassageSet(kept, model, vectors)
+                : new PassageSet(kept, null, []);
+        }
+        catch (PassageIndexException)
+        {
+            return null;
+        }
+    }
+
+    private async Task<PassageIndexState?> LibraryStateAsync(BookId id, CancellationToken cancellationToken)
+    {
+        if (passages is null || passages.Check() is not null)
+        {
+            return null;
+        }
+
+        try
+        {
+            return await passages.GetStateAsync(new BookKey(BookShelf.Library, id.ToString()), cancellationToken).ConfigureAwait(false);
+        }
+        catch (PassageIndexException)
+        {
+            return null;
+        }
     }
 
     // Adds the book of an exported file to the library. The file is untrusted input: it is read at most MaxImportBytes, validated by
@@ -260,7 +370,8 @@ public sealed class BookService(
             }
 
             await books.SaveAsync(imported, cancellationToken).ConfigureAwait(false);
-            return new ImportBookResult(imported, null, null, [], Replaced: conflicts.Count > 0);
+            var kept = await KeepPassagesAsync(imported.Id, parsed.Passages, isChecked: false).ConfigureAwait(false);
+            return new ImportBookResult(imported, null, null, [], Replaced: conflicts.Count > 0, PassagesDropped: !kept);
         }
         finally
         {
@@ -463,6 +574,165 @@ public sealed class BookService(
 
     // ---- The passages ----
 
+    // Keeps the passages that came with a book just added to the library, or removes those left under its address when it
+    // came with none. isChecked: the vectors are those of the index of an example, not of a file. False when the passages
+    // could not be kept: the book is there all the same. Not cancelled: the book is saved already.
+    private async Task<bool> KeepPassagesAsync(BookId id, PassageSet? set, bool isChecked)
+    {
+        if (set is null)
+        {
+            await DeletePassagesAsync(id, CancellationToken.None).ConfigureAwait(false);
+            return true;
+        }
+
+        if (passages is null || passages.Check() is not null)
+        {
+            return false;
+        }
+
+        var key = new BookKey(BookShelf.Library, id.ToString());
+        try
+        {
+            await passages.SavePassagesAsync(key, set.Passages, CancellationToken.None).ConfigureAwait(false);
+        }
+        catch (PassageIndexException)
+        {
+            return false;
+        }
+
+        await SaveVectorsOfAsync(key, set, isChecked).ConfigureAwait(false);
+        if (set.EmbeddingModel is not null && !isChecked)
+        {
+            // Whether they are those of the model chosen here is found out in the background.
+            scheduler.EnqueueCheck(id);
+        }
+
+        return true;
+    }
+
+    // Vectors that cannot be saved are only lost: the passages are there to be indexed.
+    private async Task SaveVectorsOfAsync(BookKey key, PassageSet set, bool isChecked)
+    {
+        if (set.EmbeddingModel is not { } model)
+        {
+            return;
+        }
+
+        try
+        {
+            await (isChecked
+                ? passages!.SaveVectorsAsync(key, model, set.Vectors, CancellationToken.None)
+                : passages!.SaveUncheckedVectorsAsync(key, model, set.Vectors, CancellationToken.None)).ConfigureAwait(false);
+        }
+        catch (Exception exception) when (exception is PassageIndexException or ArgumentException)
+        {
+        }
+    }
+
+    // What a copy of an example takes: the vectors of its index when it has been indexed here, else those it is shipped
+    // with, which are still to be checked.
+    private async Task<(PassageSet? Set, bool IsChecked)> PassagesToCopyAsync(BookId exampleId)
+    {
+        if (examples is null || await examples.CountPassagesAsync(exampleId, CancellationToken.None).ConfigureAwait(false) == 0)
+        {
+            return (null, false);
+        }
+
+        var key = new BookKey(BookShelf.Examples, exampleId.ToString());
+        if (await IndexedPassagesAsync(key, CancellationToken.None).ConfigureAwait(false) is { EmbeddingModel: not null } indexed
+            && await IsCheckedAsync(key).ConfigureAwait(false))
+        {
+            return (indexed, true);
+        }
+
+        return (await examples.GetPassagesAsync(exampleId, CancellationToken.None).ConfigureAwait(false), false);
+    }
+
+    private async Task<bool> IsCheckedAsync(BookKey key)
+    {
+        try
+        {
+            return await passages!.GetStateAsync(key, CancellationToken.None).ConfigureAwait(false) is { Unchecked: false };
+        }
+        catch (PassageIndexException)
+        {
+            return false;
+        }
+    }
+
+    // What the page of an example says about its passages; null when there is nothing to say.
+    public async Task<PassagesView?> DescribeExamplePassagesAsync(Book example, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(example);
+        if (indexer is null || examples is null)
+        {
+            return null;
+        }
+
+        var count = await examples.CountPassagesAsync(example.Id, cancellationToken).ConfigureAwait(false);
+        return count == 0
+            ? null
+            : await indexer.DescribeExampleAsync(
+                ExampleIndexing(example), count, scheduler.IsQueued(example.Id, BookShelf.Examples), cancellationToken).ConfigureAwait(false);
+    }
+
+    // The indexing of an example asked by ReindexAsync, run by the background service: its passages are put in the index
+    // with the vectors they are shipped with, which serve when they are those of the model chosen.
+    public async Task IndexExampleAsync(BookId id, CancellationToken cancellationToken)
+    {
+        if (indexer is null || passages is null || examples is null
+            || await examples.GetAsync(id, cancellationToken).ConfigureAwait(false) is not { } example)
+        {
+            return;
+        }
+
+        var progress = ExampleIndexing(example);
+        var key = new BookKey(BookShelf.Examples, id.ToString());
+        try
+        {
+            if (await passages.GetStateAsync(key, cancellationToken).ConfigureAwait(false) is null)
+            {
+                if (await examples.GetPassagesAsync(id, cancellationToken).ConfigureAwait(false) is not { } set)
+                {
+                    return;
+                }
+
+                await passages.SavePassagesAsync(key, set.Passages, cancellationToken).ConfigureAwait(false);
+                await SaveVectorsOfAsync(key, set, isChecked: false).ConfigureAwait(false);
+            }
+        }
+        catch (PassageIndexException)
+        {
+            progress.IndexErrorCode = nameof(IndexFailure.IndexUnusable);
+            return;
+        }
+
+        await indexer.IndexAsync(
+            key,
+            (change, _) =>
+            {
+                change(progress);
+                return Task.CompletedTask;
+            },
+            cancellationToken).ConfigureAwait(false);
+    }
+
+    private Book ExampleIndexing(Book example) =>
+        _exampleIndexing.GetOrAdd(example.Id, id => new Book(id, example.Title, example.FileName, clock.GetUtcNow()));
+
+    // Checks the vectors that came with the file of a book of the library, run by the background service.
+    public async Task CheckVectorsAsync(BookId id, CancellationToken cancellationToken)
+    {
+        var book = await books.GetAsync(id, cancellationToken).ConfigureAwait(false);
+        if (indexer is null || book is not { Status: BookStatus.Done })
+        {
+            return;
+        }
+
+        await indexer.CheckAsync(
+            new BookKey(BookShelf.Library, id.ToString()), (change, token) => ChangeAsync(id, change, token), cancellationToken).ConfigureAwait(false);
+    }
+
     // What the page of a book of the library says about its passages; null when there is nothing to say.
     public async Task<PassagesView?> DescribePassagesAsync(Book book, CancellationToken cancellationToken)
     {
@@ -472,22 +742,26 @@ public sealed class BookService(
             : await indexer.DescribeAsync(book, scheduler.IsQueued(book.Id), cancellationToken).ConfigureAwait(false);
     }
 
-    // Asks for the vectors of the passages kept for a book: after a failure, or because another model was chosen. False when
-    // there is nothing to do: no such book, no passages, vectors already up to date, or the book already in the queue.
+    // Asks for the vectors of the passages of a book of the library or of an example: after a failure, because another model
+    // was chosen, or because those that came with its file are not checked. False when there is nothing to do: no such book,
+    // no passages, vectors already up to date, or the book already in the queue.
     public async Task<bool> ReindexAsync(BookId id, CancellationToken cancellationToken)
     {
         await _lock.WaitAsync(cancellationToken).ConfigureAwait(false);
         try
         {
             var book = await books.GetAsync(id, cancellationToken).ConfigureAwait(false);
-            if (book is null || await DescribePassagesAsync(book, cancellationToken).ConfigureAwait(false)
-                    is not { State: PassagesState.NotIndexed or PassagesState.Outdated } view)
+            if (book is null)
+            {
+                return await ReindexExampleAsync(id, cancellationToken).ConfigureAwait(false);
+            }
+
+            if (await DescribePassagesAsync(book, cancellationToken).ConfigureAwait(false) is not { } view || !CanBeIndexed(view))
             {
                 return false;
             }
 
-            book.IndexErrorCode = null;
-            (book.IndexDone, book.IndexTotal) = (0, view.Passages);
+            Prepare(book, view);
             await books.SaveAsync(book, cancellationToken).ConfigureAwait(false);
             return scheduler.EnqueueIndexing(id);
         }
@@ -495,6 +769,28 @@ public sealed class BookService(
         {
             _lock.Release();
         }
+    }
+
+    private async Task<bool> ReindexExampleAsync(BookId id, CancellationToken cancellationToken)
+    {
+        if (examples is null || await examples.GetAsync(id, cancellationToken).ConfigureAwait(false) is not { } example
+            || await DescribeExamplePassagesAsync(example, cancellationToken).ConfigureAwait(false) is not { } view || !CanBeIndexed(view))
+        {
+            return false;
+        }
+
+        Prepare(ExampleIndexing(example), view);
+        return scheduler.EnqueueIndexing(id, BookShelf.Examples);
+    }
+
+    private static bool CanBeIndexed(PassagesView view) =>
+        view.State is PassagesState.NotIndexed or PassagesState.Outdated or PassagesState.Unchecked;
+
+    // What the page shows while the book waits. Vectors to be checked count nothing: the check comes first.
+    private static void Prepare(Book book, PassagesView view)
+    {
+        book.IndexErrorCode = null;
+        (book.IndexDone, book.IndexTotal) = (0, view.State == PassagesState.Unchecked ? 0 : view.Passages);
     }
 
     // The indexing asked by ReindexAsync, run by the background service. The book stays done meanwhile: it can be read, its
@@ -563,12 +859,54 @@ public sealed class BookService(
             {
                 scheduler.Enqueue(book.Id);
             }
+
+            await ForgetChangedExamplesAsync(cancellationToken).ConfigureAwait(false);
         }
         finally
         {
             _lock.Release();
         }
     }
+
+    // A new version of the application may ship other passages for an example: an index made from the old ones is removed,
+    // and the user is offered to index it again.
+    private async Task ForgetChangedExamplesAsync(CancellationToken cancellationToken)
+    {
+        if (examples is null || passages is null || passages.Check() is not null)
+        {
+            return;
+        }
+
+        foreach (var example in (await examples.ListAsync(cancellationToken).ConfigureAwait(false)).Books)
+        {
+            var key = new BookKey(BookShelf.Examples, example.Id.ToString());
+            try
+            {
+                var kept = await passages.GetPassagesAsync(key, cancellationToken).ConfigureAwait(false);
+                if (kept.Count == 0)
+                {
+                    continue;
+                }
+
+                var shipped = await examples.GetPassagesAsync(example.Id, cancellationToken).ConfigureAwait(false);
+                if (shipped is null || !SamePassages(kept, shipped.Passages))
+                {
+                    await passages.DeleteAsync(key, cancellationToken).ConfigureAwait(false);
+                }
+            }
+            catch (PassageIndexException)
+            {
+                return; // The settings page says that the index cannot be used.
+            }
+        }
+    }
+
+    private static bool SamePassages(IReadOnlyList<StoredPassage> left, IReadOnlyList<StoredPassage> right) =>
+        left.Count == right.Count && left.Zip(right).All(pair =>
+            pair.First.Number == pair.Second.Number && pair.First.Text == pair.Second.Text
+            && pair.First.Scenes.Count == pair.Second.Scenes.Count
+            && pair.First.Scenes.Zip(pair.Second.Scenes).All(scenes =>
+                scenes.First.Summary == scenes.Second.Summary && scenes.First.Present.SequenceEqual(scenes.Second.Present)));
 
     public void Dispose() => _lock.Dispose();
 

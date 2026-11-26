@@ -44,6 +44,13 @@ public sealed class BookPresenter(BookService books, ITextLocalizer texts)
             PassagesState.Outdated => new(
                 book, texts.Format("book.passages.outdated", new { model = view.Model }), problem, texts["book.passages.reindex"], null, null, null),
             PassagesState.Indexing => Indexing(book, view),
+            PassagesState.Checking => new(
+                book, texts["book.passages.checking"], null, null, texts["book.passages.checking"], null, null),
+            // A check that found other vectors says all there is to say: no second sentence.
+            PassagesState.Unchecked when view.Failure == IndexFailure.VectorsDiffer => new(
+                book, texts["book.passages.differ"], null, texts["book.passages.reindex"], null, null, null),
+            PassagesState.Unchecked => new(
+                book, texts["book.passages.unchecked"], problem, problem is null ? texts["book.passages.index"] : texts["book.passages.retry"], null, null, null),
             _ => new(book, Indexed(view), null, null, null, null, null),
         };
     }
@@ -67,6 +74,7 @@ public sealed class BookPresenter(BookService books, ITextLocalizer texts)
         IndexFailure.ProviderError => texts["index.failure.providerError"],
         IndexFailure.InvalidReply => texts["index.failure.invalidReply"],
         IndexFailure.IndexUnusable => texts["index.failure.indexUnusable"],
+        IndexFailure.VectorsDiffer => texts["index.failure.vectorsDiffer"],
         _ => texts["index.failure.unexpected"],
     };
 

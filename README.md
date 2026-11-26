@@ -38,10 +38,12 @@ On a phone, the same pages fit the screen:
 - **Chat with a character**: first person, short text-message replies, streamed, in the language you write in. Nothing is stored.
 - **Read the examples without a key**: the **Examples** page has public-domain books that are already analyzed; a model is only
   needed to chat.
-- **Export and import** a book as a JSON file, to move it or share it.
+- **Export and import** a book as a JSON file, to move it or share it. With passages kept (see below), the file holds the text of
+  the book.
 - **Read and edit every prompt** in `data/prompts.json`.
 - **English** interface. French is translated and kept in reserve: add it to the `LANGUAGES` setting to bring it back.
-- **Your data stays with you**: plain JSON files in a folder, API keys encrypted at rest, book text deleted after the analysis.
+- **Your data stays with you**: plain JSON files in a folder, API keys encrypted at rest, book text deleted after the analysis
+  (its passages are kept only if you choose a model for vectorization).
 
 ## Quick start (Docker)
 
@@ -121,7 +123,8 @@ The pictures are drawn from the published runs by `dotnet run --project tools/Li
 - **Costs.** Analyzing a book calls your provider many times (one play, with a small model, used about 110,000 input and 75,000 output
   tokens). The tokens used are shown at the end of each analysis. A local model costs nothing.
 - **Copyright.** Add books you have the right to read and analyze. The examples are public-domain works only. The text of a book
-  is sent to the provider you chose, and nowhere else.
+  is sent to the providers you chose, and the application sends it nowhere else. With a model for vectorization, **an exported
+  book holds its text**: share the file only if you have the right to.
 
 ## Documentation
 

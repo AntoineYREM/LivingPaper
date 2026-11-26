@@ -30,6 +30,7 @@ internal sealed class FakePassageIndex : IPassageIndex
 
         OnSave?.Invoke();
         Vectors.Remove(book);
+        Unchecked.Remove(book);
         _books[book] = passages;
         return Task.CompletedTask;
     }
@@ -50,8 +51,29 @@ internal sealed class FakePassageIndex : IPassageIndex
         }
 
         Vectors[book] = (embeddingModel, vectors);
+        Unchecked.Remove(book);
         return Task.CompletedTask;
     }
+
+    // The books whose vectors came with a file and wait to be checked.
+    public HashSet<BookKey> Unchecked { get; } = [];
+
+    public async Task SaveUncheckedVectorsAsync(BookKey book, string embeddingModel, IReadOnlyList<float[]> vectors, CancellationToken cancellationToken)
+    {
+        await SaveVectorsAsync(book, embeddingModel, vectors, cancellationToken);
+        Unchecked.Add(book);
+    }
+
+    public Task MarkCheckedAsync(BookKey book, CancellationToken cancellationToken)
+    {
+        Unchecked.Remove(book);
+        return Task.CompletedTask;
+    }
+
+    public Task<IReadOnlyList<float[]>> GetVectorsAsync(BookKey book, CancellationToken cancellationToken) =>
+        Failure is not null
+            ? Task.FromException<IReadOnlyList<float[]>>(Failure)
+            : Task.FromResult(Vectors.TryGetValue(book, out var kept) ? kept.Vectors : []);
 
     public Task<PassageIndexState?> GetStateAsync(BookKey book, CancellationToken cancellationToken)
     {
@@ -61,7 +83,7 @@ internal sealed class FakePassageIndex : IPassageIndex
         }
 
         return Task.FromResult<PassageIndexState?>(Vectors.TryGetValue(book, out var kept)
-            ? new PassageIndexState(passages.Count, kept.Model, kept.Vectors[0].Length)
+            ? new PassageIndexState(passages.Count, kept.Model, kept.Vectors[0].Length, Unchecked.Contains(book))
             : new PassageIndexState(passages.Count, null, 0));
     }
 
@@ -82,6 +104,7 @@ internal sealed class FakePassageIndex : IPassageIndex
 
         Deleted.Add(book);
         Vectors.Remove(book);
+        Unchecked.Remove(book);
         _books.Remove(book);
         return Task.CompletedTask;
     }

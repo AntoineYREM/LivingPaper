@@ -121,6 +121,38 @@ public sealed class PassageRetrievalTests : IDisposable
         _models.Rewrites.ShouldBeEmpty();
     }
 
+    // PAPER-88: vectors that came with a file are not used before they are checked.
+    [Fact]
+    public async Task VectorsThatWereNotChecked_AreNotSearched()
+    {
+        await IndexBookAsync();
+        _index.Unchecked.Add(Key);
+
+        ShouldChatWithTheStory(await ChatAsync());
+
+        Notices.ShouldBeEmpty();
+        _embeddings.Sent.ShouldBeEmpty();
+    }
+
+    // PAPER-88: an example is searched in its own index, never in that of a book of the library with the same address.
+    [Theory]
+    [InlineData(BookShelf.Examples, true)]
+    [InlineData(BookShelf.Library, false)]
+    public async Task ThePassagesAreThoseOfTheShelfOfTheBook(BookShelf shelf, bool found)
+    {
+        var example = new BookKey(BookShelf.Examples, _book.Id.ToString());
+        await _index.SavePassagesAsync(example, [new StoredPassage(1, "A passage.", [])], Token);
+        await _index.SaveVectorsAsync(example, "bge-m3", [[1, 0]], Token);
+        var retriever = new PassageRetriever(_index, _settings, _embeddings, _models, _prompts, _options);
+
+        await foreach (var _ in new CharacterChatService(_settings, _models, _prompts, retriever)
+            .ReplyAsync(_book, _character, [User("Hi")], shelf, Notices.Add, Token))
+        {
+        }
+
+        _models.Streamed.Single()[0].Content.Contains("[chat.passages]", StringComparison.Ordinal).ShouldBe(found);
+    }
+
     [Fact]
     public async Task AChatServiceWithNoRetriever_ChatsWithTheStory()
     {

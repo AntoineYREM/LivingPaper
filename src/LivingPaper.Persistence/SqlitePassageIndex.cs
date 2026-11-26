@@ -15,13 +15,20 @@ public sealed class SqlitePassageIndex(string path, string extension = SqlitePas
     // The loadable library of the sqlite-vec package.
     public const string VectorExtension = "vec0";
 
-    private const int SchemaVersion = 1;
+    // 2 added book.to_check: vectors that came with a file and wait to be checked.
+    private const int SchemaVersion = 2;
 
     private const string Schema = """
-        create table book (shelf text not null, id text not null, model text, dimensions integer, primary key (shelf, id));
+        create table book (shelf text not null, id text not null, model text, dimensions integer,
+            to_check integer not null default 0, primary key (shelf, id));
         create table passage (shelf text not null, id text not null, number integer not null, text text not null,
             scenes text not null, vector blob, primary key (shelf, id, number));
-        pragma user_version = 1;
+        pragma user_version = 2;
+        """;
+
+    private const string FromVersion1 = """
+        alter table book add column to_check integer not null default 0;
+        pragma user_version = 2;
         """;
 
     private const string OfTheBook = "shelf = $shelf and id = $id";
@@ -46,7 +53,8 @@ public sealed class SqlitePassageIndex(string path, string extension = SqlitePas
         {
             using var connection = Connect(SqliteOpenMode.ReadOnly);
             var version = Version(connection, null);
-            return version == SchemaVersion || (version == 0 && IsEmpty(connection, null)) ? null : PassageIndexProblem.FileUnusable;
+            // An older file is brought up to date when it is first used.
+            return version is >= 1 and <= SchemaVersion || (version == 0 && IsEmpty(connection, null)) ? null : PassageIndexProblem.FileUnusable;
         }
         catch (Exception exception) when (exception is SqliteException or IOException or UnauthorizedAccessException)
         {
@@ -100,7 +108,56 @@ public sealed class SqlitePassageIndex(string path, string extension = SqlitePas
             cancellationToken);
     }
 
-    public Task SaveVectorsAsync(BookKey book, string embeddingModel, IReadOnlyList<float[]> vectors, CancellationToken cancellationToken)
+    public Task SaveVectorsAsync(BookKey book, string embeddingModel, IReadOnlyList<float[]> vectors, CancellationToken cancellationToken) =>
+        SaveAsync(book, embeddingModel, vectors, toCheck: false, cancellationToken);
+
+    public Task SaveUncheckedVectorsAsync(BookKey book, string embeddingModel, IReadOnlyList<float[]> vectors, CancellationToken cancellationToken) =>
+        SaveAsync(book, embeddingModel, vectors, toCheck: true, cancellationToken);
+
+    public Task MarkCheckedAsync(BookKey book, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(book);
+        return RunAsync(
+            () =>
+            {
+                using var connection = Open(create: false);
+                if (connection is not null)
+                {
+                    using var command = Command(connection, null, $"update book set to_check = 0 where {OfTheBook}", book);
+                    command.ExecuteNonQuery();
+                }
+
+                return true;
+            },
+            cancellationToken);
+    }
+
+    public Task<IReadOnlyList<float[]>> GetVectorsAsync(BookKey book, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(book);
+        return RunAsync<IReadOnlyList<float[]>>(
+            () =>
+            {
+                using var connection = Open(create: false);
+                if (connection is null)
+                {
+                    return [];
+                }
+
+                using var command = Command(connection, null, $"select vector from passage where {OfTheBook} and vector is not null order by number", book);
+                using var reader = command.ExecuteReader();
+                var vectors = new List<float[]>();
+                while (reader.Read())
+                {
+                    vectors.Add(MemoryMarshal.Cast<byte, float>(reader.GetFieldValue<byte[]>(0)).ToArray());
+                }
+
+                return vectors;
+            },
+            cancellationToken);
+    }
+
+    private Task<bool> SaveAsync(BookKey book, string embeddingModel, IReadOnlyList<float[]> vectors, bool toCheck, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(book);
         ArgumentException.ThrowIfNullOrWhiteSpace(embeddingModel);
@@ -141,9 +198,11 @@ public sealed class SqlitePassageIndex(string path, string extension = SqlitePas
                     set.ExecuteNonQuery();
                 }
 
-                using var mark = Command(connection, transaction, $"update book set model = $model, dimensions = $dimensions where {OfTheBook}", book);
+                using var mark = Command(
+                    connection, transaction, $"update book set model = $model, dimensions = $dimensions, to_check = $toCheck where {OfTheBook}", book);
                 mark.Parameters.AddWithValue("$model", embeddingModel);
                 mark.Parameters.AddWithValue("$dimensions", vectors[0].Length);
+                mark.Parameters.AddWithValue("$toCheck", toCheck ? 1 : 0);
                 mark.ExecuteNonQuery();
                 transaction.Commit();
                 return true;
@@ -305,6 +364,21 @@ public sealed class SqlitePassageIndex(string path, string extension = SqlitePas
                 }
             }
 
+            if (version == 1)
+            {
+                using var transaction = connection.BeginTransaction();
+                version = Version(connection, transaction);
+                if (version == 1)
+                {
+                    using var upgrade = connection.CreateCommand();
+                    upgrade.Transaction = transaction;
+                    upgrade.CommandText = FromVersion1;
+                    upgrade.ExecuteNonQuery();
+                    transaction.Commit();
+                    version = SchemaVersion;
+                }
+            }
+
             if (version != SchemaVersion)
             {
                 throw new PassageIndexException("The file of the index is not one this version can use.");
@@ -392,10 +466,14 @@ public sealed class SqlitePassageIndex(string path, string extension = SqlitePas
     private static PassageIndexState? State(SqliteConnection connection, BookKey book)
     {
         using var command = Command(
-            connection, null, $"select (select count(*) from passage where {OfTheBook}), model, dimensions from book where {OfTheBook}", book);
+            connection, null, $"select (select count(*) from passage where {OfTheBook}), model, dimensions, to_check from book where {OfTheBook}", book);
         using var reader = command.ExecuteReader();
         return reader.Read()
-            ? new PassageIndexState(reader.GetInt32(0), reader.IsDBNull(1) ? null : reader.GetString(1), reader.IsDBNull(2) ? 0 : reader.GetInt32(2))
+            ? new PassageIndexState(
+                reader.GetInt32(0),
+                reader.IsDBNull(1) ? null : reader.GetString(1),
+                reader.IsDBNull(2) ? 0 : reader.GetInt32(2),
+                Unchecked: !reader.IsDBNull(1) && reader.GetInt32(3) != 0)
             : null;
     }
 

@@ -21,8 +21,9 @@ public sealed record StoredPassage(int Number, string Text, IReadOnlyList<Passag
 // Distance: the cosine distance to the vector searched, from 0 (the same direction) to 2 (the opposite one).
 public sealed record FoundPassage(StoredPassage Passage, double Distance);
 
-// EmbeddingModel: null, and VectorSize 0, when the passages have no vectors yet.
-public sealed record PassageIndexState(int Passages, string? EmbeddingModel, int VectorSize);
+// EmbeddingModel: null, and VectorSize 0, when the passages have no vectors yet. Unchecked: the vectors came with a file
+// and are not to be used before they are checked.
+public sealed record PassageIndexState(int Passages, string? EmbeddingModel, int VectorSize, bool Unchecked = false);
 
 public enum PassageIndexProblem
 {

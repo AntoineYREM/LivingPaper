@@ -69,6 +69,15 @@ internal sealed class RetrievalRecorder(
     public Task DeleteAsync(BookKey book, CancellationToken cancellationToken) =>
         throw new NotSupportedException("The evaluation tool does not change the index.");
 
+    public Task SaveUncheckedVectorsAsync(BookKey book, string embeddingModel, IReadOnlyList<float[]> vectors, CancellationToken cancellationToken) =>
+        throw new NotSupportedException("The evaluation tool does not change the index.");
+
+    public Task MarkCheckedAsync(BookKey book, CancellationToken cancellationToken) =>
+        throw new NotSupportedException("The evaluation tool does not change the index.");
+
+    public Task<IReadOnlyList<float[]>> GetVectorsAsync(BookKey book, CancellationToken cancellationToken) =>
+        Index.GetVectorsAsync(book, cancellationToken);
+
     public Task<PassageIndexState?> GetStateAsync(BookKey book, CancellationToken cancellationToken) =>
         Index.GetStateAsync(book, cancellationToken);
 

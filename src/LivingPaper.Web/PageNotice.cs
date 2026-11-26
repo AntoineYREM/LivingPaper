@@ -19,6 +19,8 @@ public static class PageNotice
     public const string ExampleAdded = "exampleAdded";
     public const string Imported = "imported";
     public const string ImportedReplaced = "importedReplaced";
+    public const string ImportedWithoutPassages = "importedWithoutPassages";
+    public const string ExampleAddedWithoutPassages = "exampleAddedWithoutPassages";
 
     public static void Set(ITempDataDictionary tempData, string kind, string title)
     {
@@ -45,6 +47,8 @@ public static class PageNotice
             ExampleAdded => texts.Format("books.notice.exampleAdded", new { title }),
             Imported => texts.Format("books.notice.imported", new { title }),
             ImportedReplaced => texts.Format("books.notice.importedReplaced", new { title }),
+            ImportedWithoutPassages => texts.Format("books.notice.importedWithoutPassages", new { title }),
+            ExampleAddedWithoutPassages => texts.Format("books.notice.exampleAddedWithoutPassages", new { title }),
             _ => null,
         };
     }

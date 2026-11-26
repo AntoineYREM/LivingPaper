@@ -34,10 +34,16 @@ public sealed class CharacterChatService(
         ReplyAsync(book, character, conversation, onNotice: null, cancellationToken);
 
     // onNotice: told, before the first piece, when the passages of the book could not be used as intended.
+    public IAsyncEnumerable<string> ReplyAsync(
+        Book book, Character character, IReadOnlyList<ChatMessage> conversation, Action<ChatNotice>? onNotice, CancellationToken cancellationToken) =>
+        ReplyAsync(book, character, conversation, BookShelf.Library, onNotice, cancellationToken);
+
+    // shelf: where the book is, which tells where its passages are.
     public async IAsyncEnumerable<string> ReplyAsync(
         Book book,
         Character character,
         IReadOnlyList<ChatMessage> conversation,
+        BookShelf shelf,
         Action<ChatNotice>? onNotice,
         [EnumeratorCancellation] CancellationToken cancellationToken)
     {
@@ -48,7 +54,7 @@ public sealed class CharacterChatService(
         var provider = await ChosenProviderAsync(cancellationToken).ConfigureAwait(false);
         var retrieval = retriever is null
             ? null
-            : await retriever.FindAsync(book, character, conversation, provider, cancellationToken).ConfigureAwait(false);
+            : await retriever.FindAsync(book, shelf, character, conversation, provider, cancellationToken).ConfigureAwait(false);
         foreach (var notice in retrieval?.Notices ?? [])
         {
             onNotice?.Invoke(notice);

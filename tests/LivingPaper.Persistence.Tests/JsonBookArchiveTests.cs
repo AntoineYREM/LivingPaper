@@ -113,12 +113,13 @@ public class JsonBookArchiveTests
     public void NothingSent_IsRefused() => _archive.Parse([]).Rejection.ShouldBe(ImportRejection.Empty);
 
     [Fact]
-    public void ATooLargeFile_IsRefused_BeforeBeingRead()
+    public void ABookFileLargerThanABook_WithoutPassages_IsRefused()
     {
-        var huge = new byte[JsonBookRepository.MaxFileBytes + 1];
-        Array.Fill(huge, (byte)' ');
+        var padded = new byte[JsonBookRepository.MaxFileBytes + 1];
+        Array.Fill(padded, (byte)' ');
+        _archive.Export(Analyzed()).CopyTo(padded, 0);
 
-        _archive.Parse(huge).Rejection.ShouldBe(ImportRejection.TooLarge);
+        _archive.Parse(padded).Rejection.ShouldBe(ImportRejection.TooLarge);
     }
 
     [Theory]
