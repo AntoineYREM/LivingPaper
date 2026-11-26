@@ -6,17 +6,17 @@ namespace LivingPaper.Application.Tests;
 
 public class PromptKeysTests
 {
-    private static readonly string[] ElevenKeys =
+    private static readonly string[] ThirteenKeys =
     [
         "analysis.bookSummary", "analysis.characterProfile", "analysis.mergeCharacters", "analysis.passageRanges",
-        "analysis.plotSummary", "analysis.readPart", "analysis.readPartSimple", "analysis.storySummary", "chat.story",
-        "chat.system", "llm.connectionTest",
+        "analysis.plotSummary", "analysis.readPart", "analysis.readPartSimple", "analysis.storySummary", "chat.passages",
+        "chat.searchQuery", "chat.story", "chat.system", "llm.connectionTest",
     ];
 
     [Fact]
-    public void All_ListsTheElevenPromptsOfTheApplication()
+    public void All_ListsTheThirteenPromptsOfTheApplication()
     {
-        PromptKeys.All.Order().ShouldBe(ElevenKeys);
+        PromptKeys.All.Order().ShouldBe(ThirteenKeys);
     }
 
     [Theory]
@@ -30,6 +30,8 @@ public class PromptKeysTests
     [InlineData("analysis.storySummary", new[] { "bookTitle", "maxWords" })]
     [InlineData("chat.system", new[] { "bookTitle", "characterName", "profile", "story" })]
     [InlineData("chat.story", new[] { "bookTitle", "characterName", "storySummary" })]
+    [InlineData("chat.passages", new[] { "bookTitle", "characterName", "plotSummary", "passages" })]
+    [InlineData("chat.searchQuery", new[] { "bookTitle", "characterName" })]
     [InlineData("llm.connectionTest", new string[0])]
     public void VariablesOf_ReturnsTheVariablesAPromptMayUse(string key, string[] expected)
     {
@@ -43,7 +45,7 @@ public class PromptKeysTests
     }
 
     [Fact]
-    public void IsKnown_RecognizesOnlyTheElevenKeys()
+    public void IsKnown_RecognizesOnlyTheThirteenKeys()
     {
         PromptKeys.All.ShouldAllBe(key => PromptKeys.IsKnown(key));
         PromptKeys.IsKnown("analysis.nothing").ShouldBeFalse();

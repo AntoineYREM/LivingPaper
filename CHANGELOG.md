@@ -13,12 +13,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   OpenAI-compatible `POST /embeddings`, local or online). The model is tried when it is chosen. It is not used yet: it prepares
   the passages of the book in the chat ([specification](docs/specs/rag.md), decision 0011).
 
+- **The chat uses the passages of the book** (PAPER-86): for an indexed book, the character gets the short plot and the
+  passages that answer the message in place of the whole story. The chat model writes the search first; `RAG_QUERY_MODE`
+  and `RAG_PASSAGES` tune it. If the search fails, the reply uses the whole story, and says so. New prompts `chat.passages`
+  and `chat.searchQuery`.
 - **The passages are indexed** (PAPER-85): at the end of an analysis, each passage, under a header with its scene and who is
   there, is turned into a vector. The page of a book says where its passages are and offers **Retry indexing** or **Re-index**
   (after another model is chosen), which run in the background. A failed indexing does not fail the analysis. The tokens of
-  the vectors are shown. The chat does not search the passages yet.
+  the vectors are shown.
 - **A short summary of the plot** (PAPER-84): written at every analysis from the story of the book, kept in the book file
-  (`schemaVersion` 4; versions 1 to 3 are still read). The chat does not use it yet.
+  (`schemaVersion` 4; versions 1 to 3 are still read).
 - **The passages of a book and their scenes** (PAPER-84): with a model for vectorization, the analysis reads each part as
   numbered passages, asks which passages each scene covers, and keeps them in `data/rag.db`; deleting a book removes them.
   New prompts `analysis.passageRanges` and `analysis.plotSummary`; `analysis.readPart` gained `{passageRanges}` (an unedited

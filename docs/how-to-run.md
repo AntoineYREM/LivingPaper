@@ -79,6 +79,8 @@ Everything is optional. Set these as environment variables (in Docker, under `en
 | `EXAMPLES_DIRECTORY` | `examples` next to the application | Where the example books are read from |
 | `ANALYSIS_PAGES_PER_PART` | `40` | Pages per part when a book is analyzed; lower it for a model with a small context window |
 | `ANALYSIS_PARALLEL_CALLS` | `3` | Parts read at the same time; use `1` for a small local server or strict rate limits |
+| `RAG_QUERY_MODE` | `rewrite` | For a book indexed with a model for vectorization: how the chat searches its passages. `rewrite`: the chat model writes the search first (one more call a message); `recent`: the last messages as they are; `last`: the message alone |
+| `RAG_PASSAGES` | `3` | How many passages the character gets with each message, from 1 to 10 |
 | `LANGFUSE_BASE_URL` | none | Address of your Langfuse (`http://localhost:3000`). Required once the two keys are set; there is no default, so nothing is sent to the cloud by surprise |
 | `LANGFUSE_PUBLIC_KEY`, `LANGFUSE_SECRET_KEY` | empty | Keys of a Langfuse project. Tracing is **off** while they are empty; setting only one stops the application at start |
 | `LANGFUSE_CAPTURE_CONTENT` | `false` | `true` also records the prompts and replies, which hold the text of your books and chats (see [reference](reference.md#traces-of-the-model-calls-langfuse)) |
@@ -99,7 +101,10 @@ chats.
 A third choice, **Model for vectorization**, is optional and set to None. It takes an embedding model (for example `bge-m3`, with
 `ollama pull bge-m3`), which turns text into vectors; the model is tried when you choose it. With it, the analysis of a book
 keeps its passages and turns them into vectors (about a minute and a half for a long novel with `bge-m3` on a 4 GB graphics
-card); the chat does not search them yet ([specification](specs/rag.md)).
+card). The chat then gives the character the passages that answer your message in place of the whole story.
+
+**A local model for the chat needs a context of at least 8,192 tokens** with passages. Some servers start with less (Ollama
+uses 4,096 on a 4 GB graphics card): set `OLLAMA_CONTEXT_LENGTH=8192` for Ollama.
 
 A model you add **fills the choices that are empty**: analysis and chat, or vectorization alone when it refuses to chat and can
 vectorize. While a choice is empty, the new model is tried once to know which; this can take a minute or two with a slow local

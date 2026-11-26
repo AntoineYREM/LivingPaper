@@ -37,7 +37,9 @@ decision records in `docs/decisions/`.
   scenes and turned into vectors; the page of the book shows their state, with retry and re-index (see `docs/specs/rag.md`).
 - "My library" page (books the user analyzed) and "Examples" page (read-only, public-domain books shipped
   already analyzed: they can be read without a key, chatting with their characters needs an LLM chosen for the chat).
-- Chat with a character: first person, short SMS-like replies, streamed. Conversations are not stored.
+- Chat with a character: first person, short SMS-like replies, streamed. Conversations are not stored. For a book indexed
+  with the chosen model for vectorization, the passages that answer the message replace the story, with fallbacks and a short
+  notice (see `docs/specs/rag.md`).
 - UI in **English only** for now. The translation mechanism (JSON translation files) and `fr.json` are kept in reserve:
   the language switch is hidden and the available languages come from the configuration (`en` alone by default).
 
@@ -93,7 +95,8 @@ OCR for scanned PDFs, saved conversations.
   shared. The chat prompt tells the LLM to answer the user **in the user's own language** (the language they write
   in). Prompts sent to the LLM are written in English.
 - **Prompts:** no prompt is hard-coded. All prompts (read a part, merge characters, character profile, book
-  summary, story of the book, passage ranges, plot summary, chat system prompt, chat story section, connection test) live in `data/prompts.json`, which users can read and edit by
+  summary, story of the book, passage ranges, plot summary, chat system prompt, chat story section, chat passages section,
+  search query, connection test) live in `data/prompts.json`, which users can read and edit by
   hand. Defaults are versioned in the repository (`prompts.default.json`) and copied in full to `data/` on first
   start. Prompts are re-read on every analysis and chat message (no restart needed). On update, missing keys are
   added, and a prompt that is still exactly an earlier shipped default (hash kept in `ReplacedDefaults`) is replaced by the new default;

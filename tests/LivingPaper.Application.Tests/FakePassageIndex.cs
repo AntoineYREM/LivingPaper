@@ -2,7 +2,7 @@ using LivingPaper.Application;
 
 namespace LivingPaper.Application.Tests;
 
-// The index of the passages, in memory. Search is not used by the code under test.
+// The index of the passages, in memory. A search answers what the test says.
 internal sealed class FakePassageIndex : IPassageIndex
 {
     private readonly Dictionary<BookKey, IReadOnlyList<StoredPassage>> _books = [];
@@ -68,8 +68,10 @@ internal sealed class FakePassageIndex : IPassageIndex
     public Task<IReadOnlyList<StoredPassage>> GetPassagesAsync(BookKey book, CancellationToken cancellationToken) =>
         Task.FromResult(_books.GetValueOrDefault(book, []));
 
+    public Func<float[], int, IReadOnlyList<FoundPassage>> Search { get; set; } = (_, _) => [];
+
     public Task<IReadOnlyList<FoundPassage>> SearchAsync(BookKey book, float[] query, int count, CancellationToken cancellationToken) =>
-        throw new NotSupportedException();
+        Task.FromResult(Search(query, count));
 
     public Task DeleteAsync(BookKey book, CancellationToken cancellationToken)
     {

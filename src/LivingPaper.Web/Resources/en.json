@@ -252,6 +252,8 @@
   "chat.noscript.body": "The chat shows the reply as it is written, which a page without JavaScript cannot do. Turn it on to chat.",
   "chat.off.title": "Chat is off",
   "chat.off.body": "No usable model is chosen to chat: none is chosen, or the key of the chosen one can no longer be read. Choose one in the settings.",
+  "chat.notice.rewriteFailed": "The search of the book could not be prepared: the last messages were searched as they are.",
+  "chat.notice.searchFailed": "The passages of the book could not be searched: this reply relies on the whole story.",
   "chat.error.title": "Error",
   "chat.error.refused": "The message was refused. Reload the page and try again.",
   "chat.error.notFound": "This character is no longer here. Go back to the library.",

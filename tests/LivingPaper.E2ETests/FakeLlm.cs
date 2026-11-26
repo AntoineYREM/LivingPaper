@@ -23,6 +23,7 @@ internal sealed class FakeLlm : IAsyncDisposable
 
     private static readonly string[] Maggie = ["Maggie"];
     private static readonly string[] NoOtherName = [];
+    private static readonly int[] Vector = [1, 0];
     private static readonly string[] Together = ["Marguerite Voss", "Captain Alder"];
 
     private readonly WebApplication _app;
@@ -68,6 +69,7 @@ internal sealed class FakeLlm : IAsyncDisposable
         FakeLlm? server = null;
         app.MapPost("/v1/chat/completions", context => server!.HandleAsync(context));
         app.MapGet("/v1/models", context => server!.ListModelsAsync(context));
+        app.MapPost("/v1/embeddings", EmbedAsync);
         await app.StartAsync();
         var address = app.Services.GetRequiredService<IServer>().Features.Get<IServerAddressesFeature>()!.Addresses.First();
         server = new FakeLlm(app, address);
@@ -139,6 +141,17 @@ internal sealed class FakeLlm : IAsyncDisposable
         await SendAsync(context, Chunk(null, "stop"));
         await SendAsync(context, Usage(120, 40));
         await SendAsync(context, "[DONE]");
+    }
+
+    // A vector for each text: the same for all, which is enough to find passages.
+    private static async Task EmbedAsync(HttpContext context)
+    {
+        using var body = await JsonDocument.ParseAsync(context.Request.Body, cancellationToken: context.RequestAborted);
+        var count = body.RootElement.GetProperty("input").GetArrayLength();
+        context.Response.ContentType = "application/json";
+        await context.Response.WriteAsync(
+            Json(new { data = Enumerable.Range(0, count).Select(index => new { index, embedding = Vector }), usage = new { prompt_tokens = 7 * count } }),
+            context.RequestAborted);
     }
 
     // The list of models the settings page asks for before the user chooses one.

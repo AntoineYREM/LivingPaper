@@ -131,6 +131,33 @@ public sealed class ChatWithACharacter : E2ETest
     }
 }
 
+// PAPER-86: with a model for vectorization, a book is indexed by its analysis and the chat gives the passages found.
+public sealed class ChatWithThePassagesOfABook : E2ETest
+{
+    [Fact]
+    public async Task ABookIsAddedAndIndexed_ThenItsCharacterAnswersWithPassagesOfTheBook()
+    {
+        await AddTheFakeModelAsync();
+        await Page.GotoAsync("/settings");
+        await Page.Locator("#llm-embedding").SelectOptionAsync(new SelectOptionValue { Label = "Fake model" });
+        await Page.GetByRole(AriaRole.Button, new PageGetByRoleOptions { Name = "Save the choice" }).ClickAsync();
+        await Assertions.Expect(Page.GetByText("The choice was saved.")).ToBeVisibleAsync();
+
+        await SendTheTestBookAsync();
+
+        // The page of the book follows the analysis, then says the book is indexed.
+        await Assertions.Expect(Page.GetByText("Indexed:")).ToBeVisibleAsync();
+        await OpenTheChatOfTheFirstCharacterAsync();
+        await SayAsync("What happened during the storm?");
+        await Assertions.Expect(Page.Locator("#chat-log")).ToContainTextAsync(FakeLlm.Reply);
+
+        var body = Llm.Bodies.Last(b => b.Contains("You play ", StringComparison.Ordinal));
+        body.ShouldContain("Here are passages of the book");
+        body.ShouldNotContain("Here is the story of the book");
+        await Assertions.Expect(Page.Locator(".message__note")).ToHaveCountAsync(0);
+    }
+}
+
 public sealed class TheExamples : E2ETest
 {
     [Fact]

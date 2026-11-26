@@ -6,8 +6,11 @@ namespace LivingPaper.Application;
 // A character of a book plays itself in a conversation (PAPER-10). The model chosen for the chat in the settings plays the
 // character from its sheet; the prompt is the one of data/prompts.json (chat.system), read again at every message.
 // Nothing is stored: the browser sends the whole conversation with each message and keeps it only while the page is open.
+// With a book indexed for the model chosen for vectorization, the character gets the short plot and the passages that answer
+// the message (PassageRetriever) in place of the whole story (PAPER-86).
 // The text of the messages is never logged, and never leaves this class except to the model and back to the browser.
-public sealed class CharacterChatService(LlmSettingsService settings, IChatModelFactory models, IPromptProvider prompts)
+public sealed class CharacterChatService(
+    LlmSettingsService settings, IChatModelFactory models, IPromptProvider prompts, PassageRetriever? retriever = null)
 {
     // False when no model is chosen for the chat, or its key can no longer be read: the page then explains and offers no chat.
     public async Task<bool> IsAvailableAsync(CancellationToken cancellationToken)
@@ -26,10 +29,16 @@ public sealed class CharacterChatService(LlmSettingsService settings, IChatModel
     // ConversationValidator: only its last ConversationLimits.MaxSentMessages messages go to the model.
     // Throws ChatReplyException, at the start or in the middle of the reply, with a code and nothing else: never the message of
     // the provider (it could repeat the key or the address). Throws OperationCanceledException when stopped.
+    public IAsyncEnumerable<string> ReplyAsync(
+        Book book, Character character, IReadOnlyList<ChatMessage> conversation, CancellationToken cancellationToken) =>
+        ReplyAsync(book, character, conversation, onNotice: null, cancellationToken);
+
+    // onNotice: told, before the first piece, when the passages of the book could not be used as intended.
     public async IAsyncEnumerable<string> ReplyAsync(
         Book book,
         Character character,
         IReadOnlyList<ChatMessage> conversation,
+        Action<ChatNotice>? onNotice,
         [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(book);
@@ -37,7 +46,15 @@ public sealed class CharacterChatService(LlmSettingsService settings, IChatModel
         ArgumentNullException.ThrowIfNull(conversation);
 
         var provider = await ChosenProviderAsync(cancellationToken).ConfigureAwait(false);
-        var system = await RenderSystemPromptAsync(book, character, cancellationToken).ConfigureAwait(false);
+        var retrieval = retriever is null
+            ? null
+            : await retriever.FindAsync(book, character, conversation, provider, cancellationToken).ConfigureAwait(false);
+        foreach (var notice in retrieval?.Notices ?? [])
+        {
+            onNotice?.Invoke(notice);
+        }
+
+        var system = await RenderSystemPromptAsync(book, character, retrieval?.Passages, cancellationToken).ConfigureAwait(false);
         var request = new List<ChatMessage> { new(ChatRole.System, system) };
         request.AddRange(conversation.TakeLast(ConversationLimits.MaxSentMessages));
 
@@ -90,12 +107,27 @@ public sealed class CharacterChatService(LlmSettingsService settings, IChatModel
         }
     }
 
-    private async Task<string> RenderSystemPromptAsync(Book book, Character character, CancellationToken cancellationToken)
+    // passages: those found for this message, which take the place of the story; null for the story.
+    private async Task<string> RenderSystemPromptAsync(
+        Book book, Character character, IReadOnlyList<FoundPassage>? passages, CancellationToken cancellationToken)
     {
         try
         {
             // The story section only exists for a book that has a story: an older book chats as before, with no empty section.
-            var story = string.IsNullOrWhiteSpace(book.StorySummary)
+            var story = passages is not null
+                ? await prompts.RenderAsync(
+                    PromptKeys.ChatPassages,
+                    new Dictionary<string, string>
+                    {
+                        [PromptVariables.BookTitle] = book.Title,
+                        [PromptVariables.CharacterName] = character.Name,
+                        [PromptVariables.PlotSummary] = book.PlotSummary ?? string.Empty,
+                        // In the order of the book, each under the scene it belongs to and who is there, as it was vectorized.
+                        [PromptVariables.Passages] = string.Join(
+                            "\n\n", passages.OrderBy(found => found.Passage.Number).Select(found => PassageHeader.TextToVectorize(found.Passage))),
+                    },
+                    cancellationToken).ConfigureAwait(false)
+                : string.IsNullOrWhiteSpace(book.StorySummary)
                 ? string.Empty
                 : await prompts.RenderAsync(
                     PromptKeys.ChatStory,

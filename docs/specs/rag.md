@@ -1,8 +1,8 @@
 # Specification: passages of the book in the chat (RAG)
 
 **Status:** validated on 26 November 2026. Implemented so far: the model for vectorization (section 3,
-PAPER-81), the cutting into passages (section 4, PAPER-82), the analysis (section 5, PAPER-84) and the index with its
-indexing (section 6, PAPER-83 and PAPER-85): nothing searches the passages yet. Why: [decision 0011](../decisions/0011-passages-of-the-book-in-the-chat.md).
+PAPER-81), the cutting into passages (section 4, PAPER-82), the analysis (section 5, PAPER-84), the index with its
+indexing (section 6, PAPER-83 and PAPER-85) and the chat (sections 7 and 10, PAPER-86). Why: [decision 0011](../decisions/0011-passages-of-the-book-in-the-chat.md).
 
 ## 1. Goal
 
@@ -165,9 +165,12 @@ For each message:
 
 1. Build the search query (see the modes below).
 2. Embed it and take the closest passages of the book.
-3. Mark each passage from the character's point of view: **lived** (present in the scene), **learned later**, or unknown.
-   All passages can be returned: the character knows the whole book.
-4. Render the system prompt: profile, rules, short plot summary, passages. The character uses them without reciting them.
+3. All passages can be returned: the character knows the whole book.
+4. Render the system prompt: profile, rules, short plot summary, passages in the order of the book, each under the header it
+   was vectorized with. The **chat model** tells from "Present:" which passages the character **lived** and which it learned
+   later: names vary from a scene to another ("Emma", "Emma Bovary"), which a comparison by the application would get wrong.
+   The passages take the place of `{story}` in `chat.system`, so an edited prompt keeps working. The character uses them
+   without reciting them.
 
 ### Context of the model
 
@@ -193,8 +196,9 @@ in the interface.
 | Rewriting fails or times out | Search with the `recent` mode |
 | Embedding or search fails | Send the full story |
 
-Both show a **short notice** in the chat (translated, no technical detail, no upstream error body). A book that
-is not indexed, or to be re-indexed, shows its state on its page, with no notice in the chat.
+Both show a **short notice** under the reply (translated, no technical detail, no upstream error body). A book that
+is not indexed, or to be re-indexed, shows its state on its page, with no notice in the chat. The rewriting and the search
+are tried once, each within 30 seconds, so that the reader does not wait through retries.
 
 The rewriting adds one model call before the first word of each reply.
 

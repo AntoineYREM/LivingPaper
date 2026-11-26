@@ -10,6 +10,7 @@ namespace LivingPaper.Web.Pages.Books;
 // The chat with a character (PAPER-10). The page needs JavaScript: the conversation lives in the page and disappears when it is
 // left (nothing is stored on the server), and each message is sent by fetch (POST) with the whole conversation; the reply
 // comes back as NDJSON, one JSON object per line, so it can be shown while it is written:
+//   {"type":"notice","code":"..."} the passages of the book could not be used as intended (a ChatNotice), before the reply
 //   {"type":"text","text":"..."}   a piece of the reply
 //   {"type":"error","code":"..."}  the reply stopped (a ChatFailure, in camelCase); the page says why in its own words
 //   {"type":"done"}                the reply is complete
@@ -88,8 +89,15 @@ public partial class ChatModel(BookService books, CharacterChatService chat, ITe
         Response.Headers["X-Accel-Buffering"] = "no"; // A proxy in front must not hold the reply back.
         try
         {
-            await foreach (var piece in chat.ReplyAsync(Book, Character, conversation, cancellationToken))
+            var notices = new Queue<ChatNotice>();
+            await foreach (var piece in chat.ReplyAsync(Book, Character, conversation, notices.Enqueue, cancellationToken))
             {
+                while (notices.TryDequeue(out var notice))
+                {
+                    LogNotice(logger, notice);
+                    await WriteEventAsync(new { type = "notice", code = CodeOf(notice) }, cancellationToken);
+                }
+
                 await WriteEventAsync(new { type = "text", text = piece }, cancellationToken);
             }
 
@@ -113,7 +121,8 @@ public partial class ChatModel(BookService books, CharacterChatService chat, ITe
     }
 
     // The code the page knows, in camelCase: "modelUnreachable".
-    private static string CodeOf(ChatFailure failure)
+    private static string CodeOf<T>(T failure)
+        where T : struct, Enum
     {
         var name = failure.ToString();
         return char.ToLowerInvariant(name[0]) + name[1..];
@@ -179,6 +188,11 @@ public partial class ChatModel(BookService books, CharacterChatService chat, ITe
             limitTitle = texts["chat.limit.title"],
             limit = texts.Format("chat.limit", new { max = ConversationLimits.MaxMessages }),
             errorTitle = texts["chat.error.title"],
+            notices = new Dictionary<string, string>
+            {
+                ["rewriteFailed"] = texts["chat.notice.rewriteFailed"],
+                ["searchFailed"] = texts["chat.notice.searchFailed"],
+            },
             errors = new Dictionary<string, string>
             {
                 ["noModel"] = texts["chat.failure.noModel"],
@@ -197,6 +211,9 @@ public partial class ChatModel(BookService books, CharacterChatService chat, ITe
 
     [LoggerMessage(Level = LogLevel.Information, Message = "A conversation was refused: {Problem}.")]
     private static partial void LogRefused(ILogger logger, ConversationProblem problem);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "The passages of a book could not be used as intended: {Notice}.")]
+    private static partial void LogNotice(ILogger logger, ChatNotice notice);
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "A reply of a character could not be written: {Failure}.")]
     private static partial void LogFailed(ILogger logger, ChatFailure failure);

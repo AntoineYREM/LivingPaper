@@ -68,7 +68,9 @@ Every port is faked in the tests: **no test calls a real AI provider.**
   vectors (`BookIndexer`, `IEmbeddingModel`). The same background queue indexes a book again when its page asks. Each step is saved, so a failure resumes where it stopped. At the end
   the stored text is deleted.
 - **Chat**: the browser sends the conversation (nothing is stored), the server checks it, builds the prompt from the saved sheet
-  and the story of the book (`chat.story`, when the book has one) and streams the model's reply back as NDJSON.
+  and the story of the book (`chat.story`, when the book has one) and streams the model's reply back as NDJSON. For an
+  indexed book, `PassageRetriever` writes a search query with the chat model, vectorizes it and takes the closest passages,
+  which replace the story (`chat.passages`, with the short plot); any failure falls back, with a notice.
 - **Export / import**: a book is a JSON file with a `schemaVersion` (4 added the summary of the plot, `plotSummary`; 3 the readable addresses, see decision 0008; 2 added the story of the book, `storySummary`; versions 1
   and 2 are still read); an import is validated like any untrusted input.
 

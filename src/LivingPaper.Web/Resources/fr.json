@@ -252,6 +252,8 @@
   "chat.noscript.body": "Le chat affiche la réponse au fur et à mesure qu’elle s’écrit, ce qu’une page sans JavaScript ne peut pas faire. Activez-le pour discuter.",
   "chat.off.title": "Le chat est désactivé",
   "chat.off.body": "Aucun modèle utilisable n’est choisi pour discuter : aucun n’est choisi, ou la clé de celui qui l’est ne peut plus être lue. Choisissez-en un dans les paramètres.",
+  "chat.notice.rewriteFailed": "La recherche dans le livre n’a pas pu être préparée : les derniers messages ont été cherchés tels quels.",
+  "chat.notice.searchFailed": "Les passages du livre n’ont pas pu être cherchés : cette réponse s’appuie sur toute l’histoire.",
   "chat.error.title": "Erreur",
   "chat.error.refused": "Le message a été refusé. Rechargez la page et recommencez.",
   "chat.error.notFound": "Ce personnage n’est plus là. Retournez à la bibliothèque.",

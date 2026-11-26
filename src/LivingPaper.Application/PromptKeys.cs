@@ -19,6 +19,10 @@ public static class PromptKeys
     public const string ChatSystem = "chat.system";
     // The section of the chat prompt that gives the story to the character; left out for a book that has no story.
     public const string ChatStory = "chat.story";
+    // Takes the place of chat.story when passages of the book were found for the message (PAPER-86).
+    public const string ChatPassages = "chat.passages";
+    // Asks the chat model for the query that searches the passages (PAPER-86).
+    public const string SearchQuery = "chat.searchQuery";
     public const string ConnectionTest = "llm.connectionTest";
 
     private static readonly Dictionary<string, string[]> Variables = new(StringComparer.Ordinal)
@@ -33,6 +37,8 @@ public static class PromptKeys
         [PlotSummary] = [PromptVariables.BookTitle, PromptVariables.MaxWords],
         [ChatSystem] = [PromptVariables.BookTitle, PromptVariables.CharacterName, PromptVariables.Profile, PromptVariables.Story],
         [ChatStory] = [PromptVariables.BookTitle, PromptVariables.CharacterName, PromptVariables.StorySummary],
+        [ChatPassages] = [PromptVariables.BookTitle, PromptVariables.CharacterName, PromptVariables.PlotSummary, PromptVariables.Passages],
+        [SearchQuery] = [PromptVariables.BookTitle, PromptVariables.CharacterName],
         [ConnectionTest] = [],
     };
 

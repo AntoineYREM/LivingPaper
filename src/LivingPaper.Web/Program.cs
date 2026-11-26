@@ -78,6 +78,9 @@ var examplesDirectory = Path.GetFullPath(builder.Configuration["EXAMPLES_DIRECTO
 builder.Services.AddSingleton<IExampleCatalog>(new JsonExampleCatalog(examplesDirectory));
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddSingleton<BookService>();
+// The search of passages in the chat (PAPER-86): RAG_QUERY_MODE and RAG_PASSAGES tune it.
+builder.Services.AddSingleton(RagSettings.Read(builder.Configuration, langfuse?.CaptureContent ?? false));
+builder.Services.AddSingleton<PassageRetriever>();
 builder.Services.AddSingleton<CharacterChatService>();
 builder.Services.AddScoped<BookPresenter>();
 

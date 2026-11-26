@@ -72,7 +72,8 @@ the models and keys you saved. Do not expose it to the Internet without a revers
 Optional, for people who want to see what the models are asked and what it costs. When `LANGFUSE_PUBLIC_KEY` and
 `LANGFUSE_SECRET_KEY` are set (with `LANGFUSE_BASE_URL`), every call to a language model is sent to your Langfuse as a trace over
 OpenTelemetry: the analysis of a book is one trace (a step for each part read, the merge of the characters, each profile, the
-summary, the story, the plot, the saving of the passages and their indexing) and each chat reply is its own. Without the keys nothing is exported.
+summary, the story, the plot, the saving of the passages and their indexing) and each chat reply is its own, with the
+search of the passages (mode, numbers and distances; the query only when content is captured). Without the keys nothing is exported.
 
 - **By default only metadata:** model, name of the provider, tokens, duration, time to the first piece of a streamed reply, step and
   outcome (kind of failure and HTTP status, never the message).
@@ -117,7 +118,7 @@ script; without it, reload the page). The language model used is the one you cho
    longest scenes shortened: none is dropped and the end is kept), and says who is present in each scene. If the model's content filter refused a part,
    or it gave no scenes for it, the story is **partial**: it is written from the other parts.
 4. **A short summary of the plot** (300 to 500 words, ending included) is written from the story. A book with no story has
-   none, and a summary refused by the content filter is left out. The chat does not use it yet.
+   none, and a summary refused by the content filter is left out. The chat uses it with the passages of an indexed book.
 
 **With a model for vectorization** (see the settings), each part is sent to the model as numbered passages (`[P12]`), and the
 model says which passages each scene covers (`analysis.passageRanges`, added to `analysis.readPart`). The passages are then
@@ -138,7 +139,7 @@ where its passages are, while a model for vectorization is chosen:
 | No passages (analyzed without a model for vectorization) | Send the book again with "Replace" |
 
 An indexing asked from the page runs in the background; the book can be read and its characters chatted with meanwhile.
-The chat does not search the passages yet ([specification](specs/rag.md)). Examples are not indexed yet.
+Examples are not indexed yet.
 
 Everything the analysis writes is in English, whatever the language of the book. The prompts are in `data/prompts.json`.
 
@@ -186,6 +187,13 @@ into the field.
   as saved on its sheet). The character also knows **the story of the book**, scene by scene, from the beginning to the end
   (spoilers included): the prompt `chat.story` gives it, where `{story}` stands in `chat.system`, and it is left out for a book
   analyzed before the story existed. The character speaks of the scenes where it is present as its own memories. The text of the messages and of the replies is never written to the logs.
+- **With an indexed book** (a model for vectorization is chosen and made its vectors), the character gets, in place of the
+  whole story, the **short summary of the plot** and the **passages that answer your message** (3 by default, `RAG_PASSAGES`),
+  in the order of the book, each under its scene and who is present: the character speaks of those it lived as memories
+  (prompts `chat.passages`, `chat.searchQuery`). The search is written by the chat model first (`RAG_QUERY_MODE`, see
+  [how to run](how-to-run.md)). If the search cannot be written, the last messages are searched; if the passages cannot be
+  searched, the reply uses the whole story. A short line under the reply says so. A book not indexed, or indexed with another
+  model, chats with the whole story, with no notice. Plan a context of at least 8,192 tokens for the chat model.
 - **The chat needs JavaScript** (the reply streams in as NDJSON lines through `fetch`); without it the chat buttons are hidden.
   With no model chosen for the chat, the page says so and links to the settings.
 

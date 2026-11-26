@@ -85,23 +85,13 @@ public sealed class BookIndexer(IPassageIndex index, LlmSettingsService settings
             }
 
             return state.EmbeddingModel is null ? new PassagesView(PassagesState.NotIndexed, state.Passages, null, failure, 0, 0)
-                : SameModel(state.EmbeddingModel, provider.Model) ? new PassagesView(PassagesState.Indexed, state.Passages, state.EmbeddingModel, null, 0, 0)
+                : EmbeddingModelNames.Same(state.EmbeddingModel, provider.Model) ? new PassagesView(PassagesState.Indexed, state.Passages, state.EmbeddingModel, null, 0, 0)
                 : new PassagesView(PassagesState.Outdated, state.Passages, state.EmbeddingModel, failure, 0, 0);
         }
         catch (Exception exception) when (exception is PassageIndexException or SettingsFileException)
         {
             return null;
         }
-    }
-
-    // The same model under the name a local server gives it: "bge-m3" and "bge-m3:latest" are one.
-    private static bool SameModel(string first, string second) => string.Equals(Untagged(first), Untagged(second), StringComparison.OrdinalIgnoreCase);
-
-    private static string Untagged(string model)
-    {
-        const string latest = ":latest";
-        var name = model.Trim();
-        return name.EndsWith(latest, StringComparison.OrdinalIgnoreCase) ? name[..^latest.Length] : name;
     }
 
     private async Task<IndexFailure?> VectorizeAsync(
