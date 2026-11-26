@@ -31,6 +31,8 @@ builder.Services.AddSingleton<IPromptProvider>(new FilePromptProvider(dataDirect
 // One factory for the whole application: its clients share a connection pool. It builds a client for each language
 // model of the settings (PAPER-5) when the analysis or the chat needs one.
 builder.Services.AddSingleton<IChatModelFactory, OpenAiCompatibleChatModelFactory>();
+// The same for the embedding models, which turn texts into vectors.
+builder.Services.AddSingleton<IEmbeddingModelFactory, OpenAiCompatibleEmbeddingModelFactory>();
 
 // The traces of the calls to the language models (PAPER-75): sent to Langfuse only when LANGFUSE_PUBLIC_KEY and
 // LANGFUSE_SECRET_KEY are set. Without them nothing is exported. The prompts and replies, which hold the text of the books and of the
@@ -58,6 +60,9 @@ builder.Services.AddSingleton<IModelCatalog, OpenAiCompatibleModelCatalog>();
 builder.Services.AddSingleton<PendingProviderStore>();
 builder.Services.AddSingleton<LlmSettingsService>();
 
+// The passages of the books and their vectors (PAPER-83): data/rag.db, created at the first save only.
+builder.Services.AddSingleton<IPassageIndex>(new SqlitePassageIndex(Path.Combine(dataDirectory, "rag.db")));
+
 // The books (PAPER-7): one JSON file each in data/books, and the text of a book kept in data/uploads only until its
 // analysis has finished. The reader of EPUB and PDF files is an adapter; the service is what the pages call.
 builder.Services.AddSingleton<IBookRepository>(new JsonBookRepository(Path.Combine(dataDirectory, "books")));
@@ -73,6 +78,9 @@ var examplesDirectory = Path.GetFullPath(builder.Configuration["EXAMPLES_DIRECTO
 builder.Services.AddSingleton<IExampleCatalog>(new JsonExampleCatalog(examplesDirectory));
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddSingleton<BookService>();
+// The search of passages in the chat (PAPER-86): RAG_QUERY_MODE and RAG_PASSAGES tune it.
+builder.Services.AddSingleton(RagSettings.Read(builder.Configuration, langfuse?.CaptureContent ?? false));
+builder.Services.AddSingleton<PassageRetriever>();
 builder.Services.AddSingleton<CharacterChatService>();
 builder.Services.AddScoped<BookPresenter>();
 
@@ -80,6 +88,7 @@ builder.Services.AddScoped<BookPresenter>();
 // the settings. The pages talk to it through IAnalysisScheduler. ANALYSIS_PAGES_PER_PART and ANALYSIS_PARALLEL_CALLS tune it.
 builder.Services.AddSingleton(AnalysisSettings.Read(builder.Configuration));
 builder.Services.AddSingleton<IAnalysisStepStore>(new JsonAnalysisStepStore(Path.Combine(dataDirectory, "books")));
+builder.Services.AddSingleton<BookIndexer>();
 builder.Services.AddSingleton<BookAnalyzer>();
 builder.Services.AddSingleton<BookAnalysisWorker>();
 builder.Services.AddSingleton<IAnalysisScheduler>(services => services.GetRequiredService<BookAnalysisWorker>());

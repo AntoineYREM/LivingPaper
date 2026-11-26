@@ -1,7 +1,8 @@
 namespace LivingPaper.Domain;
 
-// The user's language models and which one is used for analyzing books and which one for chatting. The two uses can
-// share a model or use different ones (a cheap one to read books, a better one to chat).
+// The user's language models and which one is used for analyzing books, which one for chatting and, optionally, which one
+// turns text into vectors (embeddings, to find passages of a book). Analysis and chat can share a model or use different
+// ones (a cheap one to read books, a better one to chat).
 public sealed class LlmSettings
 {
     private readonly List<LlmProvider> _providers = [];
@@ -13,6 +14,9 @@ public sealed class LlmSettings
 
     public string? ChatProviderId { get; private set; }
 
+    // null (the default): no passages of the books are looked for.
+    public string? EmbeddingProviderId { get; private set; }
+
     // Models whose key was stored but cannot be decrypted any more (the encryption keys of the application were lost, for
     // instance a volume restored without them). They have an empty key and cannot be used until they are added again.
     public IReadOnlyCollection<string> UnreadableKeyProviderIds => _unreadableKeyProviderIds;
@@ -21,10 +25,17 @@ public sealed class LlmSettings
 
     public LlmProvider? ChatProvider => Find(ChatProviderId);
 
-    // Analysis and chat are disabled until a usable model is chosen, for instance after the chosen one was deleted.
+    public LlmProvider? EmbeddingProvider => Find(EmbeddingProviderId);
+
+    // Each use is disabled until a usable model is chosen, for instance after the chosen one was deleted.
     public bool IsAnalysisEnabled => IsUsable(AnalysisProviderId);
 
     public bool IsChatEnabled => IsUsable(ChatProviderId);
+
+    public bool IsEmbeddingEnabled => IsUsable(EmbeddingProviderId);
+
+    // A use with no model: the next model added fills it, if it can do it.
+    public bool HasEmptyChoice => AnalysisProviderId is null || ChatProviderId is null || EmbeddingProviderId is null;
 
     // Rebuilds the settings from storage. Nothing is selected by itself; a selection of a model that does not exist is
     // dropped. Throws ArgumentException when two models share an id or a name, or when there are too many.
@@ -32,7 +43,8 @@ public sealed class LlmSettings
         IEnumerable<LlmProvider> providers,
         string? analysisProviderId,
         string? chatProviderId,
-        IEnumerable<string>? unreadableKeyProviderIds = null)
+        IEnumerable<string>? unreadableKeyProviderIds = null,
+        string? embeddingProviderId = null)
     {
         ArgumentNullException.ThrowIfNull(providers);
         var settings = new LlmSettings();
@@ -58,6 +70,7 @@ public sealed class LlmSettings
 
         settings.AnalysisProviderId = settings.Find(analysisProviderId)?.Id;
         settings.ChatProviderId = settings.Find(chatProviderId)?.Id;
+        settings.EmbeddingProviderId = settings.Find(embeddingProviderId)?.Id;
         foreach (var id in unreadableKeyProviderIds ?? [])
         {
             if (settings.Find(id) is not null)
@@ -69,10 +82,11 @@ public sealed class LlmSettings
         return settings;
     }
 
-    // The very first model is chosen for both uses: the application is usable at once. Later ones are not chosen by
-    // themselves. Throws InvalidOperationException when the id is already used or there are too many models: the caller
-    // checks the name and the limit with the validator first.
-    public void Add(LlmProvider provider)
+    // The new model is chosen at once for the uses that have none, so the application is usable: analysis and chat, or
+    // vectorization alone when it cannot chat (onlyVectorizes). A choice already made is never replaced. Throws
+    // InvalidOperationException when the id is already used or there are too many models: the caller checks the name and
+    // the limit with the validator first.
+    public void Add(LlmProvider provider, bool onlyVectorizes = false)
     {
         ArgumentNullException.ThrowIfNull(provider);
         if (_providers.Any(existing => existing.Id == provider.Id))
@@ -85,16 +99,20 @@ public sealed class LlmSettings
             throw new InvalidOperationException($"There cannot be more than {LlmProviderLimits.MaxProviders} language models.");
         }
 
-        var first = _providers.Count == 0;
         _providers.Add(provider);
-        if (first)
+        if (onlyVectorizes)
         {
-            AnalysisProviderId = provider.Id;
-            ChatProviderId = provider.Id;
+            EmbeddingProviderId ??= provider.Id;
+        }
+        else
+        {
+            AnalysisProviderId ??= provider.Id;
+            ChatProviderId ??= provider.Id;
         }
     }
 
-    // A deleted model that was chosen is unchosen. Nothing is chosen in its place: the user picks another one.
+    // A deleted model that was chosen is unchosen. Nothing is chosen in its place: the user picks another one, or the next
+    // model added fills it.
     public bool Remove(string id)
     {
         var provider = Find(id);
@@ -115,13 +133,20 @@ public sealed class LlmSettings
             ChatProviderId = null;
         }
 
+        if (EmbeddingProviderId == id)
+        {
+            EmbeddingProviderId = null;
+        }
+
         return true;
     }
 
-    // null: no model, which disables analysis. Throws ArgumentException for a model that does not exist.
+    // null: no model, which disables that use. Throws ArgumentException for a model that does not exist.
     public void SelectForAnalysis(string? id) => AnalysisProviderId = ResolveSelection(id);
 
     public void SelectForChat(string? id) => ChatProviderId = ResolveSelection(id);
+
+    public void SelectForEmbedding(string? id) => EmbeddingProviderId = ResolveSelection(id);
 
     private string? ResolveSelection(string? id)
     {

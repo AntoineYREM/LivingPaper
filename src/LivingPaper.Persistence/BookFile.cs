@@ -10,7 +10,9 @@ internal sealed class BookFile
 {
     // 2 added the story of the book (storySummary). A file of version 1 has none and is still read.
     // 3: the id is a slug of the title (cyrano-de-bergerac) instead of 32 hexadecimal characters. Files of version 1 and 2 are still read.
-    public const int CurrentSchemaVersion = 3;
+    // 4 added the short summary of the plot (plotSummary), and the passages of the book in the file of an export or of an
+    // example (passageIndex). Files of versions 1 to 3 have none and are still read.
+    public const int CurrentSchemaVersion = 4;
 
     public const int OldestSchemaVersion = 1;
 
@@ -35,6 +37,8 @@ internal sealed class BookFile
 
     // Written only when true (null otherwise), so a book without holes carries no extra field.
     public bool? StorySummaryPartial { get; set; }
+
+    public string? PlotSummary { get; set; }
 
     public string? Status { get; set; }
 
@@ -66,6 +70,15 @@ internal sealed class BookFile
 
     public int OutputTokens { get; set; }
 
+    // Written only when there is something to say.
+    public int? EmbeddingTokens { get; set; }
+
+    public int? IndexDone { get; set; }
+
+    public int? IndexTotal { get; set; }
+
+    public string? IndexErrorCode { get; set; }
+
     public DateTimeOffset? SentAt { get; set; }
 
     public DateTimeOffset? StartedAt { get; set; }
@@ -76,6 +89,9 @@ internal sealed class BookFile
 
     public List<CharacterFile>? Characters { get; set; }
 
+    // Only in the file of an export or of an example: the books of the library keep their passages in data/rag.db.
+    public PassageIndexFile? PassageIndex { get; set; }
+
     public static BookFile From(Book book) => new()
     {
         SchemaVersion = CurrentSchemaVersion,
@@ -85,6 +101,7 @@ internal sealed class BookFile
         Summary = book.Summary,
         StorySummary = book.StorySummary,
         StorySummaryPartial = book.StorySummaryPartial ? true : null,
+        PlotSummary = book.PlotSummary,
         Status = book.Status.ToString(),
         PartsDone = book.PartsDone,
         PartsTotal = book.PartsTotal,
@@ -100,6 +117,10 @@ internal sealed class BookFile
         InputTokens = book.InputTokens,
         CachedInputTokens = book.CachedInputTokens,
         OutputTokens = book.OutputTokens,
+        EmbeddingTokens = book.EmbeddingTokens > 0 ? book.EmbeddingTokens : null,
+        IndexDone = book.IndexDone > 0 ? book.IndexDone : null,
+        IndexTotal = book.IndexTotal > 0 ? book.IndexTotal : null,
+        IndexErrorCode = book.IndexErrorCode,
         SentAt = book.SentAt,
         StartedAt = book.StartedAt,
         UpdatedAt = book.UpdatedAt,
@@ -142,7 +163,7 @@ internal sealed class BookFile
             return null;
         }
 
-        if (new[] { PartsDone, PartsTotal, PartsSkipped, ProfilesDone, ProfilesTotal, StoryTry ?? 0, StoryTries ?? 0, InputTokens, CachedInputTokens, OutputTokens }.Any(value => value < 0)
+        if (new[] { PartsDone, PartsTotal, PartsSkipped, ProfilesDone, ProfilesTotal, StoryTry ?? 0, StoryTries ?? 0, InputTokens, CachedInputTokens, OutputTokens, EmbeddingTokens ?? 0, IndexDone ?? 0, IndexTotal ?? 0 }.Any(value => value < 0)
             || Characters.Any(character => character is null || character.Position < 1))
         {
             reason = "a number is out of range";
@@ -154,6 +175,7 @@ internal sealed class BookFile
             Summary = Summary,
             StorySummary = StorySummary,
             StorySummaryPartial = StorySummaryPartial == true,
+            PlotSummary = PlotSummary,
             Status = Enum.Parse<BookStatus>(Status!),
             PartsDone = PartsDone,
             PartsTotal = PartsTotal,
@@ -169,6 +191,10 @@ internal sealed class BookFile
             InputTokens = InputTokens,
             CachedInputTokens = CachedInputTokens,
             OutputTokens = OutputTokens,
+            EmbeddingTokens = EmbeddingTokens ?? 0,
+            IndexDone = IndexDone ?? 0,
+            IndexTotal = IndexTotal ?? 0,
+            IndexErrorCode = IndexErrorCode,
             StartedAt = StartedAt,
             UpdatedAt = UpdatedAt.Value,
             FinishedAt = FinishedAt,

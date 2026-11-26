@@ -14,10 +14,13 @@ public static class PageNotice
     public const string Replaced = "replaced";
     public const string Deleted = "deleted";
     public const string Retried = "retried";
+    public const string Indexing = "indexing";
     public const string CharacterSaved = "characterSaved";
     public const string ExampleAdded = "exampleAdded";
     public const string Imported = "imported";
     public const string ImportedReplaced = "importedReplaced";
+    public const string ImportedWithoutPassages = "importedWithoutPassages";
+    public const string ExampleAddedWithoutPassages = "exampleAddedWithoutPassages";
 
     public static void Set(ITempDataDictionary tempData, string kind, string title)
     {
@@ -39,10 +42,13 @@ public static class PageNotice
             Replaced => texts.Format("books.notice.replaced", new { title }),
             Deleted => texts.Format("books.notice.deleted", new { title }),
             Retried => texts.Format("books.notice.retried", new { title }),
+            Indexing => texts.Format("books.notice.indexing", new { title }),
             CharacterSaved => texts.Format("books.notice.characterSaved", new { title }),
             ExampleAdded => texts.Format("books.notice.exampleAdded", new { title }),
             Imported => texts.Format("books.notice.imported", new { title }),
             ImportedReplaced => texts.Format("books.notice.importedReplaced", new { title }),
+            ImportedWithoutPassages => texts.Format("books.notice.importedWithoutPassages", new { title }),
+            ExampleAddedWithoutPassages => texts.Format("books.notice.exampleAddedWithoutPassages", new { title }),
             _ => null,
         };
     }

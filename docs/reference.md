@@ -38,9 +38,19 @@ another vendor). Each model is a name, a base URL, an API key (optional for a lo
 is added in two steps: the application asks the provider for its list of models (`GET {baseUrl}/models`), which proves that the
 address and the key work, and you choose one model in that list. While you choose, the key is kept in the memory of the server for
 15 minutes at most and is never sent back to the browser. A provider that has no such list (some local servers) falls back to
-typing the model name: it is then saved only after a connection test succeeds (the application sends the `llm.connectionTest`
-prompt of `data/prompts.json` and checks that a usable reply comes back). You choose one model to analyze books and one to chat;
+typing the model name: it is then saved only after a connection test succeeds. The application sends the `llm.connectionTest`
+prompt of `data/prompts.json` as a chat message and checks that a usable reply comes back; if that fails, it asks for the vector of
+the same text (`POST {baseUrl}/embeddings`), and one success is enough. You choose one model to analyze books and one to chat;
 they can be the same.
+
+- **Model for vectorization** (optional, None by default): an embedding model. Choosing another one sends it the test text; a
+  model that cannot answer is refused, the previous choice stays and the two other choices are saved. With it, the analysis
+  keeps the passages of the book and indexes them (see the analysis, below).
+- **A model you add** fills the choices that have no model, including one you set to None. To know which, it is tried: if it
+  answers the chat test, it fills analysis and chat; if it refuses the chat (an HTTP refusal) and gives a vector, it fills
+  vectorization alone; in every other case (too slow, unreachable) it fills analysis and chat. A choice already made is never
+  replaced, and deleting a model leaves its choices empty. A model taken from the provider's list is saved whatever these tests
+  say; when no choice is empty it is not tried at all.
 
 - **Where:** `data/settings.json` holds the models and your choices. `data/keys/` holds the keys that encrypt your API
   keys. Both are in the data directory (`./data` by default, the `data/` volume in Docker) and both are ignored by git.
@@ -62,7 +72,8 @@ the models and keys you saved. Do not expose it to the Internet without a revers
 Optional, for people who want to see what the models are asked and what it costs. When `LANGFUSE_PUBLIC_KEY` and
 `LANGFUSE_SECRET_KEY` are set (with `LANGFUSE_BASE_URL`), every call to a language model is sent to your Langfuse as a trace over
 OpenTelemetry: the analysis of a book is one trace (a step for each part read, the merge of the characters, each profile, the
-summary and the story) and each chat reply is its own. Without the keys nothing is exported.
+summary, the story, the plot, the saving of the passages and their indexing) and each chat reply is its own, with the
+search of the passages (mode, numbers and distances; the query only when content is captured). Without the keys nothing is exported.
 
 - **By default only metadata:** model, name of the provider, tokens, duration, time to the first piece of a streamed reply, step and
   outcome (kind of failure and HTTP status, never the message).
@@ -83,7 +94,10 @@ EPUB or a PDF (20 MB at most) and takes you to the page of the book; you can del
   the same title is refused unless you tick "Replace", which deletes the earlier book and its analysis.
 - **Where it goes:** `data/books/{id}.json` holds the book (title, status, and later its summary and characters), and
   `data/uploads/{id}.txt` holds its text until the analysis has finished successfully, then it is deleted. The text of a
-  book is never in the book's JSON file, never in an export and never in the logs. Deleting a book deletes all of it.
+  book is never in the book's JSON file and never in the logs; an export holds it only as the passages below. Deleting a
+  book deletes all of it, its passages included.
+- **Passages** are kept only when a model for vectorization is chosen at the time of the analysis: the book, cut into
+  passages of about 1,500 characters with their scenes, goes to `data/rag.db` before the text is deleted.
   Re-analyzing a book (another model, an edited prompt) means sending it again and ticking "Replace".
 
 PDF files are read with [PdfPig](https://github.com/UglyToad/PdfPig) (Apache License 2.0, compatible with the AGPL).
@@ -100,8 +114,36 @@ script; without it, reload the page). The language model used is the one you cho
    A very long book never overflows the model: past about 150,000 letters of notes, each part keeps fewer characters.
 3. **One profile per character** (200 to 400 words: personality, way of speaking, relationships), **a short summary of the
    atmosphere** (era, place, tone) and **the story of the whole book, scene by scene** are written. The story takes between 800
-   and 3,000 words, more for a longer book (a story that goes over is asked again, shorter), and says who is present in each scene. If the model's content filter refused a part,
+   and 3,000 words, more for a longer book (a story that goes over is asked again, shorter; one still too long for the book file, 24,000 letters, has its
+   longest scenes shortened: none is dropped and the end is kept), and says who is present in each scene. If the model's content filter refused a part,
    or it gave no scenes for it, the story is **partial**: it is written from the other parts.
+4. **A short summary of the plot** (300 to 500 words, ending included) is written from the story. A book with no story has
+   none, and a summary refused by the content filter is left out. The chat uses it with the passages of an indexed book.
+
+**With a model for vectorization** (see the settings), each part is sent to the model as numbered passages (`[P12]`), and the
+model says which passages each scene covers (`analysis.passageRanges`, added to `analysis.readPart`). The passages are then
+kept in `data/rag.db`, each with its scenes and who is there. A range that cannot be followed is ignored: the passage is
+kept without scene. A prompt `analysis.readPart` that you edited has no `{passageRanges}`: add it to get the scenes of the
+passages.
+
+**Indexing** is the last step of such an analysis: each passage, under a header that tells its scene and who is there, is
+turned into a vector by the model for vectorization (16 passages a call). The analysis shows how far it is, and the tokens
+are shown with the others. If it fails, the analysis still succeeds and the passages are kept. The page of a book then says
+where its passages are, while a model for vectorization is chosen:
+
+| The page says | What to do |
+|---|---|
+| Indexed, with the name of the model | Nothing |
+| Not indexed yet, with the reason of the failure | **Retry indexing** |
+| To be re-indexed (you chose another model) | **Re-index**; nothing is recomputed by itself |
+| Checking the vectors of the file (just after an import) | Wait: the page refreshes by itself |
+| The vectors are not checked yet (imported with no model chosen, or the model could not be reached) | **Index the passages** or **Retry indexing** |
+| To be re-indexed (the vectors that came with the book are not those your model makes) | **Re-index** |
+| No passages (analyzed without a model for vectorization, or imported without them) | Send the book again with "Replace" |
+
+An indexing asked from the page runs in the background; the book can be read and its characters chatted with meanwhile.
+An **example** shipped with passages shows the same box and an **Index the passages** button: the vectors it comes with are
+used when your model makes the same ones, else new ones are computed. The example itself is never changed.
 
 Everything the analysis writes is in English, whatever the language of the book. The prompts are in `data/prompts.json`.
 
@@ -149,6 +191,13 @@ into the field.
   as saved on its sheet). The character also knows **the story of the book**, scene by scene, from the beginning to the end
   (spoilers included): the prompt `chat.story` gives it, where `{story}` stands in `chat.system`, and it is left out for a book
   analyzed before the story existed. The character speaks of the scenes where it is present as its own memories. The text of the messages and of the replies is never written to the logs.
+- **With an indexed book** (a model for vectorization is chosen and made its vectors), the character gets, in place of the
+  whole story, the **short summary of the plot** and the **passages that answer your message** (5 by default, `RAG_PASSAGES`),
+  in the order of the book, each under its scene and who is present: the character speaks of those it lived as memories
+  (prompts `chat.passages`, `chat.searchQuery`). The search is made with your message and the ones just before
+  it; the chat model can write it first instead (`RAG_QUERY_MODE`, see [how to run](how-to-run.md)), and if it cannot, the last
+  messages are searched. If the passages cannot be searched, the reply uses the whole story. A short line under the reply says so. A book not indexed, or indexed with another
+  model, chats with the whole story, with no notice. Plan a context of at least 8,192 tokens for the chat model.
 - **The chat needs JavaScript** (the reply streams in as NDJSON lines through `fetch`); without it the chat buttons are hidden.
   With no model chosen for the chat, the page says so and links to the settings.
 
@@ -159,6 +208,12 @@ summary and the sheets without a key, and chat with the characters once a model 
 edited, retried or deleted. **Add to my library** copies one into your library (a book titled the same as one you already have is
 refused), where you can edit its sheets like any other book.
 
+Three books come with the application, in English, from [Project Gutenberg](https://www.gutenberg.org/) (its own presentation
+text and licence removed before the analysis): *Alice's Adventures in Wonderland* (ebook 11), *Cyrano de Bergerac* (ebook 1254,
+translated by Gladys Thomas and Mary F. Guillemard) and *Madame Bovary* (ebook 2413, translated by Eleanor Marx-Aveling). Each
+holds its passages and their vectors, made with `bge-m3`: with that model for vectorization, **Index the passages** computes
+nothing but one test.
+
 They are the files of the `examples/` folder, in the format of a book of the library, checked like an imported book when the
 application starts: an example that is not valid is ignored, with a warning in the logs. `EXAMPLES_DIRECTORY` points to another
 folder. See `CONTRIBUTING.md` to propose one.
@@ -167,11 +222,18 @@ folder. See `CONTRIBUTING.md` to propose one.
 
 **Export** (on the page of an analyzed book, and in the library) downloads the book as a `.json` file: its title, its summary,
 its characters and their sheets (the edits you made included), and how it was analyzed (model, tokens, dates). It is the same
-format as the files of `data/books/` and of the examples. It holds no API key, no setting, no path of your machine and not the
-text of the book: the file is built field by field from the book, so nothing else can get in.
+format as the files of `data/books/` and of the examples. It holds no API key, no setting and no path of your machine: the
+file is built field by field from the book, so nothing else can get in.
+
+**A book with passages is exported with them** (there is nothing to tick), so the file then **holds the text of the book**,
+which may be protected by copyright: the page and the library say so next to the button. It also holds the vectors and the name
+and size of the model that made them (`passageIndex`: each vector is written in base64, as 32-bit little-endian floats). For a
+long novel with `bge-m3` this makes a file of about 4 MB, instead of about 50 KB. A file over 30 MB could not be imported: the
+export then leaves the vectors out (and the passages if that is not enough), and the page of the book says it.
 
 **Import** (`/import`, from the library) adds an analyzed book from such a file, on this installation or another one. The file is
-untrusted input and is checked before anything is kept: at most 1 MB, valid JSON of the shape of a book, a known `schemaVersion`
+untrusted input and is checked before anything is kept: at most 30 MB with passages (1 MB for the rest of the book, or for a file
+without passages), valid JSON of the shape of a book, a known `schemaVersion`
 (a file from a newer LivingPaper is refused with its own message), required fields, numbers in range, texts no longer than the
 limits of the analysis, sheets that follow the rules of a sheet (names distinct, no control characters). Only a book whose
 analysis is done, with at least one character, can be imported, and nothing is analyzed.
@@ -181,4 +243,14 @@ analysis is done, with at least one character, can be imported, and nothing is a
   the file again** to confirm: the old book, its analysis and its edited sheets are then deleted. A file whose identifier is that of
   an example, or that comes from before the readable addresses (0.3.0), gets the address of its title, so the example stays where it is.
 - A file you export and import again gives the same book.
+- **A file that is far too large** to be read at all (here, or a book on "Add a book") brings the form back with the limit.
+- **Passages and vectors are checked like the rest**: numbers in order, lengths, names, the number and size of the vectors,
+  finite values. A file with anything wrong is refused whole, and the message names the field.
+- **Vectors are used only after a check**, made in the background just after the import: the model chosen for vectorization must
+  have the same name (a `:latest` suffix is ignored) and make, for the first passage, a vector of the same size and nearly the
+  same direction (cosine similarity of at least 0.99). Else the book is to be re-indexed, when you ask. With no model for
+  vectorization, the passages and vectors are kept, and checked when you press **Index the passages**.
+- Where passages cannot be kept (SQLite or its extension cannot be loaded, or `rag.db` cannot be used), the book is imported
+  without them, and the page says so.
+- **Add to my library** on an example keeps its passages in the same way.
 

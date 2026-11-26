@@ -9,9 +9,16 @@ public interface IAnalysisScheduler
     // Adds the book to the queue. False when it is already waiting or running.
     bool Enqueue(BookId bookId);
 
-    // True while the book is waiting in the queue or being analyzed by this application. A book that says it is waiting or
-    // running but is not here was stopped by a restart: it is interrupted.
-    bool IsQueued(BookId bookId);
+    // The same queue for the indexing of the passages of a book already analyzed, or of an example. False when the book is
+    // already in it.
+    bool EnqueueIndexing(BookId bookId, BookShelf shelf = BookShelf.Library);
+
+    // The same queue to check the vectors that came with the file of a book of the library: nothing new is computed.
+    bool EnqueueCheck(BookId bookId);
+
+    // True while the book is waiting in the queue, being analyzed, indexed or checked by this application. A book that says it
+    // is waiting or running but is not here was stopped by a restart: it is interrupted.
+    bool IsQueued(BookId bookId, BookShelf shelf = BookShelf.Library);
 
     // Takes the book out of the queue and, when it is being analyzed, stops that analysis and waits until it has stopped,
     // so nothing is written for a book that is about to be deleted.

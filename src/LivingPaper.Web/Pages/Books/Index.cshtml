@@ -1,5 +1,6 @@
 @page "/books/{id}"
 @model LivingPaper.Web.Pages.Books.IndexModel
+@using LivingPaper.Application
 @* The page of a book. The words come from the translation files. *@
 @{
     ViewData["Title"] = Model.Book.Title;
@@ -67,6 +68,19 @@
         </ul>
     </section>
 
+    @if (Model.Passages is { } passages)
+    {
+        <hr class="ornament" />
+
+        <section aria-labelledby="passages">
+            <h2 id="passages">@T["book.passages.title"]</h2>
+            @* The same box and script as the progress of an analysis: a done book has only this one. *@
+            <div id="book-progress" data-refresh-url="@(passages.Active ? Url.Page("/Books/Index", "Passages", new { id = Model.Book.Id.ToString() }) : null)">
+                <partial name="_BookPassages" model="passages" />
+            </div>
+        </section>
+    }
+
     <hr class="ornament" />
 
     <section aria-labelledby="about">
@@ -78,7 +92,15 @@
             }
         </dl>
         <p><a class="button button--small button--quiet" href="~/books/@Model.Book.Id/export" download>@T["books.export"]</a></p>
-        <p class="field__hint">@T["books.export.hint"]</p>
+        <p class="field__hint">@T[Model.Export.HasPassages ? "books.export.hintPassages" : "books.export.hint"]</p>
+        @if (Model.Export.HasPassages)
+        {
+            <p class="field__hint">@T["books.export.passages"]</p>
+        }
+        @if (Model.Export.Omitted != ExportOmission.None)
+        {
+            <p class="entry__warning">@T[Model.Export.Omitted == ExportOmission.Vectors ? "books.export.withoutVectors" : "books.export.withoutPassages"]</p>
+        }
     </section>
 }
 

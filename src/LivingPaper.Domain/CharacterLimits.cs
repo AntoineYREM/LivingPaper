@@ -13,6 +13,9 @@ public static class CharacterLimits
     // names and the spaces), with room to spare.
     public const int StorySummary = 24000;
 
+    // The short summary of the plot: about 500 words, with room to spare.
+    public const int PlotSummary = 5000;
+
     // Cuts after the last whole word that fits, so the text never ends in the middle of a word.
     public static string Clip(string text, int max)
     {

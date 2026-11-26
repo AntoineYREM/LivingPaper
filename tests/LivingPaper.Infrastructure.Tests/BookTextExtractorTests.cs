@@ -135,4 +135,37 @@ public class BookTextExtractorTests
     [Fact]
     public void HtmlToText_DecodesEntitiesAndDropsScripts() =>
         BookTextExtractor.HtmlToText("<script>alert(1)</script><h1>Title</h1><p>It&rsquo;s&nbsp;a   hot summer</p>").ShouldBe("Title\nIt’s a hot summer");
+
+    // Many books wrap their pages every 70 letters or so: that is not where a paragraph ends (PAPER-82).
+    [Theory]
+    [InlineData("\n")]
+    [InlineData("\r\n")]
+    [InlineData("\r")]
+    public void HtmlToText_ReadsALineBreakOfTheFileAsASpace(string lineBreak) =>
+        BookTextExtractor.HtmlToText(string.Join(lineBreak, "<p>Elle aurait voulu savoir leurs existences, y", "p&eacute;n&eacute;trer,", "<em>s&rsquo;y</em>", "confondre.</p>", "<p>Mais elle grelottait.</p>"))
+            .ShouldBe("Elle aurait voulu savoir leurs existences, y pénétrer, s’y confondre.\nMais elle grelottait.");
+
+    [Theory]
+    [InlineData("one<br/>two")]
+    [InlineData("one<br class=\"verse\" />two")]
+    [InlineData("one<hr/>two")]
+    [InlineData("one<p class=\"x\">two</p>")] // A block that opens ends the text before it.
+    [InlineData("<div>one</div><div>two</div>")]
+    [InlineData("<ul><li>one</li><li>two</li></ul>")]
+    [InlineData("<dl><dt>one</dt><dd>two</dd></dl>")]
+    [InlineData("<table><tr><td>one</td></tr><tr><td>two</td></tr></table>")]
+    [InlineData("<h2>one</h2>two")]
+    [InlineData("<blockquote>one</blockquote><article>two</article>")]
+    [InlineData("<P>one</P><P>two</P>")]
+    public void HtmlToText_StartsANewLine_AtABreakOrAtTheEdgesOfABlock(string html) =>
+        BookTextExtractor.HtmlToText(html).ShouldBe("one\ntwo");
+
+    [Fact]
+    public void HtmlToText_KeepsTheLinesOfPreformattedText() =>
+        BookTextExtractor.HtmlToText("<p>Before\nthe verse</p><pre class=\"poem\">First line\nsecond line</pre><p>After\nit</p>")
+            .ShouldBe("Before the verse\nFirst line\nsecond line\nAfter it");
+
+    [Fact]
+    public void HtmlToText_DoesNotTakeAnInlineTagForABlock() =>
+        BookTextExtractor.HtmlToText("<p>a <span>b</span> <link/> <pb/> <b>c</b></p>").ShouldBe("a b c");
 }

@@ -12,7 +12,10 @@ public class LlmConnectionTesterTests
     private static CancellationToken Token => TestContext.Current.CancellationToken;
 
     private static LlmConnectionTester NewTester(FakeChatModelFactory factory, FakePromptProvider? prompts = null, TimeSpan? timeout = null) =>
-        new(factory, prompts ?? new FakePromptProvider(), timeout);
+        new(factory, new FakeEmbeddingModelFactory(), prompts ?? new FakePromptProvider(), timeout);
+
+    private static LlmConnectionTester NewEmbeddingTester(FakeEmbeddingModelFactory embeddings, FakePromptProvider? prompts = null, TimeSpan? timeout = null) =>
+        new(new FakeChatModelFactory(), embeddings, prompts ?? new FakePromptProvider(), timeout);
 
     private static ChatProviderException Http(int status) => new(ChatFailureKind.Http, $"The language model answered HTTP {status}.", status);
 
@@ -168,6 +171,84 @@ public class LlmConnectionTesterTests
         text.ShouldNotContain("sk-test-key");
         text.ShouldNotContain("api.openai.com");
     }
+
+    // ---- The embedding model ----
+
+    [Fact]
+    public async Task TestEmbedding_VectorizesTheTextOfTheConnectionTest_OnceAndWithoutRetries()
+    {
+        var embeddings = new FakeEmbeddingModelFactory();
+        var prompts = new FakePromptProvider("Say pong, please.");
+
+        var result = await NewEmbeddingTester(embeddings, prompts).TestEmbeddingAsync(Provider, Token);
+
+        result.Success.ShouldBeTrue();
+        prompts.Requests.ShouldHaveSingleItem().Key.ShouldBe(PromptKeys.ConnectionTest);
+        embeddings.Created.ShouldHaveSingleItem().ShouldBe((Provider, false));
+        embeddings.Sent.ShouldHaveSingleItem().ShouldBe(["Say pong, please."]);
+    }
+
+    [Theory]
+    [InlineData(400, ConnectionFailure.ModelUnknown)]
+    [InlineData(401, ConnectionFailure.KeyRefused)]
+    [InlineData(503, ConnectionFailure.ProviderError)]
+    public async Task TestEmbedding_TellsWhatWentWrong_ForAnHttpStatus(int status, ConnectionFailure expected)
+    {
+        var embeddings = new FakeEmbeddingModelFactory { Reply = (_, _) => throw Http(status) };
+
+        var result = await NewEmbeddingTester(embeddings).TestEmbeddingAsync(Provider, Token);
+
+        result.Failure.ShouldBe(expected);
+        result.HttpStatus.ShouldBe(status);
+    }
+
+    [Fact]
+    public async Task TestEmbedding_GivesUp_WhenTheModelDoesNotAnswerInTime()
+    {
+        var embeddings = new FakeEmbeddingModelFactory
+        {
+            Reply = async (_, cancellationToken) => { await Task.Delay(TimeSpan.FromSeconds(30), cancellationToken); return []; },
+        };
+
+        var result = await NewEmbeddingTester(embeddings, timeout: TimeSpan.FromMilliseconds(150)).TestEmbeddingAsync(Provider, Token);
+
+        result.Failure.ShouldBe(ConnectionFailure.Unreachable);
+    }
+
+    [Fact]
+    public async Task TestEmbedding_ReportsAnInvalidPromptsFile_AndAnAddressTheClientRefuses()
+    {
+        var embeddings = new FakeEmbeddingModelFactory();
+        var prompts = new FakePromptProvider(failure: new PromptFileException("prompts.json", PromptKeys.ConnectionTest, "the prompt is empty"));
+        var refusing = new FakeEmbeddingModelFactory { CreateFailure = new ArgumentException("bad address") };
+
+        (await NewEmbeddingTester(embeddings, prompts).TestEmbeddingAsync(Provider, Token)).Failure.ShouldBe(ConnectionFailure.PromptFile);
+        (await NewEmbeddingTester(refusing).TestEmbeddingAsync(Provider, Token)).Failure.ShouldBe(ConnectionFailure.Unreachable);
+        embeddings.Created.ShouldBeEmpty();
+    }
+
+    // ---- A refusal, as opposed to a slow or failing provider ----
+
+    [Theory]
+    [InlineData(400, true)]
+    [InlineData(401, true)]
+    [InlineData(404, true)]
+    [InlineData(405, true)]
+    [InlineData(422, true)]
+    [InlineData(501, true)]
+    [InlineData(408, false)]
+    [InlineData(429, false)]
+    [InlineData(500, false)]
+    [InlineData(503, false)]
+    [InlineData(302, false)]
+    [InlineData(null, false)]
+    public void ARefusal_IsAnHttpAnswerThatWouldBeTheSameAgain(int? status, bool expected)
+    {
+        ConnectionTestResult.Failed(ConnectionFailure.ProviderError, status).IsRefusal.ShouldBe(expected);
+    }
+
+    [Fact]
+    public void ASuccess_IsNotARefusal() => ConnectionTestResult.Ok().IsRefusal.ShouldBeFalse();
 
     [Fact]
     public void OkAndFailed_BuildCoherentResults()

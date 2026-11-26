@@ -5,10 +5,12 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace LivingPaper.Web.Pages;
 
-// Importing an analyzed book from the file of an export (PAPER-12). The file is untrusted: the service reads at most 1 MB and
-// validates it before keeping anything. A book of the library with the same identifier or title is replaced only when the user
+// Importing an analyzed book from the file of an export (PAPER-12). The file is untrusted: the service reads at most 30 MB
+// (a book with its passages) and validates it before keeping anything. A book of the library with the same identifier or title is replaced only when the user
 // ticks "Replace" and sends the file again (as for sending a book). A book that is accepted takes the user to its page.
-// The request may be a little larger than the largest file; anything bigger is refused by the server before it is read.
+// The request may be a little larger than the largest file; anything bigger is never read into the form: the form comes back
+// and says so.
+[RefuseOversizedUpload(MaxRequestBytes)]
 [RequestSizeLimit(MaxRequestBytes)]
 [RequestFormLimits(MultipartBodyLengthLimit = MaxRequestBytes)]
 public class ImportModel(BookService books, ITextLocalizer texts) : PageModel
@@ -24,10 +26,15 @@ public class ImportModel(BookService books, ITextLocalizer texts) : PageModel
     // Set when the file was refused because it would replace books: the page explains and asks to tick "Replace".
     public string? ConflictNote { get; private set; }
 
-    public static int MaxKilobytes => (int)(BookService.MaxImportBytes / 1024);
+    public static int MaxMegabytes => (int)(BookService.MaxImportBytes / (1024 * 1024));
 
-    public void OnGet()
+    // refused: set when a file was too large to be read at all (see RefuseOversizedUploadAttribute).
+    public void OnGet(string? refused)
     {
+        if (refused == RefuseOversizedUploadAttribute.TooLarge)
+        {
+            FileError = Describe(ImportRejection.TooLarge, null);
+        }
     }
 
     public async Task<IActionResult> OnPostAsync(IFormFile? file, bool replace)
@@ -45,7 +52,10 @@ public class ImportModel(BookService books, ITextLocalizer texts) : PageModel
 
         if (result.Imported is not null)
         {
-            PageNotice.Set(TempData, result.Replaced ? PageNotice.ImportedReplaced : PageNotice.Imported, result.Imported.Title);
+            var notice = result.PassagesDropped ? PageNotice.ImportedWithoutPassages
+                : result.Replaced ? PageNotice.ImportedReplaced
+                : PageNotice.Imported;
+            PageNotice.Set(TempData, notice, result.Imported.Title);
             return RedirectToPage("/Books/Index", new { id = result.Imported.Id.ToString() });
         }
 
@@ -65,7 +75,7 @@ public class ImportModel(BookService books, ITextLocalizer texts) : PageModel
         var message = rejection switch
         {
             ImportRejection.Empty => texts["import.error.empty"],
-            ImportRejection.TooLarge => texts.Format("import.error.tooLarge", new { max = MaxKilobytes }),
+            ImportRejection.TooLarge => texts.Format("import.error.tooLarge", new { max = MaxMegabytes }),
             ImportRejection.NotJson => texts["import.error.notJson"],
             ImportRejection.UnknownVersion => texts["import.error.unknownVersion"],
             ImportRejection.NewerVersion => texts["import.error.newerVersion"],

@@ -14,8 +14,10 @@ own API key for any OpenAI-compatible provider (OpenAI, another vendor, or a mod
 
 ## Try the examples
 
-The **Examples** page holds public-domain books that are already analyzed. You can read their summaries, the story scene by scene
-and the sheets of their characters **without any API key**; only the chat needs a language model.
+The **Examples** page holds three public-domain books that are already analyzed, in English: *Alice's Adventures in Wonderland*,
+*Cyrano de Bergerac* and *Madame Bovary*. You can read their summaries, the story scene by scene and the sheets of their
+characters **without any API key**; only the chat needs a language model. They come with the [passages of the
+book](#the-passages-of-the-book-optional) and their vectors, made with `bge-m3`.
 
 ## Screenshots
 
@@ -23,11 +25,11 @@ The shipped examples, in the interface. Black ink on white paper, like a printed
 
 | The examples | The characters of a book | Chat with a character |
 |---|---|---|
-| ![The Examples page: public-domain books already analyzed](docs/images/examples.png) | ![The characters of Le Malade imaginaire, each with a short description](docs/images/characters.png) | ![The chat page of Argan, with the field to write a message](docs/images/chat.png) |
+| ![The Examples page: public-domain books already analyzed](docs/images/examples.png) | ![The characters of Alice's Adventures in Wonderland, each with a short description](docs/images/characters.png) | ![The chat page of Alice, with the field to write a message](docs/images/chat.png) |
 
 On a phone, the same pages fit the screen:
 
-<img src="docs/images/characters-phone.png" alt="The characters of Le Malade imaginaire on a phone" width="260">
+<img src="docs/images/characters-phone.png" alt="The characters of Alice's Adventures in Wonderland on a phone" width="260">
 
 ## What it does
 
@@ -38,10 +40,12 @@ On a phone, the same pages fit the screen:
 - **Chat with a character**: first person, short text-message replies, streamed, in the language you write in. Nothing is stored.
 - **Read the examples without a key**: the **Examples** page has public-domain books that are already analyzed; a model is only
   needed to chat.
-- **Export and import** a book as a JSON file, to move it or share it.
+- **Export and import** a book as a JSON file, to move it or share it. With passages kept (see below), the file holds the text of
+  the book.
 - **Read and edit every prompt** in `data/prompts.json`.
 - **English** interface. French is translated and kept in reserve: add it to the `LANGUAGES` setting to bring it back.
-- **Your data stays with you**: plain JSON files in a folder, API keys encrypted at rest, book text deleted after the analysis.
+- **Your data stays with you**: plain JSON files in a folder, API keys encrypted at rest, book text deleted after the analysis
+  (its passages are kept only if you choose a model for vectorization).
 
 ## Quick start (Docker)
 
@@ -72,6 +76,23 @@ published image instead of building it, run from source, change a setting or rea
 With Ollama, add a model in **Settings** with the base URL `http://host.docker.internal:11434/v1` (from Docker; `localhost` would
 be the container itself), any text as the key, and the name of a model you pulled. Private addresses are allowed on purpose so that
 local models work. Details and LM Studio: [docs/how-to-run.md](docs/how-to-run.md#add-a-language-model).
+
+### The passages of the book (optional)
+
+By default a character knows the book through its story, scene by scene. With a **model for vectorization** (an embedding model),
+LivingPaper also keeps the book cut into passages, and gives the character the passages that answer your message: it can then
+quote details that a summary loses. On 26 [factual questions](docs/experiments/passages-of-the-book.md) about *Madame Bovary*,
+the average went from 3.73 to 4.13 out of 5 with these settings; with so few questions and one book, this gain could still be
+chance.
+
+1. Choose a **multilingual** model, so that you can write in your language about a book in another. We use and recommend
+   **`bge-m3`** (free on your computer: `ollama pull bge-m3`).
+2. In **Settings**, add it and choose it as **Model for vectorization**.
+3. Analyze a book, or open an example and press **Index the passages**: with `bge-m3`, an example uses the vectors it comes
+   with and computes nothing but one test.
+
+With passages, the chat model needs a context of **at least 8,192 tokens**. Some local servers start with less: Ollama uses
+4,096 on a 4 GB graphics card, set `OLLAMA_CONTEXT_LENGTH=8192`.
 
 ## Do the characters stay in their role?
 
@@ -121,7 +142,8 @@ The pictures are drawn from the published runs by `dotnet run --project tools/Li
 - **Costs.** Analyzing a book calls your provider many times (one play, with a small model, used about 110,000 input and 75,000 output
   tokens). The tokens used are shown at the end of each analysis. A local model costs nothing.
 - **Copyright.** Add books you have the right to read and analyze. The examples are public-domain works only. The text of a book
-  is sent to the provider you chose, and nowhere else.
+  is sent to the providers you chose, and the application sends it nowhere else. With a model for vectorization, **an exported
+  book holds its text**: share the file only if you have the right to.
 
 ## Documentation
 

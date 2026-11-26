@@ -89,9 +89,50 @@ public sealed class StorySummaryFileTests : IDisposable
         var book = Analyzed();
         await _repository.SaveAsync(book, Token);
         var path = Path.Combine(_temp.BooksPath, book.Id + ".json");
-        await File.WriteAllTextAsync(path, (await File.ReadAllTextAsync(path, Token)).Replace("\"schemaVersion\": 3", "\"schemaVersion\": 4", StringComparison.Ordinal), Token);
+        await File.WriteAllTextAsync(path, (await File.ReadAllTextAsync(path, Token)).Replace("\"schemaVersion\": 4", "\"schemaVersion\": 5", StringComparison.Ordinal), Token);
 
-        (await Should.ThrowAsync<BookUnreadableException>(() => _repository.GetAsync(book.Id, Token))).Message.ShouldContain("schemaVersion 4");
+        (await Should.ThrowAsync<BookUnreadableException>(() => _repository.GetAsync(book.Id, Token))).Message.ShouldContain("schemaVersion 5");
+    }
+
+    // ---- The short summary of the plot (PAPER-84) ----
+
+    [Fact]
+    public async Task TheShortSummaryOfThePlot_IsKeptByTheLibraryAndByAnExport()
+    {
+        var book = Analyzed();
+        book.PlotSummary = "Argan fears for his health.\nToinette cures him of it.";
+
+        await _repository.SaveAsync(book, Token);
+        var exported = _archive.Export(book);
+
+        (await _repository.GetAsync(book.Id, Token)).ShouldNotBeNull().PlotSummary.ShouldBe(book.PlotSummary);
+        _archive.Parse(exported).Book.ShouldNotBeNull().PlotSummary.ShouldBe(book.PlotSummary);
+    }
+
+    [Fact]
+    public async Task AFileOfVersion3_WithoutAShortSummary_IsStillRead()
+    {
+        var book = Analyzed();
+        await _repository.SaveAsync(book, Token);
+        var path = Path.Combine(_temp.BooksPath, book.Id + ".json");
+        var saved = await File.ReadAllTextAsync(path, Token);
+        saved.ShouldContain("\"schemaVersion\": 4");
+        saved.ShouldNotContain("plotSummary"); // Written only when there is one.
+        await File.WriteAllTextAsync(path, saved.Replace("\"schemaVersion\": 4", "\"schemaVersion\": 3", StringComparison.Ordinal), Token);
+
+        var loaded = await _repository.GetAsync(book.Id, Token);
+
+        loaded.ShouldNotBeNull().PlotSummary.ShouldBeNull();
+        loaded.StorySummary.ShouldBe(Story);
+    }
+
+    [Fact]
+    public void AShortSummaryThatIsTooLong_MakesTheFileUnacceptable()
+    {
+        var book = Analyzed();
+        book.PlotSummary = new string('p', CharacterLimits.PlotSummary + 1);
+
+        _archive.Parse(_archive.Export(book)).Detail.ShouldNotBeNull().ShouldContain("plotSummary");
     }
 
     // ---- The export and the import ----

@@ -331,7 +331,7 @@ public partial class ExportImportTests
         }
 
         raw.ShouldContain("__RequestVerificationToken");
-        html.ShouldContain("1024 KB at most");
+        html.ShouldContain("30 MB at most");
         Regex.IsMatch(library, @"<a[^>]*href=""/import""[^>]*>Import a book</a>").ShouldBeTrue();
     }
 
@@ -407,7 +407,7 @@ public partial class ExportImportTests
 
         using var response = await ImportAsync(client, big);
 
-        Decoded(await response.Content.ReadAsStringAsync(Token)).ShouldContain("larger than 1024 KB");
+        Decoded(await response.Content.ReadAsStringAsync(Token)).ShouldContain("larger than a book of LivingPaper can be: 30 MB");
     }
 
     [Fact]
@@ -425,7 +425,7 @@ public partial class ExportImportTests
             return Decoded(await response.Content.ReadAsStringAsync(Token));
         }
 
-        (await MessageOf(map => map["schemaVersion"] = 4)).ShouldContain("exported by a newer LivingPaper");
+        (await MessageOf(map => map["schemaVersion"] = 5)).ShouldContain("exported by a newer LivingPaper");
         (await MessageOf(map => map["schemaVersion"] = 0)).ShouldContain("version of the format that this LivingPaper does not know");
         (await MessageOf(map => map.Remove("title"))).ShouldContain("not a valid book");
         (await MessageOf(map => map["title"] = new string('t', BookLimits.Title + 1))).ShouldContain("longer than allowed: title");

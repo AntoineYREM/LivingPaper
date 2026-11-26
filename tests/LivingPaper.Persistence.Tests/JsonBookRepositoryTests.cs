@@ -90,7 +90,7 @@ public sealed class JsonBookRepositoryTests : IDisposable
         File.Exists(FileOf(book.Id)).ShouldBeTrue();
         var text = await File.ReadAllTextAsync(FileOf(book.Id), Token);
         using var json = JsonDocument.Parse(text);
-        json.RootElement.GetProperty("schemaVersion").GetInt32().ShouldBe(3);
+        json.RootElement.GetProperty("schemaVersion").GetInt32().ShouldBe(4);
         json.RootElement.GetProperty("id").GetString().ShouldBe(book.Id.ToString());
         json.RootElement.GetProperty("status").GetString().ShouldBe("Done");
         text.ShouldContain("\n");

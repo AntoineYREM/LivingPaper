@@ -3,7 +3,8 @@
 > **Status: in construction.** The command `run` works: it prints its report, keeps every run in a file, and sends it to Langfuse when
 > Langfuse is configured. The command `compare` sets two runs side by side and `latency` gives the time to answer. Measuring the judge against human grades is the next step.
 
-How to measure whether a character stays in its role, and compare two prompts or two models with the same questions.
+How to measure whether a character stays in its role and gets the facts of the book right, and compare two prompts, two models
+or two ways of giving the book to the character with the same questions.
 Why it is built this way: [decision 0010](decisions/0010-character-evaluation-with-an-llm-judge.md).
 
 ## The idea in one minute
@@ -21,7 +22,9 @@ Each question is asked several times (3 by default), because a model does not an
 | Piece | Where | State |
 |---|---|---|
 | 40 questions to Emma Bovary, and 20 to Cyrano (a second character, to check that a finding is not specific to Emma) | `evals/bovary/questions.json`, `evals/cyrano/questions.json` | done |
-| Prompt of the judge | `evals/judge.json` | done |
+| 26 factual questions to Emma, each with its expected answer and the phrases of the book that hold it | `evals/bovary/factual.json` | done |
+| Prompt of the judge of the role, and of the judge of the facts | `evals/judge.json`, `evals/accuracy-judge.json` | done |
+| Search of the passages of an indexed book (`--embedding`), kept and reported for each try | `tools/LivingPaper.Evals` | done |
 | Console tool, command `run` (report in the terminal) | `tools/LivingPaper.Evals` | done |
 | Every run kept in a file (`evals/runs/`), shareable ones in `evals/published/` | same | done |
 | Sending dataset, one trace per answer and the scores to Langfuse | same | done, to be checked on your Langfuse |
@@ -52,7 +55,8 @@ The tool does not need the web application to be running. What it reads:
   keys in `settings.json` are encrypted with the keys of that folder, and the prompts are read from it too (the character is played with
   the prompts you edited). The tool prints the folder it uses. For a site run with `dotnet run`, that is `src/LivingPaper.Web/data`;
   for a site in Docker, the data is in a Docker volume that the tool cannot read, so add the models from the tool instead.
-- **The book**: `examples/madame-bovary.json`, found by going up from the current folder (`EXAMPLES_DIRECTORY` to move it).
+- **The book**: `examples/madame-bovary.json`, found by going up from the current folder (`EXAMPLES_DIRECTORY` to move it), or the
+  book of a library with `--book-data` (see [Facts and passages](#facts-and-passages)).
 
 ### Options
 
@@ -65,11 +69,49 @@ The tool does not need the web application to be running. What it reads:
 | `--label <text>` | A short name for the run (`rule-no-ai`), kept in the run file and shown by `compare`. |
 | `--max-tokens <n>` | A ceiling on the length of every reply (thinking included). Needed with an expensive model on OpenRouter, which sets aside the price of the longest possible reply before answering: without a ceiling, a key with a spending limit is refused (HTTP 402). Not for OpenAI's own newest models, which refuse `max_tokens`. |
 | `--local-only` | Keep the run in a file only, even when Langfuse is configured. |
+| `--book-data <folder>` | A data folder whose library holds the book (`books/` and `rag.db`), instead of `examples/`. |
+| `--embedding <name>` | Search the passages with this model for vectorization (its name on the Settings page). Without it, the character gets the whole story. Needs `--book-data`. |
+| `--embedding-url <url>` | The address of a server that asks for no key (a local one): `--embedding` is then the name of its model, and nothing needs to be saved on the Settings page. |
+| `--query-mode <mode>` | `recent` (default), `rewrite` or `last`: how the search is written (`RAG_QUERY_MODE` for the site). |
+| `--passages <n>` | Passages given to the character, 1 to 10 (default 5, `RAG_PASSAGES`). |
 | `--help` | The list of options. |
 
 For a run with no keyboard (a script, CI), name the models with the options or with `EVAL_CHAT_PROVIDER` and `EVAL_JUDGE_PROVIDER` in the
 shell or in `.env`: without a terminal, the tool never waits for an answer and says what is missing. Exit codes: `0` done, `1` nothing could
 be graded, `2` something to fix (the message says what), `130` stopped with Ctrl+C.
+
+## Facts and passages
+
+What was measured with these questions, and what was decided: [experiments on the passages](experiments/passages-of-the-book.md).
+
+The judge of the role cannot see an invented fact: it knows only the question and the reply. The **factual questions**
+(`evals/bovary/factual.json`) give the right answer, and a second judge (`evals/accuracy-judge.json`, score `factual-accuracy`)
+grades each reply from 1 to 5 against it: 5 right, 2 "I do not remember", 1 something false. Seven of the 26 questions are
+**follow-ups** ("And on the way home, did you find anything?"): they are sent after the earlier messages, and only make sense with
+them, which is where the way the search is written matters.
+
+To compare the whole story with the passages, the book must be **indexed**: analyze it on the site with a model for vectorization
+chosen, then give the tool the data folder of the site (`--book-data`). Both runs below read the same book file, so the only
+difference is what the character is given:
+
+```bash
+facts="--questions evals/bovary/factual.json --judge-prompt evals/accuracy-judge.json --book-data src/LivingPaper.Web/data"
+dotnet run --project tools/LivingPaper.Evals -- run $facts --label story
+dotnet run --project tools/LivingPaper.Evals -- run $facts --label recent-5 --embedding <name> --query-mode recent --passages 5
+```
+
+Run the role questions the same two ways (without `--questions` and `--judge-prompt`) to check that the passages do not cost
+fidelity. Then `compare` sets two runs side by side.
+
+Before the first call, the tool checks that the book is indexed with the model asked for and that every phrase of the questions is
+in a passage: the chat would otherwise use the whole story without saying so. The phrases are in French, as the book analyzed was.
+With another text or another cutting, a phrase may not be found: the tool then names the questions.
+
+With passages, each try keeps in the run file the **query** searched, the numbers and distances of the **passages found**, whether
+**a phrase of the question was in one of them**, the notices a reader would have seen (query not written, search failed), the
+tokens and the time of the reply. The report adds, per reply: the tokens of the prompt (average and largest), those spent writing
+the query, the median time, and how many times the expected passage was found. A low grade with the passage found is a failure of
+the answer; with the passage missed, of the search.
 
 ## Where the runs go
 
@@ -119,6 +161,8 @@ The page shows, in this order:
   gap of a few tenths is usually inside it. It does not cover the bias of the judge, nor the choice of the questions.
 - **The questions that differ most**, to see where to look first (the replies are in the two run files).
 - **Tokens and cost** of each run, chat and judge apart.
+- **Per reply**, how each run gave the book to the character (the whole story, or the passages), the tokens, the time, and how often
+  the expected passage was found.
 
 ## Time to answer
 
@@ -195,6 +239,9 @@ tools/LivingPaper.Evals/
   EvalOptions.cs        the command line
   EvalCommand.cs        assembles the pieces (settings, prompts, examples, chat) for one run
   QuestionFile.cs       reads and checks the questions file
+  PassageCheck.cs       before a run with passages: the book is indexed, the phrases of the questions are in it
+  RetrievalRecorder.cs  keeps what each try searched, found and cost; PassageQuotes.cs compares a phrase and a passage
+  TraceSummary.cs       the tokens, time and passages found per reply
   JudgePrompt.cs        reads the judge file, fills the prompt
   JudgeVerdict.cs       reads the judge's answer (score and reason)
   EvalRunner.cs         questions x repeats: answer, then grade (each try is traced when Langfuse is on)
@@ -218,12 +265,16 @@ tools/LivingPaper.Evals/
 - The character answers through `CharacterChatService`, the code of the site's chat. The tool gives it the site's settings with only the
   model of the chat replaced, in memory: `ChatOverrideSettings` never writes anything.
 - Each question is a conversation of its own (one message), so questions do not influence each other.
-- The judge receives the question and the reply, never the prompt the character had.
+- The judge receives the question (with the earlier messages), the reply and, for the facts, the expected answer; never the
+  prompt the character had.
+- With `--prompts-file`, the `prompts.json` of the data folder is neither read nor updated.
 - The tests (`tests/LivingPaper.Evals.Tests`) use fake models: none calls a real provider.
 
 ## Limits to keep in mind
 
 - The judge is a language model: it can be wrong, and favor answers written by a model of its own family.
 - 40 questions are few. Differences of a few tenths between two runs can be noise; that is why each question is asked several times.
-- The tool measures one quality (staying in the role), not whether the character is interesting or faithful to the book.
+- The tool measures staying in the role and getting facts right, not whether the character is interesting.
+- 26 factual questions on one book, written by reading its passages: they can favor what the search finds easily. They are in
+  English and the text is in French: a reader writing in French may get a different search.
 - The text of the replies is never printed in the terminal and never logged. It is kept in the run file (and sent to Langfuse when it is on).

@@ -13,7 +13,9 @@ public sealed class BookAnalyzer(
     IChatModelFactory models,
     IPromptProvider prompts,
     TimeProvider clock,
-    AnalysisOptions options)
+    AnalysisOptions options,
+    IPassageIndex? passageIndex = null,
+    BookIndexer? indexer = null)
 {
     // Analyzes the book if it is waiting, or resumes it after a failure that was set back to waiting: the steps saved by an
     // earlier try are not asked again. A book that is not there, or not waiting, is left alone.
@@ -27,7 +29,7 @@ public sealed class BookAnalyzer(
             return null;
         }
 
-        using var run = new AnalysisRun(book, texts, steps, books, settings, models, prompts, clock, options);
+        using var run = new AnalysisRun(book, texts, steps, books, settings, models, prompts, clock, options, passageIndex, indexer);
         return await run.ExecuteAsync(cancellationToken).ConfigureAwait(false);
     }
 }

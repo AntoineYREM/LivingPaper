@@ -23,6 +23,7 @@ internal sealed class FakeLlm : IAsyncDisposable
 
     private static readonly string[] Maggie = ["Maggie"];
     private static readonly string[] NoOtherName = [];
+    private static readonly int[] Vector = [1, 0];
     private static readonly string[] Together = ["Marguerite Voss", "Captain Alder"];
 
     private readonly WebApplication _app;
@@ -68,6 +69,7 @@ internal sealed class FakeLlm : IAsyncDisposable
         FakeLlm? server = null;
         app.MapPost("/v1/chat/completions", context => server!.HandleAsync(context));
         app.MapGet("/v1/models", context => server!.ListModelsAsync(context));
+        app.MapPost("/v1/embeddings", EmbedAsync);
         await app.StartAsync();
         var address = app.Services.GetRequiredService<IServer>().Features.Get<IServerAddressesFeature>()!.Addresses.First();
         server = new FakeLlm(app, address);
@@ -141,6 +143,17 @@ internal sealed class FakeLlm : IAsyncDisposable
         await SendAsync(context, "[DONE]");
     }
 
+    // A vector for each text: the same for all, which is enough to find passages.
+    private static async Task EmbedAsync(HttpContext context)
+    {
+        using var body = await JsonDocument.ParseAsync(context.Request.Body, cancellationToken: context.RequestAborted);
+        var count = body.RootElement.GetProperty("input").GetArrayLength();
+        context.Response.ContentType = "application/json";
+        await context.Response.WriteAsync(
+            Json(new { data = Enumerable.Range(0, count).Select(index => new { index, embedding = Vector }), usage = new { prompt_tokens = 7 * count } }),
+            context.RequestAborted);
+    }
+
     // The list of models the settings page asks for before the user chooses one.
     private Task ListModelsAsync(HttpContext context)
     {
@@ -201,6 +214,11 @@ internal sealed class FakeLlm : IAsyncDisposable
         if (body.Contains("Write the story of the whole book, scene by scene", StringComparison.Ordinal))
         {
             return "Scene 1. A storm rises over the island: Marguerite keeps the light on and Captain Alder rows over with a letter. Present: Marguerite Voss, Captain Alder.";
+        }
+
+        if (body.Contains("Write its plot in English", StringComparison.Ordinal))
+        {
+            return "Marguerite keeps the light on through a storm, and Captain Alder rows over with a letter from her brother.";
         }
 
         if (body.Contains("summary of the atmosphere", StringComparison.Ordinal))

@@ -6,14 +6,14 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace LivingPaper.Web.Pages;
 
-// The settings page (PAPER-5): the language models, adding one, deleting one, and which one analyzes books and which one
-// chats. A model is added in two steps (PAPER-26): the user types the name, the address and the key and asks for the models
+// The settings page (PAPER-5): the language models, adding one, deleting one, and which one analyzes books, which one
+// chats and, optionally, which one does vectorization. A model is added in two steps (PAPER-26): the user types the name, the address and the key and asks for the models
 // of the provider (which proves that the key works); the server keeps that draft, key included, and the user chooses a
 // model in the list and saves it. A key goes from the form to the server and never back: this model has no property that
 // can carry one, the draft is shown by its identifier, and a form that is shown again is shown without it.
 // A change that works goes back to the page (POST, redirect, GET), so reloading never repeats it; the short message of
 // what was done travels in TempData.
-public class SettingsModel(LlmSettingsService settings, ITextLocalizer texts) : PageModel
+public class SettingsModel(LlmSettingsService settings, IPassageIndex passages, ITextLocalizer texts) : PageModel
 {
     private const string NoticeKind = "Notice";
     private const string NoticeName = "NoticeName";
@@ -33,6 +33,12 @@ public class SettingsModel(LlmSettingsService settings, ITextLocalizer texts) : 
 
     // Not about one field (too many models) or the failed connection test.
     public string? FormError { get; private set; }
+
+    // The model for vectorization that was just refused, and why: shown with the form of the choices.
+    public string? ChoiceError { get; private set; }
+
+    // Why the passages of the books cannot be kept here, if they cannot: the choice for vectorization then has no effect.
+    public PassageIndexProblem? PassageProblem => passages.Check();
 
     public bool FormRefused { get; private set; }
 
@@ -118,20 +124,30 @@ public class SettingsModel(LlmSettingsService settings, ITextLocalizer texts) : 
 
     // An empty choice is "none": that use is turned off. A choice that is no model of the list changes nothing.
     // The values are read from the form itself: model binding would turn an empty text into null, which here means "absent".
+    // A model for vectorization that cannot vectorize is refused alone: the two other choices are saved.
     public Task<IActionResult> OnPostSelectAsync() => GuardAsync(async token =>
     {
-        string? analysis = Request.Form.TryGetValue("analysis", out var analysisValues) ? analysisValues.ToString() : null;
-        string? chat = Request.Form.TryGetValue("chat", out var chatValues) ? chatValues.ToString() : null;
-        var ids = (await settings.GetAsync(token)).Providers.Select(provider => provider.Id).ToHashSet(StringComparer.Ordinal);
-        if (analysis is null || chat is null
-            || (analysis.Length > 0 && !ids.Contains(analysis))
-            || (chat.Length > 0 && !ids.Contains(chat)))
+        var providers = (await settings.GetAsync(token)).Providers;
+        string? Chosen(string field) => Request.Form.TryGetValue(field, out var values) ? values.ToString() : null;
+        bool IsAChoice(string? id) => id is not null && (id.Length == 0 || providers.Any(provider => provider.Id == id));
+
+        var (analysis, chat, embedding) = (Chosen("analysis"), Chosen("chat"), Chosen("embedding"));
+        if (!IsAChoice(analysis) || !IsAChoice(chat) || !IsAChoice(embedding))
         {
             return BadRequest();
         }
 
-        await settings.SelectForAnalysisAsync(analysis.Length > 0 ? analysis : null, token);
-        await settings.SelectForChatAsync(chat.Length > 0 ? chat : null, token);
+        await settings.SelectForAnalysisAsync(analysis!.Length > 0 ? analysis : null, token);
+        await settings.SelectForChatAsync(chat!.Length > 0 ? chat : null, token);
+        var vectorization = await settings.SelectForEmbeddingAsync(embedding!.Length > 0 ? embedding : null, token);
+        if (vectorization is { Success: false })
+        {
+            View = await settings.GetAsync(token);
+            var name = providers.First(provider => provider.Id == embedding).Name;
+            ChoiceError = texts.Format("settings.choose.embeddingRefused", new { name, reason = DescribeEmbeddingFailure(vectorization) });
+            return Page();
+        }
+
         return RedirectWithNotice("saved", string.Empty);
     });
 
@@ -213,6 +229,13 @@ public class SettingsModel(LlmSettingsService settings, ITextLocalizer texts) : 
         "apiKey" => LlmProviderLimits.ApiKey,
         _ => LlmProviderLimits.Model,
     };
+
+    // For an embedding model, a refusal that is not about the key (400, 404, or 501 with Ollama) means a model that cannot
+    // vectorize: "try again later" would mislead.
+    private string DescribeEmbeddingFailure(ConnectionTestResult result) =>
+        result.IsRefusal && result.Failure != ConnectionFailure.KeyRefused
+            ? texts.Format("settings.failure.cannotVectorize", new { status = result.HttpStatus })
+            : DescribeFailure(result);
 
     private string DescribeFailure(ConnectionTestResult result) => result.Failure switch
     {

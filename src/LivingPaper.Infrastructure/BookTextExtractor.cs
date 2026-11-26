@@ -202,12 +202,15 @@ public sealed partial class BookTextExtractor(long maxUnpackedBytes = BookTextEx
     }
 
     // Plain text from an XHTML page. Regular expressions rather than an XML parser, because real EPUB pages often use HTML
-    // entities such as &nbsp; that an XML parser refuses. Paragraphs and line breaks become new lines.
+    // entities such as &nbsp; that an XML parser refuses. A new line is a break of the page as it is read: <br>, or the edge
+    // of a block such as a paragraph. A line break of the file itself is a space, as in a browser (many books wrap their
+    // pages every 70 letters or so), except inside <pre>.
     public static string HtmlToText(string html)
     {
         ArgumentNullException.ThrowIfNull(html);
         var text = HeadOrScriptRegex().Replace(html, " ");
-        text = BlockEndRegex().Replace(text, "\n");
+        text = PreOrLineBreakRegex().Replace(text, match => match.Groups["pre"].Success ? match.Value : " ");
+        text = BreakRegex().Replace(text, "\n");
         text = TagRegex().Replace(text, " ");
         text = WebUtility.HtmlDecode(text);
         var lines = text.Split('\n')
@@ -219,8 +222,12 @@ public sealed partial class BookTextExtractor(long maxUnpackedBytes = BookTextEx
     [GeneratedRegex(@"<(head|script|style)\b.*?</\1\s*>", RegexOptions.IgnoreCase | RegexOptions.Singleline, matchTimeoutMilliseconds: 10_000)]
     private static partial Regex HeadOrScriptRegex();
 
-    [GeneratedRegex(@"<br\s*/?>|</(p|div|h[1-6]|li|tr|blockquote|section)\s*>", RegexOptions.IgnoreCase, matchTimeoutMilliseconds: 10_000)]
-    private static partial Regex BlockEndRegex();
+    [GeneratedRegex(@"(?<pre><pre\b.*?</pre\s*>)|[\r\n]+", RegexOptions.IgnoreCase | RegexOptions.Singleline, matchTimeoutMilliseconds: 10_000)]
+    private static partial Regex PreOrLineBreakRegex();
+
+    // <br> and <hr>, and the opening or closing tag of a block.
+    [GeneratedRegex(@"</?(br|hr|p|div|h[1-6]|ul|ol|li|dl|dt|dd|table|tr|blockquote|pre|section|article|header|footer|aside|nav|figure|figcaption)\b[^>]*>", RegexOptions.IgnoreCase, matchTimeoutMilliseconds: 10_000)]
+    private static partial Regex BreakRegex();
 
     [GeneratedRegex(@"<[^>]*>", RegexOptions.None, matchTimeoutMilliseconds: 10_000)]
     private static partial Regex TagRegex();

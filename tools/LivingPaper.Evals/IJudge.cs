@@ -4,5 +4,5 @@ namespace LivingPaper.Evals;
 internal interface IJudge
 {
     // Throws JudgeException when the reply cannot be graded.
-    Task<JudgeVerdict> GradeAsync(string question, string reply, CancellationToken cancellationToken);
+    Task<JudgeVerdict> GradeAsync(EvalQuestion question, string reply, CancellationToken cancellationToken);
 }

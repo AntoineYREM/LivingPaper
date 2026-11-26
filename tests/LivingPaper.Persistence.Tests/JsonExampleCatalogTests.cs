@@ -1,3 +1,4 @@
+using LivingPaper.Application;
 using LivingPaper.Domain;
 using Shouldly;
 
@@ -164,7 +165,7 @@ public sealed class JsonExampleCatalogTests : IDisposable
     [Fact]
     public async Task AFileThatIsTooLarge_IsLeftOut_WithoutBeingRead()
     {
-        await File.WriteAllTextAsync(Path.Combine(_examples, "huge.json"), new string(' ', JsonBookRepository.MaxFileBytes + 1), Token);
+        await File.WriteAllBytesAsync(Path.Combine(_examples, "huge.json"), new byte[BookService.MaxImportBytes + 1], Token);
 
         (await NewCatalog().ListAsync(Token)).Unreadable.Single().Reason.ShouldContain("too large");
     }

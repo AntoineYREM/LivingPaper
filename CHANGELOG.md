@@ -7,6 +7,69 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-11-26
+
+### Added
+
+- **A model for vectorization** (PAPER-81): a third, optional choice in the Settings page, for an embedding model (any
+  OpenAI-compatible `POST /embeddings`, local or online). The model is tried when it is chosen. It turns the passages of a book
+  into vectors, so that the chat can find them ([specification](docs/specs/rag.md), decision 0011).
+
+- **Examples with the passages of their book** (PAPER-89): *Alice's Adventures in Wonderland*, *Cyrano de Bergerac* and
+  *Madame Bovary*, analyzed again from their English text (Project Gutenberg) with DeepSeek V4.1 Flash, with their passages
+  and `bge-m3` vectors: with that model, indexing one computes nothing. A few sentences of the analyses were corrected by hand
+  against the text. The five earlier examples, *Around the World in Eighty Days* and *The Jungle Book* included, are archived
+  in `examples/archive/`. The README recommends a multilingual model for vectorization, and its screenshots show the examples
+  of today.
+- **Passages travel with a book** (PAPER-88): the export of a book with passages holds them, their scenes and their vectors,
+  with a warning that the file holds the text of the book; a file may now be 30 MB at most (1 MB without passages), and leaves
+  the vectors out rather than go over. An import validates them (a wrong file is refused whole) and checks in the background
+  that the vectors are those of your model before they are used. An example shipped with passages can be indexed from its page,
+  and keeps them when added to the library. `data/rag.db` is brought up to date by itself.
+- **A clear message for a file that is far too large** (PAPER-88): on "Add a book" and "Import a book", an upload too large
+  to be read brings the form back with the reason, instead of a bare error of the server.
+- **Factual evaluation and measured defaults** (PAPER-87): 26 factual questions on *Madame Bovary* with their expected
+  answers, a judge of accuracy, and options of the evaluation tool to search the passages of an indexed book (`--book-data`,
+  `--embedding`, `--query-mode`, `--passages`), with what was searched and found kept and reported. From the measures
+  ([experiments](docs/experiments/passages-of-the-book.md)), the chat now searches the recent messages as they are and gives
+  the character 5 passages (before: a query written by the chat model, and 3).
+- **The chat uses the passages of the book** (PAPER-86): for an indexed book, the character gets the short plot and the
+  passages that answer the message in place of the whole story. `RAG_QUERY_MODE` and `RAG_PASSAGES` tune the
+  search. If the search fails, the reply uses the whole story, and says so. New prompts `chat.passages`
+  and `chat.searchQuery`.
+- **The passages are indexed** (PAPER-85): at the end of an analysis, each passage, under a header with its scene and who is
+  there, is turned into a vector. The page of a book says where its passages are and offers **Retry indexing** or **Re-index**
+  (after another model is chosen), which run in the background. A failed indexing does not fail the analysis. The tokens of
+  the vectors are shown.
+- **A short summary of the plot** (PAPER-84): written at every analysis from the story of the book, kept in the book file
+  (`schemaVersion` 4; versions 1 to 3 are still read).
+- **The passages of a book and their scenes** (PAPER-84): with a model for vectorization, the analysis reads each part as
+  numbered passages, asks which passages each scene covers, and keeps them in `data/rag.db`; deleting a book removes them.
+  New prompts `analysis.passageRanges` and `analysis.plotSummary`; `analysis.readPart` gained `{passageRanges}` (an unedited
+  one is updated).
+- **An index of passages** (PAPER-83): `data/rag.db`, an embedded SQLite database with the sqlite-vec extension, keeps passages
+  of books and their vectors and finds the closest ones. If it cannot be used, the Settings page says so.
+  New dependencies: `Microsoft.Data.Sqlite` (with SQLite) and `sqlite-vec` (a prerelease).
+
+### Changed
+
+- **The Docker image is compiled for its processor** (PAPER-83) without emulation, and holds the native libraries of that
+  processor only.
+- **A model you add fills the empty choices** (PAPER-81): until now only the first model was chosen by itself. While a choice is
+  empty, the new model is tried once, to fill analysis and chat, or vectorization alone when it refuses to chat and can
+  vectorize. A choice already made is never replaced. A provider with no list of models now also accepts a model that only
+  vectorizes.
+
+### Fixed
+
+- **The end of a long story was lost** (PAPER-64): a story over 24,000 letters was cut there, so the characters did not know
+  how the book ends. Its longest scenes are now shortened instead; every scene and the ending stay. The same for the summary of
+  the plot. The summary of one scene was also cut at 600 letters, losing the end of busy scenes: the limit is now 1,500. A book
+  already analyzed does not change: send it again to repair it (the shipped example *Madame Bovary* is still cut).
+- **Paragraphs of an EPUB** (PAPER-82): in many books, those of Project Gutenberg among them, every line of the file was read as a
+  paragraph, cutting sentences in two. A line break of the file is now a space, as in a browser; paragraphs, `<br>` and the other
+  blocks still start a new line. Books already analyzed do not change.
+
 ## [0.4.0] - 2026-11-23
 
 ### Fixed
@@ -239,6 +302,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - The tests of the web application no longer reach the limit of file watchers (inotify) of Linux machines, and the test of a
   connection cut in the middle of a reply no longer depends on timing.
 
-[Unreleased]: https://github.com/AntoineYREM/LivingPaper/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/AntoineYREM/LivingPaper/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/AntoineYREM/LivingPaper/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/AntoineYREM/LivingPaper/compare/v0.3.0...v0.4.0
 [0.1.0]: https://github.com/AntoineYREM/LivingPaper/releases/tag/v0.1.0

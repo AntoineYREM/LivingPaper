@@ -21,6 +21,10 @@ public sealed class Book(BookId id, string title, string fileName, DateTimeOffse
     // possible): the story then has holes.
     public bool StorySummaryPartial { get; set; }
 
+    // The plot of the book in a few hundred words, ending included, in English: given to a character that chats with passages
+    // of the book. Null for a book analyzed before it existed, with no story, or when the model refused to write it.
+    public string? PlotSummary { get; set; }
+
     public BookStatus Status { get; set; } = BookStatus.Waiting;
 
     // Where the analysis is, as the page shows it: "part 3 of 8", then "profile 4 of 10".
@@ -59,6 +63,17 @@ public sealed class Book(BookId id, string title, string fileName, DateTimeOffse
 
     public int OutputTokens { get; set; }
 
+    // The tokens of the vectors of the passages, when the provider reports them.
+    public int EmbeddingTokens { get; set; }
+
+    // While the passages are turned into vectors: how many are done, out of how many. Both 0 the rest of the time.
+    public int IndexDone { get; set; }
+
+    public int IndexTotal { get; set; }
+
+    // Why the passages have no vectors, as a stable key the interface translates. Null when there is nothing to report.
+    public string? IndexErrorCode { get; set; }
+
     public DateTimeOffset SentAt { get; set; } = sentAt;
 
     // When the analysis last started (a retry starts it again). With FinishedAt it gives the duration of the analysis.
@@ -79,7 +94,9 @@ public sealed class Book(BookId id, string title, string fileName, DateTimeOffse
         AddIfTooLong(violations, "fileName", FileName, BookLimits.FileName);
         AddIfTooLong(violations, "summary", Summary, CharacterLimits.Summary);
         AddIfTooLong(violations, "storySummary", StorySummary, CharacterLimits.StorySummary);
+        AddIfTooLong(violations, "plotSummary", PlotSummary, CharacterLimits.PlotSummary);
         AddIfTooLong(violations, "errorDetail", ErrorDetail, BookLimits.ErrorDetail);
+        AddIfTooLong(violations, "indexErrorCode", IndexErrorCode, BookLimits.ErrorDetail);
         AddIfTooLong(violations, "providerName", ProviderName, BookLimits.ProviderName);
         AddIfTooLong(violations, "model", Model, BookLimits.ModelName);
 

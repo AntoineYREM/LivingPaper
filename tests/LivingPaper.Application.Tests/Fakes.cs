@@ -56,6 +56,7 @@ internal sealed class InMemoryLlmSettingsRepository : ILlmSettingsRepository
     private List<LlmProvider> _providers = [];
     private string? _analysisId;
     private string? _chatId;
+    private string? _embeddingId;
     private List<string> _unreadable = [];
 
     public int Saves { get; private set; }
@@ -66,7 +67,7 @@ internal sealed class InMemoryLlmSettingsRepository : ILlmSettingsRepository
 
     public Task<LlmSettings> LoadAsync(CancellationToken cancellationToken) =>
         LoadFailure is null
-            ? Task.FromResult(LlmSettings.Restore(_providers, _analysisId, _chatId, _unreadable))
+            ? Task.FromResult(LlmSettings.Restore(_providers, _analysisId, _chatId, _unreadable, _embeddingId))
             : Task.FromException<LlmSettings>(LoadFailure);
 
     public async Task SaveAsync(LlmSettings settings, CancellationToken cancellationToken)
@@ -79,6 +80,7 @@ internal sealed class InMemoryLlmSettingsRepository : ILlmSettingsRepository
         _providers = [.. settings.Providers];
         _analysisId = settings.AnalysisProviderId;
         _chatId = settings.ChatProviderId;
+        _embeddingId = settings.EmbeddingProviderId;
         _unreadable = [.. settings.UnreadableKeyProviderIds];
         Saves++;
     }
@@ -88,18 +90,69 @@ internal sealed class InMemoryLlmSettingsRepository : ILlmSettingsRepository
         _providers = [.. settings.Providers];
         _analysisId = settings.AnalysisProviderId;
         _chatId = settings.ChatProviderId;
+        _embeddingId = settings.EmbeddingProviderId;
         _unreadable = [.. settings.UnreadableKeyProviderIds];
     }
 }
 
-internal sealed class FakeConnectionTester(Func<LlmProvider, Task<ConnectionTestResult>>? test = null) : ILlmConnectionTester
+internal sealed class FakeConnectionTester(
+    Func<LlmProvider, Task<ConnectionTestResult>>? test = null,
+    Func<LlmProvider, Task<ConnectionTestResult>>? embeddingTest = null) : ILlmConnectionTester
 {
+    // The models tried with a chat call.
     public List<LlmProvider> Tested { get; } = [];
+
+    // The models tried with an embedding call.
+    public List<LlmProvider> Embedded { get; } = [];
 
     public Task<ConnectionTestResult> TestAsync(LlmProvider provider, CancellationToken cancellationToken)
     {
         Tested.Add(provider);
         return test is null ? Task.FromResult(ConnectionTestResult.Ok()) : test(provider);
+    }
+
+    public Task<ConnectionTestResult> TestEmbeddingAsync(LlmProvider provider, CancellationToken cancellationToken)
+    {
+        Embedded.Add(provider);
+        return embeddingTest is null ? Task.FromResult(ConnectionTestResult.Ok()) : embeddingTest(provider);
+    }
+}
+
+// An embedding model that answers with what the test says.
+internal sealed class FakeEmbeddingModelFactory : IEmbeddingModelFactory
+{
+    public List<(LlmProvider Provider, bool Retry)> Created { get; } = [];
+
+    public List<IReadOnlyList<string>> Sent { get; } = [];
+
+    public Func<IReadOnlyList<string>, CancellationToken, Task<IReadOnlyList<float[]>>> Reply { get; set; } =
+        (texts, _) => Task.FromResult<IReadOnlyList<float[]>>([.. texts.Select(text => new float[] { text.Length, 1f })]);
+
+    public Exception? CreateFailure { get; set; }
+
+    // What a successful call reports.
+    public int TokensPerText { get; set; }
+
+    public IEmbeddingModel Create(LlmProvider provider, bool retryPassingFailures = true)
+    {
+        if (CreateFailure is not null)
+        {
+            throw CreateFailure;
+        }
+
+        Created.Add((provider, retryPassingFailures));
+        return new Model(this);
+    }
+
+    private sealed class Model(FakeEmbeddingModelFactory owner) : IEmbeddingModel
+    {
+        public async Task<IReadOnlyList<float[]>> EmbedAsync(IReadOnlyList<string> texts, ChatUsageMeter? usage, CancellationToken cancellationToken)
+        {
+            owner.Sent.Add(texts);
+            var vectors = await owner.Reply(texts, cancellationToken);
+            usage?.Add(owner.TokensPerText * texts.Count, 0, 0);
+            return vectors;
+        }
     }
 }
 

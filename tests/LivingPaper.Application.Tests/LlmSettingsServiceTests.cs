@@ -73,7 +73,7 @@ public sealed class LlmSettingsServiceTests : IDisposable
     }
 
     [Fact]
-    public async Task Add_DoesNotChooseASecondModelByItself()
+    public async Task Add_KeepsTheChoicesAlreadyMade_ForASecondModel()
     {
         var first = (await _service.AddAsync(Draft("First"), Token)).Added!;
 
@@ -136,7 +136,7 @@ public sealed class LlmSettingsServiceTests : IDisposable
     [InlineData(ConnectionFailure.PromptFile, null)]
     public async Task Add_DoesNotSaveAModelWhoseTestFails_AndSaysWhy(ConnectionFailure failure, int? status)
     {
-        var tester = new FakeConnectionTester(_ => Task.FromResult(ConnectionTestResult.Failed(failure, status)));
+        var tester = Tester(ConnectionTestResult.Failed(failure, status), ConnectionTestResult.Failed(failure, status));
         using var service = ServiceWith(tester);
 
         var result = await service.AddAsync(Draft(), Token);
@@ -281,6 +281,175 @@ public sealed class LlmSettingsServiceTests : IDisposable
 
         _repository.Saves.ShouldBe(saves);
         (await _service.GetAsync(Token)).AnalysisProviderId.ShouldBe(first.Id);
+    }
+
+    // ---- Adding a model that cannot chat ----
+
+    private static ConnectionTestResult Refused { get; } = ConnectionTestResult.Failed(ConnectionFailure.ModelUnknown, 400);
+
+    private static FakeConnectionTester Tester(ConnectionTestResult chat, ConnectionTestResult? embedding = null) =>
+        new(_ => Task.FromResult(chat), _ => Task.FromResult(embedding ?? ConnectionTestResult.Ok()));
+
+    [Fact]
+    public async Task Add_TriesOnlyTheChat_WhenItAnswers()
+    {
+        await _service.AddAsync(Draft(), Token);
+
+        _tester.Embedded.ShouldBeEmpty();
+        (await _service.GetAsync(Token)).EmbeddingProviderId.ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task Add_ChoosesAFirstModelThatOnlyVectorizes_ForVectorizationAlone()
+    {
+        var tester = Tester(Refused);
+        using var service = ServiceWith(tester);
+
+        var result = await service.AddAsync(Draft("bge"), Token);
+
+        result.Succeeded.ShouldBeTrue();
+        result.Connection.ShouldNotBeNull().Success.ShouldBeTrue();
+        tester.Embedded.ShouldHaveSingleItem().Name.ShouldBe("bge");
+        var view = await service.GetAsync(Token);
+        view.EmbeddingProviderId.ShouldBe(result.Added!.Id);
+        view.AnalysisProviderId.ShouldBeNull();
+        view.ChatProviderId.ShouldBeNull();
+    }
+
+    [Theory]
+    [InlineData(ConnectionFailure.Unreachable, null)]
+    [InlineData(ConnectionFailure.ProviderError, 503)]
+    [InlineData(ConnectionFailure.InvalidResponse, null)]
+    public async Task Add_KeepsTheUsualChoices_ForAFirstModelWhoseChatFailsWithoutRefusing_ButWhichVectorizes(ConnectionFailure failure, int? status)
+    {
+        using var service = ServiceWith(Tester(ConnectionTestResult.Failed(failure, status)));
+
+        var result = await service.AddAsync(Draft(), Token);
+
+        result.Succeeded.ShouldBeTrue(); // One of the two tries is enough to save it.
+        var view = await service.GetAsync(Token);
+        view.ChatProviderId.ShouldBe(result.Added!.Id);
+        view.AnalysisProviderId.ShouldBe(result.Added.Id);
+        view.EmbeddingProviderId.ShouldBeNull(); // A slow model is not taken for an embedding model.
+    }
+
+    [Fact]
+    public async Task Add_ChoosesALaterModelThatOnlyVectorizes_ForTheEmptyChoiceOfVectorization()
+    {
+        var tester = new FakeConnectionTester(provider => Task.FromResult(provider.Name == "bge" ? Refused : ConnectionTestResult.Ok()));
+        using var service = ServiceWith(tester);
+        var first = (await service.AddAsync(Draft("Chat"), Token)).Added!;
+
+        var result = await service.AddAsync(Draft("bge"), Token);
+
+        result.Succeeded.ShouldBeTrue();
+        var view = await service.GetAsync(Token);
+        view.EmbeddingProviderId.ShouldBe(result.Added!.Id);
+        view.ChatProviderId.ShouldBe(first.Id);
+        view.AnalysisProviderId.ShouldBe(first.Id);
+    }
+
+    [Fact]
+    public async Task Add_ReportsTheFailureOfTheChat_WhenNeitherTrySucceeds()
+    {
+        var tester = Tester(Refused, ConnectionTestResult.Failed(ConnectionFailure.KeyRefused, 401));
+        using var service = ServiceWith(tester);
+
+        var result = await service.AddAsync(Draft(), Token);
+
+        result.Succeeded.ShouldBeFalse();
+        result.Connection.ShouldBe(Refused);
+        tester.Embedded.Count.ShouldBe(1);
+        _repository.Saves.ShouldBe(0);
+    }
+
+    [Fact]
+    public async Task Add_DoesNotTryToVectorize_WhenThePromptsFileCannotBeUsed()
+    {
+        var tester = Tester(ConnectionTestResult.Failed(ConnectionFailure.PromptFile, detail: "prompts.json"));
+        using var service = ServiceWith(tester);
+
+        var result = await service.AddAsync(Draft(), Token);
+
+        result.Succeeded.ShouldBeFalse();
+        tester.Embedded.ShouldBeEmpty();
+    }
+
+    // ---- Choosing the model for vectorization ----
+
+    [Fact]
+    public async Task SelectForEmbedding_TriesTheModel_ThenChoosesIt()
+    {
+        await _service.AddAsync(Draft("Chat"), Token);
+        var second = (await _service.AddAsync(Draft("bge"), Token)).Added!;
+
+        var result = await _service.SelectForEmbeddingAsync(second.Id, Token);
+
+        result.ShouldNotBeNull().Success.ShouldBeTrue();
+        _tester.Embedded.ShouldHaveSingleItem().Id.ShouldBe(second.Id);
+        (await _service.GetAsync(Token)).EmbeddingProviderId.ShouldBe(second.Id);
+        (await _service.GetEmbeddingProviderAsync(Token))!.ApiKey.ShouldBe(Key);
+    }
+
+    [Fact]
+    public async Task SelectForEmbedding_KeepsThePreviousChoice_WhenTheModelCannotVectorize()
+    {
+        var tester = new FakeConnectionTester(embeddingTest: provider => Task.FromResult(provider.Name == "bge" ? ConnectionTestResult.Ok() : Refused));
+        using var service = ServiceWith(tester);
+        var chat = (await service.AddAsync(Draft("Chat"), Token)).Added!;
+        var bge = (await service.AddAsync(Draft("bge"), Token)).Added!;
+        await service.SelectForEmbeddingAsync(bge.Id, Token);
+        var saves = _repository.Saves;
+
+        var result = await service.SelectForEmbeddingAsync(chat.Id, Token);
+
+        result.ShouldBe(Refused);
+        _repository.Saves.ShouldBe(saves);
+        (await service.GetAsync(Token)).EmbeddingProviderId.ShouldBe(bge.Id);
+    }
+
+    [Fact]
+    public async Task SelectForEmbedding_DoesNotTryAgainTheModelAlreadyChosen_NorTheChoiceOfNone()
+    {
+        await _service.AddAsync(Draft("Chat"), Token);
+        var bge = (await _service.AddAsync(Draft("bge"), Token)).Added!;
+        await _service.SelectForEmbeddingAsync(bge.Id, Token);
+        _tester.Embedded.Clear();
+
+        (await _service.SelectForEmbeddingAsync(bge.Id, Token))!.Success.ShouldBeTrue();
+        (await _service.SelectForEmbeddingAsync(null, Token))!.Success.ShouldBeTrue();
+
+        _tester.Embedded.ShouldBeEmpty();
+        (await _service.GetAsync(Token)).EmbeddingProviderId.ShouldBeNull();
+        (await _service.GetEmbeddingProviderAsync(Token)).ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task SelectForEmbedding_ReturnsNull_ForAnUnknownModel_WithoutTryingAnything()
+    {
+        await _service.AddAsync(Draft(), Token);
+        var saves = _repository.Saves;
+
+        (await _service.SelectForEmbeddingAsync("unknown", Token)).ShouldBeNull();
+
+        _tester.Embedded.ShouldBeEmpty();
+        _repository.Saves.ShouldBe(saves);
+    }
+
+    [Fact]
+    public async Task SelectForEmbedding_ReturnsNull_WhenTheModelIsDeletedWhileItIsTried()
+    {
+        _repository.Seed(LlmSettings.Restore([Provider("a", "A")], null, null));
+        var tester = new FakeConnectionTester(embeddingTest: _ =>
+        {
+            _repository.Seed(new LlmSettings());
+            return Task.FromResult(ConnectionTestResult.Ok());
+        });
+        using var service = ServiceWith(tester);
+
+        (await service.SelectForEmbeddingAsync("a", Token)).ShouldBeNull();
+
+        (await service.GetAsync(Token)).EmbeddingProviderId.ShouldBeNull();
     }
 
     // ---- Reading ----

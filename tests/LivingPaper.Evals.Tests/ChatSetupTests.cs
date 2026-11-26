@@ -52,9 +52,10 @@ public class ChatSetupTests
         var emma = new Character(1, "Emma Bovary", "short", "profile");
         var replier = new ChatServiceReplier(new CharacterChatService(settings, factory, new Prompts()), book, emma);
 
-        var reply = await replier.ReplyAsync("Hello?", CancellationToken.None);
+        var answer = await replier.ReplyAsync(new EvalQuestion("q-1", "normal", "Hello?", ""), CancellationToken.None);
 
-        reply.ShouldBe("Je suis Emma.");
+        answer.Reply.ShouldBe("Je suis Emma.");
+        answer.Trace.ShouldBeNull();
         factory.Created.ShouldBe([Chosen]);
         var request = model.Requests.Single();
         request[0].Role.ShouldBe(ChatRole.System);
@@ -62,13 +63,16 @@ public class ChatSetupTests
         request[^1].ShouldBe(new ChatMessage(ChatRole.User, "Hello?"));
     }
 
-    private sealed class NoTester : ILlmConnectionTester
+    internal sealed class NoTester : ILlmConnectionTester
     {
         public Task<ConnectionTestResult> TestAsync(LlmProvider provider, CancellationToken cancellationToken) =>
             Task.FromResult(ConnectionTestResult.Ok());
+
+        public Task<ConnectionTestResult> TestEmbeddingAsync(LlmProvider provider, CancellationToken cancellationToken) =>
+            Task.FromResult(ConnectionTestResult.Ok());
     }
 
-    private sealed class NoCatalog : IModelCatalog
+    internal sealed class NoCatalog : IModelCatalog
     {
         public Task<ModelListResult> ListAsync(string baseUrl, string apiKey, CancellationToken cancellationToken) =>
             Task.FromResult(ModelListResult.Failed(ConnectionFailure.NoModelList));

@@ -24,15 +24,24 @@ decision records in `docs/decisions/`.
   browser. A provider with no list falls back to a typed model name and a connection test before saving. Keys are encrypted at rest and never sent back to the
   browser. This page is also where the user chooses which LLM is used for book analysis and which one for chat.
   A deleted LLM that was selected must be unselected, and analysis/chat stay disabled until another is chosen.
+  A third, optional choice (None by default) takes an embedding model for vectorization; it is tried when chosen. A new model
+  fills the choices that have no model: analysis and chat, or vectorization alone for a model that only vectorizes; it is tried
+  to know which (see `docs/specs/rag.md`). Deleting a model leaves its choices empty.
 - Books and analyses are stored as JSON files: easy to export and import.
 - Add a book (EPUB or PDF) and delete a book. The book file is deleted after a successful analysis, so
   re-analyzing (other LLM, edited prompt) means uploading the book again and ticking "Replace".
 - Background analysis: book summary (era, place, tone), the story of the whole book scene by scene (800 to 3,000 words
-  according to the length of the book, with who is present in each scene) and the 10 most important characters, each with a
-  name, a short description and a personality profile (200 to 400 words). The characters know the whole story when they chat.
+  according to the length of the book, with who is present in each scene), a short summary of its plot (300 to 500 words) and
+  the 10 most important characters, each with a name, a short description and a personality profile (200 to 400 words). The
+  characters know the whole story when they chat. With a model for vectorization, the passages of the book are kept with their
+  scenes and turned into vectors; the page of the book shows their state, with retry and re-index (see `docs/specs/rag.md`).
+  Exports and examples carry the passages and vectors (30 MB at most, with a copyright warning); imported vectors are used only
+  after a check with one passage, and an example is indexed on demand.
 - "My library" page (books the user analyzed) and "Examples" page (read-only, public-domain books shipped
   already analyzed: they can be read without a key, chatting with their characters needs an LLM chosen for the chat).
-- Chat with a character: first person, short SMS-like replies, streamed. Conversations are not stored.
+- Chat with a character: first person, short SMS-like replies, streamed. Conversations are not stored. For a book indexed
+  with the chosen model for vectorization, the passages that answer the message replace the story, with fallbacks and a short
+  notice (see `docs/specs/rag.md`).
 - UI in **English only** for now. The translation mechanism (JSON translation files) and `fr.json` are kept in reserve:
   the language switch is hidden and the available languages come from the configuration (`en` alone by default).
 
@@ -41,7 +50,8 @@ OCR for scanned PDFs, saved conversations.
 
 ## Stack and architecture
 
-- **Backend:** ASP.NET Core on .NET 10 LTS, no database: data is stored as **JSON files** in a `data/` directory (Docker volume).
+- **Backend:** ASP.NET Core on .NET 10 LTS, no database server: data is stored as **JSON files** in a `data/` directory (Docker
+  volume), plus an embedded SQLite file for the passages of books (optional feature).
 - **Frontend:** Razor Pages rendered server-side, HTML/CSS and small vanilla JavaScript. Page models call the
   `Application` layer directly. The chat streams replies as NDJSON over `fetch` (POST). Everything except
   the chat works without JavaScript.
@@ -70,22 +80,26 @@ OCR for scanned PDFs, saved conversations.
 - **Background work:** analysis starts automatically after upload (no cost confirmation step); the tokens used and
   the duration are shown at the end. It runs in a hosted `BackgroundService`, one book at a time, with progress stored
   in the database. An analysis with no progress for 10 minutes is marked as interrupted and can be retried.
-- **AI:** all AI calls go through a port in `Application` (`IChatModel`) implemented by one adapter that speaks the
-  OpenAI-compatible Chat Completions API, so a provider with a compatible chat API works (OpenAI, local servers such as
+- **AI:** all AI calls go through a port in `Application` (`IChatModel`, and `IEmbeddingModel` for vectors) implemented by one
+  adapter each that speaks the OpenAI-compatible API (Chat Completions, embeddings), so a provider with a compatible chat API works (OpenAI, local servers such as
   Ollama or LM Studio). Only providers that were tested are named in the interface and the docs.
   A provider is `{ id, name, baseUrl, apiKey, model }`. Adding one asks the provider for its models first (a connection test when it has no list). Transient
   failures are retried 3 times with growing delays. The port is faked in tests.
 - **Data:** one JSON file per book (`data/books/{id}.json`, the id being the slug of the title: `cyrano-de-bergerac`) holding metadata, analysis status, book summary and
-  characters and the story of the book. The book text itself is never stored. Every file has a `schemaVersion` (3; versions 1 and 2
-  are still read). Writes are atomic (temp
-  file then rename). Imported JSON is untrusted input: validate schema, sizes and text lengths before accepting.
-  Storage sits behind a port (`IBookRepository`) so another backend can be added later.
+  characters, the story of the book and the short summary of its plot. The book text itself is never stored, except as the passages
+  kept when a model for vectorization is chosen (below). Every file has a `schemaVersion` (4; versions 1 to 3 are still read). Writes are atomic (temp
+  file then rename). Imported JSON is untrusted input: validate schema, sizes, text lengths, passages and vectors before
+  accepting.
+  Storage sits behind a port (`IBookRepository`) so another backend can be added later. The only database is `data/rag.db`
+  (SQLite with the sqlite-vec extension, behind `IPassageIndex`): the passages of books and their vectors, optional, never the
+  source of truth for a book (see `docs/specs/rag.md`).
 - **Language of data:** everything the analysis writes into JSON (book summary, character descriptions,
   personality profiles) is in **English**, whatever the book's language, so files are portable and examples are
   shared. The chat prompt tells the LLM to answer the user **in the user's own language** (the language they write
   in). Prompts sent to the LLM are written in English.
 - **Prompts:** no prompt is hard-coded. All prompts (read a part, merge characters, character profile, book
-  summary, story of the book, chat system prompt, chat story section, connection test) live in `data/prompts.json`, which users can read and edit by
+  summary, story of the book, passage ranges, plot summary, chat system prompt, chat story section, chat passages section,
+  search query, connection test) live in `data/prompts.json`, which users can read and edit by
   hand. Defaults are versioned in the repository (`prompts.default.json`) and copied in full to `data/` on first
   start. Prompts are re-read on every analysis and chat message (no restart needed). On update, missing keys are
   added, and a prompt that is still exactly an earlier shipped default (hash kept in `ReplacedDefaults`) is replaced by the new default;
@@ -93,7 +107,8 @@ OCR for scanned PDFs, saved conversations.
   fallback to defaults. Variables use `{name}` placeholders documented in each prompt's `description`. The
   number of characters extracted (10) is the `{maxCharacters}` variable of the merge prompt: no UI setting.
 - **Examples:** public-domain books already analyzed live in `examples/*.json` in the repository, read-only, in the
-  same format as user exports.
+  same format as user exports. The three shipped ones hold the passages of their English text and `bge-m3` vectors; only
+  public-domain books **and translations** may be shipped with passages.
 - **Settings:** providers live in `data/settings.json` with keys encrypted by ASP.NET Core Data Protection. This
   file is never part of a book export.
 - **Deployment:** multi-stage Dockerfile and `docker-compose.yml`. `docker compose up` must be enough to run the

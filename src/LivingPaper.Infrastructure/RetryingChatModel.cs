@@ -84,5 +84,5 @@ public sealed partial class RetryingChatModel(
     [LoggerMessage(
         Level = LogLevel.Warning,
         Message = "The language model call failed ({Kind}, HTTP status {Status}); try {Next} of {Total} in {Seconds} s.")]
-    private static partial void LogRetry(ILogger logger, ChatFailureKind kind, int? status, int next, int total, double seconds);
+    internal static partial void LogRetry(ILogger logger, ChatFailureKind kind, int? status, int next, int total, double seconds);
 }

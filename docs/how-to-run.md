@@ -28,7 +28,7 @@ Open <http://localhost:8080>. The first start builds the image (a few minutes), 
 
 ### Without building: the published image
 
-Each release publishes an image (amd64 and arm64) to GitHub Container Registry, tagged `0.4.0`, `0.4` and `latest`. Save this as
+Each release publishes an image (amd64 and arm64) to GitHub Container Registry, tagged `0.5.0`, `0.5` and `latest`. Save this as
 `docker-compose.yml` in an empty folder, next to nothing else:
 
 ```yaml
@@ -47,7 +47,7 @@ volumes:
   livingpaper-data:
 ```
 
-Then `docker compose up -d`. To update, `docker compose pull && docker compose up -d`. Pin a version (`:0.4.0`) rather than
+Then `docker compose up -d`. To update, `docker compose pull && docker compose up -d`. Pin a version (`:0.5.0`) rather than
 `latest` if you want updates only when you decide. The same warning about the port applies.
 
 ```bash
@@ -79,6 +79,8 @@ Everything is optional. Set these as environment variables (in Docker, under `en
 | `EXAMPLES_DIRECTORY` | `examples` next to the application | Where the example books are read from |
 | `ANALYSIS_PAGES_PER_PART` | `40` | Pages per part when a book is analyzed; lower it for a model with a small context window |
 | `ANALYSIS_PARALLEL_CALLS` | `3` | Parts read at the same time; use `1` for a small local server or strict rate limits |
+| `RAG_QUERY_MODE` | `recent` | For a book indexed with a model for vectorization: how the chat searches its passages. `recent`: your message and the three before it, as they are; `rewrite`: the chat model writes the search first (one more call a message: slower, and it costs more); `last`: your message alone |
+| `RAG_PASSAGES` | `5` | How many passages the character gets with each message, from 1 to 10. 3 makes the prompt about 1,000 tokens shorter, and the answer is found less often |
 | `LANGFUSE_BASE_URL` | none | Address of your Langfuse (`http://localhost:3000`). Required once the two keys are set; there is no default, so nothing is sent to the cloud by surprise |
 | `LANGFUSE_PUBLIC_KEY`, `LANGFUSE_SECRET_KEY` | empty | Keys of a Langfuse project. Tracing is **off** while they are empty; setting only one stops the application at start |
 | `LANGFUSE_CAPTURE_CONTENT` | `false` | `true` also records the prompts and replies, which hold the text of your books and chats (see [reference](reference.md#traces-of-the-model-calls-langfuse)) |
@@ -96,8 +98,22 @@ Open **Settings**, type a name, a base URL and an API key, then press **Get the 
 list of models, which also checks the key. Choose a model in the list and save. Then choose which model analyzes books and which one
 chats.
 
+A third choice, **Model for vectorization**, is optional and set to None. It takes an embedding model, which turns text into
+vectors; the model is tried when you choose it. Prefer a **multilingual** one, so that a question in your language finds the
+passages of a book in another: `bge-m3` (`ollama pull bge-m3`) is the one measured here, and the examples come with its
+vectors. With it, the analysis of a book
+keeps its passages and turns them into vectors (about a minute and a half for a long novel with `bge-m3` on a 4 GB graphics
+card). The chat then gives the character the passages that answer your message in place of the whole story.
+
+**A local model for the chat needs a context of at least 8,192 tokens** with passages. Some servers start with less (Ollama
+uses 4,096 on a 4 GB graphics card): set `OLLAMA_CONTEXT_LENGTH=8192` for Ollama.
+
+A model you add **fills the choices that are empty**: analysis and chat, or vectorization alone when it refuses to chat and can
+vectorize. While a choice is empty, the new model is tried once to know which; this can take a minute or two with a slow local
+model. A choice already made is never replaced, and deleting a model leaves its choices empty.
+
 If the provider has no list of models (some local servers), the page says so and asks you to type the model name; it is then tested
-with a short request before it is saved. The key is kept in memory between the two steps (15 minutes at most, forgotten when the
+with a short request (a chat, else a vectorization) before it is saved. The key is kept in memory between the two steps (15 minutes at most, forgotten when the
 application restarts) and is never shown again.
 
 | Provider | Base URL | Key |

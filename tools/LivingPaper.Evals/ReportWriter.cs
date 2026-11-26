@@ -78,6 +78,13 @@ internal static class ReportWriter
         writer.WriteLine();
         writer.WriteLine($"Tokens, chat:  {Describe(chat)}");
         writer.WriteLine($"Tokens, judge: {Describe(judge)}");
+
+        if (TraceSummary.Of(results) is { } traces)
+        {
+            writer.WriteLine();
+            writer.WriteLine($"Per reply ({traces.Tries} answered):");
+            traces.Write(writer, "  ");
+        }
     }
 
     private static string Format(double? average) => average is null ? "-" : average.Value.ToString("F2", CultureInfo.InvariantCulture);

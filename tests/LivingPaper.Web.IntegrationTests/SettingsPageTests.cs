@@ -50,11 +50,38 @@ public partial class SettingsPageTests
             Task.FromResult(Failure is { } failure ? ModelListResult.Failed(failure, Status) : ModelListResult.Found(Models));
     }
 
-    private static LivingPaperFactory NewFactory(ScriptedChatModelFactory models, ScriptedModelCatalog? catalog = null) =>
+    // Plays the embedding side of a provider: by default it cannot vectorize, as a chat model; the models named in
+    // Vectorizing can. Never a real call.
+    private sealed class ScriptedEmbeddingModelFactory : IEmbeddingModelFactory
+    {
+        public HashSet<string> Vectorizing { get; } = [];
+
+        public List<string> Tried { get; } = [];
+
+        // The HTTP status of the models that cannot vectorize.
+        public int Refusal { get; set; } = 400;
+
+        public IEmbeddingModel Create(LlmProvider provider, bool retryPassingFailures = true) => new ScriptedModel(this, provider.Model);
+
+        private sealed class ScriptedModel(ScriptedEmbeddingModelFactory owner, string model) : IEmbeddingModel
+        {
+            public Task<IReadOnlyList<float[]>> EmbedAsync(IReadOnlyList<string> texts, ChatUsageMeter? usage, CancellationToken cancellationToken)
+            {
+                owner.Tried.Add(model);
+                return owner.Vectorizing.Contains(model)
+                    ? Task.FromResult<IReadOnlyList<float[]>>([.. texts.Select(text => new float[] { text.Length, 1f })])
+                    : Task.FromException<IReadOnlyList<float[]>>(new ChatProviderException(ChatFailureKind.Http, "no vectors", owner.Refusal));
+            }
+        }
+    }
+
+    private static LivingPaperFactory NewFactory(
+        ScriptedChatModelFactory models, ScriptedModelCatalog? catalog = null, ScriptedEmbeddingModelFactory? embeddings = null) =>
         LivingPaperFactory.With(configureServices: services =>
         {
             services.AddSingleton<IChatModelFactory>(models);
             services.AddSingleton<IModelCatalog>(catalog ?? new ScriptedModelCatalog());
+            services.AddSingleton<IEmbeddingModelFactory>(embeddings ?? new ScriptedEmbeddingModelFactory());
         });
 
     private static HttpClient NewClient(LivingPaperFactory factory) =>
@@ -235,7 +262,7 @@ public partial class SettingsPageTests
 
         page.ShouldContain("does not offer a list of its models");
         Regex.IsMatch(page, @"<input[^>]*id=""llm-model""[^>]*type=""text""").ShouldBeTrue();
-        page.ShouldContain("up to a minute");
+        page.ShouldContain("up to two minutes");
 
         using var saved = await PostAsync(client, "Add", new Dictionary<string, string> { ["draft"] = DraftOf(fetched), ["model"] = "my-model" });
         saved.StatusCode.ShouldBe(HttpStatusCode.Redirect);
@@ -280,11 +307,16 @@ public partial class SettingsPageTests
     // ---- Adding a model ----
 
     [Fact]
-    public async Task AddingAModel_ChoosesItInTheList_SavesItEncrypted_WithoutAnotherTest_AndGoesBackToThePageWithANotice()
+    public async Task AModelAddedWhenEveryChoiceIsMade_IsSavedEncrypted_WithoutAnyTest_AndGoesBackToThePageWithANotice()
     {
-        var models = new ScriptedChatModelFactory { Failure = new InvalidOperationException("the chat model must not be called: the list proved the key") };
-        using var factory = NewFactory(models);
+        var models = new ScriptedChatModelFactory();
+        var embeddings = new ScriptedEmbeddingModelFactory();
+        embeddings.Vectorizing.Add("gpt-5-nano");
+        using var factory = NewFactory(models, embeddings: embeddings);
         using var client = NewClient(factory);
+        await AddAsync(client, name: "First");
+        await ChooseTheFirstModelForEverythingAsync(factory, client);
+        models.Failure = new InvalidOperationException("the chat model must not be called: the list proved the key");
         using var fetched = await PostAsync(client, "Models", NewProvider());
 
         using var response = await PostAsync(client, "Add", new Dictionary<string, string> { ["draft"] = DraftOf(fetched), ["model"] = "gpt-5-nano" });
@@ -312,6 +344,185 @@ public partial class SettingsPageTests
         html.ShouldContain("For chat");
         html.ShouldNotContain("Analysis is off");
         html.ShouldNotContain("Chat is off");
+    }
+
+    private static async Task ChooseTheFirstModelForEverythingAsync(LivingPaperFactory factory, HttpClient client)
+    {
+        var id = (await factory.Services.GetRequiredService<LlmSettingsService>().GetAsync(Token)).Providers[0].Id;
+        using var response = await PostAsync(client, "Select", new Dictionary<string, string> { ["analysis"] = id, ["chat"] = id, ["embedding"] = id });
+        response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
+    }
+
+    [Fact]
+    public async Task TheSecondStep_SaysThatTheModelIsTried_OnlyWhileAChoiceIsEmpty()
+    {
+        var embeddings = new ScriptedEmbeddingModelFactory();
+        embeddings.Vectorizing.Add("gpt-5-nano");
+        using var factory = NewFactory(new ScriptedChatModelFactory(), embeddings: embeddings);
+        using var client = NewClient(factory);
+        using var first = await PostAsync(client, "Models", NewProvider());
+        var firstStep = Decoded(await GetAsync(client, first.Headers.Location!.OriginalString.Split('#')[0]));
+        await AddAsync(client, name: "Saved");
+        await ChooseTheFirstModelForEverythingAsync(factory, client);
+        using var second = await PostAsync(client, "Models", NewProvider(name: "Next"));
+        var secondStep = Decoded(await GetAsync(client, second.Headers.Location!.OriginalString.Split('#')[0]));
+
+        firstStep.ShouldContain("The model is tried once");
+        firstStep.ShouldNotContain("The model is not tested again");
+        secondStep.ShouldContain("The model is not tested again");
+        secondStep.ShouldNotContain("The model is tried once");
+    }
+
+    [Fact]
+    public async Task AModelAddedLater_FillsTheEmptyChoices_ItCanDo()
+    {
+        var chat = new ScriptedChatModelFactory { Failure = new ChatProviderException(ChatFailureKind.Http, "does not support chat", 400) };
+        var embeddings = new ScriptedEmbeddingModelFactory();
+        embeddings.Vectorizing.Add("bge-m3");
+        using var factory = NewFactory(chat, new ScriptedModelCatalog { Models = ["bge-m3", "llama3.1"] }, embeddings);
+        using var client = NewClient(factory);
+        await AddAsync(client, name: "BGE", model: "bge-m3");
+        chat.Failure = null;
+
+        var html = Decoded(await AddAsync(client, name: "Llama", model: "llama3.1"));
+
+        html.ShouldNotContain("Analysis is off");
+        html.ShouldNotContain("Chat is off");
+        var service = factory.Services.GetRequiredService<LlmSettingsService>();
+        var view = await service.GetAsync(Token);
+        var llama = view.Providers.Single(provider => provider.Name == "Llama").Id;
+        view.AnalysisProviderId.ShouldBe(llama);
+        view.ChatProviderId.ShouldBe(llama);
+        view.EmbeddingProviderId.ShouldBe(view.Providers.Single(provider => provider.Name == "BGE").Id);
+    }
+
+    [Fact]
+    public async Task AFirstModelThatCannotChatButVectorizes_IsChosenForVectorizationAlone()
+    {
+        var chat = new ScriptedChatModelFactory { Failure = new ChatProviderException(ChatFailureKind.Http, "does not support chat", 400) };
+        var embeddings = new ScriptedEmbeddingModelFactory();
+        embeddings.Vectorizing.Add("bge-m3");
+        using var factory = NewFactory(chat, new ScriptedModelCatalog { Models = ["bge-m3"] }, embeddings);
+        using var client = NewClient(factory);
+
+        var html = Decoded(await AddAsync(client, name: "BGE", model: "bge-m3"));
+
+        html.ShouldContain("For vectorization");
+        html.ShouldNotContain("For chat");
+        html.ShouldNotContain("For analysis");
+        html.ShouldContain("Analysis is off");
+        html.ShouldContain("Chat is off");
+    }
+
+    [Fact]
+    public async Task WhenTheProviderHasNoList_AModelThatOnlyVectorizes_IsAccepted()
+    {
+        var chat = new ScriptedChatModelFactory { Failure = new ChatProviderException(ChatFailureKind.Http, "does not support chat", 400) };
+        var embeddings = new ScriptedEmbeddingModelFactory();
+        embeddings.Vectorizing.Add("typed-embedder");
+        using var factory = NewFactory(chat, new ScriptedModelCatalog { Failure = ConnectionFailure.NoModelList }, embeddings);
+        using var client = NewClient(factory);
+
+        var html = Decoded(await AddAsync(client, name: "Local", model: "typed-embedder"));
+
+        html.ShouldContain("typed-embedder");
+        html.ShouldContain("For vectorization");
+    }
+
+    // ---- The model for vectorization ----
+
+    private static async Task<(string Chat, string Embedder)> AddAChatModelAndAnEmbedderAsync(LivingPaperFactory factory, HttpClient client)
+    {
+        await AddAsync(client, "OpenAI");
+        await AddAsync(client, "BGE", "llama3.1");
+        var providers = (await factory.Services.GetRequiredService<LlmSettingsService>().GetAsync(Token)).Providers;
+        return (providers.Single(provider => provider.Name == "OpenAI").Id, providers.Single(provider => provider.Name == "BGE").Id);
+    }
+
+    [Fact]
+    public async Task TheModelForVectorization_IsNoneByDefault_AndHasALabelAndAHelpText()
+    {
+        using var factory = NewFactory(new ScriptedChatModelFactory());
+        using var client = NewClient(factory);
+
+        var html = Decoded(await AddAsync(client));
+
+        html.ShouldContain("for=\"llm-embedding\"");
+        Regex.IsMatch(html, @"<select[^>]*id=""llm-embedding""[^>]*name=""embedding""[^>]*aria-describedby=""llm-embedding-hint""").ShouldBeTrue();
+        Regex.IsMatch(html, @"<select[^>]*id=""llm-embedding""[\s\S]*?<option value="""" selected=""selected"">None</option>").ShouldBeTrue();
+        html.ShouldContain("An embedding model cannot analyze books or chat");
+    }
+
+    [Fact]
+    public async Task ChoosingAModelForVectorization_TriesIt_ThenSavesIt_AndSaysSo()
+    {
+        var embeddings = new ScriptedEmbeddingModelFactory();
+        embeddings.Vectorizing.Add("llama3.1");
+        using var factory = NewFactory(new ScriptedChatModelFactory(), embeddings: embeddings);
+        using var client = NewClient(factory);
+        var (chat, embedder) = await AddAChatModelAndAnEmbedderAsync(factory, client);
+
+        using var response = await PostAsync(client, "Select", new Dictionary<string, string> { ["analysis"] = chat, ["chat"] = chat, ["embedding"] = embedder });
+
+        response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
+        var html = Decoded(await GetAsync(client, response.Headers.Location!.OriginalString));
+        html.ShouldContain("For vectorization");
+        embeddings.Tried.ShouldBe(["llama3.1"]);
+        (await factory.Services.GetRequiredService<LlmSettingsService>().GetAsync(Token)).EmbeddingProviderId.ShouldBe(embedder);
+    }
+
+    [Fact]
+    public async Task AModelThatCannotVectorize_IsRefused_ButTheOtherChoicesAreSaved()
+    {
+        using var factory = NewFactory(new ScriptedChatModelFactory());
+        using var client = NewClient(factory);
+        var (chat, other) = await AddAChatModelAndAnEmbedderAsync(factory, client);
+
+        using var response = await PostAsync(client, "Select", new Dictionary<string, string> { ["analysis"] = string.Empty, ["chat"] = other, ["embedding"] = chat });
+        var html = Decoded(await response.Content.ReadAsStringAsync(Token));
+
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        html.ShouldContain("role=\"alert\"");
+        html.ShouldContain("OpenAI was not chosen for vectorization");
+        html.ShouldContain("cannot turn text into vectors (HTTP 400)");
+        html.ShouldContain("The other choices were saved");
+        html.ShouldNotContain(Key);
+        var settings = await factory.Services.GetRequiredService<LlmSettingsService>().GetAsync(Token);
+        settings.AnalysisProviderId.ShouldBeNull();
+        settings.ChatProviderId.ShouldBe(other);
+        settings.EmbeddingProviderId.ShouldBeNull();
+    }
+
+    [Theory]
+    [InlineData(404, "cannot turn text into vectors (HTTP 404)")]
+    [InlineData(501, "cannot turn text into vectors (HTTP 501)")] // What Ollama answers for a chat model.
+    [InlineData(401, "The key was refused (HTTP 401)")]
+    [InlineData(429, "The provider reported an error (HTTP 429)")]
+    [InlineData(503, "The provider reported an error (HTTP 503)")]
+    public async Task TheRefusalOfAModelForVectorization_SaysWhatToFix(int status, string expected)
+    {
+        using var factory = NewFactory(new ScriptedChatModelFactory(), embeddings: new ScriptedEmbeddingModelFactory { Refusal = status });
+        using var client = NewClient(factory);
+        var (chat, other) = await AddAChatModelAndAnEmbedderAsync(factory, client);
+
+        using var response = await PostAsync(client, "Select", new Dictionary<string, string> { ["analysis"] = chat, ["chat"] = chat, ["embedding"] = other });
+
+        Decoded(await response.Content.ReadAsStringAsync(Token)).ShouldContain(expected);
+    }
+
+    [Fact]
+    public async Task ChoosingAnUnknownModelForVectorization_IsRefused_AndChangesNothing()
+    {
+        using var factory = NewFactory(new ScriptedChatModelFactory());
+        using var client = NewClient(factory);
+        await AddAsync(client);
+        var service = factory.Services.GetRequiredService<LlmSettingsService>();
+        var before = await service.GetAsync(Token);
+
+        using var response = await PostAsync(client, "Select", new Dictionary<string, string> { ["analysis"] = string.Empty, ["chat"] = string.Empty, ["embedding"] = "nope" });
+
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        (await service.GetAsync(Token)).ChatProviderId.ShouldBe(before.ChatProviderId);
     }
 
     [Fact]
@@ -546,7 +757,7 @@ public partial class SettingsPageTests
 
         html.ShouldContain("for=\"llm-analysis\"");
         html.ShouldContain("for=\"llm-chat\"");
-        Regex.Count(html, @"<option value="""">None</option>").ShouldBe(2);
+        Regex.Count(html, @"<option value=""""[^>]*>None</option>").ShouldBe(3);
         Regex.Count(html, @"<option[^>]*selected[^>]*>OpenAI</option>").ShouldBe(2);
     }
 
@@ -560,7 +771,7 @@ public partial class SettingsPageTests
         var service = factory.Services.GetRequiredService<LlmSettingsService>();
         var local = (await service.GetAsync(Token)).Providers.Single(provider => provider.Name == "Local").Id;
 
-        using var response = await PostAsync(client, "Select", new Dictionary<string, string> { ["analysis"] = string.Empty, ["chat"] = local });
+        using var response = await PostAsync(client, "Select", new Dictionary<string, string> { ["analysis"] = string.Empty, ["chat"] = local, ["embedding"] = string.Empty });
         var html = Decoded(await GetAsync(client, response.Headers.Location!.OriginalString));
 
         response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
@@ -580,10 +791,83 @@ public partial class SettingsPageTests
         var service = factory.Services.GetRequiredService<LlmSettingsService>();
         var before = await service.GetAsync(Token);
 
-        using var response = await PostAsync(client, "Select", new Dictionary<string, string> { ["analysis"] = "nope", ["chat"] = before.ChatProviderId! });
+        using var response = await PostAsync(client, "Select", new Dictionary<string, string> { ["analysis"] = "nope", ["chat"] = before.ChatProviderId!, ["embedding"] = string.Empty });
 
         response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
         (await service.GetAsync(Token)).AnalysisProviderId.ShouldBe(before.AnalysisProviderId);
+    }
+
+    // ---- When the passages of the books cannot be kept ----
+
+    // An index that reports a problem; the page asks nothing else of it.
+    private sealed class BrokenPassageIndex(PassageIndexProblem problem) : IPassageIndex
+    {
+        public PassageIndexProblem? Check() => problem;
+
+        public Task SavePassagesAsync(BookKey book, IReadOnlyList<StoredPassage> passages, CancellationToken cancellationToken) => throw new NotSupportedException();
+
+        public Task SaveVectorsAsync(BookKey book, string embeddingModel, IReadOnlyList<float[]> vectors, CancellationToken cancellationToken) => throw new NotSupportedException();
+
+        public Task<PassageIndexState?> GetStateAsync(BookKey book, CancellationToken cancellationToken) => throw new NotSupportedException();
+
+        public Task<IReadOnlyList<StoredPassage>> GetPassagesAsync(BookKey book, CancellationToken cancellationToken) => throw new NotSupportedException();
+
+        public Task<IReadOnlyList<FoundPassage>> SearchAsync(BookKey book, float[] query, int count, CancellationToken cancellationToken) => throw new NotSupportedException();
+
+        public Task DeleteAsync(BookKey book, CancellationToken cancellationToken) => throw new NotSupportedException();
+
+        public Task SaveUncheckedVectorsAsync(BookKey book, string embeddingModel, IReadOnlyList<float[]> vectors, CancellationToken cancellationToken) =>
+            throw new NotSupportedException();
+
+        public Task MarkCheckedAsync(BookKey book, CancellationToken cancellationToken) => throw new NotSupportedException();
+
+        public Task<IReadOnlyList<float[]>> GetVectorsAsync(BookKey book, CancellationToken cancellationToken) => throw new NotSupportedException();
+    }
+
+    [Fact]
+    public async Task TheRealIndex_CanBeUsed_SoThePageShowsNoWarning_AndCreatesNoFile()
+    {
+        using var factory = NewFactory(new ScriptedChatModelFactory());
+        using var client = NewClient(factory);
+
+        var html = Decoded(await AddAsync(client));
+
+        factory.Services.GetRequiredService<IPassageIndex>().Check().ShouldBeNull();
+        html.ShouldNotContain("Passages of books cannot be used");
+        File.Exists(Path.Combine(factory.DataDirectory, "rag.db")).ShouldBeFalse();
+    }
+
+    [Theory]
+    [InlineData(PassageIndexProblem.ExtensionMissing, "SQLite or its vector extension cannot be loaded on this computer")]
+    [InlineData(PassageIndexProblem.FileUnusable, "The file rag.db of the data folder cannot be used")]
+    public async Task WhenThePassagesCannotBeKept_ThePageSaysSo_AndThatCharactersStillUseTheStory(PassageIndexProblem problem, string expected)
+    {
+        using var factory = LivingPaperFactory.With(configureServices: services =>
+        {
+            services.AddSingleton<IChatModelFactory>(new ScriptedChatModelFactory());
+            services.AddSingleton<IModelCatalog>(new ScriptedModelCatalog());
+            services.AddSingleton<IEmbeddingModelFactory>(new ScriptedEmbeddingModelFactory());
+            services.AddSingleton<IPassageIndex>(new BrokenPassageIndex(problem));
+        });
+        using var client = NewClient(factory);
+
+        var html = Decoded(await AddAsync(client));
+
+        html.ShouldContain("Passages of books cannot be used");
+        html.ShouldContain(expected);
+        html.ShouldContain("characters use the story of the book");
+    }
+
+    [Theory]
+    [MemberData(nameof(LanguageCodes))]
+    public void EveryProblemOfThePassages_HasItsText(string language)
+    {
+        var texts = Texts(language);
+
+        foreach (var problem in Enum.GetNames<PassageIndexProblem>())
+        {
+            texts.Keys.ShouldContain("settings.passages." + char.ToLowerInvariant(problem[0]) + problem[1..], $"{language}.json lacks the text of the problem '{problem}'");
+        }
     }
 
     // ---- When the settings file cannot be used ----
@@ -698,5 +982,7 @@ public partial class SettingsPageTests
         {
             texts.Keys.ShouldContain("settings.failure." + char.ToLowerInvariant(failure[0]) + failure[1..], $"{language}.json lacks the text of the failure '{failure}'");
         }
+
+        texts.Keys.ShouldContain("settings.failure.cannotVectorize");
     }
 }

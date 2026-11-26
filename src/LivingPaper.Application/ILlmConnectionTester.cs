@@ -6,6 +6,11 @@ namespace LivingPaper.Application;
 // the reply is usable. Faked in the tests of the settings, which never reach a real provider.
 public interface ILlmConnectionTester
 {
-    // Never throws for a failure of the provider: it is the result. Throws OperationCanceledException when cancelled.
+    // Neither throws for a failure of the provider: it is the result. Both throw OperationCanceledException when cancelled.
+
+    // One short chat call.
     Task<ConnectionTestResult> TestAsync(LlmProvider provider, CancellationToken cancellationToken);
+
+    // One short text turned into a vector: what an embedding model can do.
+    Task<ConnectionTestResult> TestEmbeddingAsync(LlmProvider provider, CancellationToken cancellationToken);
 }

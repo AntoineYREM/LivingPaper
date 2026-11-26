@@ -2,14 +2,18 @@ using LivingPaper.Domain;
 
 namespace LivingPaper.Application;
 
-// The use cases of the settings page: list the language models, add one, delete one, and choose the one for analyzing books
-// and the one for chatting.
+// The use cases of the settings page: list the language models, add one, delete one, and choose the one for analyzing books,
+// the one for chatting and, optionally, the one for vectorization.
 // A model is added in two steps (PAPER-26): "get the models" asks the provider for its list, which proves that the address
 // and the key work, and keeps the draft, key included, in memory; "save" stores the model the user chose, with no other test.
-// A provider with no list of models keeps the older way: the user types the model, and a connection test runs before saving.
+// A provider with no list of models keeps the older way: the user types the model, and a connection test runs before saving:
+// a chat call, then, if it fails, an embedding call; one success is enough.
+// A new model fills the uses that have no model. While there is one, it is tried to know which: vectorization alone when it
+// refuses to chat and can vectorize, analysis and chat in every other case (a slow model is never taken for an embedding
+// model).
 // Changes are made one at a time (a lock around load, change, save) so two requests never overwrite each other. The
 // connection test and the list, which can take seconds, are made outside the lock.
-// A key is only ever returned by GetAnalysisProviderAsync and GetChatProviderAsync, for the server to call the model.
+// A key is only ever returned by the Get...ProviderAsync methods, for the server to call the model.
 public sealed class LlmSettingsService(
     ILlmSettingsRepository repository, ILlmConnectionTester tester, IModelCatalog catalog, PendingProviderStore pending) : IDisposable
 {
@@ -23,7 +27,8 @@ public sealed class LlmSettingsService(
             settings.AnalysisProviderId,
             settings.ChatProviderId,
             settings.IsAnalysisEnabled,
-            settings.IsChatEnabled);
+            settings.IsChatEnabled,
+            settings.EmbeddingProviderId);
     }
 
     // The way for a provider with no list of models: the model is typed, tested with a real call, then saved.
@@ -39,13 +44,21 @@ public sealed class LlmSettingsService(
         }
 
         var provider = new LlmProvider(Guid.NewGuid().ToString("N"), normalized.Name!, normalized.BaseUrl!, normalized.ApiKey!, normalized.Model!);
-        var connection = await tester.TestAsync(provider, cancellationToken).ConfigureAwait(false);
-        if (!connection.Success)
+        var chat = await tester.TestAsync(provider, cancellationToken).ConfigureAwait(false);
+        var onlyVectorizes = false;
+        if (!chat.Success)
         {
-            return new AddProviderResult(null, [], connection);
+            // An unusable prompts file would fail the second test too.
+            if (chat.Failure == ConnectionFailure.PromptFile
+                || !(await tester.TestEmbeddingAsync(provider, cancellationToken).ConfigureAwait(false)).Success)
+            {
+                return new AddProviderResult(null, [], chat);
+            }
+
+            onlyVectorizes = chat.IsRefusal;
         }
 
-        return await SaveAsync(normalized, provider, connection, cancellationToken).ConfigureAwait(false);
+        return await SaveAsync(normalized, provider, onlyVectorizes, cancellationToken).ConfigureAwait(false);
     }
 
     // Step 1: asks the provider for its models and keeps the draft. Nothing is saved.
@@ -80,7 +93,8 @@ public sealed class LlmSettingsService(
     public PendingProviderView? GetPending(string? id) => pending.Get(id);
 
     // Step 2: saves the model the user chose. Null when the draft is gone (expired, or the application restarted): the user
-    // starts again. The model must be one of those the provider offered, and is not tested again: the list proved the key.
+    // starts again. The model must be one of those the provider offered; it is saved whatever a test would say, since the
+    // list proved the key. It is tried only when a use has no model, to know whether it can fill it.
     // Without a list (the provider has none), the model typed by the user goes through the connection test. A refused choice
     // keeps the draft, so the user can choose again; a saved model removes it, and the key with it.
     public async Task<AddProviderResult?> AddFetchedAsync(string? id, string? model, CancellationToken cancellationToken)
@@ -104,14 +118,17 @@ public sealed class LlmSettingsService(
         else
         {
             var normalized = new LlmProviderDraft(view.Name, view.BaseUrl, apiKey, chosen);
-            var errors = Validate(normalized, await repository.LoadAsync(cancellationToken).ConfigureAwait(false));
+            var settings = await repository.LoadAsync(cancellationToken).ConfigureAwait(false);
+            var errors = Validate(normalized, settings);
             if (errors.Count > 0)
             {
                 return new AddProviderResult(null, errors, null);
             }
 
             var provider = new LlmProvider(Guid.NewGuid().ToString("N"), view.Name, view.BaseUrl, apiKey, chosen);
-            result = await SaveAsync(normalized, provider, ConnectionTestResult.Ok(), cancellationToken).ConfigureAwait(false);
+            var onlyVectorizes = settings.HasEmptyChoice
+                && await OnlyVectorizesAsync(provider, cancellationToken).ConfigureAwait(false);
+            result = await SaveAsync(normalized, provider, onlyVectorizes, cancellationToken).ConfigureAwait(false);
         }
 
         if (result.Succeeded)
@@ -133,6 +150,34 @@ public sealed class LlmSettingsService(
     public Task<bool> SelectForChatAsync(string? id, CancellationToken cancellationToken) =>
         ChangeAsync(settings => TrySelect(() => settings.SelectForChat(id)), cancellationToken);
 
+    // Chooses the model for vectorization (null: none). A model that was not already chosen is tried first, and kept out
+    // when it cannot vectorize: the previous choice then stays. Null when there is no such model.
+    public async Task<ConnectionTestResult?> SelectForEmbeddingAsync(string? id, CancellationToken cancellationToken)
+    {
+        if (id is not null)
+        {
+            var current = await repository.LoadAsync(cancellationToken).ConfigureAwait(false);
+            var provider = current.Providers.FirstOrDefault(candidate => candidate.Id == id);
+            if (provider is null)
+            {
+                return null;
+            }
+
+            if (id != current.EmbeddingProviderId)
+            {
+                var test = await tester.TestEmbeddingAsync(provider, cancellationToken).ConfigureAwait(false);
+                if (!test.Success)
+                {
+                    return test;
+                }
+            }
+        }
+
+        // The model may have been deleted while it was tried.
+        var saved = await ChangeAsync(settings => TrySelect(() => settings.SelectForEmbedding(id)), cancellationToken).ConfigureAwait(false);
+        return saved ? ConnectionTestResult.Ok() : null;
+    }
+
     // The model chosen for analyzing books, with its key, for the server to call. Null when none is chosen or its key
     // cannot be read: the analysis is then disabled.
     public async Task<LlmProvider?> GetAnalysisProviderAsync(CancellationToken cancellationToken)
@@ -147,9 +192,21 @@ public sealed class LlmSettingsService(
         return settings.IsChatEnabled ? settings.ChatProvider : null;
     }
 
+    // Null when none is chosen or its key cannot be read.
+    public async Task<LlmProvider?> GetEmbeddingProviderAsync(CancellationToken cancellationToken)
+    {
+        var settings = await repository.LoadAsync(cancellationToken).ConfigureAwait(false);
+        return settings.IsEmbeddingEnabled ? settings.EmbeddingProvider : null;
+    }
+
     public void Dispose() => _lock.Dispose();
 
-    private async Task<AddProviderResult> SaveAsync(LlmProviderDraft normalized, LlmProvider provider, ConnectionTestResult connection, CancellationToken cancellationToken)
+    // True only on proof: the chat is refused and the embedding call works.
+    private async Task<bool> OnlyVectorizesAsync(LlmProvider provider, CancellationToken cancellationToken) =>
+        (await tester.TestAsync(provider, cancellationToken).ConfigureAwait(false)).IsRefusal
+        && (await tester.TestEmbeddingAsync(provider, cancellationToken).ConfigureAwait(false)).Success;
+
+    private async Task<AddProviderResult> SaveAsync(LlmProviderDraft normalized, LlmProvider provider, bool onlyVectorizes, CancellationToken cancellationToken)
     {
         await _lock.WaitAsync(cancellationToken).ConfigureAwait(false);
         try
@@ -162,9 +219,9 @@ public sealed class LlmSettingsService(
                 return new AddProviderResult(null, errors, null);
             }
 
-            settings.Add(provider);
+            settings.Add(provider, onlyVectorizes);
             await repository.SaveAsync(settings, cancellationToken).ConfigureAwait(false);
-            return new AddProviderResult(Summarize(provider, settings), [], connection);
+            return new AddProviderResult(Summarize(provider, settings), [], ConnectionTestResult.Ok());
         }
         finally
         {

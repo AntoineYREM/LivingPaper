@@ -28,7 +28,8 @@ public class ExamplesModel(BookService books, BookPresenter presenter, ITextLoca
         var result = await books.AddExampleAsync(exampleId, HttpContext.RequestAborted);
         if (result.Succeeded)
         {
-            PageNotice.Set(TempData, PageNotice.ExampleAdded, result.Added!.Title);
+            var notice = result.PassagesDropped ? PageNotice.ExampleAddedWithoutPassages : PageNotice.ExampleAdded;
+            PageNotice.Set(TempData, notice, result.Added!.Title);
             return RedirectToPage("/Books/Index", new { id = result.Added.Id.ToString() });
         }
 

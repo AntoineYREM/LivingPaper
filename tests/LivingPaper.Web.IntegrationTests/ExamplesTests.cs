@@ -391,6 +391,28 @@ public partial class ExamplesTests
         }
     }
 
+    // PAPER-89: the three books shipped with their passages, so that a user of bge-m3 computes no vector to chat with them.
+    [Theory]
+    [InlineData("alice-s-adventures-in-wonderland")]
+    [InlineData("cyrano-de-bergerac")]
+    [InlineData("madame-bovary")]
+    public async Task AShippedExample_HoldsItsPassages_WithVectorsOfBgeM3_AndAShortPlot(string address)
+    {
+        var catalog = new JsonExampleCatalog(ExamplesOfTheRepository());
+        BookId.TryParse(address, out var id).ShouldBeTrue();
+
+        var book = (await catalog.GetAsync(id, Token)).ShouldNotBeNull();
+        var set = (await catalog.GetPassagesAsync(id, Token)).ShouldNotBeNull();
+
+        book.PlotSummary.ShouldNotBeNullOrWhiteSpace();
+        set.EmbeddingModel.ShouldBe("bge-m3");
+        set.Vectors.Count.ShouldBe(set.Passages.Count);
+        set.Vectors.ShouldAllBe(vector => vector.Length == 1024);
+        set.Passages.Count(passage => passage.Scenes.Count > 0).ShouldBeGreaterThan(set.Passages.Count / 2);
+        // The text of Project Gutenberg may be shared without its name and its licence: they are not part of the book.
+        set.Passages.ShouldAllBe(passage => !passage.Text.Contains("Gutenberg", StringComparison.OrdinalIgnoreCase));
+    }
+
     [Fact]
     public void TheArchivedExamples_AreKeptInTheirFolder_AndAreNotShipped()
     {

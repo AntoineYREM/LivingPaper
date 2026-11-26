@@ -118,6 +118,7 @@
     let reply = '';
     let failure = null;
     let complete = false;
+    const notices = [];
 
     try {
       const response = await fetch(root.dataset.endpoint, {
@@ -134,6 +135,8 @@
             theirs.item.classList.remove('message--pending');
             setText(theirs.box, reply.trimStart());
             reveal();
+          } else if (event.type === 'notice') {
+            notices.push(event.code);
           } else if (event.type === 'error') {
             failure = event.code;
           } else if (event.type === 'done') {
@@ -161,6 +164,16 @@
       showError(texts.errors[failure] || texts.errors.unexpected);
     } else {
       messages.push({ role: 'assistant', content: reply.trim() });
+      // A short line under the reply it concerns: how it was written differently.
+      for (const code of notices) {
+        if (texts.notices[code]) {
+          const note = document.createElement('p');
+          note.className = 'message__note';
+          note.textContent = texts.notices[code];
+          theirs.item.append(note);
+        }
+      }
+
       reveal(); // The box has stopped growing: bring its end into view.
     }
 

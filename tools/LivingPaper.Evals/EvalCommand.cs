@@ -19,7 +19,7 @@ namespace LivingPaper.Evals;
 // try, the grades as scores. A problem with Langfuse never loses the run: it is saved first, and the tool says what went wrong.
 internal static class EvalCommand
 {
-    private const string DatasetDescription = "Questions put to a character of an example book to check that it stays in its role (LivingPaper evaluation tool).";
+    private const string DatasetDescription = "Questions put to a character of an example book (LivingPaper evaluation tool).";
 
     public static async Task<int> RunAsync(EvalOptions options, ITerminal terminal, Func<string, string?> environment, CancellationToken cancellationToken)
     {
@@ -29,14 +29,22 @@ internal static class EvalCommand
         var questions = await QuestionFile.ReadAsync(Locate(options.QuestionsPath, "evals/bovary/questions.json", "questions file"), cancellationToken).ConfigureAwait(false);
         var judgePrompt = await JudgePrompt.ReadAsync(Locate(options.JudgePromptPath, "evals/judge.json", "judge file"), cancellationToken).ConfigureAwait(false);
         var langfuse = options.LocalOnly ? null : ReadLangfuse();
-
-        try
+        if (judgePrompt.NeedsExpectedAnswer && questions.Items.FirstOrDefault(item => item.ExpectedOutput.Length == 0) is { } unanswered)
         {
-            await PromptFileSynchronizer.EnsureAsync(dataDirectory, cancellationToken).ConfigureAwait(false);
+            throw new EvalException($"This judge compares each reply with an expected answer, and the question {unanswered.Id} has no expectedOutput.");
         }
-        catch (PromptFileException exception)
+
+        // With another prompts file, the prompts of the data folder are not used: they are left as they are.
+        if (options.PromptsPath is null)
         {
-            throw new EvalException(exception.Message);
+            try
+            {
+                await PromptFileSynchronizer.EnsureAsync(dataDirectory, cancellationToken).ConfigureAwait(false);
+            }
+            catch (PromptFileException exception)
+            {
+                throw new EvalException(exception.Message);
+            }
         }
 
         var promptsPath = options.PromptsPath is null ? null : Path.GetFullPath(options.PromptsPath);
@@ -64,15 +72,28 @@ internal static class EvalCommand
             new OpenAiCompatibleOptions { MaxOutputTokens = options.MaxOutputTokens },
             tracing: new LlmTracingOptions { CaptureContent = langfuse?.CaptureContent ?? false });
         using var catalog = new OpenAiCompatibleModelCatalog();
-        var tester = new LlmConnectionTester(factory, prompts);
+        using var embeddings = new OpenAiCompatibleEmbeddingModelFactory(NullLoggerFactory.Instance);
+        var tester = new LlmConnectionTester(factory, embeddings, prompts);
         var pending = new PendingProviderStore(TimeProvider.System);
         using var settings = new LlmSettingsService(site, tester, catalog, pending);
 
-        var (book, character) = await FindCharacterAsync(questions, environment, cancellationToken).ConfigureAwait(false);
+        var (book, character) = await FindCharacterAsync(questions, options.BookDataPath, environment, cancellationToken).ConfigureAwait(false);
 
         var chooser = new ProviderChooser(terminal, site, new ProviderAdder(terminal, settings));
         var chatProvider = await chooser.ChooseAsync("chat", options.ChatProvider, cancellationToken).ConfigureAwait(false);
         var judgeProvider = await chooser.ChooseAsync("judge", options.JudgeProvider, cancellationToken).ConfigureAwait(false);
+
+        // Everything the search needs is checked before the first call, so that no run is paid for and then found to be useless.
+        LlmProvider? embeddingProvider = null;
+        SqlitePassageIndex? index = null;
+        if (options.Retrieval is { } search)
+        {
+            embeddingProvider = search.EmbeddingUrl is { } url
+                ? new LlmProvider(Guid.NewGuid().ToString("N"), $"{search.Embedding} (no key)", url, string.Empty, search.Embedding)
+                : await chooser.ChooseAsync("embedding", search.Embedding, cancellationToken).ConfigureAwait(false);
+            index = new SqlitePassageIndex(Path.Combine(Path.GetFullPath(options.BookDataPath!), "rag.db"));
+            await PassageCheck.RunAsync(index, book, embeddingProvider.Model, questions, cancellationToken).ConfigureAwait(false);
+        }
 
         var startedAt = DateTimeOffset.UtcNow;
         var runId = RunStore.NewId(startedAt, chatProvider.Model);
@@ -92,6 +113,16 @@ internal static class EvalCommand
             metadata["label"] = options.Label;
         }
 
+        var runRetrieval = options.Retrieval is { } used
+            ? new RunRetrieval(embeddingProvider!.Model, used.Mode.ToString().ToLowerInvariant(), used.Passages)
+            : null;
+        if (runRetrieval is not null)
+        {
+            metadata["embedding_model"] = runRetrieval.EmbeddingModel;
+            metadata["query_mode"] = runRetrieval.QueryMode;
+            metadata["passages"] = runRetrieval.Passages.ToString(CultureInfo.InvariantCulture);
+        }
+
         // Langfuse is prepared before the run: a wrong key is found now, not after the cost of the run.
         using var api = langfuse is null ? null : new LangfuseApi(langfuse);
         using var tracerProvider = langfuse is null
@@ -108,10 +139,16 @@ internal static class EvalCommand
 
         var chatMeter = new ChatUsageMeter();
         var judgeMeter = new ChatUsageMeter();
-        using var chatSettings = new LlmSettingsService(new ChatOverrideSettings(site, chatProvider.Id), tester, catalog, pending);
-        var chat = new CharacterChatService(chatSettings, new MeteredChatModelFactory(factory, chatMeter), prompts);
+        using var chatSettings = new LlmSettingsService(new ChatOverrideSettings(site, chatProvider.Id, embeddingProvider), tester, catalog, pending);
+        var recorder = index is null
+            ? new RetrievalRecorder(factory, total: chatMeter)
+            : new RetrievalRecorder(factory, embeddings, index, chatMeter);
+        var retriever = options.Retrieval is { } rag
+            ? new PassageRetriever(recorder, chatSettings, recorder, recorder, prompts, new RagOptions { Mode = rag.Mode, Passages = rag.Passages })
+            : null;
+        var chat = new CharacterChatService(chatSettings, recorder, prompts, retriever);
         var runner = new EvalRunner(
-            new ChatServiceReplier(chat, book, character),
+            new ChatServiceReplier(chat, book, character, recorder),
             new ModelJudge(new MeteredChatModelFactory(factory, judgeMeter), judgeProvider, judgePrompt, character.Name, book.Title),
             tracer);
 
@@ -120,6 +157,9 @@ internal static class EvalCommand
         terminal.WriteLine($"{character.Name} ({book.Title}) answers with {chatProvider.Name} ({chatProvider.Model}).");
         terminal.WriteLine($"{judgeProvider.Name} ({judgeProvider.Model}) judges, prompt version {judgePrompt.Version}.");
         terminal.WriteLine($"Chat prompts {promptsHash}{(options.Label is null ? string.Empty : $", label \"{options.Label}\"")}.");
+        terminal.WriteLine(runRetrieval is null
+            ? "The character reads the whole story."
+            : $"The character reads {runRetrieval.Passages} passages found with {runRetrieval.EmbeddingModel}, query mode {runRetrieval.QueryMode}.");
         terminal.WriteLine($"{questions.Items.Count} questions, {options.Repeats} times each: {total} answers to grade.");
         terminal.WriteLine();
 
@@ -146,7 +186,8 @@ internal static class EvalCommand
             new RunTokens(chatTokens, judgeTokens),
             results,
             options.Label,
-            promptsHash);
+            promptsHash,
+            runRetrieval);
 
         // Saved before anything is sent: whatever happens next, the run is kept.
         var path = await RunStore.SaveAsync(RunsFolder(), record, cancellationToken).ConfigureAwait(false);
@@ -243,18 +284,29 @@ internal static class EvalCommand
 
     private static async Task<(Book Book, Character Character)> FindCharacterAsync(
         QuestionSet questions,
+        string? bookData,
         Func<string, string?> environment,
         CancellationToken cancellationToken)
     {
-        var examples = environment("EXAMPLES_DIRECTORY") is { Length: > 0 } configured ? Path.GetFullPath(configured) : RepoFiles.Find("examples");
-        if (examples is null)
+        _ = BookId.TryParse(questions.BookId, out var bookId);
+        Book book;
+        if (bookData is not null)
         {
-            throw new EvalException("The examples folder was not found: run the tool from the repository, or set EXAMPLES_DIRECTORY.");
+            book = await new JsonBookRepository(Path.Combine(Path.GetFullPath(bookData), "books")).GetAsync(bookId, cancellationToken).ConfigureAwait(false)
+                ?? throw new EvalException($"The book {questions.BookId} was not found in the library of the folder given to --book-data.");
+        }
+        else
+        {
+            var examples = environment("EXAMPLES_DIRECTORY") is { Length: > 0 } configured ? Path.GetFullPath(configured) : RepoFiles.Find("examples");
+            if (examples is null)
+            {
+                throw new EvalException("The examples folder was not found: run the tool from the repository, or set EXAMPLES_DIRECTORY.");
+            }
+
+            book = await new JsonExampleCatalog(examples).GetAsync(bookId, cancellationToken).ConfigureAwait(false)
+                ?? throw new EvalException($"The example book {questions.BookId} was not found in the examples folder.");
         }
 
-        _ = BookId.TryParse(questions.BookId, out var bookId);
-        var book = await new JsonExampleCatalog(examples).GetAsync(bookId, cancellationToken).ConfigureAwait(false)
-            ?? throw new EvalException($"The example book {questions.BookId} was not found in the examples folder.");
         var character = book.Characters.FirstOrDefault(candidate => string.Equals(candidate.Name, questions.Character, StringComparison.OrdinalIgnoreCase))
             ?? throw new EvalException($"{book.Title} has no character named {questions.Character}. Its characters: {string.Join(", ", book.Characters.Select(candidate => candidate.Name))}.");
         return (book, character);
