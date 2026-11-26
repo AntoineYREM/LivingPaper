@@ -14,6 +14,12 @@ import xml.etree.ElementTree as ET
 ALLOWED = {
     "MIT", "Apache-2.0", "BSD-2-Clause", "BSD-3-Clause", "ISC", "0BSD", "Unlicense", "CC0-1.0", "Zlib",
     "MS-PL", "Unicode-3.0", "Unicode-DFS-2016", "PostgreSQL", "BlueOak-1.0.0",
+    "blessing",  # The public domain dedication of SQLite.
+}
+# Packages that declare their license with a file only. Each entry was checked by hand, for that version: reading the file
+# again is the price of an update. SQLite (the native library): its LICENSE.txt says "SQLite is Public Domain".
+PACKAGE_LICENSES = {
+    ("SQLite", "3.53.4"): "blessing",
 }
 # Packages published before SPDX expressions, with only a license URL. Each entry was checked by hand.
 URL_LICENSES = {
@@ -55,7 +61,7 @@ def main() -> int:
             for folder in folders:
                 nuspec = folder / lib["path"] / (name.lower() + ".nuspec")
                 if nuspec.exists():
-                    found[(name, version)] = read_license(nuspec)
+                    found[(name, version)] = PACKAGE_LICENSES.get((name, version)) or read_license(nuspec)
                     break
             else:
                 found[(name, version)] = "UNKNOWN (package not found in the cache)"

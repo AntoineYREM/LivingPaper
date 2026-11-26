@@ -1,7 +1,8 @@
 # Specification: passages of the book in the chat (RAG)
 
 **Status:** validated on 26 November 2026. Implemented so far: the model for vectorization (section 3,
-PAPER-81) and the cutting into passages (section 4, PAPER-82; nothing uses it yet). Why: [decision 0011](../decisions/0011-passages-of-the-book-in-the-chat.md).
+PAPER-81), the cutting into passages (section 4, PAPER-82) and the index (section 6, storage, PAPER-83); nothing uses the last
+two yet. Why: [decision 0011](../decisions/0011-passages-of-the-book-in-the-chat.md).
 
 ## 1. Goal
 

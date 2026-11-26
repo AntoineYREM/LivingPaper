@@ -797,6 +797,72 @@ public partial class SettingsPageTests
         (await service.GetAsync(Token)).AnalysisProviderId.ShouldBe(before.AnalysisProviderId);
     }
 
+    // ---- When the passages of the books cannot be kept ----
+
+    // An index that reports a problem; the page asks nothing else of it.
+    private sealed class BrokenPassageIndex(PassageIndexProblem problem) : IPassageIndex
+    {
+        public PassageIndexProblem? Check() => problem;
+
+        public Task SavePassagesAsync(BookKey book, IReadOnlyList<StoredPassage> passages, CancellationToken cancellationToken) => throw new NotSupportedException();
+
+        public Task SaveVectorsAsync(BookKey book, string embeddingModel, IReadOnlyList<float[]> vectors, CancellationToken cancellationToken) => throw new NotSupportedException();
+
+        public Task<PassageIndexState?> GetStateAsync(BookKey book, CancellationToken cancellationToken) => throw new NotSupportedException();
+
+        public Task<IReadOnlyList<StoredPassage>> GetPassagesAsync(BookKey book, CancellationToken cancellationToken) => throw new NotSupportedException();
+
+        public Task<IReadOnlyList<FoundPassage>> SearchAsync(BookKey book, float[] query, int count, CancellationToken cancellationToken) => throw new NotSupportedException();
+
+        public Task DeleteAsync(BookKey book, CancellationToken cancellationToken) => throw new NotSupportedException();
+    }
+
+    [Fact]
+    public async Task TheRealIndex_CanBeUsed_SoThePageShowsNoWarning_AndCreatesNoFile()
+    {
+        using var factory = NewFactory(new ScriptedChatModelFactory());
+        using var client = NewClient(factory);
+
+        var html = Decoded(await AddAsync(client));
+
+        factory.Services.GetRequiredService<IPassageIndex>().Check().ShouldBeNull();
+        html.ShouldNotContain("Passages of books cannot be used");
+        File.Exists(Path.Combine(factory.DataDirectory, "rag.db")).ShouldBeFalse();
+    }
+
+    [Theory]
+    [InlineData(PassageIndexProblem.ExtensionMissing, "SQLite or its vector extension cannot be loaded on this computer")]
+    [InlineData(PassageIndexProblem.FileUnusable, "The file rag.db of the data folder cannot be used")]
+    public async Task WhenThePassagesCannotBeKept_ThePageSaysSo_AndThatCharactersStillUseTheStory(PassageIndexProblem problem, string expected)
+    {
+        using var factory = LivingPaperFactory.With(configureServices: services =>
+        {
+            services.AddSingleton<IChatModelFactory>(new ScriptedChatModelFactory());
+            services.AddSingleton<IModelCatalog>(new ScriptedModelCatalog());
+            services.AddSingleton<IEmbeddingModelFactory>(new ScriptedEmbeddingModelFactory());
+            services.AddSingleton<IPassageIndex>(new BrokenPassageIndex(problem));
+        });
+        using var client = NewClient(factory);
+
+        var html = Decoded(await AddAsync(client));
+
+        html.ShouldContain("Passages of books cannot be used");
+        html.ShouldContain(expected);
+        html.ShouldContain("characters use the story of the book");
+    }
+
+    [Theory]
+    [MemberData(nameof(LanguageCodes))]
+    public void EveryProblemOfThePassages_HasItsText(string language)
+    {
+        var texts = Texts(language);
+
+        foreach (var problem in Enum.GetNames<PassageIndexProblem>())
+        {
+            texts.Keys.ShouldContain("settings.passages." + char.ToLowerInvariant(problem[0]) + problem[1..], $"{language}.json lacks the text of the problem '{problem}'");
+        }
+    }
+
     // ---- When the settings file cannot be used ----
 
     [Fact]

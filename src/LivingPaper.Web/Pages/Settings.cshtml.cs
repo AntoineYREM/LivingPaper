@@ -13,7 +13,7 @@ namespace LivingPaper.Web.Pages;
 // can carry one, the draft is shown by its identifier, and a form that is shown again is shown without it.
 // A change that works goes back to the page (POST, redirect, GET), so reloading never repeats it; the short message of
 // what was done travels in TempData.
-public class SettingsModel(LlmSettingsService settings, ITextLocalizer texts) : PageModel
+public class SettingsModel(LlmSettingsService settings, IPassageIndex passages, ITextLocalizer texts) : PageModel
 {
     private const string NoticeKind = "Notice";
     private const string NoticeName = "NoticeName";
@@ -36,6 +36,9 @@ public class SettingsModel(LlmSettingsService settings, ITextLocalizer texts) : 
 
     // The model for vectorization that was just refused, and why: shown with the form of the choices.
     public string? ChoiceError { get; private set; }
+
+    // Why the passages of the books cannot be kept here, if they cannot: the choice for vectorization then has no effect.
+    public PassageIndexProblem? PassageProblem => passages.Check();
 
     public bool FormRefused { get; private set; }
 

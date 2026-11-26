@@ -67,6 +67,9 @@
   "settings.pick.again": "Start again",
   "settings.draft.expired": "This draft is no longer available: it is kept for 15 minutes and forgotten when the application restarts. Start again.",
 
+  "settings.passages.title": "Passages of books cannot be used",
+  "settings.passages.extensionMissing": "SQLite or its vector extension cannot be loaded on this computer. Everything else works: characters use the story of the book.",
+  "settings.passages.fileUnusable": "The file rag.db of the data folder cannot be used: it is damaged, was written by a later version, or cannot be read. It was not changed. Everything else works: characters use the story of the book.",
   "settings.choose.title": "Which model does what",
   "settings.choose.lead": "One model can do both. A cheaper one can read books while a better one chats.",
   "settings.choose.analysis": "Model that analyzes books",

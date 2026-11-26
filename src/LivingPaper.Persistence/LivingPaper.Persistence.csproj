@@ -6,6 +6,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Data.Sqlite" />
+    <PackageReference Include="sqlite-vec" />
+  </ItemGroup>
+
+  <ItemGroup>
     <!-- The default prompts, copied to data/prompts.json on the first start. -->
     <EmbeddedResource Include="prompts.default.json" LogicalName="prompts.default.json" />
   </ItemGroup>

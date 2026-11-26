@@ -44,7 +44,8 @@ OCR for scanned PDFs, saved conversations.
 
 ## Stack and architecture
 
-- **Backend:** ASP.NET Core on .NET 10 LTS, no database: data is stored as **JSON files** in a `data/` directory (Docker volume).
+- **Backend:** ASP.NET Core on .NET 10 LTS, no database server: data is stored as **JSON files** in a `data/` directory (Docker
+  volume), plus an embedded SQLite file for the passages of books (optional feature).
 - **Frontend:** Razor Pages rendered server-side, HTML/CSS and small vanilla JavaScript. Page models call the
   `Application` layer directly. The chat streams replies as NDJSON over `fetch` (POST). Everything except
   the chat works without JavaScript.
@@ -82,7 +83,9 @@ OCR for scanned PDFs, saved conversations.
   characters and the story of the book. The book text itself is never stored. Every file has a `schemaVersion` (3; versions 1 and 2
   are still read). Writes are atomic (temp
   file then rename). Imported JSON is untrusted input: validate schema, sizes and text lengths before accepting.
-  Storage sits behind a port (`IBookRepository`) so another backend can be added later.
+  Storage sits behind a port (`IBookRepository`) so another backend can be added later. The only database is `data/rag.db`
+  (SQLite with the sqlite-vec extension, behind `IPassageIndex`): the passages of books and their vectors, optional, never the
+  source of truth for a book (see `docs/specs/rag.md`).
 - **Language of data:** everything the analysis writes into JSON (book summary, character descriptions,
   personality profiles) is in **English**, whatever the book's language, so files are portable and examples are
   shared. The chat prompt tells the LLM to answer the user **in the user's own language** (the language they write

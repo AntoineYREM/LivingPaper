@@ -210,6 +210,13 @@
     <section aria-labelledby="choose">
         <h2 id="choose">@T["settings.choose.title"]</h2>
         <p>@T["settings.choose.lead"]</p>
+        @if (Model.PassageProblem is { } problem)
+        {
+            <div class="alert alert--warning" role="status">
+                <strong class="alert__title">@T["settings.passages.title"]</strong>
+                <p>@(problem == LivingPaper.Application.PassageIndexProblem.ExtensionMissing ? T["settings.passages.extensionMissing"] : T["settings.passages.fileUnusable"])</p>
+            </div>
+        }
         @if (Model.ChoiceError is not null)
         {
             <div class="alert alert--error" role="alert">

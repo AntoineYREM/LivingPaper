@@ -60,6 +60,9 @@ builder.Services.AddSingleton<IModelCatalog, OpenAiCompatibleModelCatalog>();
 builder.Services.AddSingleton<PendingProviderStore>();
 builder.Services.AddSingleton<LlmSettingsService>();
 
+// The passages of the books and their vectors (PAPER-83): data/rag.db, created at the first save only.
+builder.Services.AddSingleton<IPassageIndex>(new SqlitePassageIndex(Path.Combine(dataDirectory, "rag.db")));
+
 // The books (PAPER-7): one JSON file each in data/books, and the text of a book kept in data/uploads only until its
 // analysis has finished. The reader of EPUB and PDF files is an adapter; the service is what the pages call.
 builder.Services.AddSingleton<IBookRepository>(new JsonBookRepository(Path.Combine(dataDirectory, "books")));

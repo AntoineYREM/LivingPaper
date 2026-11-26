@@ -1,5 +1,8 @@
-# Build stage: the .NET SDK compiles and publishes the web application.
-FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+# Build stage: the .NET SDK compiles and publishes the web application. It runs on the processor of the building machine and
+# compiles for the one of the image (TARGETARCH, given by BuildKit): no emulation of the SDK, and only the native libraries
+# of that processor (SQLite, sqlite-vec) are published.
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+ARG TARGETARCH
 WORKDIR /src
 
 # Restore first, from the project files only, so that this layer is cached until a dependency changes.
@@ -9,11 +12,12 @@ COPY src/LivingPaper.Application/LivingPaper.Application.csproj src/LivingPaper.
 COPY src/LivingPaper.Infrastructure/LivingPaper.Infrastructure.csproj src/LivingPaper.Infrastructure/
 COPY src/LivingPaper.Persistence/LivingPaper.Persistence.csproj src/LivingPaper.Persistence/
 COPY src/LivingPaper.Web/LivingPaper.Web.csproj src/LivingPaper.Web/
-RUN dotnet restore src/LivingPaper.Web/LivingPaper.Web.csproj
+RUN dotnet restore src/LivingPaper.Web/LivingPaper.Web.csproj --arch $TARGETARCH
 
 COPY src/ src/
 COPY examples/ examples/
-RUN dotnet publish src/LivingPaper.Web/LivingPaper.Web.csproj --configuration Release --no-restore --output /app
+RUN dotnet publish src/LivingPaper.Web/LivingPaper.Web.csproj --configuration Release --arch $TARGETARCH --self-contained false \
+    --no-restore --output /app
 
 # Run stage: the ASP.NET runtime only, no SDK, no source.
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime

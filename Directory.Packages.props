@@ -13,6 +13,12 @@
     <!-- IConfiguration for the reading of the LANGFUSE_* settings (Infrastructure), shared by the web application and the evaluation tool. Abstractions only. MIT. -->
     <PackageVersion Include="Microsoft.Extensions.Configuration.Abstractions" Version="11.0.0" />
     <PackageVersion Include="PdfPig" Version="0.1.16" />
+    <!-- The passages of the books and their vectors (Persistence): SQLite embedded in the application, no service to install. MIT; the SQLite
+         library it brings is in the public domain. -->
+    <PackageVersion Include="Microsoft.Data.Sqlite" Version="11.0.0" />
+    <!-- The SQLite extension that compares vectors (Persistence), by Alex Garcia. MIT or Apache 2.0. Published on NuGet as a prerelease only;
+         binaries for win-x64, linux-x64, linux-arm64, osx-x64 and osx-arm64 (elsewhere the passages are off). -->
+    <PackageVersion Include="sqlite-vec" Version="0.1.7-alpha.2.1" />
     <!-- Drives a real browser in the end-to-end tests (tests/LivingPaper.E2ETests only, never shipped). MIT license. -->
     <PackageVersion Include="Microsoft.Playwright" Version="1.64.1" />
     <!-- Exports the traces of the language model calls to Langfuse over OTLP (Web and the evaluation tool, and only when LANGFUSE_* is set). Langfuse has

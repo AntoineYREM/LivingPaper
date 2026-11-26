@@ -13,8 +13,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   OpenAI-compatible `POST /embeddings`, local or online). The model is tried when it is chosen. It is not used yet: it prepares
   the passages of the book in the chat ([specification](docs/specs/rag.md), decision 0011).
 
+- **An index of passages** (PAPER-83): `data/rag.db`, an embedded SQLite database with the sqlite-vec extension, keeps passages
+  of books and their vectors and finds the closest ones. Nothing writes it yet. If it cannot be used, the Settings page says so.
+  New dependencies: `Microsoft.Data.Sqlite` (with SQLite) and `sqlite-vec` (a prerelease).
+
 ### Changed
 
+- **The Docker image is compiled for its processor** (PAPER-83) without emulation, and holds the native libraries of that
+  processor only.
 - **A model you add fills the empty choices** (PAPER-81): until now only the first model was chosen by itself. While a choice is
   empty, the new model is tried once, to fill analysis and chat, or vectorization alone when it refuses to chat and can
   vectorize. A choice already made is never replaced. A provider with no list of models now also accepts a model that only

@@ -50,6 +50,7 @@ contain no data access: a page model calls the Application layer.
 | `ISecretProtector` | Encrypts API keys with ASP.NET Core Data Protection | Infrastructure |
 | `IBookRepository`, `IAnalysisStepStore`, `IBookTextStore` | One JSON file per book, steps file, text file | Persistence |
 | `ILlmSettingsRepository`, `IPromptProvider` | `data/settings.json`, `data/prompts.json` | Persistence |
+| `IPassageIndex` | The passages of the books and their vectors in `data/rag.db` (SQLite and the sqlite-vec extension) | Persistence |
 | `IExampleCatalog`, `IBookArchive` | `examples/*.json`, export and import of a book | Persistence |
 | `IChatModel` (decorator `TracingChatModel`) | Records each model call as an OpenTelemetry activity (`LlmTelemetry.Source`); the Web project exports them to Langfuse only when configured | Infrastructure, Web |
 | `IAnalysisScheduler` | A hosted `BackgroundService` that analyzes one book at a time | Web |
@@ -72,7 +73,7 @@ Every port is faked in the tests: **no test calls a real AI provider.**
 ## Where the data lives
 
 Everything is in the `data/` directory (the `/data` volume in Docker): `books/`, `uploads/` (the text of a book until its analysis
-ends), `settings.json`, `keys/`, `prompts.json`. The shipped examples are in `examples/`. See
+ends), `settings.json`, `keys/`, `prompts.json`, and `rag.db` once passages of books are kept (nothing writes it yet). The shipped examples are in `examples/`. See
 [ADR 0001](decisions/0001-json-files-instead-of-a-database.md).
 
 ## Decisions

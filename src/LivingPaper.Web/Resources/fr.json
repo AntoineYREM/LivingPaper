@@ -67,6 +67,9 @@
   "settings.pick.again": "Recommencer",
   "settings.draft.expired": "Ce brouillon n’est plus disponible : il est gardé 15 minutes et oublié au redémarrage de l’application. Recommencez.",
 
+  "settings.passages.title": "Les passages des livres sont inutilisables",
+  "settings.passages.extensionMissing": "SQLite ou son extension vectorielle ne peut pas être chargé sur cet ordinateur. Tout le reste fonctionne : les personnages utilisent l’histoire du livre.",
+  "settings.passages.fileUnusable": "Le fichier rag.db du dossier des données est inutilisable : il est abîmé, a été écrit par une version plus récente ou ne peut pas être lu. Il n’a pas été modifié. Tout le reste fonctionne : les personnages utilisent l’histoire du livre.",
   "settings.choose.title": "Quel modèle fait quoi",
   "settings.choose.lead": "Un même modèle peut tout faire. Un modèle économique peut lire les livres pendant qu’un meilleur modèle discute.",
   "settings.choose.analysis": "Modèle qui analyse les livres",
