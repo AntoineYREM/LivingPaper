@@ -360,15 +360,15 @@ public sealed class PassageAnalysisTests : IDisposable
     }
 
     [Fact]
-    public async Task APlotSummary_IsCutAtItsLimit_OnAWholeWord()
+    public async Task APlotSummaryTooLongForTheBook_IsShortened_AndKeepsItsEnd()
     {
-        AnswerThePlotWith(_ => Words(3000));
+        AnswerThePlotWith(_ => Words(3000) + ". Argan dies.");
 
         var book = await RunAsync();
 
         _model.CallsOf("analysis.plotSummary").ShouldBe(3);
         book.PlotSummary!.Length.ShouldBeLessThanOrEqualTo(CharacterLimits.PlotSummary);
-        book.PlotSummary.ShouldEndWith("fact");
+        book.PlotSummary.ShouldEndWith("Argan dies.");
     }
 
     [Fact]

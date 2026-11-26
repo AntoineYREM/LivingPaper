@@ -86,17 +86,19 @@ public sealed class StoryAnalysisTests : IDisposable
     }
 
     [Fact]
-    public async Task TheStory_IsCutAtItsLimit_OnAWholeWord()
+    public async Task AStoryTooLongForTheBook_IsShortened_AndStillTellsHowTheBookEnds()
     {
-        _model.Handler = (call, number) => Task.FromResult(call.Step == "analysis.storySummary"
-            ? string.Join(' ', Enumerable.Repeat("word", 9000))
-            : ScriptedAnalysisModelFactory.DefaultReply(call, number).Result);
+        const string Ending = "Scene 301. Argan dies. Present: Argan.";
+        var story = string.Join("\n\n", Enumerable.Range(1, 300).Select(number => $"Scene {number}. Argan complains about his health and calls for Toinette once more. Present: Argan, Toinette.").Append(Ending));
+        _model.Handler = (call, number) => Task.FromResult(call.Step == "analysis.storySummary" ? story : ScriptedAnalysisModelFactory.DefaultReply(call, number).Result);
 
         var book = await RunAsync();
 
         book.StorySummary!.Length.ShouldBeLessThanOrEqualTo(CharacterLimits.StorySummary);
-        book.StorySummary.ShouldEndWith("word");
+        book.StorySummary.ShouldStartWith("Scene 1.");
+        book.StorySummary.ShouldEndWith(Ending);
         book.FindLimitViolations().ShouldBeEmpty();
+        _model.Calls.Single(call => call.Step == "analysis.plotSummary").User.ShouldEndWith(Ending); // The plot is told from the whole story.
     }
 
     [Fact]
@@ -111,6 +113,53 @@ public sealed class StoryAnalysisTests : IDisposable
         await RunAsync(pages);
 
         _model.Calls.Single(call => call.Step == "analysis.storySummary").User.Length.ShouldBeLessThanOrEqualTo(4000);
+    }
+
+    // PAPER-64: a model often writes more than the sentence or two it is asked for a scene; cutting it short lost the end of
+    // the scene, and for the last one the end of the book.
+    [Theory]
+    [InlineData(1400, 1400)]
+    [InlineData(5000, 1500)]
+    public async Task ALongScene_ReachesTheStoryWhole_UpToItsLimit(int written, int kept)
+    {
+        var summary = string.Concat(Enumerable.Repeat("abcdefghi ", written / 10));
+        _model.Handler = (call, number) => Task.FromResult(call.IsPart
+            ? "{\"characters\":[" + ScriptedAnalysisModelFactory.Note("Argan") + "],\"scenes\":[" + ScriptedAnalysisModelFactory.Scene(summary, "Argan") + "]}"
+            : ScriptedAnalysisModelFactory.DefaultReply(call, number).Result);
+
+        await RunAsync("One page only.");
+
+        SummariesSentToTheStory().ShouldHaveSingleItem().Length.ShouldBeInRange(kept - 10, kept);
+    }
+
+    // A very long book still fits the context of the model: its scenes are shortened by steps, no more than needed.
+    [Theory]
+    [InlineData(40_000, 1400)]
+    [InlineData(15_000, 1000)]
+    [InlineData(9_000, 600)]
+    [InlineData(5_000, 300)]
+    public async Task TheScenesOfALongBook_AreShortenedByStepsUntilTheyFit(int maxLetters, int expected)
+    {
+        _options = _options with { MaxNotesLetters = maxLetters };
+        var summary = string.Concat(Enumerable.Repeat("abcdefghi ", 140));
+        _model.Handler = (call, number) => Task.FromResult(call.IsPart
+            ? "{\"characters\":[" + ScriptedAnalysisModelFactory.Note("Argan") + "],\"scenes\":[" + ScriptedAnalysisModelFactory.Scene(summary, "Argan") + "]}"
+            : ScriptedAnalysisModelFactory.DefaultReply(call, number).Result);
+
+        await RunAsync(string.Join('\f', Enumerable.Range(1, 12).Select(page => $"Page {page} text.")));
+
+        SummariesSentToTheStory().ShouldAllBe(sent => sent.Length >= expected - 10 && sent.Length <= expected);
+    }
+
+    private List<string> SummariesSentToTheStory()
+    {
+        using var json = System.Text.Json.JsonDocument.Parse(_model.Calls.Single(call => call.Step == "analysis.storySummary").User);
+        return
+        [
+            .. json.RootElement.GetProperty("parts").EnumerateArray()
+                .SelectMany(part => part.GetProperty("scenes").EnumerateArray())
+                .Select(scene => scene.GetProperty("summary").GetString()!),
+        ];
     }
 
     // ---- The model is told that the notes serve for the story ----

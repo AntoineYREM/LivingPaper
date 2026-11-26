@@ -34,6 +34,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- **The end of a long story was lost** (PAPER-64): a story over 24,000 letters was cut there, so the characters did not know
+  how the book ends. Its longest scenes are now shortened instead; every scene and the ending stay. The same for the summary of
+  the plot. The summary of one scene was also cut at 600 letters, losing the end of busy scenes: the limit is now 1,500. A book
+  already analyzed does not change: send it again to repair it (the shipped example *Madame Bovary* is still cut).
 - **Paragraphs of an EPUB** (PAPER-82): in many books, those of Project Gutenberg among them, every line of the file was read as a
   paragraph, cutting sentences in two. A line break of the file is now a space, as in a browser; paragraphs, `<br>` and the other
   blocks still start a new line. Books already analyzed do not change.

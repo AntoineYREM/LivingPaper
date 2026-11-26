@@ -33,8 +33,10 @@ internal static partial class AnalysisNotes
     // Each text noted about a character is cut to this many letters, so the notes of a long book stay small.
     private const int NoteFieldLetters = 500;
 
-    // The same for a scene, and for how many scenes a part may give.
-    private const int SceneLetters = 600;
+    // The same for a scene, and for how many scenes a part may give. The prompt asks for a sentence or two, but a model often
+    // writes much more for a busy scene: a short limit would cut its end, and the end of the book with the last one
+    // (PAPER-64). This one only stops a model that runs away.
+    private const int SceneLetters = 1500;
     private const int MaxScenesPerPart = 40;
     private const int MaxPresentPerScene = 15;
 
@@ -186,7 +188,7 @@ internal static partial class AnalysisNotes
     public static string CombineScenes(IReadOnlyList<PartNotes> parts, int maxLetters)
     {
         var json = string.Empty;
-        foreach (var letters in new[] { SceneLetters, 300, 200, 120, 60 })
+        foreach (var letters in new[] { SceneLetters, 1000, 600, 300, 200, 120, 60 })
         {
             json = Serialize(new
             {

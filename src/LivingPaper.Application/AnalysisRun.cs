@@ -326,7 +326,7 @@ internal sealed class AnalysisRun(
             StoryBudget.Words(textLength, options),
             (attempt, tries) => UpdateAsync(current => (current.StoryTry, current.StoryTries) = (attempt, tries), CancellationToken.None),
             cancellationToken).ConfigureAwait(false);
-        var kept = CharacterLimits.Clip(story, CharacterLimits.StorySummary);
+        var kept = StoryFitter.Fit(story, CharacterLimits.StorySummary);
         await steps.SaveAsync(book.Id, StoryKey, kept, CancellationToken.None).ConfigureAwait(false);
         return kept;
     }
@@ -345,13 +345,14 @@ internal sealed class AnalysisRun(
             return null;
         }
 
-        var kept = CharacterLimits.Clip(plot, CharacterLimits.PlotSummary);
+        var kept = StoryFitter.Fit(plot, CharacterLimits.PlotSummary);
         await steps.SaveAsync(book.Id, PlotKey, kept, CancellationToken.None).ConfigureAwait(false);
         return kept;
     }
 
     // A text of about "budget" words. A model often writes more than it is told: a text over the budget is asked again, with a
-    // tighter limit each time, and the shortest is kept. It is never cut in the middle: the end of the book would be lost.
+    // tighter limit each time, and the shortest is kept. One still too long for the book file is shortened (StoryFitter),
+    // never cut at its end, which would lose how the book ends.
     private async Task<string> WriteWithinAsync(string key, string source, int budget, Func<int, int, Task>? beforeTry, CancellationToken cancellationToken)
     {
         string? shortest = null;
