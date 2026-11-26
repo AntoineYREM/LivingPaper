@@ -106,6 +106,9 @@ The scene text of a header is cut to 200 characters. A passage covering several 
 ### Storage
 
 - **SQLite** embedded in the application, searched with the **sqlite-vec** extension. No service to install.
+- Packages: `Microsoft.Data.Sqlite` 11.0.0 and `sqlite-vec` 0.1.7-alpha.2.1 (the NuGet package, a prerelease).
+- Vectors are stored in an **ordinary table** and compared with `vec_distance_cosine`, so any size of vector fits. The
+  virtual table of sqlite-vec is not used: its size is fixed when it is created, and it changes with the model.
 - One file, `data/rag.db`, holding the passages (text, number, scenes, characters present), their vectors, and
   for each book the embedding model that made them.
 - Book files stay the source of truth for everything else.
@@ -231,8 +234,11 @@ The present judge sees only the question and the reply, so it cannot detect an i
 - `Application`: passage cutting, retrieval and prompt assembly; ports `IEmbeddingModel` and `IPassageIndex`.
 - `Infrastructure`: the OpenAI-compatible embeddings adapter, with the same retries, timeouts and URL rules as the chat.
 - `Persistence`: the SQLite adapter.
-- New dependencies (SQLite provider, sqlite-vec) must be documented and pass the license check. Their availability on Windows
-  and in the Docker image (amd64, arm64) is verified **before** anything is built on them.
+- New dependencies (SQLite provider, sqlite-vec) must be documented and pass the license check. The check needs a
+  hand-verified exception for the `SQLite` package (public domain, declared by a license file).
+- Verified before building on them (PAPER-80): Windows x64, and Linux amd64 and arm64 in the runtime image of the application.
+  The `sqlite-vec` package has binaries for `win-x64`, `linux-x64`, `linux-arm64`, `osx-x64` and `osx-arm64` only: elsewhere
+  the feature is off. Publishing keeps only the native files of the platforms that are shipped (all platforms add about 52 MB).
 - Tests use a fake embedding model: no real provider. They cover nominal cases, invalid model answers, empty results,
   transient errors and every fallback. One browser scenario adds a book, indexes it and chats.
 - Every new string goes to `en.json` and `fr.json`.
