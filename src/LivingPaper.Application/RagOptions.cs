@@ -19,10 +19,12 @@ public sealed record RagOptions
 {
     public const int MaxPassages = 10;
 
-    public QueryMode Mode { get; init; } = QueryMode.Rewrite;
+    // The default mode and number of passages were chosen on measures (docs/experiments/passages-of-the-book.md): writing the
+    // query made replies several times slower for a gain that was not shown, and five passages hold the answer more often than three.
+    public QueryMode Mode { get; init; } = QueryMode.Recent;
 
     // How many passages are given to the character.
-    public int Passages { get; init; } = 3;
+    public int Passages { get; init; } = 5;
 
     public TimeSpan RewriteTimeout { get; init; } = TimeSpan.FromSeconds(30);
 

@@ -13,9 +13,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   OpenAI-compatible `POST /embeddings`, local or online). The model is tried when it is chosen. It is not used yet: it prepares
   the passages of the book in the chat ([specification](docs/specs/rag.md), decision 0011).
 
+- **Factual evaluation and measured defaults** (PAPER-87): 26 factual questions on *Madame Bovary* with their expected
+  answers, a judge of accuracy, and options of the evaluation tool to search the passages of an indexed book (`--book-data`,
+  `--embedding`, `--query-mode`, `--passages`), with what was searched and found kept and reported. From the measures
+  ([experiments](docs/experiments/passages-of-the-book.md)), the chat now searches the recent messages as they are and gives
+  the character 5 passages (before: a query written by the chat model, and 3).
 - **The chat uses the passages of the book** (PAPER-86): for an indexed book, the character gets the short plot and the
-  passages that answer the message in place of the whole story. The chat model writes the search first; `RAG_QUERY_MODE`
-  and `RAG_PASSAGES` tune it. If the search fails, the reply uses the whole story, and says so. New prompts `chat.passages`
+  passages that answer the message in place of the whole story. `RAG_QUERY_MODE` and `RAG_PASSAGES` tune the
+  search. If the search fails, the reply uses the whole story, and says so. New prompts `chat.passages`
   and `chat.searchQuery`.
 - **The passages are indexed** (PAPER-85): at the end of an analysis, each passage, under a header with its scene and who is
   there, is turned into a vector. The page of a book says where its passages are and offers **Retry indexing** or **Re-index**

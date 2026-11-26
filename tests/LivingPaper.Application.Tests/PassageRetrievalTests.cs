@@ -24,7 +24,8 @@ public sealed class PassageRetrievalTests : IDisposable
     };
 
     private readonly Character _character = new(1, "Emma Bovary", "The heroine.", "I am Emma.");
-    private RagOptions _options = new();
+    // Most tests of this class are about the writing of the query: they ask for it, whatever the default is.
+    private RagOptions _options = new() { Mode = QueryMode.Rewrite, Passages = 3 };
 
     public PassageRetrievalTests()
     {
@@ -153,7 +154,7 @@ public sealed class PassageRetrievalTests : IDisposable
         system.ShouldContain("plotSummary=The plot in short.");
         system.ShouldContain(
             "passages=[Scene: Scene of 2. | Present: Emma]\nText of passage 2.\n\n[Scene: Scene of 79. | Present: Emma]\nText of passage 79.\n\n[Scene: Scene of 102. | Present: Emma]\nText of passage 102.");
-        system.ShouldNotContain("passage 4."); // Three by default.
+        system.ShouldNotContain("passage 4."); // Three were asked for.
         system.ShouldNotContain("The whole story");
         Notices.ShouldBeEmpty();
     }
@@ -162,7 +163,7 @@ public sealed class PassageRetrievalTests : IDisposable
     public async Task TheNumberOfPassages_IsASetting()
     {
         await IndexBookAsync();
-        _options = new RagOptions { Passages = 1 };
+        _options = new RagOptions { Mode = QueryMode.Rewrite, Passages = 1 };
 
         var system = await ChatAsync();
 
@@ -190,8 +191,28 @@ public sealed class PassageRetrievalTests : IDisposable
         User("one"), Said("two"), User("three"), Said("four"), User("Do you remember the ball?"),
     ];
 
+    // The defaults were chosen on measures (docs/experiments/passages-of-the-book.md).
     [Fact]
-    public async Task ByDefault_TheChatModelWritesTheQuery_FromTheRecentMessages()
+    public async Task ByDefault_TheRecentMessagesAreSearchedAsTheyAre_AndFivePassagesAreAskedFor()
+    {
+        await IndexBookAsync();
+        _options = new RagOptions();
+        var asked = 0;
+        _index.Search = (_, count) =>
+        {
+            asked = count;
+            return [Found(79, 0.3)];
+        };
+
+        await ChatAsync(Conversation);
+
+        Query.ShouldBe("two\nthree\nfour\nDo you remember the ball?");
+        asked.ShouldBe(5);
+        _models.Rewrites.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public async Task TheRewriteMode_HasTheChatModelWriteTheQuery_FromTheRecentMessages()
     {
         await IndexBookAsync();
         _models.Rewrite = _ => Task.FromResult("  \"the ball at the castle,\n the Viscount\"  ");
@@ -252,7 +273,7 @@ public sealed class PassageRetrievalTests : IDisposable
     public async Task ARewritingThatFails_SearchesWithTheRecentMessages_AndSaysSo(string failure)
     {
         await IndexBookAsync();
-        _options = new RagOptions { RewriteTimeout = TimeSpan.FromMilliseconds(100) };
+        _options = new RagOptions { Mode = QueryMode.Rewrite, RewriteTimeout = TimeSpan.FromMilliseconds(100) };
         _models.Rewrite = failure switch
         {
             "unreachable" => _ => throw new ChatProviderException(ChatFailureKind.Unreachable, "down"),
@@ -280,7 +301,7 @@ public sealed class PassageRetrievalTests : IDisposable
     public async Task ASearchThatFails_SendsTheWholeStory_AndSaysSo(string failure)
     {
         await IndexBookAsync();
-        _options = new RagOptions { SearchTimeout = TimeSpan.FromMilliseconds(100) };
+        _options = new RagOptions { Mode = QueryMode.Rewrite, Passages = 3, SearchTimeout = TimeSpan.FromMilliseconds(100) };
         switch (failure)
         {
             case "unreachable":
@@ -354,7 +375,7 @@ public sealed class PassageRetrievalTests : IDisposable
     public async Task TheSearch_IsTraced_WithTheTextOfTheQueryOnlyWhenContentIsCaptured(bool capture)
     {
         await IndexBookAsync();
-        _options = new RagOptions { CaptureContent = capture };
+        _options = new RagOptions { Mode = QueryMode.Rewrite, Passages = 3, CaptureContent = capture };
         _models.Rewrite = _ => Task.FromResult("the secret query");
         var spans = new List<Activity>();
         using var listener = new ActivityListener

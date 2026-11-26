@@ -37,10 +37,10 @@ internal sealed class EvalRunner(ICharacterReplier replier, IJudge judge, IExper
     {
         using var item = _tracer.BeginItem(question, repeat);
 
-        string reply;
+        CharacterAnswer answer;
         try
         {
-            reply = await replier.ReplyAsync(question.Input, cancellationToken).ConfigureAwait(false);
+            answer = await replier.ReplyAsync(question, cancellationToken).ConfigureAwait(false);
         }
         catch (ChatReplyException exception)
         {
@@ -49,17 +49,18 @@ internal sealed class EvalRunner(ICharacterReplier replier, IJudge judge, IExper
             return Result(question, repeat, item, reply: null, score: null, reason: null, failure);
         }
 
+        var reply = answer.Reply;
         try
         {
-            var verdict = await judge.GradeAsync(question.Input, reply, cancellationToken).ConfigureAwait(false);
+            var verdict = await judge.GradeAsync(question, reply, cancellationToken).ConfigureAwait(false);
             item.Complete(reply, verdict.Score, null);
-            return Result(question, repeat, item, reply, verdict.Score, verdict.Reason, failure: null);
+            return Result(question, repeat, item, reply, verdict.Score, verdict.Reason, failure: null) with { Trace = answer.Trace };
         }
         catch (JudgeException exception)
         {
             var failure = $"judge:{exception.Code}";
             item.Complete(reply, null, failure);
-            return Result(question, repeat, item, reply, score: null, reason: null, failure, exception.RawAnswer);
+            return Result(question, repeat, item, reply, score: null, reason: null, failure, exception.RawAnswer) with { Trace = answer.Trace };
         }
     }
 

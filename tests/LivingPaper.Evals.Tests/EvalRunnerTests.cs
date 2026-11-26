@@ -15,17 +15,17 @@ public class EvalRunnerTests
     {
         public List<string> Asked { get; } = [];
 
-        public Task<string> ReplyAsync(string question, CancellationToken cancellationToken)
+        public Task<CharacterAnswer> ReplyAsync(EvalQuestion question, CancellationToken cancellationToken)
         {
-            Asked.Add(question);
-            return Task.FromResult(reply(question));
+            Asked.Add(question.Input);
+            return Task.FromResult(new CharacterAnswer(reply(question.Input)));
         }
     }
 
     private sealed class Judge(Func<string, string, JudgeVerdict> grade) : IJudge
     {
-        public Task<JudgeVerdict> GradeAsync(string question, string reply, CancellationToken cancellationToken) =>
-            Task.FromResult(grade(question, reply));
+        public Task<JudgeVerdict> GradeAsync(EvalQuestion question, string reply, CancellationToken cancellationToken) =>
+            Task.FromResult(grade(question.Input, reply));
     }
 
     [Fact]
@@ -58,8 +58,8 @@ public class EvalRunnerTests
 
     private sealed class FailingReplier : ICharacterReplier
     {
-        public Task<string> ReplyAsync(string question, CancellationToken cancellationToken) =>
-            question == "Hello?" ? throw new ChatReplyException(ChatFailure.ModelUnreachable) : Task.FromResult("fine");
+        public Task<CharacterAnswer> ReplyAsync(EvalQuestion question, CancellationToken cancellationToken) =>
+            question.Input == "Hello?" ? throw new ChatReplyException(ChatFailure.ModelUnreachable) : Task.FromResult(new CharacterAnswer("fine"));
     }
 
     [Fact]
@@ -75,13 +75,13 @@ public class EvalRunnerTests
 
     private sealed class FailingJudge : IJudge
     {
-        public Task<JudgeVerdict> GradeAsync(string question, string reply, CancellationToken cancellationToken) =>
+        public Task<JudgeVerdict> GradeAsync(EvalQuestion question, string reply, CancellationToken cancellationToken) =>
             throw new JudgeException("invalid-verdict");
     }
 
     private sealed class JudgeWithAnUnreadableAnswer : IJudge
     {
-        public Task<JudgeVerdict> GradeAsync(string question, string reply, CancellationToken cancellationToken) =>
+        public Task<JudgeVerdict> GradeAsync(EvalQuestion question, string reply, CancellationToken cancellationToken) =>
             throw new JudgeException("invalid-verdict", "What the judge wrote.");
     }
 

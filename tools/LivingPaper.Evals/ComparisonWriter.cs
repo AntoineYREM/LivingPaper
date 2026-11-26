@@ -24,7 +24,26 @@ internal static class ComparisonWriter
         WriteCategories(writer, comparison);
         WriteBiggest(writer, comparison);
         WriteCost(writer, comparison, prices);
+        WriteReplies(writer, comparison);
     }
+
+    private static void WriteReplies(TextWriter writer, RunComparison comparison)
+    {
+        foreach (var (label, run) in new[] { ("A", comparison.A), ("B", comparison.B) })
+        {
+            if (TraceSummary.Of(run.Results) is { } traces)
+            {
+                writer.WriteLine();
+                writer.WriteLine($"Per reply, {label} ({Reading(run)}):");
+                traces.Write(writer, "  ");
+            }
+        }
+    }
+
+    // How the run gave the book to the character.
+    private static string Reading(RunRecord run) => run.Retrieval is { } retrieval
+        ? $"{retrieval.Passages} passages ({retrieval.EmbeddingModel}), query mode {retrieval.QueryMode}"
+        : "the whole story";
 
     private static void Describe(TextWriter writer, string label, RunRecord run)
     {

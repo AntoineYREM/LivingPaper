@@ -134,7 +134,7 @@ public partial class ChatPassagesTests
     public async Task TheCharacterGetsThePlotAndTheClosestPassages_WithTheDefaultPrompts()
     {
         var models = new Models();
-        using var factory = NewFactory(models, new Dictionary<string, string> { ["RAG_PASSAGES"] = "1" });
+        using var factory = NewFactory(models, new Dictionary<string, string> { ["RAG_PASSAGES"] = "1", ["RAG_QUERY_MODE"] = "rewrite" });
         using var client = NewClient(factory);
         var book = await SeedAsync(factory);
         models.Queries.Clear();
@@ -151,6 +151,21 @@ public partial class ChatPassagesTests
         system.ShouldNotContain("The whole story");
         system.ShouldNotContain("{passages}");
         system.ShouldNotContain("{plotSummary}");
+    }
+
+    [Fact]
+    public async Task ByDefault_TheMessageIsSearchedAsItIs_WithNoQueryWritten()
+    {
+        var models = new Models();
+        using var factory = NewFactory(models);
+        using var client = NewClient(factory);
+        var book = await SeedAsync(factory);
+        models.Queries.Clear();
+
+        var events = await SayAsync(client, book, "Tu te souviens du bal ?");
+
+        Kinds(events).ShouldBe(["text", "done"]);
+        models.Queries.ShouldBe(["Tu te souviens du bal ?"]);
     }
 
     [Fact]
@@ -171,7 +186,7 @@ public partial class ChatPassagesTests
     public async Task WhenTheRewritingFails_TheReplyStillComes_WithANoticeBeforeIt()
     {
         var models = new Models { RewriteFailure = new ChatProviderException(ChatFailureKind.Http, "secret", 500) };
-        using var factory = NewFactory(models);
+        using var factory = NewFactory(models, new Dictionary<string, string> { ["RAG_QUERY_MODE"] = "rewrite" });
         using var client = NewClient(factory);
         var book = await SeedAsync(factory);
 

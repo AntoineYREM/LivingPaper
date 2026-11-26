@@ -21,7 +21,7 @@ public class JudgeAndMeterTests
     {
         var judge = Judge(() => """{"score": 4, "reason": "ok"}""", out var model);
 
-        var verdict = await judge.GradeAsync("Hi?", "Hello.", CancellationToken.None);
+        var verdict = await judge.GradeAsync(new EvalQuestion("q-1", "normal", "Hi?", ""), "Hello.", CancellationToken.None);
 
         verdict.ShouldBe(new JudgeVerdict(4, "ok"));
         model.Requests.Single().ShouldBe([new ChatMessage(ChatRole.User, "Emma Bovary|Madame Bovary|Hi?|Hello.")]);
@@ -32,7 +32,7 @@ public class JudgeAndMeterTests
     {
         var judge = Judge(() => "I refuse to grade.", out _);
 
-        var error = await Should.ThrowAsync<JudgeException>(() => judge.GradeAsync("Hi?", "Hello.", CancellationToken.None));
+        var error = await Should.ThrowAsync<JudgeException>(() => judge.GradeAsync(new EvalQuestion("q-1", "normal", "Hi?", ""), "Hello.", CancellationToken.None));
 
         error.Code.ShouldBe("invalid-verdict");
         error.Message.ShouldNotContain("refuse");
@@ -46,7 +46,7 @@ public class JudgeAndMeterTests
     {
         var judge = Judge(() => new string('x', JudgeException.MaxRawAnswerLength + 500), out _);
 
-        var error = await Should.ThrowAsync<JudgeException>(() => judge.GradeAsync("Hi?", "Hello.", CancellationToken.None));
+        var error = await Should.ThrowAsync<JudgeException>(() => judge.GradeAsync(new EvalQuestion("q-1", "normal", "Hi?", ""), "Hello.", CancellationToken.None));
 
         error.RawAnswer!.Length.ShouldBe(JudgeException.MaxRawAnswerLength);
     }
@@ -56,7 +56,7 @@ public class JudgeAndMeterTests
     {
         var filtered = new ModelJudge(new FakeChatModelFactory(_ => new RefusingModel(new ContentFilteredException())), Provider, Prompt, "E", "B");
 
-        (await Should.ThrowAsync<JudgeException>(() => filtered.GradeAsync("q", "r", CancellationToken.None))).RawAnswer.ShouldBeNull();
+        (await Should.ThrowAsync<JudgeException>(() => filtered.GradeAsync(new EvalQuestion("q-1", "normal", "q", ""), "r", CancellationToken.None))).RawAnswer.ShouldBeNull();
     }
 
     private sealed class RefusingModel(Exception error) : IChatModel
@@ -75,8 +75,8 @@ public class JudgeAndMeterTests
         var down = new ModelJudge(
             new FakeChatModelFactory(_ => new RefusingModel(new ChatProviderException(ChatFailureKind.Unreachable, "down"))), Provider, Prompt, "E", "B");
 
-        (await Should.ThrowAsync<JudgeException>(() => filtered.GradeAsync("q", "r", CancellationToken.None))).Code.ShouldBe("content-filtered");
-        (await Should.ThrowAsync<JudgeException>(() => down.GradeAsync("q", "r", CancellationToken.None))).Code.ShouldBe("model-error");
+        (await Should.ThrowAsync<JudgeException>(() => filtered.GradeAsync(new EvalQuestion("q-1", "normal", "q", ""), "r", CancellationToken.None))).Code.ShouldBe("content-filtered");
+        (await Should.ThrowAsync<JudgeException>(() => down.GradeAsync(new EvalQuestion("q-1", "normal", "q", ""), "r", CancellationToken.None))).Code.ShouldBe("model-error");
     }
 
     [Fact]

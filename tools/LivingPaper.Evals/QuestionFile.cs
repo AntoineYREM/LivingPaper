@@ -13,6 +13,9 @@ internal static partial class QuestionFile
 
     private const int MaxIdLength = 80;
     private const int MaxCategoryLength = 40;
+    private const int MaxQuotes = 5;
+    private const int MaxQuoteLength = 300;
+    private const int MaxTurns = 10;
 
     private static readonly JsonSerializerOptions Options = new() { PropertyNameCaseInsensitive = true };
 
@@ -62,11 +65,35 @@ internal static partial class QuestionFile
                 !string.IsNullOrWhiteSpace(item.Input) && item.Input.Length <= ConversationLimits.MaxMessageLength,
                 name,
                 $"the input of {item.Id} (1 to {ConversationLimits.MaxMessageLength} characters)");
-            questions.Add(new EvalQuestion(item.Id!, item.Category!.Trim(), item.Input!.Trim(), item.ExpectedOutput?.Trim() ?? string.Empty));
+            Require(
+                item.PassageQuotes is null
+                || (item.PassageQuotes.Count is > 0 and <= MaxQuotes
+                    && item.PassageQuotes.All(quote => !string.IsNullOrWhiteSpace(quote) && quote.Length <= MaxQuoteLength)),
+                name,
+                $"passageQuotes of {item.Id} (1 to {MaxQuotes} phrases of 1 to {MaxQuoteLength} characters)");
+            Require(
+                item.Conversation is null || IsConversation(item.Conversation),
+                name,
+                $"conversation of {item.Id} (up to {MaxTurns} messages, \"user\" then \"assistant\" in turn, ending with \"assistant\")");
+            questions.Add(new EvalQuestion(item.Id!, item.Category!.Trim(), item.Input!.Trim(), item.ExpectedOutput?.Trim() ?? string.Empty)
+            {
+                PassageQuotes = item.PassageQuotes?.Select(quote => quote!.Trim()).ToList(),
+                Conversation = item.Conversation?.Select(turn => new ConversationTurn(turn!.Role == "assistant", turn.Content!.Trim())).ToList(),
+            });
         }
 
         return new QuestionSet(file.Dataset!.Trim(), file.BookId!, file.Character!.Trim(), questions);
     }
+
+    // The messages before the question: the reader first, each answered, so that the question comes next in turn.
+    private static bool IsConversation(List<TurnContent?> turns) =>
+        turns.Count is > 0 and <= MaxTurns
+        && turns.Count % 2 == 0
+        && turns.Select((turn, index) => (Turn: turn, Role: index % 2 == 0 ? "user" : "assistant")).All(expected =>
+            expected.Turn is { Content: { } content }
+            && expected.Turn.Role == expected.Role
+            && !string.IsNullOrWhiteSpace(content)
+            && content.Length <= ConversationLimits.MaxMessageLength);
 
     private static void Require(bool condition, string fileName, string what)
     {
@@ -81,5 +108,8 @@ internal static partial class QuestionFile
 
     private sealed record FileContent(int SchemaVersion, string? Dataset, string? BookId, string? Character, List<ItemContent?>? Items);
 
-    private sealed record ItemContent(string? Id, string? Category, string? Input, string? ExpectedOutput);
+    private sealed record ItemContent(
+        string? Id, string? Category, string? Input, string? ExpectedOutput, List<string?>? PassageQuotes, List<TurnContent?>? Conversation);
+
+    private sealed record TurnContent(string? Role, string? Content);
 }

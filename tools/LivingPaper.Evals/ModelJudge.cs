@@ -8,7 +8,7 @@ namespace LivingPaper.Evals;
 // failures of the judge, never a made-up score.
 internal sealed class ModelJudge(IChatModelFactory factory, LlmProvider provider, JudgePrompt prompt, string characterName, string bookTitle) : IJudge
 {
-    public async Task<JudgeVerdict> GradeAsync(string question, string reply, CancellationToken cancellationToken)
+    public async Task<JudgeVerdict> GradeAsync(EvalQuestion question, string reply, CancellationToken cancellationToken)
     {
         var message = new ChatMessage(ChatRole.User, prompt.Render(characterName, bookTitle, question, reply));
 
