@@ -203,6 +203,11 @@ internal sealed class FakeLlm : IAsyncDisposable
             return "Scene 1. A storm rises over the island: Marguerite keeps the light on and Captain Alder rows over with a letter. Present: Marguerite Voss, Captain Alder.";
         }
 
+        if (body.Contains("Write its plot in English", StringComparison.Ordinal))
+        {
+            return "Marguerite keeps the light on through a storm, and Captain Alder rows over with a letter from her brother.";
+        }
+
         if (body.Contains("summary of the atmosphere", StringComparison.Ordinal))
         {
             return "A lonely island at the end of the nineteenth century: gentle, melancholic, salt and lamp oil.";

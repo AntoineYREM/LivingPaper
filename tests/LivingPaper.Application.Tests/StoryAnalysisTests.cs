@@ -305,7 +305,7 @@ public sealed class StoryAnalysisTests : IDisposable
 
         var book = await RunAsync();
 
-        book.InputTokens.ShouldBe(100 * (7 + 3)); // 3 parts, the merge, 2 profiles, the summary, and 3 tries at the story.
+        book.InputTokens.ShouldBe(100 * (7 + 3 + 1)); // 3 parts, the merge, 2 profiles, the summary, 3 tries at the story, and the plot.
     }
 
     // ---- The page can say what the analysis is doing ----

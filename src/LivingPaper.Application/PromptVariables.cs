@@ -14,5 +14,6 @@ public static class PromptVariables
 
     // The story of the book, scene by scene (chat.story), and the whole section of the chat prompt that holds it (chat.system).
     public const string StorySummary = "storySummary";
+    public const string PassageRanges = "passageRanges";
     public const string Story = "story";
 }

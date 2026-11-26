@@ -9,7 +9,9 @@ namespace LivingPaper.Application;
 //   1. each part of the book is read; the model notes its characters (a few parts at the same time);
 //   2. the notes are merged: one character under several names becomes one, the most important are kept;
 //   3. a profile for each kept character, the summary of the book and the story of the book scene by scene, which the
-//      characters know when they chat (also a few at a time).
+//      characters know when they chat (also a few at a time), then the short summary of the plot, written from the story.
+// When a model for vectorization is chosen, each part is read as numbered passages (PassageCutter), the model says which
+// passages each scene covers, and the passages are kept with their scenes before the text of the book is deleted.
 // Everything the model writes is cut to its limit; nothing the model writes is trusted to have the right shape.
 internal sealed class AnalysisRun(
     Book book,
@@ -20,7 +22,8 @@ internal sealed class AnalysisRun(
     IChatModelFactory models,
     IPromptProvider prompts,
     TimeProvider clock,
-    AnalysisOptions options) : IDisposable
+    AnalysisOptions options,
+    IPassageIndex? passageIndex = null) : IDisposable
 {
     private readonly SemaphoreSlim _bookLock = new(1, 1);
     private readonly SemaphoreSlim _calls = new(Math.Max(1, options.MaxParallelCalls));
@@ -101,6 +104,13 @@ internal sealed class AnalysisRun(
             throw new AnalysisException(AnalysisFailure.TextMissing);
         }
 
+        // Passages are made and kept only when the user chose a model for vectorization and the index can be used here.
+        var passages = passageIndex is not null && passageIndex.Check() is null
+            && await settings.GetEmbeddingProviderAsync(cancellationToken).ConfigureAwait(false) is not null
+                ? PassageCutter.Cut(parts, linesAreParagraphs: !text!.Contains('\f', StringComparison.Ordinal))
+                : null;
+        var passagesOfPart = passages?.ToLookup(passage => passage.Part);
+
         var saved = new Dictionary<string, string>(await steps.GetAllAsync(book.Id, cancellationToken).ConfigureAwait(false), StringComparer.Ordinal);
 
         // 1. The parts. What a previous try saved is read again, not asked again.
@@ -123,7 +133,8 @@ internal sealed class AnalysisRun(
             cancellationToken).ConfigureAwait(false);
         await RunAllAsync(
             Enumerable.Range(0, parts.Count).Where(index => notes[index] is null)
-                .Select<int, Func<CancellationToken, Task>>(index => async token => notes[index] = await ReadPartAsync(index, parts[index], token).ConfigureAwait(false)),
+                .Select<int, Func<CancellationToken, Task>>(index => async token =>
+                    notes[index] = await ReadPartAsync(index, parts[index], passagesOfPart?[index].ToList(), token).ConfigureAwait(false)),
             cancellationToken).ConfigureAwait(false);
 
         // 2. The merge.
@@ -139,6 +150,7 @@ internal sealed class AnalysisRun(
 
         string? summary = saved.GetValueOrDefault(SummaryKey) is { Length: > 0 } storedSummary ? storedSummary : null;
         string? story = saved.GetValueOrDefault(StoryKey) is { Length: > 0 } storedStory ? storedStory : null;
+        string? plot = saved.GetValueOrDefault(PlotKey) is { Length: > 0 } storedPlot ? storedPlot : null;
         var partNotes = notes.Select(note => note!).ToList();
         await UpdateAsync(
             current =>
@@ -157,14 +169,20 @@ internal sealed class AnalysisRun(
 
         // The story is told from the scenes the parts gave. With none, there is nothing to tell: the book has no story, which the
         // chat copes with, and that is said in StorySummaryPartial.
-        if (story is null && AnalysisNotes.HasScenes(partNotes))
+        // The short summary of the plot is written from the story, so after it.
+        if ((story is null || plot is null) && AnalysisNotes.HasScenes(partNotes))
         {
-            work.Add(async token => story = await WriteStoryAsync(partNotes, text!.Length, token).ConfigureAwait(false));
+            work.Add(async token =>
+            {
+                story ??= await WriteStoryAsync(partNotes, text!.Length, token).ConfigureAwait(false);
+                plot ??= await WritePlotSummaryAsync(story, token).ConfigureAwait(false);
+            });
         }
 
         await RunAllAsync(work, cancellationToken).ConfigureAwait(false);
 
-        await FinishAsync(chosen, profiles!, summary!, story, AnalysisNotes.HasGaps(partNotes) || story is null, cancellationToken).ConfigureAwait(false);
+        await KeepPassagesAsync(passages, partNotes, cancellationToken).ConfigureAwait(false);
+        await FinishAsync(chosen, profiles!, summary!, story, plot, AnalysisNotes.HasGaps(partNotes) || story is null, cancellationToken).ConfigureAwait(false);
     }
 
     private async Task PrepareModelAsync(CancellationToken cancellationToken)
@@ -192,18 +210,30 @@ internal sealed class AnalysisRun(
 
     // ---- The parts ----
 
-    private async Task<PartNotes> ReadPartAsync(int index, string part, CancellationToken cancellationToken)
+    // passages: those of this part when they are kept, else null. The rich notes then read the part passage by passage, each
+    // with its number, without the repeated sentences; the simple notes read the text alone (they hold no scenes).
+    private async Task<PartNotes> ReadPartAsync(int index, string part, List<Passage>? passages, CancellationToken cancellationToken)
     {
         using var span = LlmTelemetry.Source.StartActivity("read-part");
         span?.SetTag("analysis.part", index + 1);
-        var variables = Variables((PromptVariables.BookTitle, book.Title));
         PartRead? read = null;
         foreach (var key in new[] { PromptKeys.ReadPart, PromptKeys.ReadPartSimple })
         {
+            var numbered = key == PromptKeys.ReadPart && passages is { Count: > 0 };
+            var user = numbered ? string.Join('\n', passages!.Select(passage => $"[P{passage.Number}] {passage.Body}")) : part;
+            (int First, int Last)? range = numbered ? (passages![0].Number, passages[^1].Number) : null;
             try
             {
+                var variables = Variables((PromptVariables.BookTitle, book.Title));
+                if (key == PromptKeys.ReadPart)
+                {
+                    variables[PromptVariables.PassageRanges] = numbered
+                        ? await RenderAsync(PromptKeys.PassageRanges, Variables(), cancellationToken).ConfigureAwait(false)
+                        : string.Empty;
+                }
+
                 var system = await RenderAsync(key, variables, cancellationToken).ConfigureAwait(false);
-                read = await AskAsync(system, part, (string reply, out PartRead result) => AnalysisNotes.TryReadPart(reply, out result), cancellationToken).ConfigureAwait(false);
+                read = await AskAsync(system, user, (string reply, out PartRead result) => AnalysisNotes.TryReadPart(reply, range, out result), cancellationToken).ConfigureAwait(false);
                 // The simple notes hold no scenes, whatever the model adds: the story has a hole where this part is.
                 if (key == PromptKeys.ReadPartSimple)
                 {
@@ -286,43 +316,116 @@ internal sealed class AnalysisRun(
     }
 
     // The story of the whole book, scene by scene, from the scenes of every part: about StoryBudget words, the number depending on the
-    // length of the book. A model often writes more than it is told: a story over the budget is asked again, with a tighter limit
-    // each time, and the shortest is kept. It is never cut in the middle: the end of the book would be lost.
+    // length of the book.
     private async Task<string> WriteStoryAsync(List<PartNotes> parts, int textLength, CancellationToken cancellationToken)
     {
         using var span = LlmTelemetry.Source.StartActivity("story-summary");
-        var budget = StoryBudget.Words(textLength, options);
-        var scenes = AnalysisNotes.CombineScenes(parts, options.MaxNotesLetters);
+        var story = await WriteWithinAsync(
+            PromptKeys.StorySummary,
+            AnalysisNotes.CombineScenes(parts, options.MaxNotesLetters),
+            StoryBudget.Words(textLength, options),
+            (attempt, tries) => UpdateAsync(current => (current.StoryTry, current.StoryTries) = (attempt, tries), CancellationToken.None),
+            cancellationToken).ConfigureAwait(false);
+        var kept = CharacterLimits.Clip(story, CharacterLimits.StorySummary);
+        await steps.SaveAsync(book.Id, StoryKey, kept, CancellationToken.None).ConfigureAwait(false);
+        return kept;
+    }
+
+    // The plot in a few hundred words, from the story. Null when the content filter refuses it: the book does without.
+    private async Task<string?> WritePlotSummaryAsync(string story, CancellationToken cancellationToken)
+    {
+        using var span = LlmTelemetry.Source.StartActivity("plot-summary");
+        string plot;
+        try
+        {
+            plot = await WriteWithinAsync(PromptKeys.PlotSummary, story, options.PlotSummaryWords, null, cancellationToken).ConfigureAwait(false);
+        }
+        catch (AnalysisException exception) when (exception.Failure == AnalysisFailure.ContentFiltered)
+        {
+            return null;
+        }
+
+        var kept = CharacterLimits.Clip(plot, CharacterLimits.PlotSummary);
+        await steps.SaveAsync(book.Id, PlotKey, kept, CancellationToken.None).ConfigureAwait(false);
+        return kept;
+    }
+
+    // A text of about "budget" words. A model often writes more than it is told: a text over the budget is asked again, with a
+    // tighter limit each time, and the shortest is kept. It is never cut in the middle: the end of the book would be lost.
+    private async Task<string> WriteWithinAsync(string key, string source, int budget, Func<int, int, Task>? beforeTry, CancellationToken cancellationToken)
+    {
         string? shortest = null;
         var tries = Math.Max(0, options.StoryTighteningRetries) + 1;
         for (var attempt = 0; attempt < tries; attempt++)
         {
-            await UpdateAsync(current => (current.StoryTry, current.StoryTries) = (attempt + 1, tries), CancellationToken.None).ConfigureAwait(false);
-            var asked = (int)(budget * Math.Pow(StoryBudget.Tightening, attempt));
-            var system = await RenderAsync(
-                PromptKeys.StorySummary,
-                Variables((PromptVariables.BookTitle, book.Title), (PromptVariables.MaxWords, asked.ToString(System.Globalization.CultureInfo.InvariantCulture))),
-                cancellationToken).ConfigureAwait(false);
-            var story = await AskTextStepAsync(system, scenes, cancellationToken).ConfigureAwait(false);
-            if (shortest is null || StoryBudget.CountWords(story) < StoryBudget.CountWords(shortest))
+            if (beforeTry is not null)
             {
-                shortest = story;
+                await beforeTry(attempt + 1, tries).ConfigureAwait(false);
             }
 
-            if (StoryBudget.CountWords(story) <= budget * StoryBudget.Tolerance)
+            var asked = (int)(budget * Math.Pow(StoryBudget.Tightening, attempt));
+            var system = await RenderAsync(
+                key,
+                Variables((PromptVariables.BookTitle, book.Title), (PromptVariables.MaxWords, asked.ToString(System.Globalization.CultureInfo.InvariantCulture))),
+                cancellationToken).ConfigureAwait(false);
+            var text = await AskTextStepAsync(system, source, cancellationToken).ConfigureAwait(false);
+            if (shortest is null || StoryBudget.CountWords(text) < StoryBudget.CountWords(shortest))
+            {
+                shortest = text;
+            }
+
+            if (StoryBudget.CountWords(text) <= budget * StoryBudget.Tolerance)
             {
                 break;
             }
         }
 
-        var kept = CharacterLimits.Clip(shortest!, CharacterLimits.StorySummary);
-        await steps.SaveAsync(book.Id, StoryKey, kept, CancellationToken.None).ConfigureAwait(false);
-        return kept;
+        return shortest!;
     }
+
+    // ---- The passages ----
+
+    // Keeps the passages of the book, each with the scenes that cover it. With no passages to keep, those an earlier analysis
+    // left are removed: they would not be those of this one. An index that fails does not stop the analysis.
+    private async Task KeepPassagesAsync(IReadOnlyList<Passage>? passages, List<PartNotes> parts, CancellationToken cancellationToken)
+    {
+        if (passageIndex is null || passageIndex.Check() is not null)
+        {
+            return;
+        }
+
+        using var span = LlmTelemetry.Source.StartActivity("keep-passages");
+        var key = new BookKey(BookShelf.Library, book.Id.ToString());
+        try
+        {
+            if (passages is null)
+            {
+                await passageIndex.DeleteAsync(key, cancellationToken).ConfigureAwait(false);
+                return;
+            }
+
+            span?.SetTag("analysis.passages", passages.Count);
+            await passageIndex.SavePassagesAsync(key, [.. passages.Select(passage => Stored(passage, parts[passage.Part]))], cancellationToken).ConfigureAwait(false);
+        }
+        catch (PassageIndexException)
+        {
+            span?.SetStatus(ActivityStatusCode.Error, nameof(PassageIndexException));
+        }
+    }
+
+    private static StoredPassage Stored(Passage passage, PartNotes part) => new(
+        passage.Number,
+        passage.Text,
+        [
+            .. (part.Scenes ?? [])
+                .Where(scene => scene.FirstPassage <= passage.Number && passage.Number <= scene.LastPassage)
+                .Select(scene => new PassageScene(scene.Summary, scene.Present)),
+        ]);
 
     // ---- The end ----
 
-    private async Task FinishAsync(List<ChosenCharacter> chosen, string[] profiles, string summary, string? story, bool storyPartial, CancellationToken cancellationToken)
+    private async Task FinishAsync(
+        List<ChosenCharacter> chosen, string[] profiles, string summary, string? story, string? plot, bool storyPartial, CancellationToken cancellationToken)
     {
         await UpdateAsync(
             current =>
@@ -332,6 +435,7 @@ internal sealed class AnalysisRun(
                 current.Summary = summary;
                 current.StorySummary = story;
                 current.StorySummaryPartial = storyPartial;
+                current.PlotSummary = plot;
                 current.ProviderName = CharacterLimits.Clip(_provider.Name, BookLimits.ProviderName);
                 current.Model = CharacterLimits.Clip(_provider.Model, BookLimits.ModelName);
                 current.Status = BookStatus.Done;
@@ -544,4 +648,6 @@ internal sealed class AnalysisRun(
     private const string SummaryKey = "summary";
 
     private const string StoryKey = "story";
+
+    private const string PlotKey = "plot";
 }

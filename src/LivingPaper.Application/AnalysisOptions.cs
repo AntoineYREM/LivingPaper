@@ -25,6 +25,9 @@ public sealed record AnalysisOptions
     // A story over its budget is asked again this many times, each time with a tighter limit; the shortest is kept.
     public int StoryTighteningRetries { get; init; } = 2;
 
+    // The short summary of the plot takes at most about this many words (the prompt asks for 300 or more).
+    public int PlotSummaryWords { get; init; } = 500;
+
     // A reply that cannot be read is asked for again this many times before the analysis stops.
     public int InvalidReplyRetries { get; init; } = 2;
 

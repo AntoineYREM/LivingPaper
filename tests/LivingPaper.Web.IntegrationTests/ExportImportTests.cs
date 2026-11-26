@@ -425,7 +425,7 @@ public partial class ExportImportTests
             return Decoded(await response.Content.ReadAsStringAsync(Token));
         }
 
-        (await MessageOf(map => map["schemaVersion"] = 4)).ShouldContain("exported by a newer LivingPaper");
+        (await MessageOf(map => map["schemaVersion"] = 5)).ShouldContain("exported by a newer LivingPaper");
         (await MessageOf(map => map["schemaVersion"] = 0)).ShouldContain("version of the format that this LivingPaper does not know");
         (await MessageOf(map => map.Remove("title"))).ShouldContain("not a valid book");
         (await MessageOf(map => map["title"] = new string('t', BookLimits.Title + 1))).ShouldContain("longer than allowed: title");

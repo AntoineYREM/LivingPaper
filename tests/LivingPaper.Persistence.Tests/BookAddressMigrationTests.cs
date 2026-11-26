@@ -50,7 +50,7 @@ public sealed class BookAddressMigrationTests : IDisposable
         File.Exists(Path.Combine(Books, old + ".json")).ShouldBeFalse();
         using var document = JsonDocument.Parse(File.ReadAllText(Path.Combine(Books, "cyrano-de-bergerac.json")));
         document.RootElement.GetProperty("id").GetString().ShouldBe("cyrano-de-bergerac");
-        document.RootElement.GetProperty("schemaVersion").GetInt32().ShouldBe(3);
+        document.RootElement.GetProperty("schemaVersion").GetInt32().ShouldBe(4);
         document.RootElement.GetProperty("note").GetString().ShouldBe("kept as it is");
     }
 

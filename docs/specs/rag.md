@@ -1,8 +1,8 @@
 # Specification: passages of the book in the chat (RAG)
 
 **Status:** validated on 26 November 2026. Implemented so far: the model for vectorization (section 3,
-PAPER-81), the cutting into passages (section 4, PAPER-82) and the index (section 6, storage, PAPER-83); nothing uses the last
-two yet. Why: [decision 0011](../decisions/0011-passages-of-the-book-in-the-chat.md).
+PAPER-81), the cutting into passages (section 4, PAPER-82), the index (section 6, storage, PAPER-83) and the analysis
+(section 5, PAPER-84): the passages are saved without vectors and nothing searches them yet. Why: [decision 0011](../decisions/0011-passages-of-the-book-in-the-chat.md).
 
 ## 1. Goal
 
@@ -84,12 +84,16 @@ case the chat works as today, with the full story.
   scenes are needed.
 - A passage that no valid scene covers (wrong numbers, simple notes, a prompt edited by the user) has no header:
   it is still searched, and its presence is "unknown".
-- Markers are added only when a vectorization model is chosen.
+- Markers are added only when a vectorization model is chosen, and the request for the ranges is a prompt of its own
+  (`analysis.passageRanges`), placed by `{passageRanges}` in `analysis.readPart`. The simple notes read the text alone.
+- The passages are saved with their scenes at the end of the analysis, before the text is deleted; vectors come with the
+  indexing step (section 6). Without a vectorization model, passages left under the same address are removed.
 
 ### Short plot summary
 
 - A new prompt writes the plot in **300 to 500 words**, ending included, in English. It condenses the **finished story,
-  scene by scene**, so it is written after it.
+  scene by scene**, so it is written after it. A summary that goes over is asked again, shorter, like the story. If the
+  content filter refuses it, the book does without: the analysis succeeds.
 - It is written at **every analysis**, with or without an embedding model.
 - It is stored in the book file (new field, `schemaVersion` 4; versions 1 to 3 are still read).
 - The full story is still written and stored: it is the fallback.

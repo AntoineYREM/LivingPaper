@@ -12,6 +12,10 @@ public static class PromptKeys
     public const string BookSummary = "analysis.bookSummary";
     // The story of the whole book, scene by scene, from the scenes noted in every part (PAPER-53).
     public const string StorySummary = "analysis.storySummary";
+    // Added to analysis.readPart when the passages of the book are kept: asks which passages each scene covers (PAPER-84).
+    public const string PassageRanges = "analysis.passageRanges";
+    // The plot of the book in a few hundred words, written from its story (PAPER-84).
+    public const string PlotSummary = "analysis.plotSummary";
     public const string ChatSystem = "chat.system";
     // The section of the chat prompt that gives the story to the character; left out for a book that has no story.
     public const string ChatStory = "chat.story";
@@ -19,12 +23,14 @@ public static class PromptKeys
 
     private static readonly Dictionary<string, string[]> Variables = new(StringComparer.Ordinal)
     {
-        [ReadPart] = [PromptVariables.BookTitle],
+        [ReadPart] = [PromptVariables.BookTitle, PromptVariables.PassageRanges],
         [ReadPartSimple] = [PromptVariables.BookTitle],
         [MergeCharacters] = [PromptVariables.BookTitle, PromptVariables.MaxCharacters],
         [CharacterProfile] = [PromptVariables.BookTitle, PromptVariables.CharacterName, PromptVariables.ShortDescription],
         [BookSummary] = [PromptVariables.BookTitle],
         [StorySummary] = [PromptVariables.BookTitle, PromptVariables.MaxWords],
+        [PassageRanges] = [],
+        [PlotSummary] = [PromptVariables.BookTitle, PromptVariables.MaxWords],
         [ChatSystem] = [PromptVariables.BookTitle, PromptVariables.CharacterName, PromptVariables.Profile, PromptVariables.Story],
         [ChatStory] = [PromptVariables.BookTitle, PromptVariables.CharacterName, PromptVariables.StorySummary],
         [ConnectionTest] = [],

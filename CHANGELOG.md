@@ -13,8 +13,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   OpenAI-compatible `POST /embeddings`, local or online). The model is tried when it is chosen. It is not used yet: it prepares
   the passages of the book in the chat ([specification](docs/specs/rag.md), decision 0011).
 
+- **A short summary of the plot** (PAPER-84): written at every analysis from the story of the book, kept in the book file
+  (`schemaVersion` 4; versions 1 to 3 are still read). The chat does not use it yet.
+- **The passages of a book and their scenes** (PAPER-84): with a model for vectorization, the analysis reads each part as
+  numbered passages, asks which passages each scene covers, and keeps them in `data/rag.db`; deleting a book removes them.
+  New prompts `analysis.passageRanges` and `analysis.plotSummary`; `analysis.readPart` gained `{passageRanges}` (an unedited
+  one is updated).
 - **An index of passages** (PAPER-83): `data/rag.db`, an embedded SQLite database with the sqlite-vec extension, keeps passages
-  of books and their vectors and finds the closest ones. Nothing writes it yet. If it cannot be used, the Settings page says so.
+  of books and their vectors and finds the closest ones. If it cannot be used, the Settings page says so.
   New dependencies: `Microsoft.Data.Sqlite` (with SQLite) and `sqlite-vec` (a prerelease).
 
 ### Changed

@@ -18,7 +18,8 @@ public sealed class BookService(
     TimeProvider clock,
     AnalysisOptions options,
     IExampleCatalog? examples = null,
-    IBookArchive? archive = null) : IDisposable
+    IBookArchive? archive = null,
+    IPassageIndex? passages = null) : IDisposable
 {
     // The largest book file accepted: 20 MB.
     public const long MaxBookBytes = 20L * 1024 * 1024;
@@ -168,6 +169,7 @@ public sealed class BookService(
                 Summary = example.Summary,
                 StorySummary = example.StorySummary,
                 StorySummaryPartial = example.StorySummaryPartial,
+                PlotSummary = example.PlotSummary,
                 Status = BookStatus.Done,
                 PartsDone = example.PartsDone,
                 PartsTotal = example.PartsTotal,
@@ -298,6 +300,11 @@ public sealed class BookService(
             return (ImportRejection.Invalid, "storySummary");
         }
 
+        if ((book.PlotSummary ?? string.Empty).Any(character => char.IsControl(character) && character is not ('\n' or '\r' or '\t')))
+        {
+            return (ImportRejection.Invalid, "plotSummary");
+        }
+
         if (book.Characters.Select(character => character.Position).Distinct().Count() != book.Characters.Count)
         {
             return (ImportRejection.Invalid, "characters: two have the same position");
@@ -326,6 +333,7 @@ public sealed class BookService(
             Summary = source.Summary,
             StorySummary = source.StorySummary,
             StorySummaryPartial = source.StorySummaryPartial,
+            PlotSummary = source.PlotSummary,
             Status = BookStatus.Done,
             PartsDone = source.PartsDone,
             PartsTotal = source.PartsTotal,
@@ -516,7 +524,26 @@ public sealed class BookService(
         await scheduler.CancelAsync(id, cancellationToken).ConfigureAwait(false);
         var existed = await books.DeleteAsync(id, cancellationToken).ConfigureAwait(false);
         await texts.DeleteAsync(id, cancellationToken).ConfigureAwait(false);
+        await DeletePassagesAsync(id, cancellationToken).ConfigureAwait(false);
         return existed;
+    }
+
+    // The passages of a book go with it. An index that cannot be used does not keep the book from being deleted; the
+    // analysis of a book removes what may have stayed under its address.
+    private async Task DeletePassagesAsync(BookId id, CancellationToken cancellationToken)
+    {
+        if (passages is null || passages.Check() is not null)
+        {
+            return;
+        }
+
+        try
+        {
+            await passages.DeleteAsync(new BookKey(BookShelf.Library, id.ToString()), cancellationToken).ConfigureAwait(false);
+        }
+        catch (PassageIndexException)
+        {
+        }
     }
 
     // At most limit + 1 bytes are read: enough to know the file is too large, without swallowing a huge upload.

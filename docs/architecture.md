@@ -62,18 +62,19 @@ Every port is faked in the tests: **no test calls a real AI provider.**
 - **Add a book**: the page checks the file by content and size, `BookService` reads the text at once (so a problem shows
   immediately), saves the book as *Waiting* and hands it to the scheduler.
 - **Analysis** (background): read the book in parts, note the characters and the scenes of each part, merge the characters into
-  the 10 most important, write one profile per character, a short summary and the story of the whole book scene by scene (which
-  the characters know when they chat). Each step is saved, so a failure resumes where it stopped. At the end
+  the 10 most important, write one profile per character, a short summary, the story of the whole book scene by scene (which
+  the characters know when they chat) and, from it, a short summary of the plot. With a model for vectorization, the parts are
+  read as numbered passages (`PassageCutter`) and the passages are saved with their scenes (`IPassageIndex`). Each step is saved, so a failure resumes where it stopped. At the end
   the stored text is deleted.
 - **Chat**: the browser sends the conversation (nothing is stored), the server checks it, builds the prompt from the saved sheet
   and the story of the book (`chat.story`, when the book has one) and streams the model's reply back as NDJSON.
-- **Export / import**: a book is a JSON file with a `schemaVersion` (3 since the readable addresses, see decision 0008; 2 added the story of the book, `storySummary`; versions 1
+- **Export / import**: a book is a JSON file with a `schemaVersion` (4 added the summary of the plot, `plotSummary`; 3 the readable addresses, see decision 0008; 2 added the story of the book, `storySummary`; versions 1
   and 2 are still read); an import is validated like any untrusted input.
 
 ## Where the data lives
 
 Everything is in the `data/` directory (the `/data` volume in Docker): `books/`, `uploads/` (the text of a book until its analysis
-ends), `settings.json`, `keys/`, `prompts.json`, and `rag.db` once passages of books are kept (nothing writes it yet). The shipped examples are in `examples/`. See
+ends), `settings.json`, `keys/`, `prompts.json`, and `rag.db` once passages of books are kept (an analysis made with a model for vectorization). The shipped examples are in `examples/`. See
 [ADR 0001](decisions/0001-json-files-instead-of-a-database.md).
 
 ## Decisions

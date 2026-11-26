@@ -44,8 +44,8 @@ the same text (`POST {baseUrl}/embeddings`), and one success is enough. You choo
 they can be the same.
 
 - **Model for vectorization** (optional, None by default): an embedding model. Choosing another one sends it the test text; a
-  model that cannot answer is refused, the previous choice stays and the two other choices are saved. It is not used yet: it
-  prepares the search of passages of a book ([specification](specs/rag.md)).
+  model that cannot answer is refused, the previous choice stays and the two other choices are saved. With it, the analysis
+  keeps the passages of the book; the model itself is not called yet ([specification](specs/rag.md)).
 - **A model you add** fills the choices that have no model, including one you set to None. To know which, it is tried: if it
   answers the chat test, it fills analysis and chat; if it refuses the chat (an HTTP refusal) and gives a vector, it fills
   vectorization alone; in every other case (too slow, unreachable) it fills analysis and chat. A choice already made is never
@@ -72,7 +72,7 @@ the models and keys you saved. Do not expose it to the Internet without a revers
 Optional, for people who want to see what the models are asked and what it costs. When `LANGFUSE_PUBLIC_KEY` and
 `LANGFUSE_SECRET_KEY` are set (with `LANGFUSE_BASE_URL`), every call to a language model is sent to your Langfuse as a trace over
 OpenTelemetry: the analysis of a book is one trace (a step for each part read, the merge of the characters, each profile, the
-summary and the story) and each chat reply is its own. Without the keys nothing is exported.
+summary, the story, the plot and the saving of the passages) and each chat reply is its own. Without the keys nothing is exported.
 
 - **By default only metadata:** model, name of the provider, tokens, duration, time to the first piece of a streamed reply, step and
   outcome (kind of failure and HTTP status, never the message).
@@ -93,7 +93,10 @@ EPUB or a PDF (20 MB at most) and takes you to the page of the book; you can del
   the same title is refused unless you tick "Replace", which deletes the earlier book and its analysis.
 - **Where it goes:** `data/books/{id}.json` holds the book (title, status, and later its summary and characters), and
   `data/uploads/{id}.txt` holds its text until the analysis has finished successfully, then it is deleted. The text of a
-  book is never in the book's JSON file, never in an export and never in the logs. Deleting a book deletes all of it.
+  book is never in the book's JSON file, never in an export and never in the logs. Deleting a book deletes all of it,
+  its passages included.
+- **Passages** are kept only when a model for vectorization is chosen at the time of the analysis: the book, cut into
+  passages of about 1,500 characters with their scenes, goes to `data/rag.db` before the text is deleted.
   Re-analyzing a book (another model, an edited prompt) means sending it again and ticking "Replace".
 
 PDF files are read with [PdfPig](https://github.com/UglyToad/PdfPig) (Apache License 2.0, compatible with the AGPL).
@@ -112,6 +115,15 @@ script; without it, reload the page). The language model used is the one you cho
    atmosphere** (era, place, tone) and **the story of the whole book, scene by scene** are written. The story takes between 800
    and 3,000 words, more for a longer book (a story that goes over is asked again, shorter), and says who is present in each scene. If the model's content filter refused a part,
    or it gave no scenes for it, the story is **partial**: it is written from the other parts.
+4. **A short summary of the plot** (300 to 500 words, ending included) is written from the story. A book with no story has
+   none, and a summary refused by the content filter is left out. The chat does not use it yet.
+
+**With a model for vectorization** (see the settings), each part is sent to the model as numbered passages (`[P12]`), and the
+model says which passages each scene covers (`analysis.passageRanges`, added to `analysis.readPart`). The passages are then
+kept in `data/rag.db`, each with its scenes and who is there. A range that cannot be followed is ignored: the passage is
+kept without scene. A prompt `analysis.readPart` that you edited has no `{passageRanges}`: add it to get the scenes of the
+passages. The passages have no vectors yet and the chat does not use them ([specification](specs/rag.md)). If they cannot be
+saved, the analysis succeeds without them.
 
 Everything the analysis writes is in English, whatever the language of the book. The prompts are in `data/prompts.json`.
 

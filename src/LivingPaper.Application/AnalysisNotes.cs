@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Text.Encodings.Web;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using LivingPaper.Domain;
 
 namespace LivingPaper.Application;
@@ -8,8 +9,9 @@ namespace LivingPaper.Application;
 // What the model noted about one character in one part of the book.
 internal sealed record CharacterNote(string Name, string[] OtherNames, string Role, string Personality, string Speech, string Events, int Importance);
 
-// A moment of the story noted in one part: what happens, and who is there.
-internal sealed record SceneNote(string Summary, string[] Present);
+// A moment of the story noted in one part: what happens, and who is there. FirstPassage and LastPassage: the passages of the
+// book it covers, both or neither; null when they were not asked or the answer could not be followed.
+internal sealed record SceneNote(string Summary, string[] Present, int? FirstPassage = null, int? LastPassage = null);
 
 // What the model answered for one part: the characters, and the scenes when it gave them (null: it gave none, so the story will
 // have a hole there).
@@ -26,7 +28,7 @@ internal sealed record ChosenCharacter(string Name, string ShortDescription);
 // Reads what the model answers, and writes what is saved. A model often wraps its JSON in a code fence or a sentence: only
 // what lies between the first "{" and the last "}" is read. A reply of the wrong shape is refused, never read as "no
 // character": that would hide the error behind an empty result.
-internal static class AnalysisNotes
+internal static partial class AnalysisNotes
 {
     // Each text noted about a character is cut to this many letters, so the notes of a long book stay small.
     private const int NoteFieldLetters = 500;
@@ -45,7 +47,8 @@ internal static class AnalysisNotes
 
     // The notes of a part: an object with a "characters" array (which may be empty: a part without characters is fine) and, when
     // the model followed the prompt, a "scenes" array (an array of the wrong shape counts as no scenes).
-    public static bool TryReadPart(string reply, out PartRead read)
+    // passages: the numbers of the first and last passage of the part when it was sent with numbered passages, else null.
+    public static bool TryReadPart(string reply, (int First, int Last)? passages, out PartRead read)
     {
         read = new PartRead([], null);
         if (!TryReadCharacters(reply, out var items, out var sceneItems))
@@ -70,20 +73,50 @@ internal static class AnalysisNotes
             }
         }
 
-        read = new PartRead(notes, sceneItems is null ? null : ReadScenes(sceneItems));
+        read = new PartRead(notes, sceneItems is null ? null : ReadScenes(sceneItems, passages));
         return true;
     }
 
     // A scene with no text is dropped; the names present are cut, kept once, and limited.
-    private static List<SceneNote> ReadScenes(List<JsonElement> items) =>
+    private static List<SceneNote> ReadScenes(List<JsonElement> items, (int First, int Last)? passages) =>
     [
         .. items
-            .Select(item => new SceneNote(
-                Text(item, "summary", SceneLetters),
-                [.. Texts(item, "present").Select(name => CharacterLimits.Clip(name, CharacterLimits.Name)).Where(name => name.Length > 0).Distinct(StringComparer.OrdinalIgnoreCase).Take(MaxPresentPerScene)]))
+            .Select(item =>
+            {
+                // A model may copy the markers of the passages into its texts: they mean nothing to a reader.
+                string Clean(string text) => passages is null ? text : Marker().Replace(text, " ").Trim();
+                var range = Range(item, passages);
+                return new SceneNote(
+                    Clean(Text(item, "summary", SceneLetters)),
+                    [.. Texts(item, "present").Select(name => CharacterLimits.Clip(Clean(name), CharacterLimits.Name)).Where(name => name.Length > 0).Distinct(StringComparer.OrdinalIgnoreCase).Take(MaxPresentPerScene)],
+                    range?.First,
+                    range?.Last);
+            })
             .Where(scene => scene.Summary.Length > 0)
             .Take(MaxScenesPerPart),
     ];
+
+    // The passages a scene covers. A number outside the part, a reversed range or a missing end: none, and the passages the
+    // scene meant stay without it.
+    private static (int First, int Last)? Range(JsonElement item, (int First, int Last)? passages) =>
+        passages is { } part
+        && PassageNumber(item, "firstPassage") is { } first
+        && PassageNumber(item, "lastPassage") is { } last
+        && first >= part.First && last <= part.Last && first <= last
+            ? (first, last)
+            : null;
+
+    // A whole number, also when written as a text, with or without the "P" of the marker ("12", "P12", "[P12]").
+    private static int? PassageNumber(JsonElement item, string name) => Property(item, name) switch
+    {
+        { ValueKind: JsonValueKind.Number } value => value.TryGetInt32(out var number) ? number : null,
+        { ValueKind: JsonValueKind.String } value
+            when int.TryParse(value.GetString()!.Trim().Trim('[', ']').TrimStart('P', 'p'), NumberStyles.None, CultureInfo.InvariantCulture, out var number) => number,
+        _ => null,
+    };
+
+    [GeneratedRegex(@"\s*\[P\d+\]\s*", RegexOptions.CultureInvariant)]
+    private static partial Regex Marker();
 
     // The merge: an object with a "characters" array of names and short descriptions. A character with no name or no
     // description is dropped; a name that comes twice (whatever its case) is kept once, the first being the most important.

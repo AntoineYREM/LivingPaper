@@ -172,6 +172,40 @@ Rules:
 - Plain text only: no markdown, no asterisks, no lists, no titles.
 """;
 
+    // The reading prompt shipped before the passages of the books (PAPER-84).
+    private const string PreviousReadPart = """
+You are reading an excerpt of the book "{bookTitle}". Your notes will be used afterwards for two things: to describe the main characters of the whole book, and to tell the story of the whole book scene by scene. So note the characters, and list the scenes of the excerpt in the order they happen. Ignore everything that is not part of the story itself: a license or a copyright notice, requests for donations, information about the publisher or the edition, a table of contents, notes. They are not scenes, and the people or organizations they name are not characters.
+For each character (people or creatures that act or speak, not the places or the objects), note everything the excerpt says about them. A scene is one moment of the story, in one place with the same people. Write each scene as concrete events: who does what, what is said or decided, what changes. No interpretation, no commentary, no theme, no foreshadowing, no adjectives about the mood. If something important happens (a death, a wound, a marriage, a betrayal, a departure, a revelation), say it plainly. Name in "present" only the characters who are there or directly involved and who have a name (never "a lackey" or "the crowd"). Write each one under the name the book usually calls them (for example "Cyrano", "Roxane", "De Guiche"), the same way in every scene: no full legal name, no title or alias in parentheses, no former name.
+Answer only with this JSON, with no other text:
+{"characters":[{"name":"most complete name","otherNames":["nicknames or other names used"],"role":"who they are and what they do in the excerpt, in one sentence","personality":"character, values, fears and desires, as the excerpt shows them","speech":"register, tone and verbal habits, without copying the text of the book","events":"what happens to them in the excerpt and their relationships with the other characters","importance":a number from 1 to 10 according to their place in the excerpt}],"scenes":[{"summary":"what happens in this scene, in one or two sentences","present":["usual name of each character present"]}]}
+At most 25 characters, the most important first. At most 12 scenes, in the order of the excerpt, covering the whole excerpt up to its last lines; an excerpt with a single moment gives a single scene. Write in English, whatever the language of the book.
+Important: never write straight double quotes (") inside the texts, they would break the JSON. To quote a line of dialogue, use single quotes.
+""";
+
+    [Fact]
+    public async Task Ensure_GivesAnUneditedReadingPromptTheVariableOfThePassages()
+    {
+        await WritePromptAsync(PromptKeys.ReadPart, PreviousReadPart);
+
+        await EnsureAsync();
+
+        var prompts = (await ReadPromptsAsync()).GetProperty("prompts");
+        prompts.GetProperty(PromptKeys.ReadPart).GetProperty("template").GetString()!.ShouldEndWith("{passageRanges}");
+        prompts.GetProperty(PromptKeys.PassageRanges).GetProperty("template").GetString()!.ShouldContain("\"firstPassage\"");
+        prompts.GetProperty(PromptKeys.PlotSummary).GetProperty("template").GetString()!.ShouldContain("{maxWords}");
+    }
+
+    [Fact]
+    public async Task Ensure_KeepsAReadingPromptTheUserEdited_WhichThenAsksForNoPassage()
+    {
+        var edited = PreviousReadPart + "\nBe brief.";
+        await WritePromptAsync(PromptKeys.ReadPart, edited);
+
+        await EnsureAsync();
+
+        (await ReadPromptsAsync()).GetProperty("prompts").GetProperty(PromptKeys.ReadPart).GetProperty("template").GetString().ShouldBe(edited);
+    }
+
     private async Task WritePromptAsync(string key, string template, string description = "d")
     {
         Directory.CreateDirectory(DataDirectory);

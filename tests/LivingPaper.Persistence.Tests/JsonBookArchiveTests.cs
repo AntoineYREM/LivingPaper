@@ -141,7 +141,7 @@ public class JsonBookArchiveTests
     }
 
     [Theory]
-    [InlineData(4)]
+    [InlineData(5)]
     [InlineData(99)]
     [InlineData(int.MaxValue)]
     public void ANewerVersion_IsRefusedWithItsOwnReason(int version) =>

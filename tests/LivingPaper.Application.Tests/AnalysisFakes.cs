@@ -107,6 +107,7 @@ internal sealed class ScriptedAnalysisModelFactory : IChatModelFactory
         "analysis.characterProfile" => "I am " + NameOf(call.System) + ". My profile.",
         "analysis.bookSummary" => "France, 1673. A satirical comedy.",
         "analysis.storySummary" => "Scene 1. A scene happens. Present: Argan, Toinette.",
+        "analysis.plotSummary" => "The plot, in short.",
         _ => "?",
     });
 

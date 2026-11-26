@@ -125,9 +125,9 @@ public sealed class BookAnalyzerTests : IDisposable
         book.PartsTotal.ShouldBe(3);
         book.ProfilesDone.ShouldBe(2);
         book.ProfilesTotal.ShouldBe(2);
-        book.InputTokens.ShouldBe(100 * 8);
-        book.CachedInputTokens.ShouldBe(20 * 8);
-        book.OutputTokens.ShouldBe(50 * 8);
+        book.InputTokens.ShouldBe(100 * 9);
+        book.CachedInputTokens.ShouldBe(20 * 9);
+        book.OutputTokens.ShouldBe(50 * 9);
         book.StartedAt.ShouldNotBeNull();
         book.FinishedAt.ShouldNotBeNull();
         (book.FinishedAt!.Value - book.StartedAt!.Value).ShouldBeGreaterThan(TimeSpan.FromSeconds(10));
@@ -162,7 +162,7 @@ public sealed class BookAnalyzerTests : IDisposable
 
         await RunAsync(book);
 
-        _steps.Of(book.Id).Keys.Order().ShouldBe(["merge", "part:1", "part:2", "part:3", "profile:1", "profile:2", "story"]);
+        _steps.Of(book.Id).Keys.Order().ShouldBe(["merge", "part:1", "part:2", "part:3", "plot", "profile:1", "profile:2", "story"]);
     }
 
     [Fact]
@@ -674,7 +674,7 @@ public sealed class BookAnalyzerTests : IDisposable
         var steps = spans.InTraceOf(root).Where(activity => activity != root).ToList();
         steps.ShouldAllBe(step => step.ParentId == root.Id);
         steps.GroupBy(step => step.OperationName).ToDictionary(group => group.Key, group => group.Count())
-            .ShouldBe(new Dictionary<string, int> { ["read-part"] = 3, ["merge-characters"] = 1, ["character-profile"] = 2, ["book-summary"] = 1, ["story-summary"] = 1 }, ignoreOrder: true);
+            .ShouldBe(new Dictionary<string, int> { ["read-part"] = 3, ["merge-characters"] = 1, ["character-profile"] = 2, ["book-summary"] = 1, ["story-summary"] = 1, ["plot-summary"] = 1 }, ignoreOrder: true);
         steps.Where(step => step.OperationName == "read-part").Select(step => step.GetTagItem("analysis.part")).Order().ShouldBe([1, 2, 3]);
     }
 
@@ -692,12 +692,13 @@ public sealed class BookAnalyzerTests : IDisposable
 
         await RunAsync(book);
 
-        current.Select(item => item.Span).Distinct().Order().ShouldBe(["book-summary", "character-profile", "merge-characters", "read-part", "story-summary"]);
+        current.Select(item => item.Span).Distinct().Order().ShouldBe(["book-summary", "character-profile", "merge-characters", "plot-summary", "read-part", "story-summary"]);
         current.Where(item => item.Step == "analysis.readPart").ShouldAllBe(item => item.Span == "read-part");
         current.Where(item => item.Step == "analysis.mergeCharacters").ShouldAllBe(item => item.Span == "merge-characters");
         current.Where(item => item.Step == "analysis.characterProfile").ShouldAllBe(item => item.Span == "character-profile");
         current.Where(item => item.Step == "analysis.bookSummary").ShouldAllBe(item => item.Span == "book-summary");
         current.Where(item => item.Step == "analysis.storySummary").ShouldAllBe(item => item.Span == "story-summary");
+        current.Where(item => item.Step == "analysis.plotSummary").ShouldAllBe(item => item.Span == "plot-summary");
     }
 
     [Fact]

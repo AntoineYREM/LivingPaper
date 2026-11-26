@@ -145,6 +145,9 @@ internal sealed class FakeBookArchive : IBookArchive
         var copy = new Book(source.Id, source.Title, source.FileName, source.SentAt)
         {
             Summary = source.Summary,
+            StorySummary = source.StorySummary,
+            StorySummaryPartial = source.StorySummaryPartial,
+            PlotSummary = source.PlotSummary,
             Status = source.Status,
             PartsDone = source.PartsDone,
             PartsTotal = source.PartsTotal,

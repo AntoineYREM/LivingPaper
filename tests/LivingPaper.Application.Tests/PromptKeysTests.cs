@@ -6,20 +6,23 @@ namespace LivingPaper.Application.Tests;
 
 public class PromptKeysTests
 {
-    private static readonly string[] NineKeys =
+    private static readonly string[] ElevenKeys =
     [
-        "analysis.bookSummary", "analysis.characterProfile", "analysis.mergeCharacters", "analysis.readPart",
-        "analysis.readPartSimple", "analysis.storySummary", "chat.story", "chat.system", "llm.connectionTest",
+        "analysis.bookSummary", "analysis.characterProfile", "analysis.mergeCharacters", "analysis.passageRanges",
+        "analysis.plotSummary", "analysis.readPart", "analysis.readPartSimple", "analysis.storySummary", "chat.story",
+        "chat.system", "llm.connectionTest",
     ];
 
     [Fact]
-    public void All_ListsTheNinePromptsOfTheApplication()
+    public void All_ListsTheElevenPromptsOfTheApplication()
     {
-        PromptKeys.All.Order().ShouldBe(NineKeys);
+        PromptKeys.All.Order().ShouldBe(ElevenKeys);
     }
 
     [Theory]
-    [InlineData("analysis.readPart", new[] { "bookTitle" })]
+    [InlineData("analysis.readPart", new[] { "bookTitle", "passageRanges" })]
+    [InlineData("analysis.passageRanges", new string[0])]
+    [InlineData("analysis.plotSummary", new[] { "bookTitle", "maxWords" })]
     [InlineData("analysis.readPartSimple", new[] { "bookTitle" })]
     [InlineData("analysis.mergeCharacters", new[] { "bookTitle", "maxCharacters" })]
     [InlineData("analysis.characterProfile", new[] { "bookTitle", "characterName", "shortDescription" })]
@@ -40,7 +43,7 @@ public class PromptKeysTests
     }
 
     [Fact]
-    public void IsKnown_RecognizesOnlyTheNineKeys()
+    public void IsKnown_RecognizesOnlyTheElevenKeys()
     {
         PromptKeys.All.ShouldAllBe(key => PromptKeys.IsKnown(key));
         PromptKeys.IsKnown("analysis.nothing").ShouldBeFalse();

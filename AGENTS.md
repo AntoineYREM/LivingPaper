@@ -31,8 +31,10 @@ decision records in `docs/decisions/`.
 - Add a book (EPUB or PDF) and delete a book. The book file is deleted after a successful analysis, so
   re-analyzing (other LLM, edited prompt) means uploading the book again and ticking "Replace".
 - Background analysis: book summary (era, place, tone), the story of the whole book scene by scene (800 to 3,000 words
-  according to the length of the book, with who is present in each scene) and the 10 most important characters, each with a
-  name, a short description and a personality profile (200 to 400 words). The characters know the whole story when they chat.
+  according to the length of the book, with who is present in each scene), a short summary of its plot (300 to 500 words) and
+  the 10 most important characters, each with a name, a short description and a personality profile (200 to 400 words). The
+  characters know the whole story when they chat. With a model for vectorization, the passages of the book are kept with their
+  scenes (see `docs/specs/rag.md`).
 - "My library" page (books the user analyzed) and "Examples" page (read-only, public-domain books shipped
   already analyzed: they can be read without a key, chatting with their characters needs an LLM chosen for the chat).
 - Chat with a character: first person, short SMS-like replies, streamed. Conversations are not stored.
@@ -80,8 +82,8 @@ OCR for scanned PDFs, saved conversations.
   A provider is `{ id, name, baseUrl, apiKey, model }`. Adding one asks the provider for its models first (a connection test when it has no list). Transient
   failures are retried 3 times with growing delays. The port is faked in tests.
 - **Data:** one JSON file per book (`data/books/{id}.json`, the id being the slug of the title: `cyrano-de-bergerac`) holding metadata, analysis status, book summary and
-  characters and the story of the book. The book text itself is never stored. Every file has a `schemaVersion` (3; versions 1 and 2
-  are still read). Writes are atomic (temp
+  characters, the story of the book and the short summary of its plot. The book text itself is never stored, except as the passages
+  kept when a model for vectorization is chosen (below). Every file has a `schemaVersion` (4; versions 1 to 3 are still read). Writes are atomic (temp
   file then rename). Imported JSON is untrusted input: validate schema, sizes and text lengths before accepting.
   Storage sits behind a port (`IBookRepository`) so another backend can be added later. The only database is `data/rag.db`
   (SQLite with the sqlite-vec extension, behind `IPassageIndex`): the passages of books and their vectors, optional, never the
@@ -91,7 +93,7 @@ OCR for scanned PDFs, saved conversations.
   shared. The chat prompt tells the LLM to answer the user **in the user's own language** (the language they write
   in). Prompts sent to the LLM are written in English.
 - **Prompts:** no prompt is hard-coded. All prompts (read a part, merge characters, character profile, book
-  summary, story of the book, chat system prompt, chat story section, connection test) live in `data/prompts.json`, which users can read and edit by
+  summary, story of the book, passage ranges, plot summary, chat system prompt, chat story section, connection test) live in `data/prompts.json`, which users can read and edit by
   hand. Defaults are versioned in the repository (`prompts.default.json`) and copied in full to `data/` on first
   start. Prompts are re-read on every analysis and chat message (no restart needed). On update, missing keys are
   added, and a prompt that is still exactly an earlier shipped default (hash kept in `ReplacedDefaults`) is replaced by the new default;

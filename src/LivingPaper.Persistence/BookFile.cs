@@ -10,7 +10,8 @@ internal sealed class BookFile
 {
     // 2 added the story of the book (storySummary). A file of version 1 has none and is still read.
     // 3: the id is a slug of the title (cyrano-de-bergerac) instead of 32 hexadecimal characters. Files of version 1 and 2 are still read.
-    public const int CurrentSchemaVersion = 3;
+    // 4 added the short summary of the plot (plotSummary). Files of versions 1 to 3 have none and are still read.
+    public const int CurrentSchemaVersion = 4;
 
     public const int OldestSchemaVersion = 1;
 
@@ -35,6 +36,8 @@ internal sealed class BookFile
 
     // Written only when true (null otherwise), so a book without holes carries no extra field.
     public bool? StorySummaryPartial { get; set; }
+
+    public string? PlotSummary { get; set; }
 
     public string? Status { get; set; }
 
@@ -85,6 +88,7 @@ internal sealed class BookFile
         Summary = book.Summary,
         StorySummary = book.StorySummary,
         StorySummaryPartial = book.StorySummaryPartial ? true : null,
+        PlotSummary = book.PlotSummary,
         Status = book.Status.ToString(),
         PartsDone = book.PartsDone,
         PartsTotal = book.PartsTotal,
@@ -154,6 +158,7 @@ internal sealed class BookFile
             Summary = Summary,
             StorySummary = StorySummary,
             StorySummaryPartial = StorySummaryPartial == true,
+            PlotSummary = PlotSummary,
             Status = Enum.Parse<BookStatus>(Status!),
             PartsDone = PartsDone,
             PartsTotal = PartsTotal,
