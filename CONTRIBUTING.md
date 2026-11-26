@@ -71,7 +71,8 @@ analyzed a book (it is also the format of an export). To make one:
 1. **Choose a book that is in the public domain**, and check it: the author died more than 70 years ago (or the work is old
    enough for the law of the countries you care about), and the edition you analyze adds no rights of its own (a modern
    translation is not in the public domain). Say in the pull request where you took the text and why it is free to use. Never
-   propose a book under copyright, and never a book you are not sure about.
+   propose a book under copyright, and never a book you are not sure about. A text of Project Gutenberg must have its
+   presentation and licence removed before the analysis.
 2. **Analyze it with the application**, with a language model of your choice, and wait for the status "Analyzed". Keep the
    default prompts if you can: the examples show what the application does out of the box. Read the characters and the sheets:
    fix what is wrong with the editing form of the sheet, and analyze again with a better model if the result is poor.
@@ -86,7 +87,7 @@ analyzed a book (it is also the format of an export). To make one:
    lengths of the texts) and refuses a file that is not an analyzed book with at least one character and the story of the book
    (`storySummary`, not partial), or that has the same id or title as another example. A file that fails these rules is ignored by the application, with a warning in its logs.
 
-Examples analyzed before the story of the book existed are kept in `examples/archive/`, which the application does not read.
+Older examples are kept in `examples/archive/`, which the application does not read.
 
 The files are copied next to the application and into the Docker image. The examples are read only in the application: nobody can
 change them or delete them, but anyone can add one to their library, where it becomes an ordinary book.

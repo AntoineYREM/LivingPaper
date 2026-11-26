@@ -3,8 +3,8 @@
 **Status:** validated on 26 November 2026. Implemented so far: the model for vectorization (section 3,
 PAPER-81), the cutting into passages (section 4, PAPER-82), the analysis (section 5, PAPER-84), the index with its
 indexing (section 6, PAPER-83 and PAPER-85), the chat (sections 7 and 10, PAPER-86), the evaluation (section 11,
-PAPER-87), and export, import and the index of the examples (sections 8 and 9, PAPER-88; the shipped examples get their
-passages in PAPER-89). Why: [decision 0011](../decisions/0011-passages-of-the-book-in-the-chat.md).
+PAPER-87), export, import and the index of the examples (sections 8 and 9, PAPER-88), and the examples shipped with their
+passages (section 9, PAPER-89). Why: [decision 0011](../decisions/0011-passages-of-the-book-in-the-chat.md).
 
 ## 1. Goal
 
@@ -254,6 +254,8 @@ field.
 - The maintainer analyzes the examples again and exports them **with passages and vectors**, made with **`bge-m3`**
   (multilingual, free to run locally, 1,024 dimensions).
 - Only public-domain books **and public-domain translations** can be shipped this way. The files grow to a few megabytes each.
+- Shipped since PAPER-89, from the English texts of Project Gutenberg: *Alice's Adventures in Wonderland*, *Cyrano de
+  Bergerac* and *Madame Bovary*. The earlier examples are in `examples/archive/`.
 - An example with passages shows an **Index** button when an embedding model is chosen. It reuses the shipped vectors when
   they match (section 8), so a user of `bge-m3` computes nothing; otherwise it computes new ones. Until then, the chat uses the
   full story.

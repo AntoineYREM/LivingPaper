@@ -107,7 +107,8 @@ OCR for scanned PDFs, saved conversations.
   fallback to defaults. Variables use `{name}` placeholders documented in each prompt's `description`. The
   number of characters extracted (10) is the `{maxCharacters}` variable of the merge prompt: no UI setting.
 - **Examples:** public-domain books already analyzed live in `examples/*.json` in the repository, read-only, in the
-  same format as user exports.
+  same format as user exports. The three shipped ones hold the passages of their English text and `bge-m3` vectors; only
+  public-domain books **and translations** may be shipped with passages.
 - **Settings:** providers live in `data/settings.json` with keys encrypted by ASP.NET Core Data Protection. This
   file is never part of a book export.
 - **Deployment:** multi-stage Dockerfile and `docker-compose.yml`. `docker compose up` must be enough to run the

@@ -14,6 +14,11 @@ way: [decision 0010](../docs/decisions/0010-character-evaluation-with-an-llm-jud
 | `runs/` | **Not committed.** One file per run of the tool: the replies and their grades. |
 | `published/` | Runs chosen to be shared, committed by hand. See its README. |
 
+**The sheets they were made with.** The runs published until 0.4.0 played the characters of the examples of that time, which are
+now in `examples/archive/`. The examples shipped today were analyzed again, from English texts: their sheets differ, so a new
+run is not comparable with those. To run with the earlier sheets, set `EXAMPLES_DIRECTORY=examples/archive`. The factual
+questions (`bovary/factual.json`) quote the French text and need a library that holds a French analysis (`--book-data`).
+
 ## The questions
 
 Each item has:

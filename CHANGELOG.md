@@ -7,12 +7,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-11-26
+
 ### Added
 
 - **A model for vectorization** (PAPER-81): a third, optional choice in the Settings page, for an embedding model (any
-  OpenAI-compatible `POST /embeddings`, local or online). The model is tried when it is chosen. It is not used yet: it prepares
-  the passages of the book in the chat ([specification](docs/specs/rag.md), decision 0011).
+  OpenAI-compatible `POST /embeddings`, local or online). The model is tried when it is chosen. It turns the passages of a book
+  into vectors, so that the chat can find them ([specification](docs/specs/rag.md), decision 0011).
 
+- **Examples with the passages of their book** (PAPER-89): *Alice's Adventures in Wonderland*, *Cyrano de Bergerac* and
+  *Madame Bovary*, analyzed again from their English text (Project Gutenberg) with DeepSeek V4.1 Flash, with their passages
+  and `bge-m3` vectors: with that model, indexing one computes nothing. A few sentences of the analyses were corrected by hand
+  against the text. The five earlier examples, *Around the World in Eighty Days* and *The Jungle Book* included, are archived
+  in `examples/archive/`. The README recommends a multilingual model for vectorization, and its screenshots show the examples
+  of today.
 - **Passages travel with a book** (PAPER-88): the export of a book with passages holds them, their scenes and their vectors,
   with a warning that the file holds the text of the book; a file may now be 30 MB at most (1 MB without passages), and leaves
   the vectors out rather than go over. An import validates them (a wrong file is refused whole) and checks in the background
@@ -294,6 +302,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - The tests of the web application no longer reach the limit of file watchers (inotify) of Linux machines, and the test of a
   connection cut in the middle of a reply no longer depends on timing.
 
-[Unreleased]: https://github.com/AntoineYREM/LivingPaper/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/AntoineYREM/LivingPaper/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/AntoineYREM/LivingPaper/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/AntoineYREM/LivingPaper/compare/v0.3.0...v0.4.0
 [0.1.0]: https://github.com/AntoineYREM/LivingPaper/releases/tag/v0.1.0

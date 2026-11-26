@@ -28,7 +28,7 @@ Open <http://localhost:8080>. The first start builds the image (a few minutes), 
 
 ### Without building: the published image
 
-Each release publishes an image (amd64 and arm64) to GitHub Container Registry, tagged `0.4.0`, `0.4` and `latest`. Save this as
+Each release publishes an image (amd64 and arm64) to GitHub Container Registry, tagged `0.5.0`, `0.5` and `latest`. Save this as
 `docker-compose.yml` in an empty folder, next to nothing else:
 
 ```yaml
@@ -47,7 +47,7 @@ volumes:
   livingpaper-data:
 ```
 
-Then `docker compose up -d`. To update, `docker compose pull && docker compose up -d`. Pin a version (`:0.4.0`) rather than
+Then `docker compose up -d`. To update, `docker compose pull && docker compose up -d`. Pin a version (`:0.5.0`) rather than
 `latest` if you want updates only when you decide. The same warning about the port applies.
 
 ```bash
@@ -98,8 +98,10 @@ Open **Settings**, type a name, a base URL and an API key, then press **Get the 
 list of models, which also checks the key. Choose a model in the list and save. Then choose which model analyzes books and which one
 chats.
 
-A third choice, **Model for vectorization**, is optional and set to None. It takes an embedding model (for example `bge-m3`, with
-`ollama pull bge-m3`), which turns text into vectors; the model is tried when you choose it. With it, the analysis of a book
+A third choice, **Model for vectorization**, is optional and set to None. It takes an embedding model, which turns text into
+vectors; the model is tried when you choose it. Prefer a **multilingual** one, so that a question in your language finds the
+passages of a book in another: `bge-m3` (`ollama pull bge-m3`) is the one measured here, and the examples come with its
+vectors. With it, the analysis of a book
 keeps its passages and turns them into vectors (about a minute and a half for a long novel with `bge-m3` on a 4 GB graphics
 card). The chat then gives the character the passages that answer your message in place of the whole story.
 

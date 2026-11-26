@@ -208,6 +208,12 @@ summary and the sheets without a key, and chat with the characters once a model 
 edited, retried or deleted. **Add to my library** copies one into your library (a book titled the same as one you already have is
 refused), where you can edit its sheets like any other book.
 
+Three books come with the application, in English, from [Project Gutenberg](https://www.gutenberg.org/) (its own presentation
+text and licence removed before the analysis): *Alice's Adventures in Wonderland* (ebook 11), *Cyrano de Bergerac* (ebook 1254,
+translated by Gladys Thomas and Mary F. Guillemard) and *Madame Bovary* (ebook 2413, translated by Eleanor Marx-Aveling). Each
+holds its passages and their vectors, made with `bge-m3`: with that model for vectorization, **Index the passages** computes
+nothing but one test.
+
 They are the files of the `examples/` folder, in the format of a book of the library, checked like an imported book when the
 application starts: an example that is not valid is ignored, with a warning in the logs. `EXAMPLES_DIRECTORY` points to another
 folder. See `CONTRIBUTING.md` to propose one.
