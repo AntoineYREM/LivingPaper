@@ -7,6 +7,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Added
+
+- **A model for vectorization** (PAPER-81): a third, optional choice in the Settings page, for an embedding model (any
+  OpenAI-compatible `POST /embeddings`, local or online). The model is tried when it is chosen. It is not used yet: it prepares
+  the passages of the book in the chat ([specification](docs/specs/rag.md), decision 0011).
+
+### Changed
+
+- **A model you add fills the empty choices** (PAPER-81): until now only the first model was chosen by itself. While a choice is
+  empty, the new model is tried once, to fill analysis and chat, or vectorization alone when it refuses to chat and can
+  vectorize. A choice already made is never replaced. A provider with no list of models now also accepts a model that only
+  vectorizes.
+
 ## [0.4.0] - 2026-11-23
 
 ### Fixed

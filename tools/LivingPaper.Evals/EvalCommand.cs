@@ -64,7 +64,8 @@ internal static class EvalCommand
             new OpenAiCompatibleOptions { MaxOutputTokens = options.MaxOutputTokens },
             tracing: new LlmTracingOptions { CaptureContent = langfuse?.CaptureContent ?? false });
         using var catalog = new OpenAiCompatibleModelCatalog();
-        var tester = new LlmConnectionTester(factory, prompts);
+        using var embeddings = new OpenAiCompatibleEmbeddingModelFactory(NullLoggerFactory.Instance);
+        var tester = new LlmConnectionTester(factory, embeddings, prompts);
         var pending = new PendingProviderStore(TimeProvider.System);
         using var settings = new LlmSettingsService(site, tester, catalog, pending);
 

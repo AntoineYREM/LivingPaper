@@ -24,6 +24,9 @@ decision records in `docs/decisions/`.
   browser. A provider with no list falls back to a typed model name and a connection test before saving. Keys are encrypted at rest and never sent back to the
   browser. This page is also where the user chooses which LLM is used for book analysis and which one for chat.
   A deleted LLM that was selected must be unselected, and analysis/chat stay disabled until another is chosen.
+  A third, optional choice (None by default) takes an embedding model for vectorization; it is tried when chosen. A new model
+  fills the choices that have no model: analysis and chat, or vectorization alone for a model that only vectorizes; it is tried
+  to know which (see `docs/specs/rag.md`). Deleting a model leaves its choices empty.
 - Books and analyses are stored as JSON files: easy to export and import.
 - Add a book (EPUB or PDF) and delete a book. The book file is deleted after a successful analysis, so
   re-analyzing (other LLM, edited prompt) means uploading the book again and ticking "Replace".
@@ -70,8 +73,8 @@ OCR for scanned PDFs, saved conversations.
 - **Background work:** analysis starts automatically after upload (no cost confirmation step); the tokens used and
   the duration are shown at the end. It runs in a hosted `BackgroundService`, one book at a time, with progress stored
   in the database. An analysis with no progress for 10 minutes is marked as interrupted and can be retried.
-- **AI:** all AI calls go through a port in `Application` (`IChatModel`) implemented by one adapter that speaks the
-  OpenAI-compatible Chat Completions API, so a provider with a compatible chat API works (OpenAI, local servers such as
+- **AI:** all AI calls go through a port in `Application` (`IChatModel`, and `IEmbeddingModel` for vectors) implemented by one
+  adapter each that speaks the OpenAI-compatible API (Chat Completions, embeddings), so a provider with a compatible chat API works (OpenAI, local servers such as
   Ollama or LM Studio). Only providers that were tested are named in the interface and the docs.
   A provider is `{ id, name, baseUrl, apiKey, model }`. Adding one asks the provider for its models first (a connection test when it has no list). Transient
   failures are retried 3 times with growing delays. The port is faked in tests.

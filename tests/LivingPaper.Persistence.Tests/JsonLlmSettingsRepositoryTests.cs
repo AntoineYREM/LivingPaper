@@ -85,6 +85,31 @@ public sealed class JsonLlmSettingsRepositoryTests : IDisposable
     }
 
     [Fact]
+    public async Task SaveThenLoad_GivesBackTheModelForVectorization()
+    {
+        var settings = TwoProviders();
+        settings.SelectForEmbedding(IdB);
+
+        await _repository.SaveAsync(settings, Token);
+
+        (await _repository.LoadAsync(Token)).EmbeddingProviderId.ShouldBe(IdB);
+        using var json = JsonDocument.Parse(await File.ReadAllTextAsync(SettingsFile, Token));
+        json.RootElement.GetProperty("embeddingProviderId").GetString().ShouldBe(IdB);
+        json.RootElement.GetProperty("schemaVersion").GetInt32().ShouldBe(1); // An older version of the application ignores the new field.
+    }
+
+    [Fact]
+    public async Task Load_ReadsAFileWithNoModelForVectorization_AsNoneChosen()
+    {
+        await WriteFileAsync(FileWith(Entry()));
+
+        var loaded = await _repository.LoadAsync(Token);
+
+        loaded.Providers.Count.ShouldBe(1);
+        loaded.EmbeddingProviderId.ShouldBeNull();
+    }
+
+    [Fact]
     public async Task Save_NeverWritesAKeyInClear()
     {
         await _repository.SaveAsync(TwoProviders(), Token);

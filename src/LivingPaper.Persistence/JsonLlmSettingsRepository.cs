@@ -41,7 +41,7 @@ public sealed partial class JsonLlmSettingsRepository(string dataDirectory, ISec
 
         try
         {
-            return LlmSettings.Restore(providers, file.AnalysisProviderId, file.ChatProviderId, unreadable);
+            return LlmSettings.Restore(providers, file.AnalysisProviderId, file.ChatProviderId, unreadable, file.EmbeddingProviderId);
         }
         catch (ArgumentException exception)
         {
@@ -76,6 +76,7 @@ public sealed partial class JsonLlmSettingsRepository(string dataDirectory, ISec
             ],
             AnalysisProviderId = settings.AnalysisProviderId,
             ChatProviderId = settings.ChatProviderId,
+            EmbeddingProviderId = settings.EmbeddingProviderId,
         };
 
         await AtomicFile.WriteAsync(FilePath, JsonSerializer.SerializeToUtf8Bytes(file, SettingsFile.JsonOptions), cancellationToken).ConfigureAwait(false);

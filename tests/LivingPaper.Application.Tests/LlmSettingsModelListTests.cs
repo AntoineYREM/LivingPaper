@@ -108,7 +108,7 @@ public sealed class LlmSettingsModelListTests : IDisposable
     // ---- Step 2: choose and save ----
 
     [Fact]
-    public async Task AddFetched_SavesTheChosenModel_WithoutAnotherTest_AndChoosesItForBothUses()
+    public async Task AddFetched_TriesTheFirstModel_ThenSavesItAndChoosesItForAnalysisAndChat()
     {
         var pending = (await _service.FetchModelsAsync(Draft(), Token)).Pending!;
 
@@ -117,10 +117,80 @@ public sealed class LlmSettingsModelListTests : IDisposable
         result.ShouldNotBeNull().Succeeded.ShouldBeTrue();
         result.Added!.Model.ShouldBe("gpt-5");
         result.Added.HasKey.ShouldBeTrue();
-        _tester.Tested.ShouldBeEmpty();
+        _tester.Tested.ShouldHaveSingleItem().Model.ShouldBe("gpt-5"); // To know where to choose it.
+        _tester.Embedded.ShouldBeEmpty();
         _repository.Saves.ShouldBe(1);
         (await _service.GetChatProviderAsync(Token))!.ApiKey.ShouldBe(Key);
         _service.GetPending(pending.Id).ShouldBeNull(); // The draft, and its key, are gone.
+    }
+
+    [Fact]
+    public async Task AddFetched_ChoosesAFirstModelThatOnlyVectorizes_ForVectorizationAlone()
+    {
+        var tester = new FakeConnectionTester(_ => Task.FromResult(ConnectionTestResult.Failed(ConnectionFailure.ModelUnknown, 400)));
+        using var service = new LlmSettingsService(_repository, tester, _catalog, new PendingProviderStore(_clock));
+        var pending = (await service.FetchModelsAsync(Draft(), Token)).Pending!;
+
+        var result = await service.AddFetchedAsync(pending.Id, "gpt-5", Token);
+
+        var added = result.ShouldNotBeNull().Added.ShouldNotBeNull();
+        var view = await service.GetAsync(Token);
+        view.EmbeddingProviderId.ShouldBe(added.Id);
+        view.ChatProviderId.ShouldBeNull();
+        view.AnalysisProviderId.ShouldBeNull();
+    }
+
+    [Theory]
+    [InlineData(ConnectionFailure.Unreachable, null, true)]
+    [InlineData(ConnectionFailure.ProviderError, 503, true)]
+    [InlineData(ConnectionFailure.PromptFile, null, true)]
+    [InlineData(ConnectionFailure.ModelUnknown, 404, false)]
+    public async Task AddFetched_SavesTheFirstModelWhateverTheTrySays_AndKeepsTheUsualChoicesUnlessItProvesToVectorize(
+        ConnectionFailure failure, int? status, bool embeddingWorks)
+    {
+        var tester = new FakeConnectionTester(
+            _ => Task.FromResult(ConnectionTestResult.Failed(failure, status)),
+            _ => Task.FromResult(embeddingWorks ? ConnectionTestResult.Ok() : ConnectionTestResult.Failed(ConnectionFailure.ModelUnknown, 404)));
+        using var service = new LlmSettingsService(_repository, tester, _catalog, new PendingProviderStore(_clock));
+        var pending = (await service.FetchModelsAsync(Draft(), Token)).Pending!;
+
+        var result = await service.AddFetchedAsync(pending.Id, "gpt-5", Token);
+
+        var added = result.ShouldNotBeNull().Added.ShouldNotBeNull(); // The list proved the key.
+        var view = await service.GetAsync(Token);
+        view.ChatProviderId.ShouldBe(added.Id);
+        view.AnalysisProviderId.ShouldBe(added.Id);
+        view.EmbeddingProviderId.ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task AddFetched_ChoosesAChatModelAddedAfterAnEmbeddingModel_ForAnalysisAndChat()
+    {
+        var tester = new FakeConnectionTester(provider => Task.FromResult(
+            provider.Name == "bge" ? ConnectionTestResult.Failed(ConnectionFailure.ModelUnknown, 400) : ConnectionTestResult.Ok()));
+        using var service = new LlmSettingsService(_repository, tester, _catalog, new PendingProviderStore(_clock));
+        var bge = (await service.AddFetchedAsync((await service.FetchModelsAsync(Draft("bge"), Token)).Pending!.Id, "gpt-5", Token))!.Added!;
+
+        var chat = (await service.AddFetchedAsync((await service.FetchModelsAsync(Draft("Chat"), Token)).Pending!.Id, "gpt-5", Token))!.Added!;
+
+        var view = await service.GetAsync(Token);
+        view.EmbeddingProviderId.ShouldBe(bge.Id);
+        view.AnalysisProviderId.ShouldBe(chat.Id);
+        view.ChatProviderId.ShouldBe(chat.Id);
+    }
+
+    [Fact]
+    public async Task AddFetched_DoesNotTryAModel_WhenEveryChoiceIsMade()
+    {
+        var first = (await _service.AddFetchedAsync((await _service.FetchModelsAsync(Draft("First"), Token)).Pending!.Id, "gpt-5", Token))!.Added!;
+        await _service.SelectForEmbeddingAsync(first.Id, Token);
+        _tester.Tested.Clear();
+        _tester.Embedded.Clear();
+
+        await _service.AddFetchedAsync((await _service.FetchModelsAsync(Draft("Second"), Token)).Pending!.Id, "gpt-5", Token);
+
+        _tester.Tested.ShouldBeEmpty();
+        _tester.Embedded.ShouldBeEmpty();
     }
 
     [Fact]
@@ -181,7 +251,8 @@ public sealed class LlmSettingsModelListTests : IDisposable
     [Fact]
     public async Task AddFetched_WithoutAList_KeepsTheDraft_WhenTheTestFails()
     {
-        var failing = new FakeConnectionTester(_ => Task.FromResult(ConnectionTestResult.Failed(ConnectionFailure.ModelUnknown, 404)));
+        Task<ConnectionTestResult> Unknown(LlmProvider provider) => Task.FromResult(ConnectionTestResult.Failed(ConnectionFailure.ModelUnknown, 404));
+        var failing = new FakeConnectionTester(Unknown, Unknown);
         using var service = new LlmSettingsService(_repository, failing, new FakeModelCatalog((_, _) => ModelListResult.Failed(ConnectionFailure.NoModelList)), new PendingProviderStore(_clock));
         var pending = (await service.FetchModelsAsync(Draft(), Token)).Pending!;
 

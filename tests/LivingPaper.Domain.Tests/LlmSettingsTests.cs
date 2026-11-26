@@ -185,6 +185,148 @@ public class LlmSettingsTests
         settings.ChatProviderId.ShouldBe("a");
     }
 
+    // ---- The model for vectorization ----
+
+    [Fact]
+    public void TheFirstProvider_IsNotSelectedForVectorization()
+    {
+        var settings = new LlmSettings();
+
+        settings.Add(Provider("a"));
+
+        settings.EmbeddingProviderId.ShouldBeNull();
+        settings.IsEmbeddingEnabled.ShouldBeFalse();
+    }
+
+    [Fact]
+    public void AFirstProviderThatOnlyVectorizes_IsSelectedForVectorizationAlone()
+    {
+        var settings = new LlmSettings();
+
+        settings.Add(Provider("a"), onlyVectorizes: true);
+
+        settings.EmbeddingProviderId.ShouldBe("a");
+        settings.EmbeddingProvider!.Id.ShouldBe("a");
+        settings.IsEmbeddingEnabled.ShouldBeTrue();
+        settings.AnalysisProviderId.ShouldBeNull();
+        settings.ChatProviderId.ShouldBeNull();
+    }
+
+    [Fact]
+    public void ALaterProviderThatOnlyVectorizes_FillsTheEmptyChoiceForVectorization_Alone()
+    {
+        var settings = new LlmSettings();
+        settings.Add(Provider("a"));
+
+        settings.Add(Provider("b", "Second"), onlyVectorizes: true);
+
+        settings.EmbeddingProviderId.ShouldBe("b");
+        settings.AnalysisProviderId.ShouldBe("a");
+        settings.ChatProviderId.ShouldBe("a");
+    }
+
+    [Fact]
+    public void ALaterProviderThatChats_FillsTheEmptyChoicesForAnalysisAndChat()
+    {
+        var settings = new LlmSettings();
+        settings.Add(Provider("a"), onlyVectorizes: true);
+
+        settings.Add(Provider("b", "Second"));
+
+        settings.AnalysisProviderId.ShouldBe("b");
+        settings.ChatProviderId.ShouldBe("b");
+        settings.EmbeddingProviderId.ShouldBe("a");
+    }
+
+    [Fact]
+    public void AddingAProvider_FillsOnlyTheEmptyChoices_AndNeverReplacesOne()
+    {
+        var settings = new LlmSettings();
+        settings.Add(Provider("a"));
+        settings.Add(Provider("b", "Second"), onlyVectorizes: true);
+        settings.SelectForChat(null);
+
+        settings.Add(Provider("c", "Third"));
+        settings.Add(Provider("d", "Fourth"), onlyVectorizes: true);
+
+        settings.AnalysisProviderId.ShouldBe("a");
+        settings.ChatProviderId.ShouldBe("c"); // Emptied by the user, filled by the next model that can.
+        settings.EmbeddingProviderId.ShouldBe("b");
+    }
+
+    [Fact]
+    public void AChoiceIsEmpty_UntilTheThreeUsesHaveAModel()
+    {
+        var settings = new LlmSettings();
+        settings.HasEmptyChoice.ShouldBeTrue();
+        settings.Add(Provider("a"));
+        settings.HasEmptyChoice.ShouldBeTrue(); // Vectorization.
+
+        settings.Add(Provider("b", "Second"), onlyVectorizes: true);
+        settings.HasEmptyChoice.ShouldBeFalse();
+
+        settings.SelectForAnalysis(null);
+        settings.HasEmptyChoice.ShouldBeTrue();
+    }
+
+    [Fact]
+    public void TheModelForVectorization_IsSelectedAndUnselected_WithoutTouchingTheOtherChoices()
+    {
+        var settings = new LlmSettings();
+        settings.Add(Provider("a"));
+        settings.Add(Provider("b", "Second"));
+
+        settings.SelectForEmbedding("b");
+
+        settings.EmbeddingProviderId.ShouldBe("b");
+        settings.AnalysisProviderId.ShouldBe("a");
+        settings.ChatProviderId.ShouldBe("a");
+
+        settings.SelectForEmbedding(null);
+
+        settings.EmbeddingProviderId.ShouldBeNull();
+        settings.IsEmbeddingEnabled.ShouldBeFalse();
+    }
+
+    [Fact]
+    public void SelectingAnUnknownProviderForVectorization_Throws_AndKeepsThePreviousSelection()
+    {
+        var settings = new LlmSettings();
+        settings.Add(Provider("a"), onlyVectorizes: true);
+
+        Should.Throw<ArgumentException>(() => settings.SelectForEmbedding("zzz"));
+
+        settings.EmbeddingProviderId.ShouldBe("a");
+    }
+
+    [Fact]
+    public void RemovingTheModelForVectorization_UnselectsIt()
+    {
+        var settings = new LlmSettings();
+        settings.Add(Provider("a"));
+        settings.Add(Provider("b", "Second"));
+        settings.SelectForEmbedding("b");
+
+        settings.Remove("b");
+
+        settings.EmbeddingProviderId.ShouldBeNull();
+        settings.ChatProviderId.ShouldBe("a");
+    }
+
+    [Fact]
+    public void Restore_KeepsTheModelForVectorization_OnlyWhenItExistsAndItsKeyCanBeRead()
+    {
+        var kept = LlmSettings.Restore([Provider("a")], null, null, embeddingProviderId: "a");
+        var gone = LlmSettings.Restore([Provider("a")], null, null, embeddingProviderId: "gone");
+        var unreadable = LlmSettings.Restore([Provider("a", key: string.Empty)], null, null, unreadableKeyProviderIds: ["a"], embeddingProviderId: "a");
+
+        kept.EmbeddingProviderId.ShouldBe("a");
+        kept.IsEmbeddingEnabled.ShouldBeTrue();
+        gone.EmbeddingProviderId.ShouldBeNull();
+        unreadable.EmbeddingProviderId.ShouldBe("a");
+        unreadable.IsEmbeddingEnabled.ShouldBeFalse();
+    }
+
     // ---- A key that cannot be read ----
 
     [Fact]

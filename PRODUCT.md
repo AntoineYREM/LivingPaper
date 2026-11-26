@@ -46,7 +46,7 @@ as plain JSON files, open source, no account.)
 
 ## Capabilities and Constraints
 
-V0 scope: a settings page (add and delete models after a connection test, choose the analysis and chat model), add and
+V0 scope: a settings page (add and delete models after a connection test, choose the analysis, chat and optional vectorization model), add and
 delete a book, background analysis (book summary of era, place and tone, and the 10 main characters), "My library" and
 "Examples" pages (public-domain books shipped already analyzed, read-only), chat with a character (not stored).
 

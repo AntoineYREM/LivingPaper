@@ -25,6 +25,9 @@ internal sealed class SettingsFile
     public string? AnalysisProviderId { get; set; }
 
     public string? ChatProviderId { get; set; }
+
+    // Added without a new schemaVersion: a file without it is read as "none", and an older application ignores it.
+    public string? EmbeddingProviderId { get; set; }
 }
 
 internal sealed class ProviderEntry

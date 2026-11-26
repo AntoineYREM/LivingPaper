@@ -31,6 +31,8 @@ builder.Services.AddSingleton<IPromptProvider>(new FilePromptProvider(dataDirect
 // One factory for the whole application: its clients share a connection pool. It builds a client for each language
 // model of the settings (PAPER-5) when the analysis or the chat needs one.
 builder.Services.AddSingleton<IChatModelFactory, OpenAiCompatibleChatModelFactory>();
+// The same for the embedding models, which turn texts into vectors.
+builder.Services.AddSingleton<IEmbeddingModelFactory, OpenAiCompatibleEmbeddingModelFactory>();
 
 // The traces of the calls to the language models (PAPER-75): sent to Langfuse only when LANGFUSE_PUBLIC_KEY and
 // LANGFUSE_SECRET_KEY are set. Without them nothing is exported. The prompts and replies, which hold the text of the books and of the

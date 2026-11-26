@@ -3,19 +3,45 @@ using LivingPaper.Domain;
 namespace LivingPaper.Application;
 
 // Sends one short message (the prompt llm.connectionTest of the prompts file, "Reply with the single word: pong" by
-// default) and reads what comes back. One try only and a time limit: a wrong address must show its error at once, not
-// after the retries of a real call. Any usable reply means the connection works; the text of the reply does not matter.
-public sealed class LlmConnectionTester(IChatModelFactory factory, IPromptProvider prompts, TimeSpan? timeout = null) : ILlmConnectionTester
+// default) and reads what comes back: a reply for a chat model, a vector for an embedding model. One try only and a time
+// limit: a wrong address must show its error at once, not after the retries of a real call. Any usable answer means the
+// connection works; what it says does not matter.
+public sealed class LlmConnectionTester(
+    IChatModelFactory factory, IEmbeddingModelFactory embeddings, IPromptProvider prompts, TimeSpan? timeout = null) : ILlmConnectionTester
 {
     // A model that thinks before answering can take a while; a dead address is reported long before this.
     public static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(60);
 
     private static readonly IReadOnlyDictionary<string, string> NoVariables = new Dictionary<string, string>();
 
-    public async Task<ConnectionTestResult> TestAsync(LlmProvider provider, CancellationToken cancellationToken)
+    public Task<ConnectionTestResult> TestAsync(LlmProvider provider, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(provider);
+        return RunAsync(
+            async (message, limit) =>
+            {
+                // Its own trace (PAPER-75): the call is not part of any analysis or chat.
+                using var span = LlmTelemetry.Source.StartActivity("connection-test");
+                var model = factory.Create(provider, retryPassingFailures: false);
+                await model.CompleteAsync([new ChatMessage(ChatRole.User, message)], usage: null, limit).ConfigureAwait(false);
+            },
+            cancellationToken);
+    }
 
+    public Task<ConnectionTestResult> TestEmbeddingAsync(LlmProvider provider, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(provider);
+        return RunAsync(
+            async (message, limit) =>
+            {
+                var model = embeddings.Create(provider, retryPassingFailures: false);
+                await model.EmbedAsync([message], usage: null, limit).ConfigureAwait(false);
+            },
+            cancellationToken);
+    }
+
+    private async Task<ConnectionTestResult> RunAsync(Func<string, CancellationToken, Task> call, CancellationToken cancellationToken)
+    {
         string message;
         try
         {
@@ -26,14 +52,11 @@ public sealed class LlmConnectionTester(IChatModelFactory factory, IPromptProvid
             return ConnectionTestResult.Failed(ConnectionFailure.PromptFile, detail: exception.Message);
         }
 
-        // Its own trace (PAPER-75): the call is not part of any analysis or chat.
-        using var span = LlmTelemetry.Source.StartActivity("connection-test");
         using var limit = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         limit.CancelAfter(timeout ?? DefaultTimeout);
         try
         {
-            var model = factory.Create(provider, retryPassingFailures: false);
-            await model.CompleteAsync([new ChatMessage(ChatRole.User, message)], usage: null, limit.Token).ConfigureAwait(false);
+            await call(message, limit.Token).ConfigureAwait(false);
             return ConnectionTestResult.Ok();
         }
         catch (ChatProviderException exception)

@@ -58,7 +58,7 @@
             {
                 <li class="entry">
                     <h3 class="entry__title">@provider.Name</h3>
-                    @if (provider.Id == Model.View.AnalysisProviderId || provider.Id == Model.View.ChatProviderId)
+                    @if (provider.Id == Model.View.AnalysisProviderId || provider.Id == Model.View.ChatProviderId || provider.Id == Model.View.EmbeddingProviderId)
                     {
                         <p>
                             @if (provider.Id == Model.View.AnalysisProviderId)
@@ -68,6 +68,10 @@
                             @if (provider.Id == Model.View.ChatProviderId)
                             {
                                 <span class="tag">@T["settings.model.forChat"]</span>
+                            }
+                            @if (provider.Id == Model.View.EmbeddingProviderId)
+                            {
+                                <span class="tag">@T["settings.model.forEmbedding"]</span>
                             }
                         </p>
                     }
@@ -134,7 +138,7 @@
                             <option value="@modelName">@modelName</option>
                         }
                     </select>
-                    <p class="field__hint" id="llm-model-hint">@T["settings.pick.hint"]</p>
+                    <p class="field__hint" id="llm-model-hint">@(Model.View.HasEmptyChoice ? T["settings.pick.hintTried"] : T["settings.pick.hint"])</p>
                 }
                 @if (!draft.CanChooseFromList)
                 {
@@ -206,6 +210,13 @@
     <section aria-labelledby="choose">
         <h2 id="choose">@T["settings.choose.title"]</h2>
         <p>@T["settings.choose.lead"]</p>
+        @if (Model.ChoiceError is not null)
+        {
+            <div class="alert alert--error" role="alert">
+                <strong class="alert__title">@T["settings.alert.error"]</strong>
+                <p>@Model.ChoiceError</p>
+            </div>
+        }
         <form class="form" method="post" asp-page-handler="Select">
             <div class="field">
                 <label class="field__label" for="llm-analysis">@T["settings.choose.analysis"]</label>
@@ -226,6 +237,17 @@
                         <option value="@provider.Id" selected="@(provider.Id == Model.View.ChatProviderId)">@provider.Name</option>
                     }
                 </select>
+            </div>
+            <div class="field">
+                <label class="field__label" for="llm-embedding">@T["settings.choose.embedding"]</label>
+                <select class="select" id="llm-embedding" name="embedding" aria-describedby="llm-embedding-hint">
+                    <option value="" selected="@(Model.View.EmbeddingProviderId is null)">@T["settings.choose.none"]</option>
+                    @foreach (var provider in Model.View.Providers)
+                    {
+                        <option value="@provider.Id" selected="@(provider.Id == Model.View.EmbeddingProviderId)">@provider.Name</option>
+                    }
+                </select>
+                <p class="field__hint" id="llm-embedding-hint">@T["settings.choose.embeddingHint"]</p>
             </div>
             <div class="form__actions">
                 <button type="submit" class="button">@T["settings.choose.submit"]</button>

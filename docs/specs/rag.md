@@ -1,6 +1,6 @@
 # Specification: passages of the book in the chat (RAG)
 
-**Status:** validated on 26 November 2026. Nothing described here is implemented. Why: [decision 0011](../decisions/0011-passages-of-the-book-in-the-chat.md).
+**Status:** validated on 26 November 2026. Implemented so far: the model for vectorization (section 3, PAPER-81). Why: [decision 0011](../decisions/0011-passages-of-the-book-in-the-chat.md).
 
 ## 1. Goal
 
@@ -35,14 +35,26 @@ case the chat works as today, with the full story.
 
 ## 3. Settings
 
-- Models are added as today. A third list, **Vectorization**, sits next to Analysis and Chat. Its default is **None**, and
-  adding a first model does not select it.
+- Models are added as today. A third list, **Vectorization**, sits next to Analysis and Chat. Its default is **None**.
 - Any OpenAI-compatible `POST /embeddings` endpoint can be used (local or online). A multilingual model is recommended in the
   documentation, since the user may write in another language than the book.
 - A deleted model that was chosen is unselected.
-- Choosing a model for vectorization sends one test embedding, and refuses a model that cannot answer.
-- Note for the implementation: a provider with no model list is tested today with a chat completion, which an embedding model
-  fails. This path needs its own test.
+- Choosing another model for vectorization sends one test embedding. A model that cannot answer is refused: the previous
+  vectorization choice stays, and the analysis and chat choices of the same form are saved.
+- A provider with no model list: the chat test runs first, then, if it fails, the embedding test. One success is enough to
+  save the model.
+- A model that is added **fills the choices that have no model**, including one the user set to None. A choice already made is
+  never replaced, and deleting a model leaves its choices empty. While a choice is empty, the new model is tried to know which
+  it can fill:
+
+  | Result of the try | The new model fills, where empty |
+  |---|---|
+  | It answers the chat test | Analysis and chat |
+  | The chat test is **refused** (an HTTP refusal) and the embedding test succeeds | Vectorization only |
+  | Anything else (too slow, unreachable, failing provider) | Analysis and chat |
+
+  A slow model is thus never taken for an embedding model: some chat models can also vectorize. A model of a provider with a
+  list is saved whatever the try says, since the list proved the key.
 
 ## 4. Cutting the book into passages
 

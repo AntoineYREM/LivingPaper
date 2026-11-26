@@ -45,6 +45,7 @@ contain no data access: a page model calls the Application layer.
 | Port (in `Application`) | Adapter | Where |
 |---|---|---|
 | `IChatModel`, `IChatModelFactory`, `ILlmConnectionTester` | Talk to any OpenAI-compatible Chat Completions API (streaming, retries, failure kinds) | Infrastructure |
+| `IEmbeddingModel`, `IEmbeddingModelFactory` | Turn texts into vectors with any OpenAI-compatible embeddings API (same retries and URL rules, answer checked) | Infrastructure |
 | `IBookTextExtractor` | Reads the text of an EPUB or a PDF, checked on content, with bounds | Infrastructure |
 | `ISecretProtector` | Encrypts API keys with ASP.NET Core Data Protection | Infrastructure |
 | `IBookRepository`, `IAnalysisStepStore`, `IBookTextStore` | One JSON file per book, steps file, text file | Persistence |

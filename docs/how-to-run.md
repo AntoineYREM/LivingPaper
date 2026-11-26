@@ -96,8 +96,16 @@ Open **Settings**, type a name, a base URL and an API key, then press **Get the 
 list of models, which also checks the key. Choose a model in the list and save. Then choose which model analyzes books and which one
 chats.
 
+A third choice, **Model for vectorization**, is optional and set to None. It takes an embedding model (for example `bge-m3`, with
+`ollama pull bge-m3`), which turns text into vectors; the model is tried when you choose it. LivingPaper does not use it yet: it
+prepares the search of passages of a book ([specification](specs/rag.md)).
+
+A model you add **fills the choices that are empty**: analysis and chat, or vectorization alone when it refuses to chat and can
+vectorize. While a choice is empty, the new model is tried once to know which; this can take a minute or two with a slow local
+model. A choice already made is never replaced, and deleting a model leaves its choices empty.
+
 If the provider has no list of models (some local servers), the page says so and asks you to type the model name; it is then tested
-with a short request before it is saved. The key is kept in memory between the two steps (15 minutes at most, forgotten when the
+with a short request (a chat, else a vectorization) before it is saved. The key is kept in memory between the two steps (15 minutes at most, forgotten when the
 application restarts) and is never shown again.
 
 | Provider | Base URL | Key |

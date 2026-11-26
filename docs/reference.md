@@ -38,9 +38,19 @@ another vendor). Each model is a name, a base URL, an API key (optional for a lo
 is added in two steps: the application asks the provider for its list of models (`GET {baseUrl}/models`), which proves that the
 address and the key work, and you choose one model in that list. While you choose, the key is kept in the memory of the server for
 15 minutes at most and is never sent back to the browser. A provider that has no such list (some local servers) falls back to
-typing the model name: it is then saved only after a connection test succeeds (the application sends the `llm.connectionTest`
-prompt of `data/prompts.json` and checks that a usable reply comes back). You choose one model to analyze books and one to chat;
+typing the model name: it is then saved only after a connection test succeeds. The application sends the `llm.connectionTest`
+prompt of `data/prompts.json` as a chat message and checks that a usable reply comes back; if that fails, it asks for the vector of
+the same text (`POST {baseUrl}/embeddings`), and one success is enough. You choose one model to analyze books and one to chat;
 they can be the same.
+
+- **Model for vectorization** (optional, None by default): an embedding model. Choosing another one sends it the test text; a
+  model that cannot answer is refused, the previous choice stays and the two other choices are saved. It is not used yet: it
+  prepares the search of passages of a book ([specification](specs/rag.md)).
+- **A model you add** fills the choices that have no model, including one you set to None. To know which, it is tried: if it
+  answers the chat test, it fills analysis and chat; if it refuses the chat (an HTTP refusal) and gives a vector, it fills
+  vectorization alone; in every other case (too slow, unreachable) it fills analysis and chat. A choice already made is never
+  replaced, and deleting a model leaves its choices empty. A model taken from the provider's list is saved whatever these tests
+  say; when no choice is empty it is not tried at all.
 
 - **Where:** `data/settings.json` holds the models and your choices. `data/keys/` holds the keys that encrypt your API
   keys. Both are in the data directory (`./data` by default, the `data/` volume in Docker) and both are ignored by git.

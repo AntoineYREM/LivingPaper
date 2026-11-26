@@ -66,6 +66,9 @@ public class ChatSetupTests
     {
         public Task<ConnectionTestResult> TestAsync(LlmProvider provider, CancellationToken cancellationToken) =>
             Task.FromResult(ConnectionTestResult.Ok());
+
+        public Task<ConnectionTestResult> TestEmbeddingAsync(LlmProvider provider, CancellationToken cancellationToken) =>
+            Task.FromResult(ConnectionTestResult.Ok());
     }
 
     private sealed class NoCatalog : IModelCatalog
