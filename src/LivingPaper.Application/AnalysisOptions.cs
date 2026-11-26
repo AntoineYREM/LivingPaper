@@ -28,6 +28,9 @@ public sealed record AnalysisOptions
     // The short summary of the plot takes at most about this many words (the prompt asks for 300 or more).
     public int PlotSummaryWords { get; init; } = 500;
 
+    // How many passages are sent to the embedding model in one call.
+    public int PassagesPerEmbeddingCall { get; init; } = 16;
+
     // A reply that cannot be read is asked for again this many times before the analysis stops.
     public int InvalidReplyRetries { get; init; } = 2;
 

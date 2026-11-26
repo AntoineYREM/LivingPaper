@@ -178,6 +178,20 @@ internal sealed class FakeAnalysisScheduler : IAnalysisScheduler
         return true;
     }
 
+    // The books queued to have their passages indexed.
+    public List<BookId> Indexing { get; } = [];
+
+    public bool EnqueueIndexing(BookId bookId)
+    {
+        if (!Enqueue(bookId))
+        {
+            return false;
+        }
+
+        Indexing.Add(bookId);
+        return true;
+    }
+
     public bool IsQueued(BookId bookId) => _queued.Contains(bookId);
 
     public Task CancelAsync(BookId bookId, CancellationToken cancellationToken)

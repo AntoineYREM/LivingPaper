@@ -45,7 +45,7 @@ they can be the same.
 
 - **Model for vectorization** (optional, None by default): an embedding model. Choosing another one sends it the test text; a
   model that cannot answer is refused, the previous choice stays and the two other choices are saved. With it, the analysis
-  keeps the passages of the book; the model itself is not called yet ([specification](specs/rag.md)).
+  keeps the passages of the book and indexes them (see the analysis, below).
 - **A model you add** fills the choices that have no model, including one you set to None. To know which, it is tried: if it
   answers the chat test, it fills analysis and chat; if it refuses the chat (an HTTP refusal) and gives a vector, it fills
   vectorization alone; in every other case (too slow, unreachable) it fills analysis and chat. A choice already made is never
@@ -72,7 +72,7 @@ the models and keys you saved. Do not expose it to the Internet without a revers
 Optional, for people who want to see what the models are asked and what it costs. When `LANGFUSE_PUBLIC_KEY` and
 `LANGFUSE_SECRET_KEY` are set (with `LANGFUSE_BASE_URL`), every call to a language model is sent to your Langfuse as a trace over
 OpenTelemetry: the analysis of a book is one trace (a step for each part read, the merge of the characters, each profile, the
-summary, the story, the plot and the saving of the passages) and each chat reply is its own. Without the keys nothing is exported.
+summary, the story, the plot, the saving of the passages and their indexing) and each chat reply is its own. Without the keys nothing is exported.
 
 - **By default only metadata:** model, name of the provider, tokens, duration, time to the first piece of a streamed reply, step and
   outcome (kind of failure and HTTP status, never the message).
@@ -123,8 +123,22 @@ script; without it, reload the page). The language model used is the one you cho
 model says which passages each scene covers (`analysis.passageRanges`, added to `analysis.readPart`). The passages are then
 kept in `data/rag.db`, each with its scenes and who is there. A range that cannot be followed is ignored: the passage is
 kept without scene. A prompt `analysis.readPart` that you edited has no `{passageRanges}`: add it to get the scenes of the
-passages. The passages have no vectors yet and the chat does not use them ([specification](specs/rag.md)). If they cannot be
-saved, the analysis succeeds without them.
+passages.
+
+**Indexing** is the last step of such an analysis: each passage, under a header that tells its scene and who is there, is
+turned into a vector by the model for vectorization (16 passages a call). The analysis shows how far it is, and the tokens
+are shown with the others. If it fails, the analysis still succeeds and the passages are kept. The page of a book then says
+where its passages are, while a model for vectorization is chosen:
+
+| The page says | What to do |
+|---|---|
+| Indexed, with the name of the model | Nothing |
+| Not indexed yet, with the reason of the failure | **Retry indexing** |
+| To be re-indexed (you chose another model) | **Re-index**; nothing is recomputed by itself |
+| No passages (analyzed without a model for vectorization) | Send the book again with "Replace" |
+
+An indexing asked from the page runs in the background; the book can be read and its characters chatted with meanwhile.
+The chat does not search the passages yet ([specification](specs/rag.md)). Examples are not indexed yet.
 
 Everything the analysis writes is in English, whatever the language of the book. The prompts are in `data/prompts.json`.
 

@@ -98,7 +98,8 @@ chats.
 
 A third choice, **Model for vectorization**, is optional and set to None. It takes an embedding model (for example `bge-m3`, with
 `ollama pull bge-m3`), which turns text into vectors; the model is tried when you choose it. With it, the analysis of a book
-keeps its passages and the scenes they belong to; the chat does not search them yet ([specification](specs/rag.md)).
+keeps its passages and turns them into vectors (about a minute and a half for a long novel with `bge-m3` on a 4 GB graphics
+card); the chat does not search them yet ([specification](specs/rag.md)).
 
 A model you add **fills the choices that are empty**: analysis and chat, or vectorization alone when it refuses to chat and can
 vectorize. While a choice is empty, the new model is tried once to know which; this can take a minute or two with a slow local

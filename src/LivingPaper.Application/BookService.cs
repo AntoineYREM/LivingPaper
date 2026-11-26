@@ -19,7 +19,8 @@ public sealed class BookService(
     AnalysisOptions options,
     IExampleCatalog? examples = null,
     IBookArchive? archive = null,
-    IPassageIndex? passages = null) : IDisposable
+    IPassageIndex? passages = null,
+    BookIndexer? indexer = null) : IDisposable
 {
     // The largest book file accepted: 20 MB.
     public const long MaxBookBytes = 20L * 1024 * 1024;
@@ -181,6 +182,7 @@ public sealed class BookService(
                 InputTokens = example.InputTokens,
                 CachedInputTokens = example.CachedInputTokens,
                 OutputTokens = example.OutputTokens,
+                EmbeddingTokens = example.EmbeddingTokens,
                 StartedAt = example.StartedAt,
                 FinishedAt = example.FinishedAt,
                 UpdatedAt = now,
@@ -345,6 +347,7 @@ public sealed class BookService(
             InputTokens = source.InputTokens,
             CachedInputTokens = source.CachedInputTokens,
             OutputTokens = source.OutputTokens,
+            EmbeddingTokens = source.EmbeddingTokens,
             StartedAt = source.StartedAt,
             UpdatedAt = source.UpdatedAt,
             FinishedAt = source.FinishedAt,
@@ -451,6 +454,74 @@ public sealed class BookService(
             await books.SaveAsync(book, cancellationToken).ConfigureAwait(false);
             scheduler.Enqueue(id);
             return true;
+        }
+        finally
+        {
+            _lock.Release();
+        }
+    }
+
+    // ---- The passages ----
+
+    // What the page of a book of the library says about its passages; null when there is nothing to say.
+    public async Task<PassagesView?> DescribePassagesAsync(Book book, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(book);
+        return indexer is null || book.Status != BookStatus.Done
+            ? null
+            : await indexer.DescribeAsync(book, scheduler.IsQueued(book.Id), cancellationToken).ConfigureAwait(false);
+    }
+
+    // Asks for the vectors of the passages kept for a book: after a failure, or because another model was chosen. False when
+    // there is nothing to do: no such book, no passages, vectors already up to date, or the book already in the queue.
+    public async Task<bool> ReindexAsync(BookId id, CancellationToken cancellationToken)
+    {
+        await _lock.WaitAsync(cancellationToken).ConfigureAwait(false);
+        try
+        {
+            var book = await books.GetAsync(id, cancellationToken).ConfigureAwait(false);
+            if (book is null || await DescribePassagesAsync(book, cancellationToken).ConfigureAwait(false)
+                    is not { State: PassagesState.NotIndexed or PassagesState.Outdated } view)
+            {
+                return false;
+            }
+
+            book.IndexErrorCode = null;
+            (book.IndexDone, book.IndexTotal) = (0, view.Passages);
+            await books.SaveAsync(book, cancellationToken).ConfigureAwait(false);
+            return scheduler.EnqueueIndexing(id);
+        }
+        finally
+        {
+            _lock.Release();
+        }
+    }
+
+    // The indexing asked by ReindexAsync, run by the background service. The book stays done meanwhile: it can be read, its
+    // sheets edited, its characters chatted with.
+    public async Task IndexAsync(BookId id, CancellationToken cancellationToken)
+    {
+        var book = await books.GetAsync(id, cancellationToken).ConfigureAwait(false);
+        if (indexer is null || book is not { Status: BookStatus.Done })
+        {
+            return;
+        }
+
+        await indexer.IndexAsync(
+            new BookKey(BookShelf.Library, id.ToString()), (change, token) => ChangeAsync(id, change, token), cancellationToken).ConfigureAwait(false);
+    }
+
+    // Changes the book as it is now, so that a sheet edited meanwhile is not written over.
+    private async Task ChangeAsync(BookId id, Action<Book> change, CancellationToken cancellationToken)
+    {
+        await _lock.WaitAsync(cancellationToken).ConfigureAwait(false);
+        try
+        {
+            if (await books.GetAsync(id, cancellationToken).ConfigureAwait(false) is { } book)
+            {
+                change(book);
+                await books.SaveAsync(book, cancellationToken).ConfigureAwait(false);
+            }
         }
         finally
         {

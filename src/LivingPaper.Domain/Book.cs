@@ -63,6 +63,17 @@ public sealed class Book(BookId id, string title, string fileName, DateTimeOffse
 
     public int OutputTokens { get; set; }
 
+    // The tokens of the vectors of the passages, when the provider reports them.
+    public int EmbeddingTokens { get; set; }
+
+    // While the passages are turned into vectors: how many are done, out of how many. Both 0 the rest of the time.
+    public int IndexDone { get; set; }
+
+    public int IndexTotal { get; set; }
+
+    // Why the passages have no vectors, as a stable key the interface translates. Null when there is nothing to report.
+    public string? IndexErrorCode { get; set; }
+
     public DateTimeOffset SentAt { get; set; } = sentAt;
 
     // When the analysis last started (a retry starts it again). With FinishedAt it gives the duration of the analysis.
@@ -85,6 +96,7 @@ public sealed class Book(BookId id, string title, string fileName, DateTimeOffse
         AddIfTooLong(violations, "storySummary", StorySummary, CharacterLimits.StorySummary);
         AddIfTooLong(violations, "plotSummary", PlotSummary, CharacterLimits.PlotSummary);
         AddIfTooLong(violations, "errorDetail", ErrorDetail, BookLimits.ErrorDetail);
+        AddIfTooLong(violations, "indexErrorCode", IndexErrorCode, BookLimits.ErrorDetail);
         AddIfTooLong(violations, "providerName", ProviderName, BookLimits.ProviderName);
         AddIfTooLong(violations, "model", Model, BookLimits.ModelName);
 

@@ -1,8 +1,8 @@
 # Specification: passages of the book in the chat (RAG)
 
 **Status:** validated on 26 November 2026. Implemented so far: the model for vectorization (section 3,
-PAPER-81), the cutting into passages (section 4, PAPER-82), the index (section 6, storage, PAPER-83) and the analysis
-(section 5, PAPER-84): the passages are saved without vectors and nothing searches them yet. Why: [decision 0011](../decisions/0011-passages-of-the-book-in-the-chat.md).
+PAPER-81), the cutting into passages (section 4, PAPER-82), the analysis (section 5, PAPER-84) and the index with its
+indexing (section 6, PAPER-83 and PAPER-85): nothing searches the passages yet. Why: [decision 0011](../decisions/0011-passages-of-the-book-in-the-chat.md).
 
 ## 1. Goal
 
@@ -124,7 +124,8 @@ Each passage that has a scene gets a header, and **header and text are vectorize
 ...text of the passage...
 ```
 
-The scene text of a header is cut to 200 characters. A passage covering several scenes lists them all.
+The scene text of a header is cut to 200 characters, on a whole word. A passage covering several scenes lists them all,
+separated by " / ", and each character once.
 
 ### Storage
 
@@ -146,7 +147,10 @@ The scene text of a header is cut to 200 characters. A passage covering several 
 | Model chosen, indexing fails | The analysis succeeds, passages are kept, the book offers **Retry indexing** |
 
 Passages are saved before the text of the book is deleted. Indexing is a step of the analysis, shown in its progress, and it
-keeps the heartbeat that detects an interrupted analysis. The embedding tokens are shown with the other tokens.
+keeps the heartbeat that detects an interrupted analysis. The embedding tokens are shown with the other tokens. Passages are
+sent 16 a call, and the vectors replace the earlier ones only when all are made. The page of a book says nothing about
+passages while no model for vectorization is chosen; otherwise it shows the state and, after a failure, its reason (the
+reason is kept in the book file). Model names are compared without regard to case or to a ":latest" suffix.
 
 ### Life of an index
 

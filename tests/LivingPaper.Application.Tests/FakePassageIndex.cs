@@ -29,14 +29,41 @@ internal sealed class FakePassageIndex : IPassageIndex
         }
 
         OnSave?.Invoke();
+        Vectors.Remove(book);
         _books[book] = passages;
         return Task.CompletedTask;
     }
 
-    public Task SaveVectorsAsync(BookKey book, string embeddingModel, IReadOnlyList<float[]> vectors, CancellationToken cancellationToken) =>
-        throw new NotSupportedException();
+    // The model and the vectors of the books that have some.
+    public Dictionary<BookKey, (string Model, IReadOnlyList<float[]> Vectors)> Vectors { get; } = [];
 
-    public Task<PassageIndexState?> GetStateAsync(BookKey book, CancellationToken cancellationToken) => throw new NotSupportedException();
+    public Task SaveVectorsAsync(BookKey book, string embeddingModel, IReadOnlyList<float[]> vectors, CancellationToken cancellationToken)
+    {
+        if (Failure is not null)
+        {
+            return Task.FromException(Failure);
+        }
+
+        if (vectors.Count != _books.GetValueOrDefault(book, []).Count || vectors.Any(vector => vector.Length != vectors[0].Length))
+        {
+            return Task.FromException(new ArgumentException("The vectors do not match the passages."));
+        }
+
+        Vectors[book] = (embeddingModel, vectors);
+        return Task.CompletedTask;
+    }
+
+    public Task<PassageIndexState?> GetStateAsync(BookKey book, CancellationToken cancellationToken)
+    {
+        if (!_books.TryGetValue(book, out var passages) || passages.Count == 0)
+        {
+            return Task.FromResult<PassageIndexState?>(null);
+        }
+
+        return Task.FromResult<PassageIndexState?>(Vectors.TryGetValue(book, out var kept)
+            ? new PassageIndexState(passages.Count, kept.Model, kept.Vectors[0].Length)
+            : new PassageIndexState(passages.Count, null, 0));
+    }
 
     public Task<IReadOnlyList<StoredPassage>> GetPassagesAsync(BookKey book, CancellationToken cancellationToken) =>
         Task.FromResult(_books.GetValueOrDefault(book, []));
@@ -52,6 +79,7 @@ internal sealed class FakePassageIndex : IPassageIndex
         }
 
         Deleted.Add(book);
+        Vectors.Remove(book);
         _books.Remove(book);
         return Task.CompletedTask;
     }

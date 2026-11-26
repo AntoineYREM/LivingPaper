@@ -1,0 +1,23 @@
+@model LivingPaper.Web.BookPresenter.PassagesPanel
+@* Where the passages of a book are, why they are not indexed, and the button that asks for it. Part of the page of the book,
+   and served alone (?handler=Passages) for the page to refresh it while they are indexed (wwwroot/js/book.js). *@
+<div data-state="@(Model.Active ? "active" : "stopped")">
+    <p>@Model.Text</p>
+    @if (Model.Active)
+    {
+        <progress class="progress" value="@Model.Done" max="@Model.Total" aria-label="@T.Format("book.passages.label", new { title = Model.Book.Title })">@Model.Progress</progress>
+        <p class="field__hint">@T["book.progress.leave"]</p>
+    }
+    @if (Model.Problem is not null)
+    {
+        <p class="entry__problem">@Model.Problem</p>
+    }
+    @if (Model.Action is not null)
+    {
+        <form class="form" method="post" asp-page="/Books/Index" asp-page-handler="Reindex" asp-route-id="@Model.Book.Id.ToString()">
+            <div class="form__actions">
+                <button type="submit" class="button">@Model.Action</button>
+            </div>
+        </form>
+    }
+</div>

@@ -9,7 +9,10 @@ public interface IAnalysisScheduler
     // Adds the book to the queue. False when it is already waiting or running.
     bool Enqueue(BookId bookId);
 
-    // True while the book is waiting in the queue or being analyzed by this application. A book that says it is waiting or
+    // The same queue for the indexing of the passages of a book already analyzed. False when the book is already in it.
+    bool EnqueueIndexing(BookId bookId);
+
+    // True while the book is waiting in the queue, being analyzed or being indexed by this application. A book that says it is waiting or
     // running but is not here was stopped by a restart: it is interrupted.
     bool IsQueued(BookId bookId);
 

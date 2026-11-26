@@ -6,18 +6,25 @@ using LivingPaper.Domain;
 namespace LivingPaper.Web;
 
 // Analyzes the books in the background, one at a time, so the user can leave the page (PAPER-8). It is the queue behind
-// IAnalysisScheduler: the pages put a book in it and the analysis runs here, in the same process.
+// IAnalysisScheduler: the pages put a book in it and the analysis runs here, in the same process. The same queue indexes
+// again the passages of a book already analyzed (PAPER-85).
 // At startup it finds again what a restart cut: a book that was running is interrupted (and can be retried), the books that
 // were waiting are queued again.
 // It logs ids, codes and counts, never a title, a text of the book or a key.
 public sealed partial class BookAnalysisWorker(IServiceProvider services, ILogger<BookAnalysisWorker> logger) : BackgroundService, IAnalysisScheduler
 {
-    private readonly Channel<(BookId Id, object Ticket)> _channel = Channel.CreateUnbounded<(BookId, object)>();
+    private readonly Channel<(BookId Id, Ticket Ticket)> _channel = Channel.CreateUnbounded<(BookId, Ticket)>();
 
     // The books waiting or running here, each with the ticket of its place in the queue. A book taken out and queued again
     // gets a new ticket: the old place, still in the channel, is then skipped, and the end of the old run does not take
     // the new place away.
-    private readonly ConcurrentDictionary<BookId, object> _queued = new();
+    private readonly ConcurrentDictionary<BookId, Ticket> _queued = new();
+
+    // A place in the queue, and what to do there. Compared by reference: two places are never the same one.
+    private sealed class Ticket(bool indexing)
+    {
+        public bool Indexing { get; } = indexing;
+    }
 
     private readonly TaskCompletionSource _recovered = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
@@ -28,11 +35,11 @@ public sealed partial class BookAnalysisWorker(IServiceProvider services, ILogge
     // it, or the recovery could take a book it has just created for one left over from a previous run.
     public Task Recovered => _recovered.Task;
 
-    public bool Enqueue(BookId bookId)
-    {
-        var ticket = new object();
-        return _queued.TryAdd(bookId, ticket) && _channel.Writer.TryWrite((bookId, ticket));
-    }
+    public bool Enqueue(BookId bookId) => Add(bookId, new Ticket(indexing: false));
+
+    public bool EnqueueIndexing(BookId bookId) => Add(bookId, new Ticket(indexing: true));
+
+    private bool Add(BookId bookId, Ticket ticket) => _queued.TryAdd(bookId, ticket) && _channel.Writer.TryWrite((bookId, ticket));
 
     public bool IsQueued(BookId bookId) => _queued.ContainsKey(bookId);
 
@@ -85,7 +92,7 @@ public sealed partial class BookAnalysisWorker(IServiceProvider services, ILogge
         }
     }
 
-    private async Task RunAsync(BookId id, object ticket, CancellationToken stoppingToken)
+    private async Task RunAsync(BookId id, Ticket ticket, CancellationToken stoppingToken)
     {
         using var stop = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken);
         var done = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -96,6 +103,14 @@ public sealed partial class BookAnalysisWorker(IServiceProvider services, ILogge
 
         try
         {
+            if (ticket.Indexing)
+            {
+                LogIndexingStarted(logger, id);
+                await services.GetRequiredService<BookService>().IndexAsync(id, stop.Token).ConfigureAwait(false);
+                LogIndexingFinished(logger, id);
+                return;
+            }
+
             LogStarted(logger, id);
             var failure = await services.GetRequiredService<BookAnalyzer>().AnalyzeAsync(id, stop.Token).ConfigureAwait(false);
             if (failure is null)
@@ -129,10 +144,17 @@ public sealed partial class BookAnalysisWorker(IServiceProvider services, ILogge
                 _current = null;
             }
 
-            _queued.TryRemove(new KeyValuePair<BookId, object>(id, ticket));
+            _queued.TryRemove(new KeyValuePair<BookId, Ticket>(id, ticket));
             done.TrySetResult();
         }
     }
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "The indexing of book {BookId} started.")]
+    private static partial void LogIndexingStarted(ILogger logger, BookId bookId);
+
+    // A failure is written on the book, not here.
+    [LoggerMessage(Level = LogLevel.Information, Message = "The indexing of book {BookId} ended.")]
+    private static partial void LogIndexingFinished(ILogger logger, BookId bookId);
 
     [LoggerMessage(Level = LogLevel.Information, Message = "The analysis of book {BookId} started.")]
     private static partial void LogStarted(ILogger logger, BookId bookId);

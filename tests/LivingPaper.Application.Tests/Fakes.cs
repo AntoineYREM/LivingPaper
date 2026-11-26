@@ -130,6 +130,9 @@ internal sealed class FakeEmbeddingModelFactory : IEmbeddingModelFactory
 
     public Exception? CreateFailure { get; set; }
 
+    // What a successful call reports.
+    public int TokensPerText { get; set; }
+
     public IEmbeddingModel Create(LlmProvider provider, bool retryPassingFailures = true)
     {
         if (CreateFailure is not null)
@@ -143,10 +146,12 @@ internal sealed class FakeEmbeddingModelFactory : IEmbeddingModelFactory
 
     private sealed class Model(FakeEmbeddingModelFactory owner) : IEmbeddingModel
     {
-        public Task<IReadOnlyList<float[]>> EmbedAsync(IReadOnlyList<string> texts, ChatUsageMeter? usage, CancellationToken cancellationToken)
+        public async Task<IReadOnlyList<float[]>> EmbedAsync(IReadOnlyList<string> texts, ChatUsageMeter? usage, CancellationToken cancellationToken)
         {
             owner.Sent.Add(texts);
-            return owner.Reply(texts, cancellationToken);
+            var vectors = await owner.Reply(texts, cancellationToken);
+            usage?.Add(owner.TokensPerText * texts.Count, 0, 0);
+            return vectors;
         }
     }
 }

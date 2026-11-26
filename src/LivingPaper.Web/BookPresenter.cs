@@ -24,6 +24,52 @@ public sealed class BookPresenter(BookService books, ITextLocalizer texts)
         bool Active,
         string Meta);
 
+    // The passages of a book as its page shows them. Progress: not null while they are indexed, and the page then refreshes
+    // by itself. Action: the words of the button that asks for the indexing, null when there is nothing to ask.
+    public sealed record PassagesPanel(Book Book, string Text, string? Problem, string? Action, string? Progress, int? Done, int? Total)
+    {
+        public bool Active => Progress is not null;
+    }
+
+    public PassagesPanel Describe(Book book, PassagesView view)
+    {
+        ArgumentNullException.ThrowIfNull(book);
+        ArgumentNullException.ThrowIfNull(view);
+        var problem = view.Failure is { } failure ? IndexProblem(failure) : null;
+        return view.State switch
+        {
+            PassagesState.Missing => new(book, texts["book.passages.missing"], problem, null, null, null, null),
+            PassagesState.NotIndexed => new(
+                book, texts["book.passages.pending"], problem, problem is null ? texts["book.passages.index"] : texts["book.passages.retry"], null, null, null),
+            PassagesState.Outdated => new(
+                book, texts.Format("book.passages.outdated", new { model = view.Model }), problem, texts["book.passages.reindex"], null, null, null),
+            PassagesState.Indexing => Indexing(book, view),
+            _ => new(book, Indexed(view), null, null, null, null, null),
+        };
+    }
+
+    private PassagesPanel Indexing(Book book, PassagesView view)
+    {
+        var total = view.Total > 0 ? view.Total : view.Passages;
+        var progress = texts.Format("books.progress.indexing", new { done = view.Done, total });
+        return new(book, progress, null, null, progress, view.Done, total);
+    }
+
+    private string Indexed(PassagesView view) =>
+        texts.Format(view.Passages == 1 ? "book.passages.indexedOne" : "book.passages.indexedOther", new { count = view.Passages, model = view.Model });
+
+    private string IndexProblem(IndexFailure failure) => failure switch
+    {
+        IndexFailure.NoModel => texts["index.failure.noModel"],
+        IndexFailure.ModelUnreachable => texts["index.failure.modelUnreachable"],
+        IndexFailure.KeyRefused => texts["index.failure.keyRefused"],
+        IndexFailure.CannotVectorize => texts["index.failure.cannotVectorize"],
+        IndexFailure.ProviderError => texts["index.failure.providerError"],
+        IndexFailure.InvalidReply => texts["index.failure.invalidReply"],
+        IndexFailure.IndexUnusable => texts["index.failure.indexUnusable"],
+        _ => texts["index.failure.unexpected"],
+    };
+
     public Row Describe(Book book)
     {
         ArgumentNullException.ThrowIfNull(book);
@@ -69,11 +115,23 @@ public sealed class BookPresenter(BookService books, ITextLocalizer texts)
             })));
         }
 
+        if (book.EmbeddingTokens > 0)
+        {
+            facts.Add((texts["books.embeddingTokens"], book.EmbeddingTokens.ToString("N0", culture)));
+        }
+
         return facts;
     }
 
     private Row Running(Book book)
     {
+        // The last step of an analysis: the passages are turned into vectors.
+        if (book.IndexTotal > 0)
+        {
+            var indexing = texts.Format("books.progress.indexing", new { done = book.IndexDone, total = book.IndexTotal });
+            return Make(book, "books.status.running", string.Empty, indexing, book.IndexDone, book.IndexTotal, Active: true);
+        }
+
         if (book.ProfilesTotal > 0)
         {
             var profiles = texts.Format("books.progress.profiles", new { done = book.ProfilesDone, total = book.ProfilesTotal });

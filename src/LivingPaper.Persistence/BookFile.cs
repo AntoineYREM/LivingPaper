@@ -69,6 +69,15 @@ internal sealed class BookFile
 
     public int OutputTokens { get; set; }
 
+    // Written only when there is something to say.
+    public int? EmbeddingTokens { get; set; }
+
+    public int? IndexDone { get; set; }
+
+    public int? IndexTotal { get; set; }
+
+    public string? IndexErrorCode { get; set; }
+
     public DateTimeOffset? SentAt { get; set; }
 
     public DateTimeOffset? StartedAt { get; set; }
@@ -104,6 +113,10 @@ internal sealed class BookFile
         InputTokens = book.InputTokens,
         CachedInputTokens = book.CachedInputTokens,
         OutputTokens = book.OutputTokens,
+        EmbeddingTokens = book.EmbeddingTokens > 0 ? book.EmbeddingTokens : null,
+        IndexDone = book.IndexDone > 0 ? book.IndexDone : null,
+        IndexTotal = book.IndexTotal > 0 ? book.IndexTotal : null,
+        IndexErrorCode = book.IndexErrorCode,
         SentAt = book.SentAt,
         StartedAt = book.StartedAt,
         UpdatedAt = book.UpdatedAt,
@@ -146,7 +159,7 @@ internal sealed class BookFile
             return null;
         }
 
-        if (new[] { PartsDone, PartsTotal, PartsSkipped, ProfilesDone, ProfilesTotal, StoryTry ?? 0, StoryTries ?? 0, InputTokens, CachedInputTokens, OutputTokens }.Any(value => value < 0)
+        if (new[] { PartsDone, PartsTotal, PartsSkipped, ProfilesDone, ProfilesTotal, StoryTry ?? 0, StoryTries ?? 0, InputTokens, CachedInputTokens, OutputTokens, EmbeddingTokens ?? 0, IndexDone ?? 0, IndexTotal ?? 0 }.Any(value => value < 0)
             || Characters.Any(character => character is null || character.Position < 1))
         {
             reason = "a number is out of range";
@@ -174,6 +187,10 @@ internal sealed class BookFile
             InputTokens = InputTokens,
             CachedInputTokens = CachedInputTokens,
             OutputTokens = OutputTokens,
+            EmbeddingTokens = EmbeddingTokens ?? 0,
+            IndexDone = IndexDone ?? 0,
+            IndexTotal = IndexTotal ?? 0,
+            IndexErrorCode = IndexErrorCode,
             StartedAt = StartedAt,
             UpdatedAt = UpdatedAt.Value,
             FinishedAt = FinishedAt,

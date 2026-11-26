@@ -34,7 +34,7 @@ decision records in `docs/decisions/`.
   according to the length of the book, with who is present in each scene), a short summary of its plot (300 to 500 words) and
   the 10 most important characters, each with a name, a short description and a personality profile (200 to 400 words). The
   characters know the whole story when they chat. With a model for vectorization, the passages of the book are kept with their
-  scenes (see `docs/specs/rag.md`).
+  scenes and turned into vectors; the page of the book shows their state, with retry and re-index (see `docs/specs/rag.md`).
 - "My library" page (books the user analyzed) and "Examples" page (read-only, public-domain books shipped
   already analyzed: they can be read without a key, chatting with their characters needs an LLM chosen for the chat).
 - Chat with a character: first person, short SMS-like replies, streamed. Conversations are not stored.

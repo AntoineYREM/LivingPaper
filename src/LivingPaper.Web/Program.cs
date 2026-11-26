@@ -85,6 +85,7 @@ builder.Services.AddScoped<BookPresenter>();
 // the settings. The pages talk to it through IAnalysisScheduler. ANALYSIS_PAGES_PER_PART and ANALYSIS_PARALLEL_CALLS tune it.
 builder.Services.AddSingleton(AnalysisSettings.Read(builder.Configuration));
 builder.Services.AddSingleton<IAnalysisStepStore>(new JsonAnalysisStepStore(Path.Combine(dataDirectory, "books")));
+builder.Services.AddSingleton<BookIndexer>();
 builder.Services.AddSingleton<BookAnalyzer>();
 builder.Services.AddSingleton<BookAnalysisWorker>();
 builder.Services.AddSingleton<IAnalysisScheduler>(services => services.GetRequiredService<BookAnalysisWorker>());

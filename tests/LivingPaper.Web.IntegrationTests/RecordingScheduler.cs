@@ -13,6 +13,20 @@ public sealed class RecordingScheduler : IAnalysisScheduler
 
     public bool Enqueue(BookId bookId) => _queued.TryAdd(bookId, true);
 
+    // The books queued to have their passages indexed.
+    public ConcurrentBag<BookId> Indexing { get; } = [];
+
+    public bool EnqueueIndexing(BookId bookId)
+    {
+        if (!Enqueue(bookId))
+        {
+            return false;
+        }
+
+        Indexing.Add(bookId);
+        return true;
+    }
+
     public bool IsQueued(BookId bookId) => _queued.ContainsKey(bookId);
 
     public Task CancelAsync(BookId bookId, CancellationToken cancellationToken)

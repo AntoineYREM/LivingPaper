@@ -64,7 +64,8 @@ Every port is faked in the tests: **no test calls a real AI provider.**
 - **Analysis** (background): read the book in parts, note the characters and the scenes of each part, merge the characters into
   the 10 most important, write one profile per character, a short summary, the story of the whole book scene by scene (which
   the characters know when they chat) and, from it, a short summary of the plot. With a model for vectorization, the parts are
-  read as numbered passages (`PassageCutter`) and the passages are saved with their scenes (`IPassageIndex`). Each step is saved, so a failure resumes where it stopped. At the end
+  read as numbered passages (`PassageCutter`), the passages are saved with their scenes (`IPassageIndex`) and turned into
+  vectors (`BookIndexer`, `IEmbeddingModel`). The same background queue indexes a book again when its page asks. Each step is saved, so a failure resumes where it stopped. At the end
   the stored text is deleted.
 - **Chat**: the browser sends the conversation (nothing is stored), the server checks it, builds the prompt from the saved sheet
   and the story of the book (`chat.story`, when the book has one) and streams the model's reply back as NDJSON.

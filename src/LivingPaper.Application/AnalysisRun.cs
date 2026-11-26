@@ -11,7 +11,8 @@ namespace LivingPaper.Application;
 //   3. a profile for each kept character, the summary of the book and the story of the book scene by scene, which the
 //      characters know when they chat (also a few at a time), then the short summary of the plot, written from the story.
 // When a model for vectorization is chosen, each part is read as numbered passages (PassageCutter), the model says which
-// passages each scene covers, and the passages are kept with their scenes before the text of the book is deleted.
+// passages each scene covers, and the passages are kept with their scenes before the text of the book is deleted, then
+// turned into vectors (BookIndexer). An indexing that fails does not fail the analysis.
 // Everything the model writes is cut to its limit; nothing the model writes is trusted to have the right shape.
 internal sealed class AnalysisRun(
     Book book,
@@ -23,7 +24,8 @@ internal sealed class AnalysisRun(
     IPromptProvider prompts,
     TimeProvider clock,
     AnalysisOptions options,
-    IPassageIndex? passageIndex = null) : IDisposable
+    IPassageIndex? passageIndex = null,
+    BookIndexer? indexer = null) : IDisposable
 {
     private readonly SemaphoreSlim _bookLock = new(1, 1);
     private readonly SemaphoreSlim _calls = new(Math.Max(1, options.MaxParallelCalls));
@@ -129,6 +131,8 @@ internal sealed class AnalysisRun(
                 current.ProfilesDone = 0;
                 current.ProfilesTotal = 0;
                 current.StoryTry = current.StoryTries = 0;
+                current.IndexDone = current.IndexTotal = 0;
+                current.IndexErrorCode = null;
             },
             cancellationToken).ConfigureAwait(false);
         await RunAllAsync(
@@ -411,6 +415,17 @@ internal sealed class AnalysisRun(
         catch (PassageIndexException)
         {
             span?.SetStatus(ActivityStatusCode.Error, nameof(PassageIndexException));
+            if (passages is not null)
+            {
+                await UpdateAsync(current => current.IndexErrorCode = nameof(IndexFailure.IndexUnusable), cancellationToken).ConfigureAwait(false);
+            }
+
+            return;
+        }
+
+        if (passages is not null && indexer is not null)
+        {
+            await indexer.IndexAsync(key, UpdateAsync, cancellationToken).ConfigureAwait(false);
         }
     }
 
