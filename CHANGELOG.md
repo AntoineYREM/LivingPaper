@@ -20,6 +20,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   vectorize. A choice already made is never replaced. A provider with no list of models now also accepts a model that only
   vectorizes.
 
+### Fixed
+
+- **Paragraphs of an EPUB** (PAPER-82): in many books, those of Project Gutenberg among them, every line of the file was read as a
+  paragraph, cutting sentences in two. A line break of the file is now a space, as in a browser; paragraphs, `<br>` and the other
+  blocks still start a new line. Books already analyzed do not change.
+
 ## [0.4.0] - 2026-11-23
 
 ### Fixed

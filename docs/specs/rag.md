@@ -1,6 +1,7 @@
 # Specification: passages of the book in the chat (RAG)
 
-**Status:** validated on 26 November 2026. Implemented so far: the model for vectorization (section 3, PAPER-81). Why: [decision 0011](../decisions/0011-passages-of-the-book-in-the-chat.md).
+**Status:** validated on 26 November 2026. Implemented so far: the model for vectorization (section 3,
+PAPER-81) and the cutting into passages (section 4, PAPER-82; nothing uses it yet). Why: [decision 0011](../decisions/0011-passages-of-the-book-in-the-chat.md).
 
 ## 1. Goal
 
@@ -58,10 +59,15 @@ case the chat works as today, with the full story.
 
 ## 4. Cutting the book into passages
 
-- Target about **1,500 characters**, never more than **2,000**.
-- Cut at the end of a **paragraph**, else of a **sentence**, else between two **words**. A PDF has lost its paragraphs at
-  extraction, so it is cut between sentences.
-- Each passage starts again with the **last sentence of the previous one** (about 200 characters).
+- Target about **1,500 characters**, never more than **2,000**, the repeated sentence included.
+- Cut at the end of a **paragraph**, else of a **sentence**, else between two **words** (a text with none of these, over
+  thousands of characters, is cut anywhere, never inside a character). A PDF has lost its paragraphs at extraction, so it is
+  cut between sentences. The point of a title or of an initial ("M. Bovary") does not end a sentence.
+- A paragraph is a real one: in an EPUB, a line break of the file itself is read as a space, as a browser does (many books
+  wrap their pages every 70 characters or so). This also changes the text the analysis reads, not its words.
+- Each passage starts again with the **last sentence of the previous one**; a sentence longer than **200 characters** is not
+  repeated whole, only its last words.
+- Each part of the analysis is cut on its own: a passage never straddles two parts. The sentence repeated crosses the limit.
 - Passages are numbered from the start of the book. The cut is deterministic: a retried analysis finds the same passages.
 - Boilerplate removed from the analysis (`BookBoilerplate`) is not cut into passages.
 
