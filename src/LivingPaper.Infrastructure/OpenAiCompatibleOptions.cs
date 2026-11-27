@@ -13,6 +13,18 @@ public sealed record OpenAiCompatibleOptions
     // Time without any new event while a reply is streaming. Each event starts the count again.
     public TimeSpan IdleTimeout { get; init; } = TimeSpan.FromMinutes(5);
 
+    // The limits of one reply, against a provider that would fill the memory or never end. They are far above any reply the
+    // application asks for (the longest, the story of a book, is about 24,000 characters); going over one is not retried.
+
+    // The longest line of the stream, in bytes: an event holds a few words.
+    public int MaxLineBytes { get; init; } = 1024 * 1024;
+
+    // The longest text of a whole reply, in characters.
+    public int MaxReplyLength { get; init; } = 1_000_000;
+
+    // The longest time from sending the request to the end of the reply, even when events keep coming.
+    public TimeSpan MaxReplyDuration { get; init; } = TimeSpan.FromMinutes(30);
+
     // A ceiling on the length of a reply ("max_tokens"), counting the tokens a model spends thinking. Null (the default) sends none. Some
     // providers, such as OpenRouter, set aside the cost of the longest possible reply before answering: with no ceiling, an expensive
     // model can be refused (HTTP 402) by a key that has a spending limit. Used by the evaluation tool; the site sends none.

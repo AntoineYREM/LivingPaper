@@ -16,6 +16,9 @@ public enum AnalysisFailure
     // The model's replies could not be read (not the JSON asked for, or empty) after several tries.
     InvalidReply,
 
+    // A reply of the model was far longer, in size or in time, than any reply asked for: reading it stopped.
+    ReplyTooLong,
+
     // The model's content filter refused a step that has no simpler version (the merge, a profile, the summary).
     ContentFiltered,
 

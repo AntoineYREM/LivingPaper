@@ -165,6 +165,7 @@
   "books.failure.modelUnreachable": "The language model could not be reached, or kept failing. Check the model in the settings, then retry.",
   "books.failure.modelRefused": "The provider refused the request (a wrong key or an unknown model). Check the model in the settings, then retry.",
   "books.failure.invalidReply": "The replies of the model could not be read after several tries. Retry, or choose another model.",
+  "books.failure.replyTooLong": "A reply of the model was too long, so it was stopped. Retry, or choose another model.",
   "books.failure.contentFiltered": "The content filter of the model refused a step of the analysis. Retry, or choose another model.",
   "books.failure.noCharacters": "No character was found in this book.",
   "books.failure.textMissing": "The text of this book is no longer stored. Delete it and send the book again.",
@@ -268,6 +269,7 @@
   "chat.failure.modelRefused": "The provider refused the request (a wrong key or an unknown model). Check the model in the settings.",
   "chat.failure.contentFiltered": "The content filter of the model stopped the reply. Try another message, or another model.",
   "chat.failure.invalidReply": "The reply of the model could not be read. Send your message again.",
+  "chat.failure.replyTooLong": "The reply of the model was too long, so it was stopped. Send your message again.",
   "chat.failure.promptFile": "The prompts file cannot be used. Fix data/prompts.json.",
   "chat.failure.unexpected": "The reply stopped because of an error of the application. Send your message again.",
 

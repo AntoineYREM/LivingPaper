@@ -202,6 +202,7 @@ public sealed class CharacterChatServiceTests : IDisposable
     [InlineData(ChatFailureKind.Http, 404, ChatFailure.ModelRefused)]
     [InlineData(ChatFailureKind.InvalidResponse, null, ChatFailure.InvalidReply)]
     [InlineData(ChatFailureKind.EmptyReply, null, ChatFailure.InvalidReply)]
+    [InlineData(ChatFailureKind.ReplyTooLong, null, ChatFailure.ReplyTooLong)]
     public async Task AFailureOfTheModel_AtTheStart_IsMappedToACode(ChatFailureKind kind, int? status, ChatFailure expected)
     {
         _models.FailAtStart = new ChatProviderException(kind, "the provider said: sk-chat-secret-key", status);

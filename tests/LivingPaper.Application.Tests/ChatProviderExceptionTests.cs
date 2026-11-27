@@ -32,6 +32,7 @@ public class ChatProviderExceptionTests
     [InlineData(ChatFailureKind.EmptyReply, true)]
     [InlineData(ChatFailureKind.InvalidResponse, false)]
     [InlineData(ChatFailureKind.ContentFiltered, false)]
+    [InlineData(ChatFailureKind.ReplyTooLong, false)]
     public void IsTransient_ForOtherFailures_FollowsTheRetryRules(ChatFailureKind kind, bool expected)
     {
         new ChatProviderException(kind, "message").IsTransient.ShouldBe(expected);

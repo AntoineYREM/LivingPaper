@@ -151,6 +151,8 @@ Everything the analysis writes is in English, whatever the language of the book.
   succeeded is saved in `data/books/{id}.steps.json`, so the retry resumes where it stopped and does not pay for the
   steps already done. A reply that is not the JSON asked for is asked again twice, then the analysis stops with a clear
   error: nothing is invented to hide it.
+- **A reply far too long** is stopped, and the analysis with it: a line of the stream over 1 MB, a text over 1,000,000
+  characters, or a reply that takes more than 30 minutes. It is not asked again by itself. The same limits apply to the chat.
 - **A restart** loses nothing: the books that were waiting start again by themselves, and a book that was running is shown
   as interrupted, with Retry. A running analysis that has not moved for 10 minutes is shown as interrupted too.
 - **The content filter** of some providers refuses passages of dark books. That part is read again with simpler notes; if
@@ -181,7 +183,7 @@ From a character's sheet or card, **Chat with ...** opens a conversation with th
 chose for the chat in the settings. The character speaks in the first person, in short messages like text messages (no
 described gestures, no formatting), stays in its role, never says it is an AI, and **answers in the language of your last
 message**. The reply is shown as it is written. If the model fails, the error is shown in the window and your message goes back
-into the field.
+into the field. A reply far too long is stopped in the same way (the limits are those of the analysis, above).
 
 - **Nothing is stored.** The conversation lives in the page and disappears when you leave it. The browser sends the whole
   conversation with each message; only the last 20 messages go to the model.
