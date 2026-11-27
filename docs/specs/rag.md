@@ -220,8 +220,8 @@ books and two models: no clear difference of grades between 3 and 5, for a promp
 
 Since PAPER-94 the `recent` mode makes two searches and gives **4** passages: with the recent messages as one text, a new
 subject found its passage in 11 of 60 cases, against 46 with the last message alone, which in turn found nothing for short
-follow-ups such as "And on the way home?" ([experiments](../experiments/admitting-not-knowing.md)). The grades of the
-replies were not measured.
+follow-ups such as "And on the way home?". Over 81 questions, the right replies went from 29 to 63, mostly on new subjects;
+the 7 short follow-ups lost 2 ([experiments](../experiments/admitting-not-knowing.md)).
 
 ## 8. Export and import
 

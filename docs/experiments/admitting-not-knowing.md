@@ -113,8 +113,33 @@ the recent messages only, 4 passages found 15 of the 60 new subjects and 3 of th
 The distance of the closest passage does not tell a search that failed: median 0.378 when the right passage was found, 0.374
 when it was not (100 searches of the runs of the day).
 
+## The replies with 1 recent + 3 last
+
+**Decision of the owner: kept** (27 November 2026, PAPER-94).
+
+- **Questions:** the 60 new subjects, now `evals/alice/new-subject.json`, `evals/cyrano/new-subject.json` and
+  `evals/bovary/new-subject-en.json`; the 7 short follow-ups; the 14 long ones.
+- **Before:** the search of the recent messages, 3 passages (the tool built at the commit of PAPER-92; for the long follow-ups,
+  the runs above). **After:** 1 recent + 3 last. Same character (ERNIE), judge, prompts and day. One try a question.
+
+| Replies | New subject, before | after | Short, before | after | Long, before | after | **All 81, before** | **after** |
+|---|---|---|---|---|---|---|---|---|
+| Right (5 and 4) | 19 | 50 | 5 | 3 | 5 | 10 | **29** | **63** |
+| Partly right (3) | 5 | 2 | 0 | 1 | 2 | 0 | **7** | **3** |
+| Without the fact (2) | 29 | 6 | 2 | 1 | 4 | 3 | **35** | **10** |
+| False (1) | 7 | 2 | 0 | 2 | 3 | 1 | **10** | **5** |
+| Average | 2.85 | 4.30 | 3.57 | 2.71 | 2.93 | 3.86 | | |
+| Difference (95% interval) | +1.45 (+1.03 to +1.87) | | -0.86 (-1.85 to +0.13) | | +0.93 (-0.04 to +1.90) | | | |
+| Prompt, average tokens | 3,266 | 3,722 | 3,273 | 3,865 | 3,413 | 3,892 | | |
+
+- **New subject:** a gain beyond chance. **Long follow-ups:** a probable gain, not shown.
+- **Short follow-ups got worse** (4 of 7 lower), within what chance can do on 7 questions. In the two cases looked at, the
+  answer had come from the 2nd or 3rd passage of the recent messages, no longer given: the passage with the cigar case, and the
+  one where Charles calls Emma.
+- The median time of a reply stayed between 2.0 and 2.8 s.
+- **Not tried:** 3 recent + 3 last, which would keep every passage of before.
+
 ## Not measured
 
-- The grades of the replies with any of the combined searches.
 - Another model than ERNIE for the character, and a lesser-known book, where the model knows less by itself.
 - The role with passages.

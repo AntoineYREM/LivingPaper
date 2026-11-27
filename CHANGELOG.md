@@ -12,7 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - **A new subject is no longer drowned by the earlier messages** (PAPER-94): the chat makes two searches of the passages,
   one with the recent messages for one passage, one with the last message for three. `RAG_PASSAGES` is now 4 by default. By
   the search alone, the expected passage of a new subject was found in 11 of 60 cases with the recent messages only, and in
-  46 with the last message only ([experiments](docs/experiments/admitting-not-knowing.md)).
+  46 with the last message only. Over 81 questions, right replies went from 29 to 63; short follow-ups did a little worse
+  (5 to 3 of 7) ([experiments](docs/experiments/admitting-not-knowing.md)).
 - **A character that does not find the answer says so** (PAPER-92): asked for a fact of its story that it was not given, it
   now says in its own voice that it does not remember and asks for a more precise question, instead of making one up. The
   default `chat.system` changes (an unedited one is updated). The evaluation tool counts the replies of each grade. Measured: fewer invented answers, and fewer right ones with the

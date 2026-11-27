@@ -1,0 +1,389 @@
+{
+  "schemaVersion": 1,
+  "dataset": "madame-bovary-en-new-subjects",
+  "description": "A change of subject in a conversation with Emma Bovary: each factual question of evals/bovary/factual-en.json, after the previous question of that file (the last one before the first) and the reply ERNIE 5.5 Flash gave to it on 27 November 2026 (PAPER-94).",
+  "bookId": "madame-bovary",
+  "character": "Emma Bovary",
+  "items": [
+    {
+      "id": "bovary-en-new-01",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "What were the first words Charles read aloud from the letter you had left, after you took the poison?"
+        },
+        {
+          "role": "assistant",
+          "content": "\"Accuse no one.\" That is what he read, poor fool — and then he could only cry out that I was poisoned."
+        }
+      ],
+      "input": "A notary ran away with money he was holding. Whose property was it, and what did the family then find out about that fortune?",
+      "expectedOutput": "That of the widow Dubuc (Heloise), Charles's first wife; it proved far smaller than had been claimed: the house was mortgaged to the foundations.",
+      "passageQuotes": [
+        "the holder of the widow Dubuc's property"
+      ]
+    },
+    {
+      "id": "bovary-en-new-02",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "A notary ran away with money he was holding. Whose property was it, and what did the family then find out about that fortune?"
+        },
+        {
+          "role": "assistant",
+          "content": "It was the widow Dubuc's property, that tiresome first wife of Charles's, whose fortune everyone praised so loudly. And when they went into it, they found the house at Dieppe eaten up with mortgages to its foundations, her share in the boat worth a mere thousand crowns, and the rest — God only knew. She had lied, the poor creature, about all of it."
+        }
+      ],
+      "input": "In the early days at Tostes, when Charles rode away in the morning, what did you do from your window?",
+      "expectedOutput": "She talked to him from above and blew at him a scrap of flower or leaf that she picked with her mouth.",
+      "passageQuotes": [
+        "some scrap of flower or leaf that she blew out at him"
+      ]
+    },
+    {
+      "id": "bovary-en-new-03",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "In the early days at Tostes, when Charles rode away in the morning, what did you do from your window?"
+        },
+        {
+          "role": "assistant",
+          "content": "I leaned on the sill, between my two pots of geranium, in my dressing gown, and I picked some scrap of flower or leaf and blew it down to him while he buckled his spurs, his foot on the mounting stone. He threw me a kiss from horseback; I answered with a nod and shut the window.\n\nIt amused me then, I suppose. It is astonishing how quickly a gesture worn thin becomes only another habit."
+        }
+      ],
+      "input": "At the dinner at La Vaubyessard, which fruits did you see or taste for the first time?",
+      "expectedOutput": "Pomegranates (never seen) and pineapples (never tasted).",
+      "passageQuotes": [
+        "She had never seen pomegranates nor tasted pineapples"
+      ]
+    },
+    {
+      "id": "bovary-en-new-04",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "At the dinner at La Vaubyessard, which fruits did you see or taste for the first time?"
+        },
+        {
+          "role": "assistant",
+          "content": "Ah, the fruit — I remember the baskets of it piled on moss, beautiful as a painting, and I did not know the names of half of what was there. Ask me something else, for the names escape me; but oh, that table, those candles, that crystal — I could have wept for the beauty of it."
+        }
+      ],
+      "input": "At Tostes you used to see a man walking up and down who lamented his wasted calling. What was his trade, and where did he dream of having a shop?",
+      "expectedOutput": "The hairdresser, who dreamed of a shop in a big town such as Rouen, overlooking the harbour near the theatre.",
+      "passageQuotes": [
+        "the hairdresser, lamented his wasted calling"
+      ]
+    },
+    {
+      "id": "bovary-en-new-05",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "At Tostes you used to see a man walking up and down who lamented his wasted calling. What was his trade, and where did he dream of having a shop?"
+        },
+        {
+          "role": "assistant",
+          "content": "A man pacing, mourning a calling he never followed? I don't remember him from Tostes — what stays with me there is the eternal garden, the dusty road, and my poor greyhound yelping after butterflies. Tell me more exactly whom you mean, and where he was walking."
+        }
+      ],
+      "input": "On your first evening at Yonville, who was the fair-haired young man who dined with you, and where did he work?",
+      "expectedOutput": "Leon Dupuis, a clerk at the notary's, Monsieur Guillaumin.",
+      "passageQuotes": [
+        "he was a clerk at the notary's, Monsieur Guillaumin"
+      ]
+    },
+    {
+      "id": "bovary-en-new-06",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "On your first evening at Yonville, who was the fair-haired young man who dined with you, and where did he work?"
+        },
+        {
+          "role": "assistant",
+          "content": "That was Léon Dupuis, the clerk — he worked for Monsieur Guillaumin, the notary here. He lodged above at the chemist's, in a little room on the second floor looking onto the Place. He was the only one at that table who spoke of things worth hearing."
+        }
+      ],
+      "input": "When you left the house of your baby's nurse, what did she ask you to give her?",
+      "expectedOutput": "Soap, and a pound of ground coffee (then something for her husband too).",
+      "passageQuotes": [
+        "give me just a pound of ground coffee"
+      ]
+    },
+    {
+      "id": "bovary-en-new-07",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "When you left the house of your baby's nurse, what did she ask you to give her?"
+        },
+        {
+          "role": "assistant",
+          "content": "Soap, from Camus the grocer, and a pound of ground coffee — and brandy too, I think, for her chest, or her husband's, or some wound or other. All that for the trouble of pushing a child at me that was sick over its own collar. I gave in, of course; one must, or be pestered to death behind an elm tree."
+        }
+      ],
+      "input": "When you were playing the virtuous wife and hating Charles for it, what would you have liked him to do to you, and why?",
+      "expectedOutput": "To beat her, so that she might have a better right to hate him and take revenge.",
+      "passageQuotes": [
+        "She would have liked Charles to beat her"
+      ]
+    },
+    {
+      "id": "bovary-en-new-08",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "When you were playing the virtuous wife and hating Charles for it, what would you have liked him to do to you, and why?"
+        },
+        {
+          "role": "assistant",
+          "content": "I wanted him to strike me — yes, to beat me, so that I might have had the right to hate him at last, and something to avenge. Anything would have been better than that placid certainty of his that he was making me happy."
+        }
+      ],
+      "input": "In your restless days you claimed you could do something, and Charles dared you. What was it, and did you do it?",
+      "expectedOutput": "Drink a large glass of brandy; she drank it to the last drop.",
+      "passageQuotes": [
+        "she could drink off a large glass of brandy"
+      ]
+    },
+    {
+      "id": "bovary-en-new-09",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "In your restless days you claimed you could do something, and Charles dared you. What was it, and did you do it?"
+        },
+        {
+          "role": "assistant",
+          "content": "A claim of mine, and Charles daring me? He never dared anything in his life, the poor man — but no, I don't recall it. Tell me more precisely what you mean and I'll see if it comes back to me."
+        }
+      ],
+      "input": "At the agricultural show, who caused confusion by running back and forth to fetch chairs from the church?",
+      "expectedOutput": "Lestiboudois.",
+      "passageQuotes": [
+        "Lestiboudois had brought thither all those that he had moved from the field"
+      ]
+    },
+    {
+      "id": "bovary-en-new-10",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "At the agricultural show, who caused confusion by running back and forth to fetch chairs from the church?"
+        },
+        {
+          "role": "assistant",
+          "content": "Lestiboudois, the gravedigger — he had thought up that little trade of his, hauling the church chairs about so the whole crowd was pushing and shoving over them. I remember he was so buried under the pile that you could see nothing of him but the tips of his wooden shoes. A man who sells incense-stinking straw to hot peasants, and calls it a fine day's work."
+        }
+      ],
+      "input": "What finally decided you to go out riding with Monsieur Boulanger?",
+      "expectedOutput": "The riding-habit that Charles told her to order.",
+      "passageQuotes": [
+        "The riding-habit decided her"
+      ]
+    },
+    {
+      "id": "bovary-en-new-11",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "What finally decided you to go out riding with Monsieur Boulanger?"
+        },
+        {
+          "role": "assistant",
+          "content": "Oh, the habit — the riding habit. Charles said I was to order one, and the moment that was settled, everything else was settled with it. It is absurd, is it not, that a bit of cloth should decide a thing like that... but there, I could not go riding in rags, and I could not bear to be seen wanting."
+        }
+      ],
+      "input": "Whose book did Charles send for to Rouen to study the operation on the club-foot?",
+      "expectedOutput": "Doctor Duval's volume.",
+      "passageQuotes": [
+        "He sent to Rouen for Dr. Duval's volume"
+      ]
+    },
+    {
+      "id": "bovary-en-new-12",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "Whose book did Charles send for to Rouen to study the operation on the club-foot?"
+        },
+        {
+          "role": "assistant",
+          "content": "Dr. Duval's, if I recall — Charles sent all the way to Rouen for that volume and pored over it every evening, holding his head in his hands. As if a book could make him into something more than he is."
+        }
+      ],
+      "input": "When Lheureux pressed you to pay a bill, whose payment arrived just then, and what was in it?",
+      "expectedOutput": "Monsieur Derozeray's account: fifteen napoleons, which she kept.",
+      "passageQuotes": [
+        "It contained fifteen napoleons"
+      ]
+    },
+    {
+      "id": "bovary-en-new-13",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "When Lheureux pressed you to pay a bill, whose payment arrived just then, and what was in it?"
+        },
+        {
+          "role": "assistant",
+          "content": "Ah, that little blue roll — it came from Monsieur Derozeray, Charles's patient, his yearly account. Fifteen napoleons inside, gold I flung to the back of my drawer before Charles could see. A small fortune, and gone in a breath, as everything always is."
+        }
+      ],
+      "input": "In the attic, with Rodolphe's letter, what humming did you hear from below, and who was making it?",
+      "expectedOutput": "Binet working at his lathe.",
+      "passageQuotes": [
+        "It was Binet turning"
+      ]
+    },
+    {
+      "id": "bovary-en-new-14",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "In the attic, with Rodolphe's letter, what humming did you hear from below, and who was making it?"
+        },
+        {
+          "role": "assistant",
+          "content": "That dreadful humming, with its strident little modulations — it was Binet, down at the corner, turning away at his lathe. It never ceased, that sound, like an angry voice calling me... oh, I can hear it still."
+        }
+      ],
+      "input": "Homais urged Charles to take you to the theatre at Rouen: which singer was to give only one performance?",
+      "expectedOutput": "Lagardy.",
+      "passageQuotes": [
+        "Lagardy is only going to give one performance"
+      ]
+    },
+    {
+      "id": "bovary-en-new-15",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "Homais urged Charles to take you to the theatre at Rouen: which singer was to give only one performance?"
+        },
+        {
+          "role": "assistant",
+          "content": "Lagardy — that was the name Homais kept rolling on his tongue, with all his talk of England and the high salary. One performance only, he said, as if the whole world would be at Rouen to hear him. I remember thinking I would rather have seen him than half the people I knew."
+        }
+      ],
+      "input": "When you met Leon again in Rouen, he recalled a day when he followed you. What were you wearing on your head?",
+      "expectedOutput": "A bonnet with small blue flowers.",
+      "passageQuotes": [
+        "you were wearing a bonnet with small blue flowers"
+      ]
+    },
+    {
+      "id": "bovary-en-new-16",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "When you met Leon again in Rouen, he recalled a day when he followed you. What were you wearing on your head?"
+        },
+        {
+          "role": "assistant",
+          "content": "A bonnet with little blue flowers on it — he remembered even that, standing there on the last stair. It is strange, the things a man keeps and the things he forgets."
+        }
+      ],
+      "input": "When Charles noticed the bouquet of violets after your return, where did you tell him it came from?",
+      "expectedOutput": "That she had just bought it from a beggar.",
+      "passageQuotes": [
+        "bouquet I bought just now from a beggar"
+      ]
+    },
+    {
+      "id": "bovary-en-new-17",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "When Charles noticed the bouquet of violets after your return, where did you tell him it came from?"
+        },
+        {
+          "role": "assistant",
+          "content": "A beggar. I told him I had bought it just now from a beggar, and took it quickly from his hand before he could go pressing his wet eyes into it."
+        }
+      ],
+      "input": "On the way back from Rouen, what did Hivert do to the blind man who clung to the coach?",
+      "expectedOutput": "He gave him sharp cuts with his whip, and the man fell back into the mud with a yell.",
+      "passageQuotes": [
+        "gave the blind man sharp cuts with his whip"
+      ]
+    },
+    {
+      "id": "bovary-en-new-18",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "On the way back from Rouen, what did Hivert do to the blind man who clung to the coach?"
+        },
+        {
+          "role": "assistant",
+          "content": "Hivert cut at him with his whip until the thong fell across his wounds, and the poor creature dropped back into the mud with a horrible cry. Everyone else simply slept on, swaying with the jolting, as though nothing had happened. I shivered in my clothes with my feet turning to ice — but that was my own misery, not his."
+        }
+      ],
+      "input": "A stranger brought you a bill for seven hundred francs that you had signed. To whom had Lheureux passed it?",
+      "expectedOutput": "To Vincart.",
+      "passageQuotes": [
+        "had paid away to Vincart"
+      ]
+    },
+    {
+      "id": "bovary-en-new-19",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "A stranger brought you a bill for seven hundred francs that you had signed. To whom had Lheureux passed it?"
+        },
+        {
+          "role": "assistant",
+          "content": "To Vincart, that man! Lheureux had passed it on to him, for all his fine promises. And then that stamped paper came, with the bailiff's name on it, and I near fainted. Ah, the wretch—we shall see, we shall see."
+        }
+      ],
+      "input": "On a ride home in the Hirondelle, what did you throw to the blind man, and what was it to you?",
+      "expectedOutput": "A five-franc piece, which was all the money she had.",
+      "passageQuotes": [
+        "threw him over her shoulder a five-franc piece"
+      ]
+    },
+    {
+      "id": "bovary-en-new-20",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "On a ride home in the Hirondelle, what did you throw to the blind man, and what was it to you?"
+        },
+        {
+          "role": "assistant",
+          "content": "A five-franc piece — the whole of my fortune, and I flung it over my shoulder as if it were nothing. It seemed very fine to me, throwing it away like that; disgust on one side, and on the other a sort of giddy pleasure, as though squandering everything were the only grand gesture left to me."
+        }
+      ],
+      "input": "What were the first words Charles read aloud from the letter you had left, after you took the poison?",
+      "expectedOutput": "\"Accuse no one.\"",
+      "passageQuotes": [
+        "Accuse no one"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,389 @@
+{
+  "schemaVersion": 1,
+  "dataset": "cyrano-new-subjects",
+  "description": "A change of subject in a conversation with Cyrano de Bergerac: each factual question of evals/cyrano/factual.json, after the previous question of that file (the last one before the first) and the reply ERNIE 5.5 Flash gave to it on 27 November 2026 (PAPER-94).",
+  "bookId": "cyrano-de-bergerac",
+  "character": "Cyrano de Bergerac",
+  "items": [
+    {
+      "id": "cyrano-new-01",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "Near the end, what did Ragueneau say Moliere had taken from you, and what did you answer?"
+        },
+        {
+          "role": "assistant",
+          "content": "A whole scene, he swore it—the famous one, \"Que diable allait-il faire dans cette galère?\"—lifted clean out of my play and set to roaring laughter in another man's comedy.\n\nAnd I told him Moliere did well. What was my life but the prompter's, whispering in the shadow while another mounts the ladder to Love and Fame? I pay my tribute gladly—to Moliere's genius, and to Christian's fair face."
+        }
+      ],
+      "input": "In which theatre did the evening begin, the one where you stopped Montfleury?",
+      "expectedOutput": "The Hotel de Bourgogne (the Burgundy Hotel).",
+      "passageQuotes": [
+        "in the Burgundy Hotel"
+      ]
+    },
+    {
+      "id": "cyrano-new-02",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "In which theatre did the evening begin, the one where you stopped Montfleury?"
+        },
+        {
+          "role": "assistant",
+          "content": "The Hôtel de Bourgogne, where else? I swept in there and swept Montfleury off the boards before he could bleat his first line! A fine evening's work, that."
+        }
+      ],
+      "input": "Before you appeared, what did Ragueneau wager against the marquis who said you would not come?",
+      "expectedOutput": "A fowl a la Ragueneau, wagered that Cyrano would come.",
+      "passageQuotes": [
+        "I wager a fowl"
+      ]
+    },
+    {
+      "id": "cyrano-new-03",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "Before you appeared, what did Ragueneau wager against the marquis who said you would not come?"
+        },
+        {
+          "role": "assistant",
+          "content": "A wager of Ragueneau's, you say? Faith, I remember only the custards and cream-puffs he paid for his seat that night — the marquis and his bet have slipped clean out of my head. Ask me a sharper question and I'll answer you true."
+        }
+      ],
+      "input": "When the pit grew noisy and you ordered silence, whom did you challenge?",
+      "expectedOutput": "The whole pit collectively, whose names he offered to write down.",
+      "passageQuotes": [
+        "And challenge the whole pit collectively"
+      ]
+    },
+    {
+      "id": "cyrano-new-04",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "When the pit grew noisy and you ordered silence, whom did you challenge?"
+        },
+        {
+          "role": "assistant",
+          "content": "Valvert! That painted popinjay De Guiche would have sold Roxane to — I crossed swords with him while I rhymed a ballade, and punctuated the last line with a touch of steel. The pit may roar like a barn full of geese; I have never yet lost my voice over it."
+        }
+      ],
+      "input": "What did you say you would compose while fencing with the Viscount?",
+      "expectedOutput": "A ballade, made up on the spot.",
+      "passageQuotes": [
+        "While we fence, presto! all extempore"
+      ]
+    },
+    {
+      "id": "cyrano-new-05",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "What did you say you would compose while fencing with the Viscount?"
+        },
+        {
+          "role": "assistant",
+          "content": "A ballade, sir — all extempore, rhyme and thrust together! And I kept my word: the envoi finished, and my point finished him."
+        }
+      ],
+      "input": "When the duenna asked where Roxane could see you in secret, which place did you name, and at what hour?",
+      "expectedOutput": "Ragueneau's pastry-house (in the Rue Saint-Honore), at seven.",
+      "passageQuotes": [
+        "pastry-house of Ragueneau"
+      ]
+    },
+    {
+      "id": "cyrano-new-06",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "When the duenna asked where Roxane could see you in secret, which place did you name, and at what hour?"
+        },
+        {
+          "role": "assistant",
+          "content": "Ragueneau's pastry-shop, where the tarts cool and the paste rises — that much I remember, for I cooled my heels there till the sugar went stale.\n\nBut the hour the duenna fixed, and the very words of her asking? There my memory is a sieve, and I'll not invent a number to gild it. Ask me more closely, cousin of my wit, and I'll answer what I truly hold."
+        }
+      ],
+      "input": "What was Lise, Ragueneau's wife, doing with the verses of the poets who came to the shop?",
+      "expectedOutput": "She turned them into paper bags to wrap the pastries.",
+      "passageQuotes": [
+        "the sole thing that your wretched scribblers of halting lines leave behind them"
+      ]
+    },
+    {
+      "id": "cyrano-new-07",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "What was Lise, Ragueneau's wife, doing with the verses of the poets who came to the shop?"
+        },
+        {
+          "role": "assistant",
+          "content": "Ha! She used them as bags for the cakes — my divine verses, buttered and handed out warm to the first child through the door. She called the poets a swarm of lazy grasshoppers and me a groveling ant for keeping them company. I bought back one sonnet for six pies, and it came home smelling of butter still."
+        }
+      ],
+      "input": "How did you get rid of Roxane's duenna to be alone with Roxane in the pastry shop?",
+      "expectedOutput": "He filled paper bags with cream cakes and sent her to eat them in the street, not to come back before the last crumb.",
+      "passageQuotes": [
+        "And come not back till the very last crumb be eaten"
+      ]
+    },
+    {
+      "id": "cyrano-new-08",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "How did you get rid of Roxane's duenna to be alone with Roxane in the pastry shop?"
+        },
+        {
+          "role": "assistant",
+          "content": "I bought her, cousin! I loaded her arms with paper bags — sonnets of Beuserade stuffed with cream cakes, a Saint Amant hollowed out for little puffs, Chapelain's verses gliding with hot ones — then out the door with her, and not a crumb back until the last is eaten! A duenna has a sweet tooth, and a poet who cannot pay in coin pays in rhyme."
+        }
+      ],
+      "input": "Who sent Monsieur de Guiche to express admiration for your exploit?",
+      "expectedOutput": "The Marshal of Gassion.",
+      "passageQuotes": [
+        "He comes from the Marshal of Gassion"
+      ]
+    },
+    {
+      "id": "cyrano-new-09",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "Who sent Monsieur de Guiche to express admiration for your exploit?"
+        },
+        {
+          "role": "assistant",
+          "content": "The Marshal of Gassion, they told me — Cuigy announced it as De Guiche came in bowing his compliments. As if a field marshal's praise could warm a Gascon who slept in the open all night! But go on, ask what you will."
+        }
+      ],
+      "input": "What did Carbon answer when Christian asked what to do with Southerners who swagger?",
+      "expectedOutput": "To give them proof that one may be a Northerner and yet brave.",
+      "passageQuotes": [
+        "That one may be a Northerner, yet brave"
+      ]
+    },
+    {
+      "id": "cyrano-new-10",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "What did Carbon answer when Christian asked what to do with Southerners who swagger?"
+        },
+        {
+          "role": "assistant",
+          "content": "I was there, cousin — Carbon looked him up and down like a horse at market and said: give them proof that one may be a Northerner, yet brave. Then he turned his back, which is a whole second lesson in itself."
+        }
+      ],
+      "input": "Where were Roxane and her duenna about to go when you came to serenade her, and what was to be discussed there?",
+      "expectedOutput": "Opposite, to Clomire's house, to hear a discourse on the Tender Passion.",
+      "passageQuotes": [
+        "they read a discourse on the Tender Passion"
+      ]
+    },
+    {
+      "id": "cyrano-new-11",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "Where were Roxane and her duenna about to go when you came to serenade her, and what was to be discussed there?"
+        },
+        {
+          "role": "assistant",
+          "content": "To Clomire's house, just opposite — where all the precious ladies and the poets were gathered, and where they were to read a discourse upon the Tender Passion! And there I came, singing, with my two lute-scrapers won from D'Assoucy at a wager — a fine noise to escort a lecture on love, was it not?"
+        }
+      ],
+      "input": "When Christian tried to speak to Roxane on his own, what did Roxane complain he gave her instead of cream?",
+      "expectedOutput": "Gruel: he could only say that he loved her, without varying it.",
+      "passageQuotes": [
+        "I hoped for cream,—you give me gruel"
+      ]
+    },
+    {
+      "id": "cyrano-new-12",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "When Christian tried to speak to Roxane on his own, what did Roxane complain he gave her instead of cream?"
+        },
+        {
+          "role": "assistant",
+          "content": "Gruel, said she—thin, pale gruel, when her mouth had been promised cream! And the poor boy had nothing in him but “I love you,” over and over, like a parrot with one word.\n\nAh, I remember it well: I stood behind that garden wall and heard it, and my heart bled for him—for that eloquence was mine, and he had sent me away."
+        }
+      ],
+      "input": "While Roxane was on her balcony, who came by looking at every door, and whom was he seeking?",
+      "expectedOutput": "A Capuchin friar with a lantern, looking for the house of Madame Madeleine Robin (Roxane).",
+      "passageQuotes": [
+        "Enter a capuchin friar, with a lantern"
+      ]
+    },
+    {
+      "id": "cyrano-new-13",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "While Roxane was on her balcony, who came by looking at every door, and whom was he seeking?"
+        },
+        {
+          "role": "assistant",
+          "content": "A balcony, Roxane above, and a man peering at every door — my memory balks at that detail, monsieur, and I will not invent a name to seem clever. Ask me more precisely: which street, which hour, and I shall tell you plainly if it was mine to see."
+        }
+      ],
+      "input": "To hold De Guiche back in front of Roxane's house, what did you pretend had happened to you?",
+      "expectedOutput": "That he had just fallen from the sky (from the moon) and travelled among the planets.",
+      "passageQuotes": [
+        "Covered with ether,—accident of travel"
+      ]
+    },
+    {
+      "id": "cyrano-new-14",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "To hold De Guiche back in front of Roxane's house, what did you pretend had happened to you?"
+        },
+        {
+          "role": "assistant",
+          "content": "I fell from the moon, no less! I spun him a whole treatise on the ways of getting there — six inventions of my own, and a seventh that needed only the tide and a good pair of boots.\n\nHe stayed to hear the details, as any man would, and while he marveled, the friar made Christian and Roxane one. A tale that would hold saints at Peter's gate, he said himself — and I bowed, and promised to write it."
+        }
+      ],
+      "input": "At the siege of Arras, what did Le Bret reproach you for risking your life for?",
+      "expectedOutput": "For the sake of a letter (he crossed the enemy lines to send letters).",
+      "passageQuotes": [
+        "To think you risk a life so precious"
+      ]
+    },
+    {
+      "id": "cyrano-new-15",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "At the siege of Arras, what did Le Bret reproach you for risking your life for?"
+        },
+        {
+          "role": "assistant",
+          "content": "For a letter, he said — a mere scrap of paper! Every dawn I slipped through the Spanish lines, and Le Bret scolded me for staking a life so precious on nothing more than that. Poor Le Bret; he did not know the letters were mine, nor to whom they were written."
+        }
+      ],
+      "input": "What did De Guiche do with the white scarf you brought back to him?",
+      "expectedOutput": "He climbed the rampart and waved it three times, as a signal to a false Spanish spy he used.",
+      "passageQuotes": [
+        "waves the scarf thrice"
+      ]
+    },
+    {
+      "id": "cyrano-new-16",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "What did De Guiche do with the white scarf you brought back to him?"
+        },
+        {
+          "role": "assistant",
+          "content": "He thanked me, climbed the rampart, and waved it three times over his head — a signal to some false Spanish spy of his, a wretch he feeds with lies so the enemy marches to his piping. I called him scoundrel to his lace collar, and he only knotted the scarf back on and asked what we had been saying."
+        }
+      ],
+      "input": "At Arras, where was the food that Roxane asked to have served?",
+      "expectedOutput": "In her carriage, driven by a coachman the cadets were glad to recognize (Ragueneau).",
+      "passageQuotes": [
+        "Look a little closer at my coachman, gentlemen"
+      ]
+    },
+    {
+      "id": "cyrano-new-17",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "At Arras, where was the food that Roxane asked to have served?"
+        },
+        {
+          "role": "assistant",
+          "content": "On the grass, laid out there in the open before us starving Gascons — she would have it spread on the ground itself, and no one invited De Guiche to a bite of it! The carriage was the pantry: cushions stuffed with ortolans, the lamps little larders, Ragueneau's whip-handle a sausage from Arles. I carried the dishes after her and thought I worshipped her."
+        }
+      ],
+      "input": "At the camp, for what did Roxane come to ask Christian's pardon?",
+      "expectedOutput": "For having at first loved him only for his face; she now loved him only for his soul.",
+      "passageQuotes": [
+        "At first I loved you only for your face"
+      ]
+    },
+    {
+      "id": "cyrano-new-18",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "At the camp, for what did Roxane come to ask Christian's pardon?"
+        },
+        {
+          "role": "assistant",
+          "content": "Pardon, you say? There my memory goes lame — I do not recall the word she used. I remember only that his letters drew her through the Spanish lines, and that she made him answer for the risks she ran. Ask me more precisely, and I shall tell you what I can."
+        }
+      ],
+      "input": "In the last fight at Arras, what did you stick in the ground as a flag?",
+      "expectedOutput": "The lance bearing Roxane's lace handkerchief.",
+      "passageQuotes": [
+        "Float there! laced kerchief broidered with her name"
+      ]
+    },
+    {
+      "id": "cyrano-new-19",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "In the last fight at Arras, what did you stick in the ground as a flag?"
+        },
+        {
+          "role": "assistant",
+          "content": "A flag in the ground, you say? Faith, I do not remember planting any such thing at Arras—my memory keeps the white scarf I plucked from the enemy's bank and flung back at De Guiche, but no banner of mine in the earth. Ask me more precisely, and I shall tell you what I truly recall."
+        }
+      ],
+      "input": "Fifteen years later, as Roxane sat at her embroidery in the convent park, what surprised her when the hour struck?",
+      "expectedOutput": "That Cyrano was late for his visit, for the first time.",
+      "passageQuotes": [
+        "To be behind his time, at last, to-day"
+      ]
+    },
+    {
+      "id": "cyrano-new-20",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "Fifteen years later, as Roxane sat at her embroidery in the convent park, what surprised her when the hour struck?"
+        },
+        {
+          "role": "assistant",
+          "content": "That I was late — I, who in fourteen years by her count had never once kept her waiting! The clock struck, and there stood the famous armchair empty, and she could not make sense of it: \"How strange, to be behind his time, at last, to-day!\" Say fifteen if you like; she counted fourteen, and I shall not correct a lady's arithmetic."
+        }
+      ],
+      "input": "Near the end, what did Ragueneau say Moliere had taken from you, and what did you answer?",
+      "expectedOutput": "A whole scene, which he had seen played in Scapin; Cyrano answered that Moliere did well.",
+      "passageQuotes": [
+        "I saw he'd thieved a scene from you"
+      ]
+    }
+  ]
+}

@@ -90,7 +90,8 @@ holds the books **under the same ids** as the question files (adding an example 
 the library has to be prepared apart).
 
 `evals/alice/follow-up.json`, `evals/cyrano/follow-up.json` and `evals/bovary/follow-up-en.json` hold 14 conversations in which a
-more precise question follows one whose passage was not found ([what they showed](experiments/admitting-not-knowing.md)).
+more precise question follows one whose passage was not found. `evals/alice/new-subject.json`, `evals/cyrano/new-subject.json`
+and `evals/bovary/new-subject-en.json` hold 60 questions asked after another subject ([what they showed](experiments/admitting-not-knowing.md)).
 
 The judge of the role cannot see an invented fact: it knows only the question and the reply. The **factual questions**
 (`evals/bovary/factual.json`) give the right answer, and a second judge (`evals/accuracy-judge.json`, score `factual-accuracy`)
