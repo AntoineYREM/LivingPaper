@@ -196,10 +196,10 @@ those of the analysis, above).
   (spoilers included): the prompt `chat.story` gives it, where `{story}` stands in `chat.system`, and it is left out for a book
   analyzed before the story existed. The character speaks of the scenes where it is present as its own memories. The text of the messages and of the replies is never written to the logs.
 - **With an indexed book** (a model for vectorization is chosen and made its vectors), the character gets, in place of the
-  whole story, the **short summary of the plot** and the **passages that answer your message** (3 by default, `RAG_PASSAGES`),
+  whole story, the **short summary of the plot** and the **passages that answer your message** (4 by default, `RAG_PASSAGES`),
   in the order of the book, each under its scene and who is present: the character speaks of those it lived as memories
-  (prompts `chat.passages`, `chat.searchQuery`). The search is made with your message and the ones just before
-  it; the chat model can write it first instead (`RAG_QUERY_MODE`, see [how to run](how-to-run.md)), and if it cannot, the last
+  (prompts `chat.passages`, `chat.searchQuery`). Two searches are made: one with your message and the ones just
+  before it, for one passage, and one with your message alone, for the others. The chat model can write a single search instead (`RAG_QUERY_MODE`, see [how to run](how-to-run.md)), and if it cannot, the last
   messages are searched. If the passages cannot be searched, the reply uses the whole story. A short line under the reply says so. A book not indexed, or indexed with another
   model, chats with the whole story, with no notice. Plan a context of at least 8,192 tokens for the chat model.
 - **The chat needs JavaScript** (the reply streams in as NDJSON lines through `fetch`); without it the chat buttons are hidden.

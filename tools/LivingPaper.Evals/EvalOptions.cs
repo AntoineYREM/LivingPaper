@@ -52,7 +52,7 @@ internal sealed record EvalOptions(
                                  without it the character gets the whole story. Needs --book-data, with the book indexed by it
           --embedding-url <url>  address of a server that asks for no key: --embedding is then the name of its model
           --query-mode <mode>    recent (default), rewrite or last: how the search is written, as RAG_QUERY_MODE for the site
-          --passages <n>         passages given to the character, 1 to 10 (default 3), as RAG_PASSAGES
+          --passages <n>         passages given to the character, 1 to 10 (default 4), as RAG_PASSAGES
           --help                 this text
 
         Every run is saved in evals/runs/ (not committed: it holds the replies). With the LANGFUSE_* variables set (shell or .env) it

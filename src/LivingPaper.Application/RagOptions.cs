@@ -6,7 +6,7 @@ public enum QueryMode
     // The chat model writes a query that stands alone, from the recent messages.
     Rewrite,
 
-    // The message of the reader and the ones before it.
+    // The message of the reader and the ones before it, and that message alone: two searches.
     Recent,
 
     // The message of the reader alone.
@@ -19,13 +19,13 @@ public sealed record RagOptions
 {
     public const int MaxPassages = 10;
 
-    // The defaults were chosen on measures (docs/experiments/passages-of-the-book.md): writing the query made replies several
-    // times slower for a gain that was not shown, and three passages gave grades with no clear difference from five, for a
-    // prompt about a quarter shorter.
+    // The defaults were chosen on measures: writing the query made replies several times slower for a gain that was not shown
+    // (docs/experiments/passages-of-the-book.md); four passages, one for the recent messages and three for the last one, find
+    // the expected passage of a new subject far more often (docs/experiments/admitting-not-knowing.md).
     public QueryMode Mode { get; init; } = QueryMode.Recent;
 
     // How many passages are given to the character.
-    public int Passages { get; init; } = 3;
+    public int Passages { get; init; } = 4;
 
     public TimeSpan RewriteTimeout { get; init; } = TimeSpan.FromSeconds(30);
 

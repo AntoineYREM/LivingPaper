@@ -87,7 +87,9 @@ internal sealed class RetrievalRecorder(
     public async Task<IReadOnlyList<FoundPassage>> SearchAsync(BookKey book, float[] query, int count, CancellationToken cancellationToken)
     {
         var found = await Index.SearchAsync(book, query, count, cancellationToken).ConfigureAwait(false);
-        _found = found.Count == 0 ? null : found;
+        // A second search in the same try is that of the last message: kept as the chat puts the two together.
+        var kept = _found is null ? found : PassageRetriever.Combine(_found, found, count);
+        _found = kept.Count == 0 ? null : kept;
         return found;
     }
 
@@ -137,7 +139,7 @@ internal sealed class RetrievalRecorder(
     {
         public Task<IReadOnlyList<float[]>> EmbedAsync(IReadOnlyList<string> texts, ChatUsageMeter? usage, CancellationToken cancellationToken)
         {
-            owner._text = texts.Count > 0 ? texts[0] : null;
+            owner._text = texts.Count > 0 ? string.Join("\n---\n", texts) : null;
             return model.EmbedAsync(texts, usage, cancellationToken);
         }
     }

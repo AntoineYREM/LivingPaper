@@ -1,5 +1,7 @@
 using System.Diagnostics;
+using System.Globalization;
 using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
 using LivingPaper.Application;
 using LivingPaper.Domain;
 using Shouldly;
@@ -223,24 +225,78 @@ public sealed class PassageRetrievalTests : IDisposable
         User("one"), Said("two"), User("three"), Said("four"), User("Do you remember the ball?"),
     ];
 
-    // The defaults were chosen on measures (docs/experiments/passages-of-the-book.md).
+    // PAPER-94: the earlier messages drown a new subject, so the last message is searched on its own too
+    // (docs/experiments/admitting-not-knowing.md).
+    private const string Recent = "two\nthree\nfour\nDo you remember the ball?";
+    private const string LastMessage = "Do you remember the ball?";
+
+    // The counts asked of the index, by the text that was searched (the fake vector of a text starts with its length).
+    private List<(string Search, int Count)> SearchTwice(int[] recentFound, int[] lastFound)
+    {
+        var asked = new List<(string, int)>();
+        _index.Search = (vector, count) =>
+        {
+            var recent = (int)vector[0] == Recent.Length;
+            asked.Add((recent ? "recent" : "last", count));
+            return [.. (recent ? recentFound : lastFound).Select(number => Found(number, 0.3)).Take(count)];
+        };
+        return asked;
+    }
+
+    private static List<int> PassagesIn(string system) =>
+        [.. Regex.Matches(system, @"Text of passage (\d+)\.").Select(match => int.Parse(match.Groups[1].Value, CultureInfo.InvariantCulture))];
+
     [Fact]
-    public async Task ByDefault_TheRecentMessagesAreSearchedAsTheyAre_AndThreePassagesAreAskedFor()
+    public async Task ByDefault_TheRecentMessagesAndTheLastOneAreSearched_InOneCall_ForOneAndThreePassages()
     {
         await IndexBookAsync();
         _options = new RagOptions();
-        var asked = 0;
-        _index.Search = (_, count) =>
-        {
-            asked = count;
-            return [Found(79, 0.3)];
-        };
+        var asked = SearchTwice([99, 98], [79, 2, 102, 4, 5]);
 
-        await ChatAsync(Conversation);
+        var system = await ChatAsync(Conversation);
 
-        Query.ShouldBe("two\nthree\nfour\nDo you remember the ball?");
-        asked.ShouldBe(3);
+        _embeddings.Sent.ShouldHaveSingleItem().ShouldBe([Recent, LastMessage]);
+        asked.ShouldBe([("recent", 1), ("last", 4)]);
+        PassagesIn(system).ShouldBe([2, 79, 99, 102]); // One of the recent messages, three of the last one, in the order of the book.
         _models.Rewrites.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public async Task APassageThatBothSearchesFind_IsGivenOnce_AndTheNextOfTheLastMessageTakesItsPlace()
+    {
+        await IndexBookAsync();
+        _options = new RagOptions();
+        SearchTwice([2], [79, 2, 102, 4, 5]);
+
+        PassagesIn(await ChatAsync(Conversation)).ShouldBe([2, 4, 79, 102]);
+    }
+
+    [Fact]
+    public async Task WithOnePassage_TheLastMessageAloneIsSearched()
+    {
+        await IndexBookAsync();
+        _options = new RagOptions { Passages = 1 };
+        var asked = SearchTwice([99], [79, 2]);
+
+        var system = await ChatAsync(Conversation);
+
+        Query.ShouldBe(LastMessage);
+        asked.ShouldBe([("last", 1)]);
+        PassagesIn(system).ShouldBe([79]);
+    }
+
+    [Fact]
+    public async Task TheFirstMessage_IsSearchedOnce_ForAllThePassages()
+    {
+        await IndexBookAsync();
+        _options = new RagOptions();
+        var asked = SearchTwice([99], [79, 2, 102, 4, 5]);
+
+        var system = await ChatAsync(User(LastMessage));
+
+        Query.ShouldBe(LastMessage);
+        asked.ShouldBe([("last", 4)]);
+        PassagesIn(system).ShouldBe([2, 4, 79, 102]);
     }
 
     [Fact]
@@ -267,7 +323,7 @@ public sealed class PassageRetrievalTests : IDisposable
 
         await ChatAsync(Conversation);
 
-        Query.ShouldBe("two\nthree\nfour\nDo you remember the ball?");
+        _embeddings.Sent.ShouldHaveSingleItem().ShouldBe([Recent, LastMessage]);
         _models.Rewrites.ShouldBeEmpty();
     }
 
@@ -317,7 +373,7 @@ public sealed class PassageRetrievalTests : IDisposable
 
         var system = await ChatAsync(Conversation);
 
-        Query.ShouldStartWith("two\nthree");
+        _embeddings.Sent.ShouldHaveSingleItem().ShouldBe([Recent, LastMessage]);
         system.ShouldContain("[chat.passages]");
         Notices.ShouldBe([ChatNotice.RewriteFailed]);
     }

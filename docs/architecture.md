@@ -69,8 +69,8 @@ Every port is faked in the tests: **no test calls a real AI provider.**
   the stored text is deleted.
 - **Chat**: the browser sends the conversation (nothing is stored), the server checks it, builds the prompt from the saved sheet
   and the story of the book (`chat.story`, when the book has one) and streams the model's reply back as NDJSON. For an
-  indexed book, `PassageRetriever` vectorizes the recent messages (or a query the chat model writes, with
-  `RAG_QUERY_MODE=rewrite`) and takes the closest passages,
+  indexed book, `PassageRetriever` vectorizes the recent messages and the last one (or a query the chat model writes, with
+  `RAG_QUERY_MODE=rewrite`) and takes the closest passages, one for the former and the others for the latter,
   which replace the story (`chat.passages`, with the short plot); any failure falls back, with a notice.
 - **Passages that travel** (PAPER-88): the file of an export or of an example also holds the passages and vectors
   (`passageIndex`, `PassageSet` in the application; the books of the library keep theirs in `rag.db`). Vectors that come with a

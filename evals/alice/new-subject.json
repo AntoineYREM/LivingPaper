@@ -1,0 +1,389 @@
+{
+  "schemaVersion": 1,
+  "dataset": "alice-new-subjects",
+  "description": "A change of subject in a conversation with Alice: each factual question of evals/alice/factual.json, after the previous question of that file (the last one before the first) and the reply ERNIE 5.5 Flash gave to it on 27 November 2026 (PAPER-94).",
+  "bookId": "alice-s-adventures-in-wonderland",
+  "character": "Alice",
+  "items": [
+    {
+      "id": "alice-new-01",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "Who woke you at the end, and what did that person tell you to go and do?"
+        },
+        {
+          "role": "assistant",
+          "content": "Oh, that was my sister, dear! She woke me and said I'd had a long sleep, and then she told me to run in to my tea, for it was getting late. And run I did, thinking all the while what a wonderful dream it had been!"
+        }
+      ],
+      "input": "As you fell down the well, you took a jar from one of the shelves. What was written on it, and what was inside?",
+      "expectedOutput": "The jar was labelled ORANGE MARMALADE, and it was empty.",
+      "passageQuotes": [
+        "but to her great disappointment it was empty"
+      ]
+    },
+    {
+      "id": "alice-new-02",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "As you fell down the well, you took a jar from one of the shelves. What was written on it, and what was inside?"
+        },
+        {
+          "role": "assistant",
+          "content": "Oh, it was labelled \"ORANGE MARMALADE,\" if you please! But dear, dear, it was quite empty — not a drop inside. What a great disappointment, and after all that falling too!"
+        }
+      ],
+      "input": "After drinking from the little bottle you were the right size for the garden door. What had you forgotten?",
+      "expectedOutput": "The little golden key, left on the glass table, which she could then no longer reach.",
+      "passageQuotes": [
+        "she found she had forgotten the little golden key"
+      ]
+    },
+    {
+      "id": "alice-new-03",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "After drinking from the little bottle you were the right size for the garden door. What had you forgotten?"
+        },
+        {
+          "role": "assistant",
+          "content": "Dear, dear, the little golden key! I had left it on the glass table, and once I was only ten inches high I couldn't reach it at all, though I could see it plainly through the glass. I tried climbing up a leg of the table, but it was too slippery, and then I'm afraid I sat down and cried like a baby."
+        }
+      ],
+      "input": "What made you shrink so quickly just before you fell into the water?",
+      "expectedOutput": "The fan she was holding (the White Rabbit's fan).",
+      "passageQuotes": [
+        "the cause of this was the fan she was holding"
+      ]
+    },
+    {
+      "id": "alice-new-04",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "What made you shrink so quickly just before you fell into the water?"
+        },
+        {
+          "role": "assistant",
+          "content": "Dear me, it was the fan! I was holding the Rabbit's little fan, and I felt myself going smaller and smaller, quite rapidly. I dropped it in the very nick of time, or I should have shrunk away altogether, like a candle blown out. And then, would you believe it, my foot slipped and splash! into the salt water I went."
+        }
+      ],
+      "input": "You were all wet after the pool. What did the Dodo propose to get you dry?",
+      "expectedOutput": "A Caucus-race.",
+      "passageQuotes": [
+        "the best thing to get us dry would be a Caucus-race"
+      ]
+    },
+    {
+      "id": "alice-new-05",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "You were all wet after the pool. What did the Dodo propose to get you dry?"
+        },
+        {
+          "role": "assistant",
+          "content": "Dear me, yes, we were all dripping! The Dodo stood up and said the best thing to dry us would be a Caucus-race, though first it went on with such long words that the Eaglet told it to speak English. When I asked what a Caucus-race was, it said the best way to explain it was to do it — and so we all ran about till we were dry again, queer as that sounds!"
+        }
+      ],
+      "input": "When the White Rabbit called out to you angrily, who did he take you for, and what did he tell you to fetch?",
+      "expectedOutput": "He took her for Mary Ann, his housemaid, and told her to fetch him a pair of gloves and a fan.",
+      "passageQuotes": [
+        "Why, Mary Ann, what are you doing out here?"
+      ]
+    },
+    {
+      "id": "alice-new-06",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "When the White Rabbit called out to you angrily, who did he take you for, and what did he tell you to fetch?"
+        },
+        {
+          "role": "assistant",
+          "content": "Dear, dear, he took me for his housemaid, Mary Ann! And he told me to run home this moment and fetch him a pair of gloves and a fan, quick now. I was so frightened I ran off without even trying to explain the mistake."
+        }
+      ],
+      "input": "While you were stuck in the Rabbit's house, who was to be sent down the chimney?",
+      "expectedOutput": "Bill.",
+      "passageQuotes": [
+        "Bill's to go down"
+      ]
+    },
+    {
+      "id": "alice-new-07",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "While you were stuck in the Rabbit's house, who was to be sent down the chimney?"
+        },
+        {
+          "role": "assistant",
+          "content": "Dear me, it was poor Bill! They all seemed to put everything upon him, and the master said he was to go down the chimney. I only wish I hadn't kicked him quite so sharply — I do hope they gave him his brandy."
+        }
+      ],
+      "input": "What was the Caterpillar smoking, and what was the first thing it asked you?",
+      "expectedOutput": "A long hookah; it asked her \"Who are you?\".",
+      "passageQuotes": [
+        "quietly smoking a long hookah"
+      ]
+    },
+    {
+      "id": "alice-new-08",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "What was the Caterpillar smoking, and what was the first thing it asked you?"
+        },
+        {
+          "role": "assistant",
+          "content": "He was smoking a long hookah, if you please! And the very first thing he asked me was, “Who are you?” Dear me, such a rude way to begin a conversation, and no encouragement at all!"
+        }
+      ],
+      "input": "Why did the Pigeon take you for a serpent, and what did you answer that you were?",
+      "expectedOutput": "Because of her very long neck (it also asked about eggs); she answered that she was a little girl.",
+      "passageQuotes": [
+        "never one with such a neck as that"
+      ]
+    },
+    {
+      "id": "alice-new-09",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "Why did the Pigeon take you for a serpent, and what did you answer that you were?"
+        },
+        {
+          "role": "assistant",
+          "content": "Dear me, it was all because of my neck — it had grown so long that I could see nothing but treetops, and the Pigeon would insist no little girl ever had such a neck. I told it, quite indignantly, that I was a little girl, though I'm afraid I said it rather doubtfully, for I had changed so often that day I scarcely knew what I was. Then it declared that since little girls eat eggs as much as serpents do, they must be a kind of serpent — which I thought very unfair reasoning indeed!"
+        }
+      ],
+      "input": "In the Duchess's kitchen, what was there certainly too much of, and in what?",
+      "expectedOutput": "Too much pepper, in the soup.",
+      "passageQuotes": [
+        "too much pepper in that soup"
+      ]
+    },
+    {
+      "id": "alice-new-10",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "In the Duchess's kitchen, what was there certainly too much of, and in what?"
+        },
+        {
+          "role": "assistant",
+          "content": "Dear, dear, pepper! There was certainly too much pepper in that soup, and too much of it in the air besides — I could scarcely speak for sneezing, and the baby howled and sneezed by turns without a moment's pause."
+        }
+      ],
+      "input": "Who did the Cheshire Cat say lived in the two directions it pointed to?",
+      "expectedOutput": "A Hatter in one direction and a March Hare in the other, both mad.",
+      "passageQuotes": [
+        "lives a Hatter: and in that direction"
+      ]
+    },
+    {
+      "id": "alice-new-11",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "Who did the Cheshire Cat say lived in the two directions it pointed to?"
+        },
+        {
+          "role": "assistant",
+          "content": "Why, in one direction it said there lived a Hatter, and in the other a March Hare — and it declared they were both mad! I wasn't at all pleased to hear it, I assure you, but it told me I couldn't help that, since we are all mad here."
+        }
+      ],
+      "input": "What was strange about the watch at the tea party?",
+      "expectedOutput": "It told the day of the month, not what o'clock it was.",
+      "passageQuotes": [
+        "It tells the day of the month"
+      ]
+    },
+    {
+      "id": "alice-new-12",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "What was strange about the watch at the tea party?"
+        },
+        {
+          "role": "assistant",
+          "content": "Oh, it was a most curious watch! It told the day of the month, but not what o'clock it was, and when I said so the Hatter asked why it should, for that mine doesn't tell the year. And then they went and dipped it in the tea and put butter in it with the bread-knife—the best butter, they said! Dear, dear, I never saw such a nonsensical timepiece."
+        }
+      ],
+      "input": "When you walked away from the tea party, what were the others doing with the Dormouse?",
+      "expectedOutput": "They were trying to put the Dormouse into the teapot.",
+      "passageQuotes": [
+        "they were trying to put the Dormouse into the teapot"
+      ]
+    },
+    {
+      "id": "alice-new-13",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "When you walked away from the tea party, what were the others doing with the Dormouse?"
+        },
+        {
+          "role": "assistant",
+          "content": "Dear me, the last time I looked back, they were trying to stuff the poor Dormouse into the teapot! Imagine it — I suppose it was fast asleep and didn't mind, but it was more than I could bear. The stupidest tea-party I ever was at, and I never went there again."
+        }
+      ],
+      "input": "In the Queen's game of croquet, what were used as balls and as mallets?",
+      "expectedOutput": "Live hedgehogs as balls and live flamingoes as mallets.",
+      "passageQuotes": [
+        "the balls were live hedgehogs, the mallets live flamingoes"
+      ]
+    },
+    {
+      "id": "alice-new-14",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "In the Queen's game of croquet, what were used as balls and as mallets?"
+        },
+        {
+          "role": "assistant",
+          "content": "Dear me, it was the queerest game! The balls were live hedgehogs, and the mallets were live flamingoes — and the soldiers had to double themselves up to make the arches, if you please. I never had such a time managing my flamingo, for it kept twisting its neck round to look at me!"
+        }
+      ],
+      "input": "When the Duchess took your arm again, what did you suppose had made her so savage in the kitchen?",
+      "expectedOutput": "The pepper.",
+      "passageQuotes": [
+        "perhaps it was only the pepper that had made her so savage"
+      ]
+    },
+    {
+      "id": "alice-new-15",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "When the Duchess took your arm again, what did you suppose had made her so savage in the kitchen?"
+        },
+        {
+          "role": "assistant",
+          "content": "Dear me, I don't remember rightly what I supposed at the time — only that the pepper was so thick in the air that everyone was sneezing, and the cook was flinging saucepans about as if it were quite the thing to do. I suppose anyone would turn savage in such an uproar, though I did think her \"chop off her head!\" was very rude. Did she take my arm again? I recall she walked with me and found a moral in everything, but if you mean some other moment, you must ask me more precisely."
+        }
+      ],
+      "input": "Whom did the Queen order to take you to the Mock Turtle, and what was that creature doing when you found it?",
+      "expectedOutput": "The Gryphon, which was lying fast asleep in the sun.",
+      "passageQuotes": [
+        "They very soon came upon a Gryphon, lying fast asleep in the sun"
+      ]
+    },
+    {
+      "id": "alice-new-16",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "Whom did the Queen order to take you to the Mock Turtle, and what was that creature doing when you found it?"
+        },
+        {
+          "role": "assistant",
+          "content": "Dear me, yes — the Queen ordered the Gryphon, that great queer creature, to take me, and told it I was to hear the Mock Turtle's history. And when we came upon it, it was lying fast asleep in the sun, if you please! The Queen called it a lazy thing and marched off to see after her executions, and I was left quite alone with it."
+        }
+      ],
+      "input": "In the dance that the Mock Turtle and the Gryphon described, what do you throw as far out to sea as you can?",
+      "expectedOutput": "The lobsters.",
+      "passageQuotes": [
+        "as far out to sea as you can"
+      ]
+    },
+    {
+      "id": "alice-new-17",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "In the dance that the Mock Turtle and the Gryphon described, what do you throw as far out to sea as you can?"
+        },
+        {
+          "role": "assistant",
+          "content": "The lobsters, of course! They change partners, and then throw the lobsters as far out to sea as ever they can, and swim after them. I remember thinking it a very curious sort of dance, though I was glad when the song was over."
+        }
+      ],
+      "input": "What did the Mock Turtle say about the verses you were reciting about the Owl and the Panther?",
+      "expectedOutput": "That it was useless to repeat them without explaining them: by far the most confusing thing he had ever heard.",
+      "passageQuotes": [
+        "by far the most confusing thing I ever heard"
+      ]
+    },
+    {
+      "id": "alice-new-18",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "What did the Mock Turtle say about the verses you were reciting about the Owl and the Panther?"
+        },
+        {
+          "role": "assistant",
+          "content": "Dear, dear, he was quite rude about it! He said he couldn't see the use of repeating all that stuff if I didn't explain it as I went along, and that it was by far the most confusing thing he had ever heard. And before that he had called the whole of it uncommon nonsense — as if I had meant it to come out wrong!"
+        }
+      ],
+      "input": "At the trial, what happened to the Hatter when the Queen asked for the list of the singers at the last concert?",
+      "expectedOutput": "He trembled so much that he shook both his shoes off.",
+      "passageQuotes": [
+        "that he shook both his shoes off"
+      ]
+    },
+    {
+      "id": "alice-new-19",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "At the trial, what happened to the Hatter when the Queen asked for the list of the singers at the last concert?"
+        },
+        {
+          "role": "assistant",
+          "content": "Dear, dear, the poor Hatter trembled so that he shook both his shoes clean off his feet! Then the King told him to give his evidence or be executed whether he was nervous or not, and presently he was let go — and off he hurried without even stopping to put his shoes on."
+        }
+      ],
+      "input": "Which rule did the King read to make you leave the court, and what did you say about it?",
+      "expectedOutput": "Rule Forty-two, that all persons more than a mile high must leave the court; she said it was not a regular rule, he had just invented it.",
+      "passageQuotes": [
+        "All persons more than a mile high to leave the court"
+      ]
+    },
+    {
+      "id": "alice-new-20",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "Which rule did the King read to make you leave the court, and what did you say about it?"
+        },
+        {
+          "role": "assistant",
+          "content": "It was Rule Forty-two, if you please: all persons more than a mile high to leave the court. I told him I wasn't a mile high, and that I shan't go at any rate, for it wasn't a regular rule at all, he'd only just invented it! When he insisted it was the oldest rule in the book, I said then it ought to be Number One."
+        }
+      ],
+      "input": "Who woke you at the end, and what did that person tell you to go and do?",
+      "expectedOutput": "Her sister, who told her to run in to her tea because it was getting late.",
+      "passageQuotes": [
+        "but now run in to your tea"
+      ]
+    }
+  ]
+}

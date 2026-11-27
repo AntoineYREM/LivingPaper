@@ -84,12 +84,12 @@ public class RetrievalMeasureTests
         return index;
     }
 
-    private static ChatServiceReplier Replier(SqlitePassageIndex index, Embeddings embeddings, Model model, QueryMode mode = QueryMode.Rewrite)
+    private static ChatServiceReplier Replier(SqlitePassageIndex index, Embeddings embeddings, Model model, QueryMode mode = QueryMode.Rewrite, int passages = 1)
     {
         var site = new InMemorySettings(LlmSettings.Restore([Chat], Chat.Id, Chat.Id));
         var settings = new LlmSettingsService(new ChatOverrideSettings(site, Chat.Id, Vectors), new ChatSetupTests.NoTester(), new ChatSetupTests.NoCatalog(), new PendingProviderStore(TimeProvider.System));
         var recorder = new RetrievalRecorder(new FakeChatModelFactory(_ => model), embeddings, index);
-        var retriever = new PassageRetriever(recorder, settings, recorder, recorder, new Prompts(), new RagOptions { Mode = mode, Passages = 1 });
+        var retriever = new PassageRetriever(recorder, settings, recorder, recorder, new Prompts(), new RagOptions { Mode = mode, Passages = passages });
         var book = TheBook();
         return new ChatServiceReplier(new CharacterChatService(settings, recorder, new Prompts(), retriever), book, book.Characters[0], recorder);
     }
@@ -154,9 +154,29 @@ public class RetrievalMeasureTests
 
         var answer = await Replier(await IndexAsync(folder), new Embeddings(), model, QueryMode.Recent).ReplyAsync(question, CancellationToken.None);
 
-        answer.Trace!.Query.ShouldBe("Where?\nAt the ball.\nAnd then?");
+        answer.Trace!.Query.ShouldBe("And then?"); // One passage: the last message alone is searched.
         model.Replies.Single().Skip(1).Select(message => (message.Role, message.Content))
             .ShouldBe([(ChatRole.User, "Where?"), (ChatRole.Assistant, "At the ball."), (ChatRole.User, "And then?")]);
+    }
+
+    // PAPER-94: what is kept is what the character got, from the two searches.
+    [Fact]
+    public async Task WithTwoSearches_TheTryKeepsBothQueries_AndThePassagesOfBoth()
+    {
+        using var folder = new TempFolder();
+        var question = new EvalQuestion("f-1", "follow-up", "And your wedding?", "x")
+        {
+            Conversation = [new ConversationTurn(false, "The waltz?"), new ConversationTurn(true, "Yes.")],
+            PassageQuotes = ["le Vicomte"],
+        };
+
+        var answer = await Replier(await IndexAsync(folder), new Embeddings(), new Model(), QueryMode.Recent, passages: 2)
+            .ReplyAsync(question, CancellationToken.None);
+
+        answer.Trace!.Query.ShouldBe("The waltz?\nYes.\nAnd your wedding?\n---\nAnd your wedding?");
+        answer.Trace.Passages.ShouldBe([1, 2]); // 1 from the recent messages (the waltz), 2 from the last one.
+        answer.Trace.Distances!.Count.ShouldBe(2);
+        answer.Trace.ExpectedFound.ShouldBe(true);
     }
 
     [Fact]

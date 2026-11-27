@@ -73,7 +73,7 @@ The tool does not need the web application to be running. What it reads:
 | `--embedding <name>` | Search the passages with this model for vectorization (its name on the Settings page). Without it, the character gets the whole story. Needs `--book-data`. |
 | `--embedding-url <url>` | The address of a server that asks for no key (a local one): `--embedding` is then the name of its model, and nothing needs to be saved on the Settings page. |
 | `--query-mode <mode>` | `recent` (default), `rewrite` or `last`: how the search is written (`RAG_QUERY_MODE` for the site). |
-| `--passages <n>` | Passages given to the character, 1 to 10 (default 3, `RAG_PASSAGES`). |
+| `--passages <n>` | Passages given to the character, 1 to 10 (default 4, `RAG_PASSAGES`). |
 | `--help` | The list of options. |
 
 For a run with no keyboard (a script, CI), name the models with the options or with `EVAL_CHAT_PROVIDER` and `EVAL_JUDGE_PROVIDER` in the
@@ -90,7 +90,8 @@ holds the books **under the same ids** as the question files (adding an example 
 the library has to be prepared apart).
 
 `evals/alice/follow-up.json`, `evals/cyrano/follow-up.json` and `evals/bovary/follow-up-en.json` hold 14 conversations in which a
-more precise question follows one whose passage was not found ([what they showed](experiments/admitting-not-knowing.md)).
+more precise question follows one whose passage was not found. `evals/alice/new-subject.json`, `evals/cyrano/new-subject.json`
+and `evals/bovary/new-subject-en.json` hold 60 questions asked after another subject ([what they showed](experiments/admitting-not-knowing.md)).
 
 The judge of the role cannot see an invented fact: it knows only the question and the reply. The **factual questions**
 (`evals/bovary/factual.json`) give the right answer, and a second judge (`evals/accuracy-judge.json`, score `factual-accuracy`)
@@ -115,7 +116,8 @@ Before the first call, the tool checks that the book is indexed with the model a
 in a passage: the chat would otherwise use the whole story without saying so. The phrases are in French, as the book analyzed was.
 With another text or another cutting, a phrase may not be found: the tool then names the questions.
 
-With passages, each try keeps in the run file the **query** searched, the numbers and distances of the **passages found**, whether
+With passages, each try keeps in the run file the **query** searched (both, separated by `---`, when the `recent` mode makes two
+searches; runs made before PAPER-94 had one), the numbers and distances of the **passages found**, whether
 **a phrase of the question was in one of them**, the notices a reader would have seen (query not written, search failed), the
 tokens and the time of the reply. The report adds, per reply: the tokens of the prompt (average and largest), those spent writing
 the query, the median time, and how many times the expected passage was found. A low grade with the passage found is a failure of

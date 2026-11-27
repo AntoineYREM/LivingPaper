@@ -24,7 +24,7 @@ Compared with the full story, on *Madame Bovary*:
 **Measured on 26 November 2026** (PAPER-87, [experiments](../experiments/passages-of-the-book.md)): criterion 1 is met by the
 four settings tried, beyond chance only for rewriting with 5 passages; criterion 2 is met (3,497 tokens at most); criterion 3
 is met by the default setting of that day, recent messages and 5 passages (4.86 with the story, 4.90 with the passages). The
-role was not measured again with the present default of 3 passages.
+role was not measured again with the defaults chosen since (3 passages, then 4 from two searches).
 
 ### Out of scope
 
@@ -170,8 +170,8 @@ reason is kept in the book file). Model names are compared without regard to cas
 
 For each message:
 
-1. Build the search query (see the modes below).
-2. Embed it and take the closest passages of the book.
+1. Build the search query (see the modes below). The default mode has two.
+2. Embed them in one call and take the closest passages of the book.
 3. All passages can be returned: the character knows the whole book.
 4. Render the system prompt: profile, rules, short plot summary, passages in the order of the book, each under the header it
    was vectorized with. The **chat model** tells from "Present:" which passages the character **lived** and which it learned
@@ -181,8 +181,8 @@ For each message:
 
 ### Context of the model
 
-The chat with passages is designed for a model with a context of **at least 8,192 tokens**: a system prompt of about 3,500
-tokens at most with the 3 passages of the default (4,600 with 5), and the rest for the conversation (still up to 20 messages)
+The chat with passages is designed for a model with a context of **at least 8,192 tokens**: a system prompt of about 4,000
+tokens at most with the 4 passages of the default (an estimate: 3,500 measured with 3, 4,600 with 5), and the rest for the conversation (still up to 20 messages)
 and the reply. The documentation says so, and that some local servers start with less (Ollama uses 4,096 by default on a 4 GB
 graphics card).
 
@@ -191,11 +191,14 @@ graphics card).
 | Mode | Query |
 |---|---|
 | `rewrite` | The **chat model** writes a standalone search query from the recent messages (prompt in `prompts.json`) |
-| `recent` (default) | The user's message and the previous ones (3 previous) |
+| `recent` (default) | **Two searches**: the user's message with the previous ones (3 previous), for **1 passage**; the user's message alone, for **the others** |
 | `last` | The user's message only |
 
-Environment variables `RAG_QUERY_MODE` (default `recent`) and `RAG_PASSAGES` (default `3`, 1 to 10). No setting
+Environment variables `RAG_QUERY_MODE` (default `recent`) and `RAG_PASSAGES` (default `4`, 1 to 10). No setting
 in the interface.
+
+In the `recent` mode, a passage found by both searches is given once, and the next one of the last message takes its place.
+The first message of a conversation, and a setting of 1 passage, need one search: that of the user's message alone.
 
 ### Failures
 
@@ -214,6 +217,11 @@ The defaults were `rewrite` and 3 passages until the measures of PAPER-87
 ([experiments](../experiments/passages-of-the-book.md)): rewriting made replies about nine times slower for a gain that was not
 shown, and 5 passages held the expected one more often than 3. The number went back to **3** after a second measure on three
 books and two models: no clear difference of grades between 3 and 5, for a prompt about a quarter shorter.
+
+Since PAPER-94 the `recent` mode makes two searches and gives **4** passages: with the recent messages as one text, a new
+subject found its passage in 11 of 60 cases, against 46 with the last message alone, which in turn found nothing for short
+follow-ups such as "And on the way home?". Over 81 questions, the right replies went from 29 to 63, mostly on new subjects;
+the 7 short follow-ups lost 2 ([experiments](../experiments/admitting-not-knowing.md)).
 
 ## 8. Export and import
 
