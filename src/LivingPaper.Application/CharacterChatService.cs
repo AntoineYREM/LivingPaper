@@ -165,6 +165,7 @@ public sealed class CharacterChatService(
     {
         ChatFailureKind.Http when exception.StatusCode is 400 or 401 or 403 or 404 => new ChatReplyException(ChatFailure.ModelRefused),
         ChatFailureKind.InvalidResponse or ChatFailureKind.EmptyReply => new ChatReplyException(ChatFailure.InvalidReply),
+        ChatFailureKind.ReplyTooLong => new ChatReplyException(ChatFailure.ReplyTooLong),
         _ => new ChatReplyException(ChatFailure.ModelUnreachable),
     };
 }

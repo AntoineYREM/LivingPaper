@@ -14,6 +14,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   default `chat.system` changes (an unedited one is updated). The evaluation tool counts the replies of each grade. Measured: fewer invented answers, and fewer right ones with the
   whole story ([experiments](docs/experiments/admitting-not-knowing.md)).
 
+### Security
+
+- **A reply of a model can no longer fill the memory or never end** (PAPER-31): reading it stops at a line over 1 MB, a
+  text over 1,000,000 characters, or after 30 minutes. It is not retried, and the page says the reply was too long.
+
 ## [0.5.0] - 2026-11-26
 
 ### Added

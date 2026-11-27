@@ -408,6 +408,7 @@ public partial class ChatTests
     [InlineData(ChatFailureKind.Http, 503, "modelUnreachable")]
     [InlineData(ChatFailureKind.Http, 401, "modelRefused")]
     [InlineData(ChatFailureKind.InvalidResponse, null, "invalidReply")]
+    [InlineData(ChatFailureKind.ReplyTooLong, null, "replyTooLong")]
     public async Task AFailureAtTheStart_IsAnErrorEvent_WithACode_NeverTheMessageOfTheProvider(ChatFailureKind kind, int? status, string code)
     {
         var model = new StreamingChatFactory { FailAtStart = new ChatProviderException(kind, "the provider says " + Key, status) };
