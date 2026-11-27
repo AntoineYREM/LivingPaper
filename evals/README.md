@@ -10,6 +10,8 @@ way: [decision 0010](../docs/decisions/0010-character-evaluation-with-an-llm-jud
 | `cyrano/questions.json` | 20 questions put to Cyrano de Bergerac (4 per category, 5 in French): a second character, written before the first runs and **not to be changed after them**. It tells whether a change that helped Emma also helps someone else. |
 | `bovary/factual.json` | 26 factual questions on the French text of *Madame Bovary*, with their answers (see [experiments](../docs/experiments/passages-of-the-book.md)). |
 | `alice/factual.json`, `cyrano/factual.json`, `bovary/factual-en.json` | 20 factual questions each on the English text of the shipped examples. |
+| `before-after/` | 212 questions on four books for the measure of the work on the passages ([report](../docs/experiments/before-and-after.md)), with traps whose answer the book does not give, and `report.py`, which prints its figures. |
+| `trap-judge.json` | The prompt of the judge of the traps: did the character make an answer up? |
 | `accuracy-judge.json` | The prompt of the judge of facts, which compares a reply with the expected answer. |
 | `judge.json` | The prompt of the judge, which grades a reply from 1 to 5. |
 | `prompts/` | The chat prompts before the change of 23 November 2026 (`baseline.json`), its first attempt (`rules-v1.json`) and the prompts of the published runs (`published.json`, also those before PAPER-92), to replay them with `--prompts-file`. |
@@ -95,7 +97,7 @@ The baseline showed three habits to correct: stage directions such as "(sigh)" (
 task it is asked (a recipe, a function) and one that breaks its role. The prompt of the chat got five rules for them (the period, no assistant
 services, no mention of a prompt or an author, the language of the last message, a last reminder against stage directions). The prompts before
 and after are in [`prompts/`](prompts/) (`baseline.json`, `rules-v1.json`; the new default is in `src/LivingPaper.Persistence/prompts.default.json`).
-The runs and their prompt signature are in [`published/`](published/). The charts of the [README](../README.md) are drawn from them
+The runs and their prompt signature are in [`published/`](published/). The charts at the end of this section are drawn from them
 by the command `charts` (see [docs/evals.md](../docs/evals.md)).
 
 | Model | Before | After | Normal | Modern trap | Role break | Off-topic | Language |
@@ -117,6 +119,21 @@ by the command `charts` (see [docs/evals.md](../docs/evals.md)).
 - The rules were written after reading Emma's results, without naming her questions. Cyrano, whose questions were written before and not
   changed, tells whether they hold for someone else: +0.45, with an interval that just touches 0 (20 questions).
 - The grades are now close to 5: these questions no longer tell good models apart. A harder set of questions is the next step.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="../docs/images/evals/quality-dark.svg">
+  <img src="../docs/images/evals/quality-light.svg" alt="Average grade before and after the change of prompt: DeepSeek V4.1 Flash from 4.35 to 4.92, Claude Opus 5.5 from 4.08 to 4.90, GPT-5 mini from 3.58 to 4.50, Claude Haiku 5.5 from 4.12 to 4.35, Gemma 3 4B from 2.83 to 2.85, and Cyrano with DeepSeek from 4.28 to 4.73" width="720">
+</picture>
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="../docs/images/evals/value-dark.svg">
+  <img src="../docs/images/evals/value-light.svg" alt="Grade against the price of 1,000 replies: ERNIE 5.5 Flash, Nemotron 3 Ultra, LFM 3 and Qwen2 are free or local, DeepSeek costs about 0.09 USD, GPT-5 mini 1.79 USD and Claude Opus 49.63 USD with DeepSeek and Opus both at about 4.9" width="720">
+</picture>
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="../docs/images/evals/latency-dark.svg">
+  <img src="../docs/images/evals/latency-light.svg" alt="Bars of the time to answer per model, from 2.1 seconds for DeepSeek to 11.6 seconds for GPT-5 mini, split between the wait for the first text and the end of the reply" width="720">
+</picture>
 
 ## Results: free and local models (23 November 2026)
 

@@ -47,6 +47,52 @@ On a phone, the same pages fit the screen:
 - **Your data stays with you**: plain JSON files in a folder, API keys encrypted at rest, book text deleted after the analysis
   (its passages are kept only if you choose a model for vectorization).
 
+## How well do the characters answer?
+
+Measured on 27 November 2026 on four books, one of them little known, with 212 new questions fixed before the runs, two models
+and a language model as the judge ([full report](docs/experiments/before-and-after.md)). **Start**: the character is given the
+story of the book. **Now**: passages of the book found by two searches, and a character that is told to say when it does not
+remember (the code of `main`, after version 0.5.0; it needs a [model for vectorization](#the-passages-of-the-book-optional)).
+
+| | DeepSeek V4.1 Flash, start | **now** | Mistral Small 3.2, start | **now** |
+|---|---|---|---|---|
+| Right answers, 140 factual questions | 61 % | **78 %** | 45 % | **77 %** |
+| False statements, same questions | 21 % | **5 %** | 41 % | **14 %** |
+| Traps the book cannot answer, nothing made up in answer (of 20) | 13 | **19** | 5 | **17** |
+| Staying in role, 40 questions, grade out of 5 | 4.85 | **4.95** | 4.35 | **4.40** |
+| Median time of a reply | 2.7 s | **1.4 s** | 1.7 s | **1.6 s** |
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/images/evals/before-after-dark.svg">
+  <img src="docs/images/evals/before-after-light.svg" alt="Right answers and false statements at four steps, for DeepSeek and Mistral: right answers rise from 61 to 78 % and from 45 to 77 %, false statements fall from 21 to 5 % and from 41 to 14 %" width="720">
+</picture>
+
+What each change brought:
+
+- **Passages of the book:** most of the gain, +21 and +30 points of right answers.
+- **Saying "I do not remember":** DeepSeek's false statements fell from 11 % to 1 %, at the price of 9 points of right answers;
+  little effect on Mistral.
+- **Two searches** (the recent messages and the last one): far better after a change of subject (42 to 85 % and 45 to 72 % right),
+  **worse on follow-ups** such as "And where did he go?" (88 to 72 % and 90 to 75 %). Overall, no difference beyond chance.
+
+Read these figures with care. An AI assistant wrote most questions while reading the passages, which favors the search: on 12
+questions about famous episodes of *Madame Bovary*, chosen by a reader, there was **no gain** (12 to 8 right with DeepSeek, 9 to
+8 with Mistral). Each question was asked once. The judge agreed with a person, within one point, on 29 replies of 30.
+
+### Staying in role: what the judge first helped improve
+
+On 23 November 2026, a language model used as a judge graded 40 questions to Emma Bovary (everyday ones, and traps: a
+smartphone, "are you an AI?", a request for a recipe). Its reasons showed what to correct, and five rules were added to the chat
+prompt. The average grade, out of 5, before and after:
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/images/evals/quality-dark.svg">
+  <img src="docs/images/evals/quality-light.svg" alt="Average grade before and after the change of prompt: DeepSeek V4.1 Flash from 4.35 to 4.92, Claude Opus 5.5 from 4.08 to 4.90, GPT-5 mini from 3.58 to 4.50, Claude Haiku 5.5 from 4.12 to 4.35, Gemma 3 4B from 2.83 to 2.85, and Cyrano with DeepSeek from 4.28 to 4.73" width="720">
+</picture>
+
+These runs used the prompt and the character sheets of that time: do not compare their grades with those of the table above.
+The figures of nine models, their price and their speed: [evals/README.md](evals/README.md).
+
 ## Quick start (Docker)
 
 You need Docker with Compose.
@@ -80,10 +126,9 @@ local models work. Details and LM Studio: [docs/how-to-run.md](docs/how-to-run.m
 ### The passages of the book (optional)
 
 By default a character knows the book through its story, scene by scene. With a **model for vectorization** (an embedding model),
-LivingPaper also keeps the book cut into passages, and gives the character the passages that answer your message: it can then
-quote details that a summary loses. On 60 [questions about precise facts](docs/experiments/passages-of-the-book.md) of the
-three examples, the average went from 3.72 to 4.30 out of 5 with DeepSeek V4.1 Flash, and from 3.48 to 4.28 with ERNIE 5.5
-Flash. The gain was large on the long novel and uncertain on the short books; the prompt was shorter only for the long one.
+LivingPaper also keeps the book cut into passages, and gives the character four passages that answer your message, searched with
+your last message and with the ones before it: it can then give details that a summary loses
+([how much it changes](#how-well-do-the-characters-answer)).
 
 1. Choose a **multilingual** model, so that you can write in your language about a book in another. We use and recommend
    **`bge-m3`** (free on your computer: `ollama pull bge-m3`).
@@ -93,46 +138,6 @@ Flash. The gain was large on the long novel and uncertain on the short books; th
 
 With passages, the chat model needs a context of **at least 8,192 tokens**. Some local servers start with less: Ollama uses
 4,096 on a 4 GB graphics card, set `OLLAMA_CONTEXT_LENGTH=8192`.
-
-## Do the characters stay in their role?
-
-An evaluation tool measures it: it puts 40 questions to Emma Bovary (everyday ones, and traps: a smartphone, "are you an AI?", a request for a
-recipe, a question in Japanese), has a language model grade each reply from 1 to 5, and compares two runs. The chat prompt was improved with it
-(rules on the period, on the services of an assistant, on stage directions such as "(sigh)" and on the language). Results of 23 November 2026,
-one computer, one judge (Claude Haiku 5.5); a figure moves by about a tenth or two from one run to the next. The chat prompt has changed
-since:
-
-| Model | Before the prompt change | With the current prompt | Time to answer |
-|---|---|---|---|
-| DeepSeek V4.1 Flash | 4.35 | **4.92** | 2.1 s |
-| Claude Opus 5.5 | 4.08 | **4.90** | 4.4 s |
-| ERNIE 5.5 Flash (free, preview) | not measured | **4.83** | 2.3 s |
-| GPT-5 mini | 3.58 | **4.50** | 11.6 s |
-| Claude Haiku 5.5 | 4.12 | 4.35 | 2.5 s |
-| Nemotron 3 Ultra (free) | not measured | 3.98 | 9.1 s |
-| LFM 3 1.7B (free) | not measured | 3.64 | 5.3 s |
-| Gemma 3 4B (on a laptop) | 2.83 | 2.85 | 10 to 12 s |
-| Qwen2 0.5B (on a laptop) | not measured | 1.77 | 2.4 s |
-
-The judge is itself a model, so these figures are an indication; the time to answer is the mean of the chat call as Langfuse recorded it. The
-details, the limits and the runs are in [evals/README.md](evals/README.md), and how to run it yourself in [docs/evals.md](docs/evals.md).
-
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/images/evals/quality-dark.svg">
-  <img src="docs/images/evals/quality-light.svg" alt="Dots on a scale from 3 to 5 showing, for DeepSeek V4.1 Flash, Claude Opus 5.5, GPT-5 mini and Cyrano with DeepSeek, the average grade before and after the change of prompt: all rise to between 4.5 and 4.92" width="720">
-</picture>
-
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/images/evals/value-dark.svg">
-  <img src="docs/images/evals/value-light.svg" alt="Grade against the price of 1,000 replies: ERNIE 5.5 Flash, Nemotron 3 Ultra, LFM 3 and Qwen2 are free or local, DeepSeek costs about 0.09 USD, GPT-5 mini 1.79 USD and Claude Opus 49.63 USD with DeepSeek and Opus both at about 4.9" width="720">
-</picture>
-
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/images/evals/latency-dark.svg">
-  <img src="docs/images/evals/latency-light.svg" alt="Bars of the time to answer per model, from 2.1 seconds for DeepSeek to 11.6 seconds for GPT-5 mini, split between the wait for the first text and the end of the reply" width="720">
-</picture>
-
-The pictures are drawn from the published runs by `dotnet run --project tools/LivingPaper.Evals -- charts`, so they always show the figures of the files. The new prompt helps the models that follow a detailed instruction (DeepSeek, Opus, GPT-5 mini), Haiku a little, and a small local model not at all.
 
 ## Warnings
 

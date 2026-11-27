@@ -8,7 +8,7 @@ internal sealed record ChartsOptions(bool ShowHelp, string? OutFolder)
     public const string Usage = """
         Usage: dotnet run --project tools/LivingPaper.Evals -- charts [--out <folder>]
 
-        Draws the charts of the README from the published runs (evals/published/), their times (evals/published/latency.json) and the prices
+        Draws the charts of evals/README.md from the published runs (evals/published/), their times (evals/published/latency.json) and the prices
         (evals/prices.json): the grade before and after the change of prompt, the grade against the price, and the time to answer. Each chart is
         written twice, as an SVG for a light page and for a dark one, so GitHub shows the one that matches its theme.
 

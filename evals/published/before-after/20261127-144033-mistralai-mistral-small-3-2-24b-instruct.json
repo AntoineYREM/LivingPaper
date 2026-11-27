@@ -1,0 +1,1336 @@
+{
+  "schemaVersion": 1,
+  "id": "20261127-144033-mistralai-mistral-small-3-2-24b-instruct",
+  "startedAt": "2026-11-27T14:40:33.5767998+00:00",
+  "finishedAt": "2026-11-27T14:42:29.8502893+00:00",
+  "dataset": "before-after-cayley",
+  "bookId": "miss-cayley-s-adventures",
+  "character": "Lois Cayley",
+  "repeats": 1,
+  "chat": {
+    "provider": "mistral-small-32",
+    "model": "mistralai/mistral-small-3.2-24b-instruct"
+  },
+  "judge": {
+    "provider": "test-langfuse-claude-haiku-5.5",
+    "model": "anthropic/claude-haiku-5.5",
+    "promptVersion": "1",
+    "scoreName": "factual-accuracy"
+  },
+  "tokens": {
+    "chat": {
+      "input": 129257,
+      "cachedInput": 0,
+      "output": 1044
+    },
+    "judge": {
+      "input": 20040,
+      "cachedInput": 0,
+      "output": 9681
+    }
+  },
+  "results": [
+    {
+      "questionId": "cayley-direct-01",
+      "category": "direct",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply correctly names Schlangenbad, and its extra details (the Rhine region, spa guests) do not contradict the book.",
+      "failure": null,
+      "input": "To which German spa did the Cantankerous Old Lady need to travel?",
+      "reply": "Oh, Schlangenbad, of course! A delightful little place by the Rhine, full of ladies with complexions to preserve and gentlemen with wounds to mend. I must say, it was the perfect starting point for my adventures.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "To which German spa did the Cantankerous Old Lady need to travel?",
+        "passages": [
+          38,
+          13,
+          39,
+          14
+        ],
+        "distances": [
+          0.4326,
+          0.4342,
+          0.4864,
+          0.4884
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3414,
+          "cachedInput": 0,
+          "output": 48
+        },
+        "queryTokens": null,
+        "seconds": 2.8
+      }
+    },
+    {
+      "questionId": "cayley-direct-02",
+      "category": "direct",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply correctly names Malines as the station where the Count feared losing the compartment, and the extra detail about the reservation does not contradict the expected answer or the book as far as I know it.",
+      "failure": null,
+      "input": "On the train from Ostend, at which station did the Count fear you might have to give up your compartment?",
+      "reply": "At Malines, that's where the Count was so worried about losing our compartment. He was quite insistent that we might have to leave it there, though I assured him it was reserved all the way through.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "On the train from Ostend, at which station did the Count fear you might have to give up your compartment?",
+        "passages": [
+          27,
+          28,
+          31,
+          30
+        ],
+        "distances": [
+          0.3862,
+          0.3968,
+          0.4119,
+          0.4156
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3583,
+          "cachedInput": 0,
+          "output": 44
+        },
+        "queryTokens": null,
+        "seconds": 2.8
+      }
+    },
+    {
+      "questionId": "cayley-direct-03",
+      "category": "direct",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply gives the expected name, Cyrus W. Hitchcock, and its added remarks about him do not contradict the book.",
+      "failure": null,
+      "input": "What was the name of the American who asked you to meet him at Fraunheim?",
+      "reply": "Oh, that would be Mr. Cyrus W. Hitchcock. Quite the character, he was. Keen as mustard, that man.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What was the name of the American who asked you to meet him at Fraunheim?",
+        "passages": [
+          68,
+          73,
+          71,
+          74
+        ],
+        "distances": [
+          0.4135,
+          0.4298,
+          0.4358,
+          0.4549
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3631,
+          "cachedInput": 0,
+          "output": 29
+        },
+        "queryTokens": null,
+        "seconds": 1.5
+      }
+    },
+    {
+      "questionId": "cayley-direct-04",
+      "category": "direct",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply names silver sulphide, which matches the expected answer, and nothing in it contradicts the book.",
+      "failure": null,
+      "input": "What did you remember, from the college laboratory, that a blackish film like the one on the bangle might be?",
+      "reply": "Oh, I remembered a bit of chemistry from my college days. That blackish film on the bangle? It reminded me of silver sulphide, a blackish substance we sometimes came across in the laboratory. I wasn't an expert, mind you, but I had a hunch it might be the culprit.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What did you remember, from the college laboratory, that a blackish film like the one on the bangle might be?",
+        "passages": [
+          107,
+          109,
+          110,
+          112
+        ],
+        "distances": [
+          0.4391,
+          0.4527,
+          0.4736,
+          0.4806
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3943,
+          "cachedInput": 0,
+          "output": 65
+        },
+        "queryTokens": null,
+        "seconds": 3.5
+      }
+    },
+    {
+      "questionId": "cayley-direct-05",
+      "category": "direct",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply gives the expected figure of forty-eight nooses, and the extra details about counting during the climb do not contradict the book as far as known.",
+      "failure": null,
+      "input": "When you climbed up the rope to the top, how many nooses did you know there were?",
+      "reply": "I knew there were forty-eight nooses. I counted them as I climbed, one by one, to keep my mind off the dizzying height and the swaying rope. It was a harrowing experience, but I focused on the task at hand and trusted in my own strength and determination.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "When you climbed up the rope to the top, how many nooses did you know there were?",
+        "passages": [
+          138,
+          135,
+          140,
+          139
+        ],
+        "distances": [
+          0.3494,
+          0.414,
+          0.4451,
+          0.4515
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3692,
+          "cachedInput": 0,
+          "output": 61
+        },
+        "queryTokens": null,
+        "seconds": 3.7
+      }
+    },
+    {
+      "questionId": "cayley-direct-06",
+      "category": "direct",
+      "repeat": 1,
+      "score": 4,
+      "reason": "It correctly names Mr. Marmaduke Ashurst as the gentleman, but omits that he was sent by Lady Georgina, and the added detail that he is her brother does not contradict the book.",
+      "failure": null,
+      "input": "In Florence, who did you recognise the urbane old gentleman to be?",
+      "reply": "Oh, I must admit, I had a bit of a clever guess. I recognised him as Mr. Marmaduke Ashurst, Lady Georgina Fawley's brother. I suppose it was a bit of intuition, or perhaps just a lucky hunch. He was rather surprised that I knew who he was, but I couldn't resist teasing him a little.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "In Florence, who did you recognise the urbane old gentleman to be?",
+        "passages": [
+          159,
+          155,
+          154,
+          145
+        ],
+        "distances": [
+          0.3491,
+          0.3684,
+          0.37,
+          0.3766
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3643,
+          "cachedInput": 0,
+          "output": 76
+        },
+        "queryTokens": null,
+        "seconds": 2.7
+      }
+    },
+    {
+      "questionId": "cayley-direct-07",
+      "category": "direct",
+      "repeat": 1,
+      "score": 3,
+      "reason": "It names Dongola but then says she was sold at Khartoum, a wrong detail that conflicts with the expected answer.",
+      "failure": null,
+      "input": "In the oasis, where had the veiled Englishwoman first been sold to a man?",
+      "reply": "At Dongola, if I remember correctly. She was with Gordon's force at Khartoum, then carried off and sold there. Poor thing, she's been through quite an ordeal.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "In the oasis, where had the veiled Englishwoman first been sold to a man?",
+        "passages": [
+          196,
+          195,
+          203,
+          107
+        ],
+        "distances": [
+          0.3774,
+          0.4206,
+          0.47,
+          0.473
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3759,
+          "cachedInput": 0,
+          "output": 40
+        },
+        "queryTokens": null,
+        "seconds": 1.5
+      }
+    },
+    {
+      "questionId": "cayley-direct-08",
+      "category": "direct",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply correctly names the Maharajah of Moozuffernuggar as the man who came aboard ship, and its extra details do not contradict the book as I know it.",
+      "failure": null,
+      "input": "Aboard ship, who said he had come to superintend the preparations for your reception?",
+      "reply": "Oh, that was the Maharajah of Moozuffernuggar, the very same who invited Elsie and me to his palace. Quite the grand fellow, with a diamond in his turban and a suite that would put the Wise Men to shame. He was most insistent on ensuring our comfort and safety during our stay.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "Aboard ship, who said he had come to superintend the preparations for your reception?",
+        "passages": [
+          226,
+          241,
+          232,
+          225
+        ],
+        "distances": [
+          0.436,
+          0.4422,
+          0.4464,
+          0.4531
+        ],
+        "expectedFound": false,
+        "notices": null,
+        "replyTokens": {
+          "input": 3782,
+          "cachedInput": 0,
+          "output": 68
+        },
+        "queryTokens": null,
+        "seconds": 3.7
+      }
+    },
+    {
+      "questionId": "cayley-direct-09",
+      "category": "direct",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply gives the expected fact (her office at Florence) and nothing in it contradicts the book as far as I know.",
+      "failure": null,
+      "input": "At the trial, where did you say you had typed Mr. Ashurst's will?",
+      "reply": "In my office at Florence, dear. Though I must admit, I was rather flustered during the cross-examination. That cross-eyed Q.C. had a way of making one feel quite uncomfortable.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "At the trial, where did you say you had typed Mr. Ashurst's will?",
+        "passages": [
+          272,
+          327,
+          318,
+          166
+        ],
+        "distances": [
+          0.3213,
+          0.3504,
+          0.3744,
+          0.3763
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3638,
+          "cachedInput": 0,
+          "output": 42
+        },
+        "queryTokens": null,
+        "seconds": 2
+      }
+    },
+    {
+      "questionId": "cayley-direct-10",
+      "category": "direct",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply names the Spread Eagle, the same make as Lois's own typewriter, matching the expected answer, and the added certainty does not contradict the book.",
+      "failure": null,
+      "input": "On which make of typewriter did you say the suspect will had been written?",
+      "reply": "On a Spread Eagle, the same sort of machine as my own. I know the type perfectly, and I'm quite certain about it.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "On which make of typewriter did you say the suspect will had been written?",
+        "passages": [
+          315,
+          314,
+          272,
+          316
+        ],
+        "distances": [
+          0.4216,
+          0.4417,
+          0.4567,
+          0.463
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3706,
+          "cachedInput": 0,
+          "output": 29
+        },
+        "queryTokens": null,
+        "seconds": 1.2
+      }
+    },
+    {
+      "questionId": "cayley-new-subject-01",
+      "category": "new-subject",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply gives the name on the card, M. le Comte de Laroche-sur-Loiret, exactly as the expected answer states, with nothing contradicting the book.",
+      "failure": null,
+      "input": "What name was on the card the foreign gentleman handed to Lady Georgina?",
+      "reply": "M. le Comte de Laroche-sur-Loiret.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "To which German spa did the Cantankerous Old Lady need to travel?\nTo Schlangenbad.\nWhat name was on the card the foreign gentleman handed to Lady Georgina?\n---\nWhat name was on the card the foreign gentleman handed to Lady Georgina?",
+        "passages": [
+          38,
+          115,
+          22,
+          171
+        ],
+        "distances": [
+          0.3265,
+          0.4219,
+          0.4287,
+          0.4337
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3646,
+          "cachedInput": 0,
+          "output": 12
+        },
+        "queryTokens": null,
+        "seconds": 1
+      }
+    },
+    {
+      "questionId": "cayley-new-subject-02",
+      "category": "new-subject",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply names Girton, which matches the expected answer, and nothing in it contradicts the book.",
+      "failure": null,
+      "input": "When Harold and you compared colleges, which did you name as yours?",
+      "reply": "Girton.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "On the train from Ostend, at which station did the Count fear you might have to give up your compartment?\nAt Malines, he said.\nWhen Harold and you compared colleges, which did you name as yours?\n---\nWhen Harold and you compared colleges, which did you name as yours?",
+        "passages": [
+          31,
+          49,
+          295,
+          310
+        ],
+        "distances": [
+          0.3825,
+          0.4662,
+          0.4969,
+          0.507
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3653,
+          "cachedInput": 0,
+          "output": 5
+        },
+        "queryTokens": null,
+        "seconds": 0.9
+      }
+    },
+    {
+      "questionId": "cayley-new-subject-03",
+      "category": "new-subject",
+      "repeat": 1,
+      "score": 1,
+      "reason": "The reply says the official told her to fall in and pinned a race number on her, which contradicts the expected answer that the woman could not compete.",
+      "failure": null,
+      "input": "What did the German official finally say about your entering the race?",
+      "reply": "He said, \"Fall in, then, Fräulein Engländerin,\" and waved me into line. He even pinned a badge with a large number, 7, on my dress.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What was the name of the American who asked you to meet him at Fraunheim?\nCyrus W. Hitchcock, he was.\nWhat did the German official finally say about your entering the race?\n---\nWhat did the German official finally say about your entering the race?",
+        "passages": [
+          71,
+          83,
+          81,
+          85
+        ],
+        "distances": [
+          0.3432,
+          0.3889,
+          0.3946,
+          0.4062
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3680,
+          "cachedInput": 0,
+          "output": 41
+        },
+        "queryTokens": null,
+        "seconds": 2.2
+      }
+    },
+    {
+      "questionId": "cayley-new-subject-04",
+      "category": "new-subject",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply names the book as Revolution of the Heavenly Bodies, says it was astronomy, and implies it was mistaken for revolutionary material, matching the expected answer without contradicting the book.",
+      "failure": null,
+      "input": "At the Austrian frontier, which book caused your trunks to be held back?",
+      "reply": "\"Revolution of the Heavenly Bodies\"! Can you imagine, Elsie, a conspirator? It was astronomy, not revolution.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What did you remember, from the college laboratory, that a blackish film like the one on the bangle might be?\nSulphide of silver, I remembered.\nAt the Austrian frontier, which book caused your trunks to be held back?\n---\nAt the Austrian frontier, which book caused your trunks to be held back?",
+        "passages": [
+          107,
+          151,
+          176,
+          27
+        ],
+        "distances": [
+          0.446,
+          0.4484,
+          0.5181,
+          0.5243
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3718,
+          "cachedInput": 0,
+          "output": 30
+        },
+        "queryTokens": null,
+        "seconds": 1.9
+      }
+    },
+    {
+      "questionId": "cayley-new-subject-05",
+      "category": "new-subject",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply names the Daily Telephone, matching the expected answer, and the added detail that Mr. Elworthy runs it is consistent with the book.",
+      "failure": null,
+      "input": "Which newspaper offered to send you to Egypt to write articles?",
+      "reply": "The Daily Telephone, Mr. Elworthy's paper.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "When you climbed up the rope to the top, how many nooses did you know there were?\nForty-eight, and I counted them.\nWhich newspaper offered to send you to Egypt to write articles?\n---\nWhich newspaper offered to send you to Egypt to write articles?",
+        "passages": [
+          138,
+          180,
+          206,
+          190
+        ],
+        "distances": [
+          0.4189,
+          0.4503,
+          0.4987,
+          0.505
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3757,
+          "cachedInput": 0,
+          "output": 13
+        },
+        "queryTokens": null,
+        "seconds": 1.3
+      }
+    },
+    {
+      "questionId": "cayley-new-subject-06",
+      "category": "new-subject",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply names Bombay, which matches the expected answer and contradicts nothing in the book.",
+      "failure": null,
+      "input": "To which city did your arrangement with your newspaper proprietor take you from Suez?",
+      "reply": "Bombay.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "In Florence, who did you recognise the urbane old gentleman to be?\nMr. Marmaduke Ashurst.\nTo which city did your arrangement with your newspaper proprietor take you from Suez?\n---\nTo which city did your arrangement with your newspaper proprietor take you from Suez?",
+        "passages": [
+          159,
+          206,
+          207,
+          180
+        ],
+        "distances": [
+          0.3247,
+          0.4176,
+          0.5043,
+          0.5179
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3883,
+          "cachedInput": 0,
+          "output": 4
+        },
+        "queryTokens": null,
+        "seconds": 1.1
+      }
+    },
+    {
+      "questionId": "cayley-new-subject-07",
+      "category": "new-subject",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply states that she had never held a gun before, which matches the expected answer and nothing in it contradicts the book.",
+      "failure": null,
+      "input": "Before the tiger hunt, what did you say you had never held in your life?",
+      "reply": "A gun, in my born days before.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "In the oasis, where had the veiled Englishwoman first been sold to a man?\nTo a man at Dongola, she told us.\nBefore the tiger hunt, what did you say you had never held in your life?\n---\nBefore the tiger hunt, what did you say you had never held in your life?",
+        "passages": [
+          196,
+          247,
+          244,
+          258
+        ],
+        "distances": [
+          0.3351,
+          0.4121,
+          0.4537,
+          0.455
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3531,
+          "cachedInput": 0,
+          "output": 10
+        },
+        "queryTokens": null,
+        "seconds": 0.9
+      }
+    },
+    {
+      "questionId": "cayley-new-subject-08",
+      "category": "new-subject",
+      "repeat": 1,
+      "score": 1,
+      "reason": "The reply says Mr. Ashurst made his money on the stock exchange, which contradicts the book: Lady Georgina said he made his money in soap and cocoa.",
+      "failure": null,
+      "input": "In what did Lady Georgina say Mr. Ashurst had made his money?",
+      "reply": "She said he had made his money in the stock exchange.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "Aboard ship, who said he had come to superintend the preparations for your reception?\nThe Maharajah of Moozuffernuggar.\nIn what did Lady Georgina say Mr. Ashurst had made his money?\n---\nIn what did Lady Georgina say Mr. Ashurst had made his money?",
+        "passages": [
+          232,
+          169,
+          160,
+          50
+        ],
+        "distances": [
+          0.3336,
+          0.3517,
+          0.354,
+          0.3732
+        ],
+        "expectedFound": false,
+        "notices": null,
+        "replyTokens": {
+          "input": 3697,
+          "cachedInput": 0,
+          "output": 13
+        },
+        "queryTokens": null,
+        "seconds": 1.1
+      }
+    },
+    {
+      "questionId": "cayley-new-subject-09",
+      "category": "new-subject",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply names the Maharajah of Moozuffernuggar as the caller and her discomfort matches the question; the added remark about walls having ears contradicts nothing in the book.",
+      "failure": null,
+      "input": "After your day in court, who came in a carriage to call on you, to your discomfort?",
+      "reply": "The Maharajah of Moozuffernuggar, though I was rather put out by the whole affair. Walls have ears, you know, and I had no wish for any more scandal.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "At the trial, where did you say you had typed Mr. Ashurst's will?\nIn my office at Florence.\nAfter your day in court, who came in a carriage to call on you, to your discomfort?\n---\nAfter your day in court, who came in a carriage to call on you, to your discomfort?",
+        "passages": [
+          272,
+          290,
+          295,
+          276
+        ],
+        "distances": [
+          0.3004,
+          0.4272,
+          0.4285,
+          0.4358
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3707,
+          "cachedInput": 0,
+          "output": 40
+        },
+        "queryTokens": null,
+        "seconds": 2.1
+      }
+    },
+    {
+      "questionId": "cayley-new-subject-10",
+      "category": "new-subject",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply gives the expected fact, the central drawer on the left-hand side, and contradicts nothing in the book.",
+      "failure": null,
+      "input": "Behind which drawer of the desk was the secret hiding place of the real will?",
+      "reply": "The central drawer on the left-hand side.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "On which make of typewriter did you say the suspect will had been written?\nA Spread Eagle, like my own.\nBehind which drawer of the desk was the secret hiding place of the real will?\n---\nBehind which drawer of the desk was the secret hiding place of the real will?",
+        "passages": [
+          315,
+          319,
+          322,
+          271
+        ],
+        "distances": [
+          0.3228,
+          0.4084,
+          0.4361,
+          0.4406
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3756,
+          "cachedInput": 0,
+          "output": 10
+        },
+        "queryTokens": null,
+        "seconds": 0.6
+      }
+    },
+    {
+      "questionId": "cayley-short-follow-up-01",
+      "category": "short-follow-up",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply states that she tore the cheque into very small pieces, matching the expected answer exactly with no contradiction.",
+      "failure": null,
+      "input": "What did she do with it when you refused?",
+      "reply": "She tore it up into very small pieces.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "How did Lady Georgina try to reward you for saving her jewels?\nWith a cheque.\nWhat did she do with it when you refused?\n---\nWhat did she do with it when you refused?",
+        "passages": [
+          35,
+          60,
+          61,
+          62
+        ],
+        "distances": [
+          0.3363,
+          0.4377,
+          0.4554,
+          0.4585
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3603,
+          "cachedInput": 0,
+          "output": 10
+        },
+        "queryTokens": null,
+        "seconds": 1
+      }
+    },
+    {
+      "questionId": "cayley-short-follow-up-02",
+      "category": "short-follow-up",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply gives the expected two pounds, and the extra detail about twopence in London is not known to contradict the book.",
+      "failure": null,
+      "input": "And how much money did you have in your pocket then?",
+      "reply": "Two pounds. Quite a fortune, considering I had only twopence when I left London.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "How did you leave Schlangenbad?\nBy the coach, on my own.\nAnd how much money did you have in your pocket then?\n---\nAnd how much money did you have in your pocket then?",
+        "passages": [
+          37,
+          63,
+          4,
+          35
+        ],
+        "distances": [
+          0.4554,
+          0.4328,
+          0.4355,
+          0.4575
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3520,
+          "cachedInput": 0,
+          "output": 20
+        },
+        "queryTokens": null,
+        "seconds": 1.1
+      }
+    },
+    {
+      "questionId": "cayley-short-follow-up-03",
+      "category": "short-follow-up",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply states ten percent, which matches the expected answer exactly and contradicts nothing in the book.",
+      "failure": null,
+      "input": "What cut did you then propose on the orders you would bring him?",
+      "reply": "Ten percent.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What did Mr. Hitchcock offer you after the race?\nTo keep the Manitou bicycle.\nWhat cut did you then propose on the orders you would bring him?\n---\nWhat cut did you then propose on the orders you would bring him?",
+        "passages": [
+          93,
+          156,
+          229,
+          28
+        ],
+        "distances": [
+          0.2971,
+          0.4489,
+          0.45,
+          0.4616
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3789,
+          "cachedInput": 0,
+          "output": 4
+        },
+        "queryTokens": null,
+        "seconds": 0.8
+      }
+    },
+    {
+      "questionId": "cayley-short-follow-up-04",
+      "category": "short-follow-up",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply gives 400 marks, exactly the price stated in the expected answer, and contradicts nothing.",
+      "failure": null,
+      "input": "What price did you give them for it?",
+      "reply": "400 marks.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "Who admired your bicycle on the road and tried it?\nTwo Germans.\nWhat price did you give them for it?\n---\nWhat price did you give them for it?",
+        "passages": [
+          102,
+          93,
+          96,
+          95
+        ],
+        "distances": [
+          0.3951,
+          0.4087,
+          0.419,
+          0.428
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3836,
+          "cachedInput": 0,
+          "output": 6
+        },
+        "queryTokens": null,
+        "seconds": 0.7
+      }
+    },
+    {
+      "questionId": "cayley-short-follow-up-05",
+      "category": "short-follow-up",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply gives the expected fact of sharp-headed nails in the boots, and the extra details about dints and scratches do not contradict the book as I know it.",
+      "failure": null,
+      "input": "What was it about his boots that left marks?",
+      "reply": "They had sharp-headed nails, which made dints in the moist soil and scratched the smooth surface of the rock.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "When you went to find Harold on the mountain, how did you track him?\nBy his footprints.\nWhat was it about his boots that left marks?\n---\nWhat was it about his boots that left marks?",
+        "passages": [
+          131,
+          130,
+          132,
+          207
+        ],
+        "distances": [
+          0.3388,
+          0.5034,
+          0.5126,
+          0.5139
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3611,
+          "cachedInput": 0,
+          "output": 24
+        },
+        "queryTokens": null,
+        "seconds": 0.8
+      }
+    },
+    {
+      "questionId": "cayley-short-follow-up-06",
+      "category": "short-follow-up",
+      "repeat": 1,
+      "score": 1,
+      "reason": "The reply claims she said the towns were like a village under aliases, which contradicts the book's answer that she said they were like wall-paper.",
+      "failure": null,
+      "input": "What did you say it was just like?",
+      "reply": "Like a village under a number of aliases.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What did you think of the towns you passed on the Nile?\nAll the same: only the name differed.\nWhat did you say it was just like?\n---\nWhat did you say it was just like?",
+        "passages": [
+          186,
+          300,
+          25,
+          161
+        ],
+        "distances": [
+          0.3145,
+          0.475,
+          0.4845,
+          0.4895
+        ],
+        "expectedFound": false,
+        "notices": null,
+        "replyTokens": {
+          "input": 3527,
+          "cachedInput": 0,
+          "output": 10
+        },
+        "queryTokens": null,
+        "seconds": 1
+      }
+    },
+    {
+      "questionId": "cayley-short-follow-up-07",
+      "category": "short-follow-up",
+      "repeat": 1,
+      "score": 4,
+      "reason": "The reply correctly names Mr. Ashurst, the person Higginson was enticed from, but omits the alias Marmy.",
+      "failure": null,
+      "input": "From whom had he enticed him away?",
+      "reply": "Mr. Ashurst.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "Whom had Lord Southminster taken on as his courier?\nHigginson.\nFrom whom had he enticed him away?\n---\nFrom whom had he enticed him away?",
+        "passages": [
+          209,
+          40,
+          211,
+          212
+        ],
+        "distances": [
+          0.3082,
+          0.4633,
+          0.4683,
+          0.4684
+        ],
+        "expectedFound": false,
+        "notices": null,
+        "replyTokens": {
+          "input": 3583,
+          "cachedInput": 0,
+          "output": 6
+        },
+        "queryTokens": null,
+        "seconds": 0.6
+      }
+    },
+    {
+      "questionId": "cayley-short-follow-up-08",
+      "category": "short-follow-up",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply gives the expected fact that the rifle went off by itself, and the added detail about trembling and not being collected fits the scene without contradicting the book.",
+      "failure": null,
+      "input": "And had you really fired?",
+      "reply": "Oh, heavens no! The rifle went off all by itself. I was trembling like a leaf, not cool and collected at all.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "At the tiger hunt, what did your mahout cry out about you?\nThat the Mem Sahib was a great shikari.\nAnd had you really fired?\n---\nAnd had you really fired?",
+        "passages": [
+          255,
+          310,
+          322,
+          303
+        ],
+        "distances": [
+          0.3724,
+          0.5248,
+          0.5273,
+          0.5277
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3650,
+          "cachedInput": 0,
+          "output": 28
+        },
+        "queryTokens": null,
+        "seconds": 1.2
+      }
+    },
+    {
+      "questionId": "cayley-short-follow-up-09",
+      "category": "short-follow-up",
+      "repeat": 1,
+      "score": 5,
+      "reason": "6.30 is the same time as the expected answer, half past six, and nothing in the reply contradicts the book.",
+      "failure": null,
+      "input": "At what time was the detective due in Edinburgh, so that you had to marry before?",
+      "reply": "6.30.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "In Scotland, what did you answer when asked about your luggage?\nThat we had none.\nAt what time was the detective due in Edinburgh, so that you had to marry before?\n---\nAt what time was the detective due in Edinburgh, so that you had to marry before?",
+        "passages": [
+          299,
+          304,
+          309,
+          308
+        ],
+        "distances": [
+          0.3724,
+          0.4157,
+          0.4174,
+          0.4202
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3599,
+          "cachedInput": 0,
+          "output": 6
+        },
+        "queryTokens": null,
+        "seconds": 0.7
+      }
+    },
+    {
+      "questionId": "cayley-short-follow-up-10",
+      "category": "short-follow-up",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply names Higginson as the forger and Lord Southminster as the one who accepted the will, matching the expected answer without contradiction.",
+      "failure": null,
+      "input": "Who did he say had forged the false will, and who had accepted it?",
+      "reply": "He accused Higginson of forging the will and Lord Southminster of accepting it.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "Whom did the solicitor threaten with prosecution to make him confess?\nWhite.\nWho did he say had forged the false will, and who had accepted it?\n---\nWho did he say had forged the false will, and who had accepted it?",
+        "passages": [
+          327,
+          285,
+          284,
+          317
+        ],
+        "distances": [
+          0.3488,
+          0.4121,
+          0.4149,
+          0.4217
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3814,
+          "cachedInput": 0,
+          "output": 19
+        },
+        "queryTokens": null,
+        "seconds": 1.3
+      }
+    },
+    {
+      "questionId": "cayley-precise-follow-up-01",
+      "category": "precise-follow-up",
+      "repeat": 1,
+      "score": 4,
+      "reason": "The reply describes the expected adventuresses (middle-class women chasing wealthy men for money) without naming them, and the extra details don't clearly contradict the book.",
+      "failure": null,
+      "input": "I mean her sharp hints at Schlangenbad: what sort of women did she go on about?",
+      "reply": "Oh, those dreadful generalised hints! She was on about middle-class young women running after young men of birth and fortune. She claimed they'd stoop to anything to catch five hundred thousand, and that the clever ones were the worst, pretending to go in for intellectual companionship. It was all rather pointed, I must say.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "How did Lady Georgina behave when Harold paid you attention?\nI'm afraid it has slipped my mind. Do ask me something more precise.\nI mean her sharp hints at Schlangenbad: what sort of women did she go on about?\n---\nI mean her sharp hints at Schlangenbad: what sort of women did she go on about?",
+        "passages": [
+          52,
+          39,
+          38,
+          17
+        ],
+        "distances": [
+          0.2742,
+          0.3794,
+          0.3848,
+          0.3892
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3411,
+          "cachedInput": 0,
+          "output": 69
+        },
+        "queryTokens": null,
+        "seconds": 2.1
+      }
+    },
+    {
+      "questionId": "cayley-precise-follow-up-02",
+      "category": "precise-follow-up",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply names Lady Georgina as the matron of experience who ought to have protected the two girls, exactly matching the expected answer.",
+      "failure": null,
+      "input": "I mean when he asked to stay: who did you say ought to have been there to protect you two girls?",
+      "reply": "I said that Lady Georgina, as a matron of experience, ought to have been there to protect us.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What happened when Harold came to see you at the chalet?\nI'm afraid it has slipped my mind. Do ask me something more precise.\nI mean when he asked to stay: who did you say ought to have been there to protect you two girls?\n---\nI mean when he asked to stay: who did you say ought to have been there to protect you two girls?",
+        "passages": [
+          52,
+          126,
+          9,
+          202
+        ],
+        "distances": [
+          0.3698,
+          0.4718,
+          0.4865,
+          0.4965
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3690,
+          "cachedInput": 0,
+          "output": 24
+        },
+        "queryTokens": null,
+        "seconds": 1.2
+      }
+    },
+    {
+      "questionId": "cayley-precise-follow-up-03",
+      "category": "precise-follow-up",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply correctly states that Ashurst said his sister had taken her as her maid, and the added remark about being a paragon of virtue does not contradict the expected answer.",
+      "failure": null,
+      "input": "I mean the story of your coming to Germany, before he knew it was you: as what did he say his sister had taken you?",
+      "reply": "As her maid, the dear old thing. I must say, I rather liked the idea of being a paragon of virtue, though I suspect he didn't mean it as a compliment.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What did Mr. Ashurst say about a young woman while you worked for him?\nI'm afraid it has slipped my mind. Do ask me something more precise.\nI mean the story of your coming to Germany, before he knew it was you: as what did he say his sister had taken you?\n---\nI mean the story of your coming to Germany, before he knew it was you: as what did he say his sister had taken you?",
+        "passages": [
+          171,
+          112,
+          12,
+          89
+        ],
+        "distances": [
+          0.3849,
+          0.4551,
+          0.4592,
+          0.4624
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 4187,
+          "cachedInput": 0,
+          "output": 40
+        },
+        "queryTokens": null,
+        "seconds": 1.4
+      }
+    },
+    {
+      "questionId": "cayley-precise-follow-up-04",
+      "category": "precise-follow-up",
+      "repeat": 1,
+      "score": 4,
+      "reason": "It names Harold as the man she was backing, which implies the wrong fellow, but it adds details (Harold getting nothing, the inheritance) that I cannot confirm against the book.",
+      "failure": null,
+      "input": "I mean when he proposed and you refused: on whom did he say you were staking your money?",
+      "reply": "Ah, that wretched man! He claimed I was backing Harold, expecting him to inherit Mr. Ashurst's fortune. He insisted Harold would get nothing, and that I'd be better off with him—imagine the nerve! As if I'd marry a lump of dough, let alone him.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What did Lord Southminster want from you?\nI'm afraid it has slipped my mind. Do ask me something more precise.\nI mean when he proposed and you refused: on whom did he say you were staking your money?\n---\nI mean when he proposed and you refused: on whom did he say you were staking your money?",
+        "passages": [
+          227,
+          228,
+          70,
+          60
+        ],
+        "distances": [
+          0.3936,
+          0.4764,
+          0.4776,
+          0.4786
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3889,
+          "cachedInput": 0,
+          "output": 62
+        },
+        "queryTokens": null,
+        "seconds": 1.9
+      }
+    },
+    {
+      "questionId": "cayley-precise-follow-up-05",
+      "category": "precise-follow-up",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply gives the expected condition (only if he were poor and without expectations), and the added reason about avoiding suspicion of mercenary motives does not contradict the book.",
+      "failure": null,
+      "input": "I mean when you tried to explain your engagement: on what condition had you said you would marry Harold?",
+      "reply": "Oh, that! I said I would only marry him if he were poor and without expectations. I couldn't bear the thought of being suspected of marrying him for his money.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What did the lawyer make you admit in court?\nI'm afraid it has slipped my mind. Do ask me something more precise.\nI mean when you tried to explain your engagement: on what condition had you said you would marry Harold?\n---\nI mean when you tried to explain your engagement: on what condition had you said you would marry Harold?",
+        "passages": [
+          293,
+          280,
+          294,
+          295
+        ],
+        "distances": [
+          0.3499,
+          0.3727,
+          0.378,
+          0.3988
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3729,
+          "cachedInput": 0,
+          "output": 36
+        },
+        "queryTokens": null,
+        "seconds": 1.7
+      }
+    }
+  ],
+  "label": "q95-mistral-v3-cayley-facts",
+  "promptsHash": "0d1b5f463001",
+  "retrieval": {
+    "embeddingModel": "bge-m3",
+    "queryMode": "recent",
+    "passages": 4
+  }
+}

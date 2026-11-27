@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 360" width="720" height="360" role="img" aria-label="Right and false replies, from the start to the final version, for two models" font-family="system-ui, sans-serif">
+<rect width="720" height="360" fill="#1a1a19"/>
+<text x="24" y="30" font-size="16" fill="#f0efec" text-anchor="start" font-weight="600">Answers about the books, from the start to the final version</text>
+<text x="24" y="50" font-size="12" fill="#c3c2b7" text-anchor="start" font-weight="400">140 factual questions on four books, % of the replies, graded by a language model</text>
+<circle cx="28.0" cy="68.0" r="4.5" fill="#3987e5" stroke="#1a1a19" stroke-width="2"/>
+<text x="40" y="72" font-size="12" fill="#c3c2b7" text-anchor="start" font-weight="400">DeepSeek V4.1 Flash</text>
+<circle cx="208.0" cy="68.0" r="4.5" fill="#d95926" stroke="#1a1a19" stroke-width="2"/>
+<text x="220" y="72" font-size="12" fill="#c3c2b7" text-anchor="start" font-weight="400">Mistral Small 3.2</text>
+<text x="24" y="94" font-size="13" fill="#f0efec" text-anchor="start" font-weight="600">Right answers (higher is better)</text>
+<line x1="56" y1="306.0" x2="306" y2="306.0" stroke="#343432" stroke-width="1"/>
+<text x="48" y="310.0" font-size="11" fill="#c3c2b7" text-anchor="end" font-weight="400">0</text>
+<line x1="56" y1="256.5" x2="306" y2="256.5" stroke="#343432" stroke-width="1"/>
+<text x="48" y="260.5" font-size="11" fill="#c3c2b7" text-anchor="end" font-weight="400">25</text>
+<line x1="56" y1="207.0" x2="306" y2="207.0" stroke="#343432" stroke-width="1"/>
+<text x="48" y="211.0" font-size="11" fill="#c3c2b7" text-anchor="end" font-weight="400">50</text>
+<line x1="56" y1="157.5" x2="306" y2="157.5" stroke="#343432" stroke-width="1"/>
+<text x="48" y="161.5" font-size="11" fill="#c3c2b7" text-anchor="end" font-weight="400">75</text>
+<line x1="56" y1="108.0" x2="306" y2="108.0" stroke="#343432" stroke-width="1"/>
+<text x="48" y="112.0" font-size="11" fill="#c3c2b7" text-anchor="end" font-weight="400">100</text>
+<text x="70.0" y="324" font-size="12" fill="#c3c2b7" text-anchor="middle" font-weight="400">V0</text>
+<text x="144.0" y="324" font-size="12" fill="#c3c2b7" text-anchor="middle" font-weight="400">V1</text>
+<text x="218.0" y="324" font-size="12" fill="#c3c2b7" text-anchor="middle" font-weight="400">V2</text>
+<text x="292.0" y="324" font-size="12" fill="#c3c2b7" text-anchor="middle" font-weight="400">V3</text>
+<polyline points="70.0,184.4 144.0,141.9 218.0,158.9 292.0,151.8" fill="none" stroke="#3987e5" stroke-width="2" stroke-linejoin="round"/>
+<circle cx="70.0" cy="184.4" r="4.5" fill="#3987e5" stroke="#1a1a19" stroke-width="2"/>
+<circle cx="144.0" cy="141.9" r="4.5" fill="#3987e5" stroke="#1a1a19" stroke-width="2"/>
+<circle cx="218.0" cy="158.9" r="4.5" fill="#3987e5" stroke="#1a1a19" stroke-width="2"/>
+<circle cx="292.0" cy="151.8" r="4.5" fill="#3987e5" stroke="#1a1a19" stroke-width="2"/>
+<polyline points="70.0,216.9 144.0,157.5 218.0,158.9 292.0,153.3" fill="none" stroke="#d95926" stroke-width="2" stroke-linejoin="round"/>
+<circle cx="70.0" cy="216.9" r="4.5" fill="#d95926" stroke="#1a1a19" stroke-width="2"/>
+<circle cx="144.0" cy="157.5" r="4.5" fill="#d95926" stroke="#1a1a19" stroke-width="2"/>
+<circle cx="218.0" cy="158.9" r="4.5" fill="#d95926" stroke="#1a1a19" stroke-width="2"/>
+<circle cx="292.0" cy="153.3" r="4.5" fill="#d95926" stroke="#1a1a19" stroke-width="2"/>
+<text x="70.0" y="174.4" font-size="12" fill="#f0efec" text-anchor="middle" font-weight="600">61%</text>
+<text x="70.0" y="235.9" font-size="12" fill="#f0efec" text-anchor="middle" font-weight="600">45%</text>
+<text x="302.0" y="149.8" font-size="12" fill="#f0efec" text-anchor="start" font-weight="600">78%</text>
+<text x="302.0" y="165.3" font-size="12" fill="#f0efec" text-anchor="start" font-weight="600">77%</text>
+<text x="378" y="94" font-size="13" fill="#f0efec" text-anchor="start" font-weight="600">False statements (lower is better)</text>
+<line x1="410" y1="306.0" x2="660" y2="306.0" stroke="#343432" stroke-width="1"/>
+<text x="402" y="310.0" font-size="11" fill="#c3c2b7" text-anchor="end" font-weight="400">0</text>
+<line x1="410" y1="256.5" x2="660" y2="256.5" stroke="#343432" stroke-width="1"/>
+<text x="402" y="260.5" font-size="11" fill="#c3c2b7" text-anchor="end" font-weight="400">25</text>
+<line x1="410" y1="207.0" x2="660" y2="207.0" stroke="#343432" stroke-width="1"/>
+<text x="402" y="211.0" font-size="11" fill="#c3c2b7" text-anchor="end" font-weight="400">50</text>
+<line x1="410" y1="157.5" x2="660" y2="157.5" stroke="#343432" stroke-width="1"/>
+<text x="402" y="161.5" font-size="11" fill="#c3c2b7" text-anchor="end" font-weight="400">75</text>
+<line x1="410" y1="108.0" x2="660" y2="108.0" stroke="#343432" stroke-width="1"/>
+<text x="402" y="112.0" font-size="11" fill="#c3c2b7" text-anchor="end" font-weight="400">100</text>
+<text x="424.0" y="324" font-size="12" fill="#c3c2b7" text-anchor="middle" font-weight="400">V0</text>
+<text x="498.0" y="324" font-size="12" fill="#c3c2b7" text-anchor="middle" font-weight="400">V1</text>
+<text x="572.0" y="324" font-size="12" fill="#c3c2b7" text-anchor="middle" font-weight="400">V2</text>
+<text x="646.0" y="324" font-size="12" fill="#c3c2b7" text-anchor="middle" font-weight="400">V3</text>
+<polyline points="424.0,265.0 498.0,284.8 572.0,303.2 646.0,296.1" fill="none" stroke="#3987e5" stroke-width="2" stroke-linejoin="round"/>
+<circle cx="424.0" cy="265.0" r="4.5" fill="#3987e5" stroke="#1a1a19" stroke-width="2"/>
+<circle cx="498.0" cy="284.8" r="4.5" fill="#3987e5" stroke="#1a1a19" stroke-width="2"/>
+<circle cx="572.0" cy="303.2" r="4.5" fill="#3987e5" stroke="#1a1a19" stroke-width="2"/>
+<circle cx="646.0" cy="296.1" r="4.5" fill="#3987e5" stroke="#1a1a19" stroke-width="2"/>
+<polyline points="424.0,224.0 498.0,273.5 572.0,280.5 646.0,277.7" fill="none" stroke="#d95926" stroke-width="2" stroke-linejoin="round"/>
+<circle cx="424.0" cy="224.0" r="4.5" fill="#d95926" stroke="#1a1a19" stroke-width="2"/>
+<circle cx="498.0" cy="273.5" r="4.5" fill="#d95926" stroke="#1a1a19" stroke-width="2"/>
+<circle cx="572.0" cy="280.5" r="4.5" fill="#d95926" stroke="#1a1a19" stroke-width="2"/>
+<circle cx="646.0" cy="277.7" r="4.5" fill="#d95926" stroke="#1a1a19" stroke-width="2"/>
+<text x="424.0" y="284.0" font-size="12" fill="#f0efec" text-anchor="middle" font-weight="600">21%</text>
+<text x="424.0" y="214.0" font-size="12" fill="#f0efec" text-anchor="middle" font-weight="600">41%</text>
+<text x="656.0" y="300.1" font-size="12" fill="#f0efec" text-anchor="start" font-weight="600">5%</text>
+<text x="656.0" y="281.7" font-size="12" fill="#f0efec" text-anchor="start" font-weight="600">14%</text>
+<text x="24" y="346" font-size="11" fill="#c3c2b7" text-anchor="start" font-weight="400">V0: whole story · V1: passages of the book · V2: V1 and says when it does not know · V3: V2 and two searches</text>
+</svg>

@@ -1,0 +1,574 @@
+{
+  "schemaVersion": 1,
+  "dataset": "before-after-bovary",
+  "description": "Before-and-after measure of PAPER-95, Emma Bovary: 10 direct questions, 10 on a new subject after another one, 10 short follow-ups and 5 more precise ones after an admission. Written on 27 November 2026 from passages that no earlier question used, before any search or reply with them, and frozen. The earlier replies of the conversations were written by hand.",
+  "bookId": "madame-bovary",
+  "character": "Emma Bovary",
+  "items": [
+    {
+      "id": "bovary-direct-01",
+      "category": "direct",
+      "input": "At the convent, what did you do at confession so as to stay there longer?",
+      "expectedOutput": "She invented little sins.",
+      "passageQuotes": [
+        "she invented little sins"
+      ]
+    },
+    {
+      "id": "bovary-direct-02",
+      "category": "direct",
+      "input": "At the ball, what jewels did the ladies wear on their bodices and arms?",
+      "expectedOutput": "Diamond brooches and medallion bracelets, with lace trimmings.",
+      "passageQuotes": [
+        "medallion bracelets"
+      ]
+    },
+    {
+      "id": "bovary-direct-03",
+      "category": "direct",
+      "input": "At the end of February at Tostes, what did your father bring in memory of his cure?",
+      "expectedOutput": "A superb turkey.",
+      "passageQuotes": [
+        "a superb turkey"
+      ]
+    },
+    {
+      "id": "bovary-direct-04",
+      "category": "direct",
+      "input": "At your first dinner at Yonville, what music did Léon say he preferred?",
+      "expectedOutput": "German music, which makes you dream.",
+      "passageQuotes": [
+        "German music; that which makes you dream"
+      ]
+    },
+    {
+      "id": "bovary-direct-05",
+      "category": "direct",
+      "input": "When you resolved to be a good wife, from whom did you take your daughter back?",
+      "expectedOutput": "From the nurse.",
+      "passageQuotes": [
+        "She took Berthe from nurse"
+      ]
+    },
+    {
+      "id": "bovary-direct-06",
+      "category": "direct",
+      "input": "On your walk with Rodolphe, which merchant kept beside you and tried to join the talk?",
+      "expectedOutput": "Monsieur Lheureux.",
+      "passageQuotes": [
+        "Monsieur Lheureux was accompanying them"
+      ]
+    },
+    {
+      "id": "bovary-direct-07",
+      "category": "direct",
+      "input": "After your first ride with Rodolphe, what did you keep repeating to yourself in your room?",
+      "expectedOutput": "I have a lover!",
+      "passageQuotes": [
+        "I have a lover! a lover!"
+      ]
+    },
+    {
+      "id": "bovary-direct-08",
+      "category": "direct",
+      "input": "As you prepared to go away, what garment did you ask Lheureux for?",
+      "expectedOutput": "A large lined cloak with a deep collar.",
+      "passageQuotes": [
+        "a large lined cloak with a deep collar"
+      ]
+    },
+    {
+      "id": "bovary-direct-09",
+      "category": "direct",
+      "input": "At the opera in Rouen, when leaving was proposed, who wanted to stay because it was going to be tragic?",
+      "expectedOutput": "Charles.",
+      "passageQuotes": [
+        "this is going to be tragic"
+      ]
+    },
+    {
+      "id": "bovary-direct-10",
+      "category": "direct",
+      "input": "When the bailiff drew up the inventory, which object of your husband's did he not write down, as an instrument of his profession?",
+      "expectedOutput": "The phrenological head.",
+      "passageQuotes": [
+        "did not write down the phrenological head"
+      ]
+    },
+    {
+      "id": "bovary-new-subject-01",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "At the convent, what did you do at confession so as to stay there longer?"
+        },
+        {
+          "role": "assistant",
+          "content": "I invented little sins, to stay kneeling longer."
+        }
+      ],
+      "input": "At Tostes, what did your mother-in-law think of your ways?",
+      "expectedOutput": "That they were too fine for their position.",
+      "passageQuotes": [
+        "too fine for their position"
+      ]
+    },
+    {
+      "id": "bovary-new-subject-02",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "At the ball, what jewels did the ladies wear on their bodices and arms?"
+        },
+        {
+          "role": "assistant",
+          "content": "Lace, diamond brooches and medallion bracelets."
+        }
+      ],
+      "input": "At the ball, which waltzer came a second time to ask you to dance?",
+      "expectedOutput": "The Viscount.",
+      "passageQuotes": [
+        "familiarly called Viscount"
+      ]
+    },
+    {
+      "id": "bovary-new-subject-03",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "At the end of February at Tostes, what did your father bring in memory of his cure?"
+        },
+        {
+          "role": "assistant",
+          "content": "A superb turkey."
+        }
+      ],
+      "input": "When the priest walked into the inn kitchen at twilight, what did the landlady offer him?",
+      "expectedOutput": "A thimbleful of cassis or a glass of wine.",
+      "passageQuotes": [
+        "A thimbleful of Cassis"
+      ]
+    },
+    {
+      "id": "bovary-new-subject-04",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "At your first dinner at Yonville, what music did Léon say he preferred?"
+        },
+        {
+          "role": "assistant",
+          "content": "German music, the kind that makes you dream."
+        }
+      ],
+      "input": "At Yonville, how often did Léon pass your window, and where was he going?",
+      "expectedOutput": "Twice a day, from his office to the Lion d'Or.",
+      "passageQuotes": [
+        "Twice a day Léon went from his office"
+      ]
+    },
+    {
+      "id": "bovary-new-subject-05",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "When you resolved to be a good wife, from whom did you take your daughter back?"
+        },
+        {
+          "role": "assistant",
+          "content": "I took Berthe back from the nurse."
+        }
+      ],
+      "input": "After Léon left for Paris, what happened in the sky as you watched from your window?",
+      "expectedOutput": "Clouds gathered and rain suddenly fell, then the sun came back.",
+      "passageQuotes": [
+        "suddenly the rain fell"
+      ]
+    },
+    {
+      "id": "bovary-new-subject-06",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "On your walk with Rodolphe, which merchant kept beside you and tried to join the talk?"
+        },
+        {
+          "role": "assistant",
+          "content": "That Lheureux, the draper."
+        }
+      ],
+      "input": "During the banquet of the agricultural show, what was Rodolphe thinking of?",
+      "expectedOutput": "Of Emma: what she had said and the line of her lips.",
+      "passageQuotes": [
+        "He was dreaming of what she had said"
+      ]
+    },
+    {
+      "id": "bovary-new-subject-07",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "After your first ride with Rodolphe, what did you keep repeating to yourself in your room?"
+        },
+        {
+          "role": "assistant",
+          "content": "I have a lover! A lover!"
+        }
+      ],
+      "input": "What motto was on the seal you gave Rodolphe?",
+      "expectedOutput": "Amor nel cor.",
+      "passageQuotes": [
+        "Amor nel cor"
+      ]
+    },
+    {
+      "id": "bovary-new-subject-08",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "As you prepared to go away, what garment did you ask Lheureux for?"
+        },
+        {
+          "role": "assistant",
+          "content": "A large cloak with a deep collar."
+        }
+      ],
+      "input": "Who advised your husband to take you to the theatre in Rouen to hear Lagardy?",
+      "expectedOutput": "Homais, the chemist.",
+      "passageQuotes": [
+        "advised Charles to give madame some distraction"
+      ]
+    },
+    {
+      "id": "bovary-new-subject-09",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "At the opera in Rouen, when leaving was proposed, who wanted to stay because it was going to be tragic?"
+        },
+        {
+          "role": "assistant",
+          "content": "Charles wanted to stay."
+        }
+      ],
+      "input": "What book did Homais shake out of Justin's pocket?",
+      "expectedOutput": "Conjugal Love, with illustrations.",
+      "passageQuotes": [
+        "CONJUGAL—LOVE"
+      ]
+    },
+    {
+      "id": "bovary-new-subject-10",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "When the bailiff drew up the inventory, which object of your husband's did he not write down, as an instrument of his profession?"
+        },
+        {
+          "role": "assistant",
+          "content": "His phrenological head."
+        }
+      ],
+      "input": "Coming out of the church in tears, whom did you think you recognised driving a tilbury with a black horse?",
+      "expectedOutput": "The Viscount.",
+      "passageQuotes": [
+        "Why, it was he—the Viscount"
+      ]
+    },
+    {
+      "id": "bovary-short-follow-up-01",
+      "category": "short-follow-up",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "In your weariness at Tostes, did you go on playing music?"
+        },
+        {
+          "role": "assistant",
+          "content": "No, I gave it up."
+        }
+      ],
+      "input": "What could you never do, that made practising useless?",
+      "expectedOutput": "Play at a concert, in a velvet gown, on an Erard piano.",
+      "passageQuotes": [
+        "ivory keys of an Erard"
+      ]
+    },
+    {
+      "id": "bovary-short-follow-up-02",
+      "category": "short-follow-up",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "Who walked back with you along the muddy path to your garden?"
+        },
+        {
+          "role": "assistant",
+          "content": "Léon."
+        }
+      ],
+      "input": "And where did he go to lie down afterwards?",
+      "expectedOutput": "To La Pâture, at the top of the Argueil hills, under the pines.",
+      "passageQuotes": [
+        "La Pâture at the top of the Argueil hills"
+      ]
+    },
+    {
+      "id": "bovary-short-follow-up-03",
+      "category": "short-follow-up",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "At the church, whom had you gone to speak with?"
+        },
+        {
+          "role": "assistant",
+          "content": "The curé."
+        }
+      ],
+      "input": "What were the boys being asked as you walked home?",
+      "expectedOutput": "Are you a Christian?",
+      "passageQuotes": [
+        "Are you a Christian"
+      ]
+    },
+    {
+      "id": "bovary-short-follow-up-04",
+      "category": "short-follow-up",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "At the agricultural show, what did Rodolphe do with his hand while the councillor spoke?"
+        },
+        {
+          "role": "assistant",
+          "content": "He let it fall on mine."
+        }
+      ],
+      "input": "And what did you do?",
+      "expectedOutput": "She took her hand away.",
+      "passageQuotes": [
+        "She took hers away"
+      ]
+    },
+    {
+      "id": "bovary-short-follow-up-05",
+      "category": "short-follow-up",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "What operation did the chemist urge your husband to try?"
+        },
+        {
+          "role": "assistant",
+          "content": "To cure a club-foot."
+        }
+      ],
+      "input": "On whom?",
+      "expectedOutput": "Hippolyte, of the Lion d'Or.",
+      "passageQuotes": [
+        "poor Hippolyte of the"
+      ]
+    },
+    {
+      "id": "bovary-short-follow-up-06",
+      "category": "short-follow-up",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "While Hippolyte lay sick, which man of the church kept coming back to him?"
+        },
+        {
+          "role": "assistant",
+          "content": "The curé, Monsieur Bournisien."
+        }
+      ],
+      "input": "And what did the landlady hang near the bed?",
+      "expectedOutput": "A basin of holy water and a branch of box.",
+      "passageQuotes": [
+        "a basin filled with holy-water"
+      ]
+    },
+    {
+      "id": "bovary-short-follow-up-07",
+      "category": "short-follow-up",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "While you were ill, which tradesman harassed your husband most?"
+        },
+        {
+          "role": "assistant",
+          "content": "Lheureux."
+        }
+      ],
+      "input": "What did your husband end up signing for him?",
+      "expectedOutput": "A bill at six months.",
+      "passageQuotes": [
+        "signing a bill at six months"
+      ]
+    },
+    {
+      "id": "bovary-short-follow-up-08",
+      "category": "short-follow-up",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "What did Homais call the little room where he kept his drugs?"
+        },
+        {
+          "role": "assistant",
+          "content": "The Capharnaum."
+        }
+      ],
+      "input": "Where did its key hang?",
+      "expectedOutput": "On a nail in his laboratory.",
+      "passageQuotes": [
+        "hanging on its nail in my laboratory"
+      ]
+    },
+    {
+      "id": "bovary-short-follow-up-09",
+      "category": "short-follow-up",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "How did you travel to Rouen on your Thursdays?"
+        },
+        {
+          "role": "assistant",
+          "content": "In the Hirondelle."
+        }
+      ],
+      "input": "What did you take off before getting down?",
+      "expectedOutput": "Her overshoes (then she put on other gloves).",
+      "passageQuotes": [
+        "Emma undid her overshoes"
+      ]
+    },
+    {
+      "id": "bovary-short-follow-up-10",
+      "category": "short-follow-up",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "As you sat alone near the convent, thinking nothing was worth seeking, what hour did you hear strike?"
+        },
+        {
+          "role": "assistant",
+          "content": "Four o'clock."
+        }
+      ],
+      "input": "Later a man came to the house with a paper: who had sent him?",
+      "expectedOutput": "Monsieur Vincart of Rouen.",
+      "passageQuotes": [
+        "sent by Monsieur Vincart of Rouen"
+      ]
+    },
+    {
+      "id": "bovary-precise-follow-up-01",
+      "category": "precise-follow-up",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "What did Rodolphe do after the agricultural show?"
+        },
+        {
+          "role": "assistant",
+          "content": "I don't remember, truly. Could you ask me more precisely?"
+        }
+      ],
+      "input": "I mean when he stayed away and at last came back: what reason did he first give?",
+      "expectedOutput": "That he had been busy and ill.",
+      "passageQuotes": [
+        "I have been ill"
+      ]
+    },
+    {
+      "id": "bovary-precise-follow-up-02",
+      "category": "precise-follow-up",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "What did Rodolphe write to you?"
+        },
+        {
+          "role": "assistant",
+          "content": "I don't remember, truly. Could you ask me more precisely?"
+        }
+      ],
+      "input": "I mean in his farewell letter: under the shade of which tree did he say he had rested, in your ideal happiness?",
+      "expectedOutput": "The manchineel tree.",
+      "passageQuotes": [
+        "manchineel tree"
+      ]
+    },
+    {
+      "id": "bovary-precise-follow-up-03",
+      "category": "precise-follow-up",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "What happened that evening with Léon?"
+        },
+        {
+          "role": "assistant",
+          "content": "I don't remember, truly. Could you ask me more precisely?"
+        }
+      ],
+      "input": "I mean in the room, by candlelight: what part of your dress was he fingering as he spoke of beginning now?",
+      "expectedOutput": "The blue binding of her long white sash.",
+      "passageQuotes": [
+        "blue binding of her long white sash"
+      ]
+    },
+    {
+      "id": "bovary-precise-follow-up-04",
+      "category": "precise-follow-up",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "What did your husband find out about your lessons?"
+        },
+        {
+          "role": "assistant",
+          "content": "I don't remember, truly. Could you ask me more precisely?"
+        }
+      ],
+      "input": "I mean when he said he had spoken of you to someone who did not know you: who was she?",
+      "expectedOutput": "Mademoiselle Lempereur.",
+      "passageQuotes": [
+        "It is Mademoiselle Lempereur"
+      ]
+    },
+    {
+      "id": "bovary-precise-follow-up-05",
+      "category": "precise-follow-up",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "What did the chemist do when he visited Léon in Rouen?"
+        },
+        {
+          "role": "assistant",
+          "content": "I don't remember, truly. Could you ask me more precisely?"
+        }
+      ],
+      "input": "I mean at the table before they left: what did the chemist order two cups of?",
+      "expectedOutput": "Coffee.",
+      "passageQuotes": [
+        "two cups of coffee"
+      ]
+    }
+  ]
+}

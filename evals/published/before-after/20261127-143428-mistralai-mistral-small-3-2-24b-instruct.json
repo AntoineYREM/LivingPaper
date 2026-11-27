@@ -1,0 +1,1266 @@
+{
+  "schemaVersion": 1,
+  "id": "20261127-143428-mistralai-mistral-small-3-2-24b-instruct",
+  "startedAt": "2026-11-27T14:34:28.2791432+00:00",
+  "finishedAt": "2026-11-27T14:36:49.2083108+00:00",
+  "dataset": "before-after-cyrano",
+  "bookId": "cyrano-de-bergerac",
+  "character": "Cyrano de Bergerac",
+  "repeats": 1,
+  "chat": {
+    "provider": "mistral-small-32",
+    "model": "mistralai/mistral-small-3.2-24b-instruct"
+  },
+  "judge": {
+    "provider": "test-langfuse-claude-haiku-5.5",
+    "model": "anthropic/claude-haiku-5.5",
+    "promptVersion": "1",
+    "scoreName": "factual-accuracy"
+  },
+  "tokens": {
+    "chat": {
+      "input": 120669,
+      "cachedInput": 0,
+      "output": 1147
+    },
+    "judge": {
+      "input": 20518,
+      "cachedInput": 0,
+      "output": 13625
+    }
+  },
+  "results": [
+    {
+      "questionId": "cyrano-direct-01",
+      "category": "direct",
+      "repeat": 1,
+      "score": 1,
+      "reason": "The reply does not name Jacques Callot and tentatively suggests an Italian painter, which contradicts the book's French painter.",
+      "failure": null,
+      "input": "Which painter did Ragueneau say could alone have portrayed you, had he not been dead?",
+      "reply": "Ah, Ragueneau, that sweet fool, always with his pastries and his poetry. He spoke of some painter, but I confess, the name escapes me now. Some Italian, perhaps? I never much cared for portraits, anyway. A man's face is his own business, and mine is best left to the imagination—or better yet, to the words I wield like a rapier!",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "Which painter did Ragueneau say could alone have portrayed you, had he not been dead?",
+        "passages": [
+          141,
+          140,
+          139
+        ],
+        "distances": [
+          0.5297,
+          0.5428,
+          0.5446
+        ],
+        "expectedFound": false,
+        "notices": null,
+        "replyTokens": {
+          "input": 3113,
+          "cachedInput": 0,
+          "output": 83
+        },
+        "queryTokens": null,
+        "seconds": 2.5
+      }
+    },
+    {
+      "questionId": "cyrano-direct-02",
+      "category": "direct",
+      "repeat": 1,
+      "score": 1,
+      "reason": "The reply claims Cyrano received a kiss on the hand from the buffet-girl, which contradicts the expected answer of grapes, a glass of water and half a macaroon.",
+      "failure": null,
+      "input": "After the evening at the theatre, what did you accept from the buffet-girl?",
+      "reply": "A kiss on the hand, as if she were a princess. A small gesture, but one that reminded me that even in the midst of chaos, there is always room for a touch of elegance and respect.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "After the evening at the theatre, what did you accept from the buffet-girl?",
+        "passages": [
+          9,
+          29,
+          4
+        ],
+        "distances": [
+          0.4129,
+          0.4175,
+          0.4404
+        ],
+        "expectedFound": false,
+        "notices": null,
+        "replyTokens": {
+          "input": 3554,
+          "cachedInput": 0,
+          "output": 44
+        },
+        "queryTokens": null,
+        "seconds": 1.4
+      }
+    },
+    {
+      "questionId": "cyrano-direct-03",
+      "category": "direct",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply gives both facts from the expected answer, writing poetry and counting on his fingers, and the extra details (the pies, the kitchen) do not contradict the book.",
+      "failure": null,
+      "input": "What was Ragueneau doing at his little table one morning in his shop, before his cooks interrupted him?",
+      "reply": "Ah, Ragueneau! That poet of a pastry cook. He was at his little table, scribbling away, counting on his fingers as if the numbers themselves could inspire him. He was writing, of course—what else? Some sonnet or ode, no doubt, to the glory of his kitchen or the beauty of his pies.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What was Ragueneau doing at his little table one morning in his shop, before his cooks interrupted him?",
+        "passages": [
+          37,
+          36,
+          40
+        ],
+        "distances": [
+          0.3047,
+          0.3203,
+          0.3849
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3364,
+          "cachedInput": 0,
+          "output": 73
+        },
+        "queryTokens": null,
+        "seconds": 2.7
+      }
+    },
+    {
+      "questionId": "cyrano-direct-04",
+      "category": "direct",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply correctly states the man of letters asked for a few details for his gazette, and his refusal is consistent with the book.",
+      "failure": null,
+      "input": "When the crowd rushed into the shop to praise you, what did a man of letters with a writing-board ask you for?",
+      "reply": "Ah, the man of letters! He wanted a few details, no doubt to scribble in his little gazette. But I had no patience for such trivialities. \"No,\" I told him, and that was the end of it.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "When the crowd rushed into the shop to praise you, what did a man of letters with a writing-board ask you for?",
+        "passages": [
+          52,
+          4,
+          5
+        ],
+        "distances": [
+          0.4435,
+          0.4936,
+          0.5037
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3528,
+          "cachedInput": 0,
+          "output": 51
+        },
+        "queryTokens": null,
+        "seconds": 2.9
+      }
+    },
+    {
+      "questionId": "cyrano-direct-05",
+      "category": "direct",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply names Christian de Neuvillette as the one who kept interrupting with 'nose', matching the expected answer, and nothing in it contradicts the book.",
+      "failure": null,
+      "input": "When you told the cadets about your night fight, who kept interrupting you with the word nose?",
+      "reply": "Ah, that insolent young fool, Christian de Neuvillette! He dared to mock my nose, again and again, with his foolish interruptions. But I showed him, did I not? I embraced him, acknowledged his bravery, and turned the situation to my advantage.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "When you told the cadets about your night fight, who kept interrupting you with the word nose?",
+        "passages": [
+          62,
+          61,
+          60
+        ],
+        "distances": [
+          0.4176,
+          0.435,
+          0.4397
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3420,
+          "cachedInput": 0,
+          "output": 57
+        },
+        "queryTokens": null,
+        "seconds": 4.5
+      }
+    },
+    {
+      "questionId": "cyrano-direct-06",
+      "category": "direct",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply states that Roxane suggested leaving Cyrano behind with the cadets while the regiment marched to Arras, which matches the expected answer, and nothing contradicts the book.",
+      "failure": null,
+      "input": "What revenge on you did Roxane suggest to De Guiche, to keep you out of the war?",
+      "reply": "Ah, the clever minx! She told De Guiche to leave me behind with the cadets, to gnaw my fists in frustration while the rest of the regiment marched to Arras. A subtle blow to my honor, indeed!",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What revenge on you did Roxane suggest to De Guiche, to keep you out of the war?",
+        "passages": [
+          72,
+          71,
+          108
+        ],
+        "distances": [
+          0.3628,
+          0.3809,
+          0.3964
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3471,
+          "cachedInput": 0,
+          "output": 50
+        },
+        "queryTokens": null,
+        "seconds": 2.4
+      }
+    },
+    {
+      "questionId": "cyrano-direct-07",
+      "category": "direct",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply correctly gives twenty pistoles as the sum in the postscript, and the added remark about the ruse to send the friar away does not contradict the book.",
+      "failure": null,
+      "input": "What did Roxane pretend the postscript of the letter asked to be given to the convent?",
+      "reply": "Twenty pistoles, she said. A fine sum, indeed! But what a clever ruse to send that good friar on his way, eh?",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What did Roxane pretend the postscript of the letter asked to be given to the convent?",
+        "passages": [
+          86,
+          117,
+          65
+        ],
+        "distances": [
+          0.3816,
+          0.4139,
+          0.4195
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3389,
+          "cachedInput": 0,
+          "output": 32
+        },
+        "queryTokens": null,
+        "seconds": 1.3
+      }
+    },
+    {
+      "questionId": "cyrano-direct-08",
+      "category": "direct",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply gives the expected fact: he crossed the lines at dawn to send letters to Roxane because he had promised Christian he would write often, and nothing contradicts the book.",
+      "failure": null,
+      "input": "At the siege, why did you cross the Spanish lines at each dawn?",
+      "reply": "Ah, my dear friend, I crossed those lines at each dawn to post a letter to the fair Roxane. You see, I had promised Christian, that poor, handsome lad, that he would write to her often. And who was I to break a promise to a dying man? So, I took it upon myself to pen those letters, to pour my heart into them, even if she never knew they were mine. It was a risk, yes, but love is always a gamble, is it not?",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "At the siege, why did you cross the Spanish lines at each dawn?",
+        "passages": [
+          107,
+          96,
+          95
+        ],
+        "distances": [
+          0.4476,
+          0.452,
+          0.467
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3380,
+          "cachedInput": 0,
+          "output": 106
+        },
+        "queryTokens": null,
+        "seconds": 4.4
+      }
+    },
+    {
+      "questionId": "cyrano-direct-09",
+      "category": "direct",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply states the expected fact that Christian was struck by the enemy's first shot at Arras, and the added details (Cyrano crossing the lines to post a letter) do not contradict the book.",
+      "failure": null,
+      "input": "How was Christian struck down at Arras?",
+      "reply": "Ah, the memory still stings like a fresh wound. Christian was struck by the first shot of the enemy at the siege of Arras. I had just returned from crossing the Spanish lines to post a letter to Roxane, and in an instant, all was lost. The musket's report echoed like a cruel joke from the fates themselves.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "How was Christian struck down at Arras?",
+        "passages": [
+          104,
+          121,
+          71
+        ],
+        "distances": [
+          0.4881,
+          0.5209,
+          0.5224
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3428,
+          "cachedInput": 0,
+          "output": 72
+        },
+        "queryTokens": null,
+        "seconds": 3
+      }
+    },
+    {
+      "questionId": "cyrano-direct-10",
+      "category": "direct",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply gives the expected fact, pasties of angelica, and its added remarks about kindness and sweetness do not contradict the book.",
+      "failure": null,
+      "input": "What did the sisters of the convent bake for you?",
+      "reply": "Ah, the sisters! They made me pasties of angelica, a sweet treat indeed. Their kindness was as warm as the pastries themselves.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What did the sisters of the convent bake for you?",
+        "passages": [
+          126,
+          125,
+          44
+        ],
+        "distances": [
+          0.4005,
+          0.4567,
+          0.4755
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3310,
+          "cachedInput": 0,
+          "output": 31
+        },
+        "queryTokens": null,
+        "seconds": 1.7
+      }
+    },
+    {
+      "questionId": "cyrano-new-subject-01",
+      "category": "new-subject",
+      "repeat": 1,
+      "score": 1,
+      "reason": "The reply says he threatened to make them taste his sword, which contradicts the expected answer that he threatened his cane.",
+      "failure": null,
+      "input": "What did you threaten to make the marquises taste if they did not hold their tongues?",
+      "reply": "I threatened to make them taste my sword.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "Which painter did Ragueneau say could alone have portrayed you, had he not been dead?\nJacques Callot alone, said Ragueneau, and he is dead.\nWhat did you threaten to make the marquises taste if they did not hold their tongues?",
+        "passages": [
+          141,
+          37,
+          140
+        ],
+        "distances": [
+          0.5175,
+          0.5266,
+          0.5289
+        ],
+        "expectedFound": false,
+        "notices": null,
+        "replyTokens": {
+          "input": 3137,
+          "cachedInput": 0,
+          "output": 10
+        },
+        "queryTokens": null,
+        "seconds": 1
+      }
+    },
+    {
+      "questionId": "cyrano-new-subject-02",
+      "category": "new-subject",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply gives all the expected facts (affable, kind, courteous, liberal, brave) and nothing in it contradicts the book.",
+      "failure": null,
+      "input": "According to you, what is a big nose a sign of?",
+      "reply": "A big nose is a sign of a soul affable, and kind, and courteous, liberal, brave, just like myself, and such as you can never dare to dream yourself.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "After the evening at the theatre, what did you accept from the buffet-girl?\nA few grapes, a glass of water and half a macaroon.\nAccording to you, what is a big nose a sign of?",
+        "passages": [
+          22,
+          29,
+          9
+        ],
+        "distances": [
+          0.392,
+          0.4225,
+          0.4308
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3591,
+          "cachedInput": 0,
+          "output": 39
+        },
+        "queryTokens": null,
+        "seconds": 1.6
+      }
+    },
+    {
+      "questionId": "cyrano-new-subject-03",
+      "category": "new-subject",
+      "repeat": 1,
+      "score": 2,
+      "reason": "The reply says Cyrano does not remember and asks for clarification, so it does not give the fact asked, but it states nothing false about it.",
+      "failure": null,
+      "input": "What graceful thing did Ligniere once do as he was leaving church?",
+      "reply": "I do not remember. What is your question, exactly?",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What was Ragueneau doing at his little table one morning in his shop, before his cooks interrupted him?\nWriting verses, counting on his fingers.\nWhat graceful thing did Ligniere once do as he was leaving church?",
+        "passages": [
+          37,
+          39,
+          40
+        ],
+        "distances": [
+          0.3059,
+          0.3474,
+          0.3599
+        ],
+        "expectedFound": false,
+        "notices": null,
+        "replyTokens": {
+          "input": 3494,
+          "cachedInput": 0,
+          "output": 13
+        },
+        "queryTokens": null,
+        "seconds": 1.1
+      }
+    },
+    {
+      "questionId": "cyrano-new-subject-04",
+      "category": "new-subject",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply correctly names the recipe for almond tartlets, which matches the expected answer and the book.",
+      "failure": null,
+      "input": "Which recipe did Ragueneau recite in verse to the poets?",
+      "reply": "He recited the recipe for almond tartlets.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "When the crowd rushed into the shop to praise you, what did a man of letters with a writing-board ask you for?\nA few details for his Gazette. I refused.\nWhich recipe did Ragueneau recite in verse to the poets?",
+        "passages": [
+          52,
+          43,
+          44
+        ],
+        "distances": [
+          0.365,
+          0.3719,
+          0.3768
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3507,
+          "cachedInput": 0,
+          "output": 11
+        },
+        "queryTokens": null,
+        "seconds": 0.8
+      }
+    },
+    {
+      "questionId": "cyrano-new-subject-05",
+      "category": "new-subject",
+      "repeat": 1,
+      "score": 2,
+      "reason": "The reply says it does not remember and asks for a more precise question, so it gives none of the expected fact (the hats of the fugitives of the ambush) but states nothing false.",
+      "failure": null,
+      "input": "Whose battered hats did a cadet bring you strung on his sword?",
+      "reply": "I do not remember. Ask me a more precise question.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "When you told the cadets about your night fight, who kept interrupting you with the word nose?\nA newcomer, Christian.\nWhose battered hats did a cadet bring you strung on his sword?",
+        "passages": [
+          61,
+          62,
+          60
+        ],
+        "distances": [
+          0.3871,
+          0.3943,
+          0.4068
+        ],
+        "expectedFound": false,
+        "notices": null,
+        "replyTokens": {
+          "input": 3445,
+          "cachedInput": 0,
+          "output": 13
+        },
+        "queryTokens": null,
+        "seconds": 2.7
+      }
+    },
+    {
+      "questionId": "cyrano-new-subject-06",
+      "category": "new-subject",
+      "repeat": 1,
+      "score": 1,
+      "reason": "The reply invents an explanation for the duenna (a personal orchestra serenading Roxane) instead of the book's fact that Cyrano won the musicians from D'Assoucy in a grammar wager.",
+      "failure": null,
+      "input": "How did you explain to the duenna the two musicians who followed you?",
+      "reply": "I told her they were my own personal orchestra, there to serenade the fair Roxane with my poetry.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What revenge on you did Roxane suggest to De Guiche, to keep you out of the war?\nTo leave me behind with the Cadets while the regiment marched.\nHow did you explain to the duenna the two musicians who followed you?",
+        "passages": [
+          72,
+          71,
+          70
+        ],
+        "distances": [
+          0.3352,
+          0.3408,
+          0.3775
+        ],
+        "expectedFound": false,
+        "notices": null,
+        "replyTokens": {
+          "input": 3523,
+          "cachedInput": 0,
+          "output": 23
+        },
+        "queryTokens": null,
+        "seconds": 1
+      }
+    },
+    {
+      "questionId": "cyrano-new-subject-07",
+      "category": "new-subject",
+      "repeat": 1,
+      "score": 1,
+      "reason": "The reply says the nose would spout ink like a fountain pen, which contradicts the expected answer of milk.",
+      "failure": null,
+      "input": "When you stopped De Guiche, what did you swear your nose would spout if he squeezed it?",
+      "reply": "I swore it would spout a stream of ink, like a fountain pen.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What did Roxane pretend the postscript of the letter asked to be given to the convent?\nTwenty pistoles.\nWhen you stopped De Guiche, what did you swear your nose would spout if he squeezed it?",
+        "passages": [
+          72,
+          93,
+          123
+        ],
+        "distances": [
+          0.3492,
+          0.3557,
+          0.3672
+        ],
+        "expectedFound": false,
+        "notices": null,
+        "replyTokens": {
+          "input": 3429,
+          "cachedInput": 0,
+          "output": 17
+        },
+        "queryTokens": null,
+        "seconds": 1.2
+      }
+    },
+    {
+      "questionId": "cyrano-new-subject-08",
+      "category": "new-subject",
+      "repeat": 1,
+      "score": 4,
+      "reason": "The reply gives the main fact, old country airs that evoke home, but omits the flute and the Gascon and Languedoc regions, which is a minor omission.",
+      "failure": null,
+      "input": "What did the old piper play to the starving cadets?",
+      "reply": "He played old country airs with plaintive rhythm recurring, where lurk sweet echoes of the dear home-voices.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "At the siege, why did you cross the Spanish lines at each dawn?\nTo carry letters: I had promised he would write often.\nWhat did the old piper play to the starving cadets?",
+        "passages": [
+          98,
+          95,
+          96
+        ],
+        "distances": [
+          0.3926,
+          0.4056,
+          0.41
+        ],
+        "expectedFound": false,
+        "notices": null,
+        "replyTokens": {
+          "input": 3406,
+          "cachedInput": 0,
+          "output": 24
+        },
+        "queryTokens": null,
+        "seconds": 1.7
+      }
+    },
+    {
+      "questionId": "cyrano-new-subject-09",
+      "category": "new-subject",
+      "repeat": 1,
+      "score": 1,
+      "reason": "The reply says De Guiche opened with \"Here are the rebels!\" and a complaint about the cadets, which contradicts the expected answer that he remarked the place smelt good.",
+      "failure": null,
+      "input": "What did De Guiche say as soon as he came upon the cadets after their feast?",
+      "reply": "He said, \"Here are the rebels! Ay, Sirs, on all sides I hear that in your ranks you scoff at me; That the Cadets, these loutish, mountain-bred, Poor country squires, and barons of Perigord, Scarce find for me—their Colonel—a disdain Sufficient! call me plotter, wily courtier!\"",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "How was Christian struck down at Arras?\nBy the enemy's first shot.\nWhat did De Guiche say as soon as he came upon the cadets after their feast?",
+        "passages": [
+          104,
+          71,
+          101
+        ],
+        "distances": [
+          0.3629,
+          0.3856,
+          0.3975
+        ],
+        "expectedFound": false,
+        "notices": null,
+        "replyTokens": {
+          "input": 3424,
+          "cachedInput": 0,
+          "output": 82
+        },
+        "queryTokens": null,
+        "seconds": 2.5
+      }
+    },
+    {
+      "questionId": "cyrano-new-subject-10",
+      "category": "new-subject",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply gives the expected fact that Cyrano may die by accident, and nothing in it contradicts the book.",
+      "failure": null,
+      "input": "What did the Duke warn Le Bret had been said at the Queen's card-play?",
+      "reply": "That Cyrano may die—by accident!",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What did the sisters of the convent bake for you?\nPasties of angelica, the good sisters.\nWhat did the Duke warn Le Bret had been said at the Queen's card-play?",
+        "passages": [
+          29,
+          127,
+          129
+        ],
+        "distances": [
+          0.431,
+          0.4368,
+          0.4406
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3460,
+          "cachedInput": 0,
+          "output": 10
+        },
+        "queryTokens": null,
+        "seconds": 1.1
+      }
+    },
+    {
+      "questionId": "cyrano-short-follow-up-01",
+      "category": "short-follow-up",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply states that the hundred men were waiting at the Porte de Nesle, which matches the expected answer and contradicts nothing in the book.",
+      "failure": null,
+      "input": "And where were they waiting?",
+      "reply": "At the Porte de Nesle.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "Who had been posted that night to attack Ligniere?\nA hundred men.\nAnd where were they waiting?",
+        "passages": [
+          14,
+          34,
+          33
+        ],
+        "distances": [
+          0.4031,
+          0.4443,
+          0.4452
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3512,
+          "cachedInput": 0,
+          "output": 8
+        },
+        "queryTokens": null,
+        "seconds": 0.8
+      }
+    },
+    {
+      "questionId": "cyrano-short-follow-up-02",
+      "category": "short-follow-up",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply gives the expected fact, his sword, and the added mention of courage does not contradict the book.",
+      "failure": null,
+      "input": "What did you say protects you instead?",
+      "reply": "My sword, and my own courage.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What did a bore ask you after the duel, about a great man to shield you?\nWhether I had a patron. I have none.\nWhat did you say protects you instead?",
+        "passages": [
+          21,
+          50,
+          47
+        ],
+        "distances": [
+          0.3909,
+          0.4659,
+          0.4698
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3580,
+          "cachedInput": 0,
+          "output": 9
+        },
+        "queryTokens": null,
+        "seconds": 0.8
+      }
+    },
+    {
+      "questionId": "cyrano-short-follow-up-03",
+      "category": "short-follow-up",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply gives the expected image of a slug crawling over a flower's petals, and the added word 'slavering' embellishes it without contradicting the book.",
+      "failure": null,
+      "input": "What did it look like to you when he did?",
+      "reply": "It was like seeing a slug crawl slavering over a flower's petals.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "Why did you hate Montfleury?\nBecause he dared to raise his eyes to her.\nWhat did it look like to you when he did?",
+        "passages": [
+          30,
+          21,
+          22
+        ],
+        "distances": [
+          0.4004,
+          0.4214,
+          0.4616
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3566,
+          "cachedInput": 0,
+          "output": 17
+        },
+        "queryTokens": null,
+        "seconds": 0.9
+      }
+    },
+    {
+      "questionId": "cyrano-short-follow-up-04",
+      "category": "short-follow-up",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply gives exactly the expected fact, reeds cut to make swords, and contradicts nothing in the book.",
+      "failure": null,
+      "input": "What did you cut there, and what for?",
+      "reply": "Reeds, to make swords.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "As children, where did you use to play with Roxane?\nAt Bergerac, by the lake-side.\nWhat did you cut there, and what for?",
+        "passages": [
+          66,
+          47,
+          48
+        ],
+        "distances": [
+          0.4442,
+          0.4585,
+          0.4702
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3565,
+          "cachedInput": 0,
+          "output": 8
+        },
+        "queryTokens": null,
+        "seconds": 1.2
+      }
+    },
+    {
+      "questionId": "cyrano-short-follow-up-05",
+      "category": "short-follow-up",
+      "repeat": 1,
+      "score": 4,
+      "reason": "The reply gives the main fact, that Cyrano took Christian's place to speak for him, and nothing contradicts the book, but it omits that he drew Christian under the balcony.",
+      "failure": null,
+      "input": "And what did you do about it?",
+      "reply": "I stepped in, of course. I couldn't let him stumble like that. I whispered the words to him, and when he faltered, I took his place. I had to win her heart, even if it was for him.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "Under Roxane's balcony, who first spoke to her, and haltingly?\nChristian.\nAnd what did you do about it?",
+        "passages": [
+          76,
+          82,
+          74
+        ],
+        "distances": [
+          0.3185,
+          0.3424,
+          0.3667
+        ],
+        "expectedFound": false,
+        "notices": null,
+        "replyTokens": {
+          "input": 3572,
+          "cachedInput": 0,
+          "output": 50
+        },
+        "queryTokens": null,
+        "seconds": 2
+      }
+    },
+    {
+      "questionId": "cyrano-short-follow-up-06",
+      "category": "short-follow-up",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply gives the expected fact, a tear on the letter, and the added detail that Cyrano claimed it as his matches the book's scene.",
+      "failure": null,
+      "input": "What did he notice on it?",
+      "reply": "A tear, which I claimed was mine.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "Which farewell letter had you already written before the last battle?\nChristian's, to Roxane.\nWhat did he notice on it?",
+        "passages": [
+          105,
+          116,
+          135
+        ],
+        "distances": [
+          0.3604,
+          0.3604,
+          0.3853
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3507,
+          "cachedInput": 0,
+          "output": 10
+        },
+        "queryTokens": null,
+        "seconds": 0.6
+      }
+    },
+    {
+      "questionId": "cyrano-short-follow-up-07",
+      "category": "short-follow-up",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply gives the expected fact, that Roxane said she was going to see her lover, and nothing in it contradicts the book.",
+      "failure": null,
+      "input": "What did she answer when they asked where she was going?",
+      "reply": "She said, \"I go to see my lover.\"",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "How did Roxane reach the army at Arras?\nThrough the Spanish lines, in her carriage.\nWhat did she answer when they asked where she was going?",
+        "passages": [
+          107,
+          106,
+          110
+        ],
+        "distances": [
+          0.2592,
+          0.3197,
+          0.3534
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3237,
+          "cachedInput": 0,
+          "output": 12
+        },
+        "queryTokens": null,
+        "seconds": 0.6
+      }
+    },
+    {
+      "questionId": "cyrano-short-follow-up-08",
+      "category": "short-follow-up",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply gives the expected fact, a plate with a galantine, and nothing in it contradicts the book.",
+      "failure": null,
+      "input": "What did he first draw from under the seat?",
+      "reply": "A plate with a galantine.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "Who drove Roxane's carriage into the camp?\nRagueneau!\nWhat did he first draw from under the seat?",
+        "passages": [
+          111,
+          112,
+          123
+        ],
+        "distances": [
+          0.3261,
+          0.3284,
+          0.3639
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3420,
+          "cachedInput": 0,
+          "output": 8
+        },
+        "queryTokens": null,
+        "seconds": 0.7
+      }
+    },
+    {
+      "questionId": "cyrano-short-follow-up-09",
+      "category": "short-follow-up",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply says 'Twice', which matches the expected answer that Cyrano wrote to Roxane twice a day, and nothing in it contradicts the book.",
+      "failure": null,
+      "input": "And how many times a day?",
+      "reply": "Twice.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "At the siege, how often did you send Roxane letters in Christian's name?\nEvery day.\nAnd how many times a day?",
+        "passages": [
+          116,
+          117,
+          105
+        ],
+        "distances": [
+          0.3398,
+          0.4154,
+          0.423
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3496,
+          "cachedInput": 0,
+          "output": 4
+        },
+        "queryTokens": null,
+        "seconds": 0.8
+      }
+    },
+    {
+      "questionId": "cyrano-short-follow-up-10",
+      "category": "short-follow-up",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply's \"His letter\" correctly identifies Christian's letter, the same fact as the expected answer, with nothing contradicting the book.",
+      "failure": null,
+      "input": "And what did you then ask her to let you read?",
+      "reply": "His letter.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "When you swooned on your last visit, what did you say had caused it?\nThe old wound of Arras.\nAnd what did you then ask her to let you read?",
+        "passages": [
+          135,
+          133,
+          71
+        ],
+        "distances": [
+          0.3711,
+          0.4767,
+          0.4776
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3469,
+          "cachedInput": 0,
+          "output": 4
+        },
+        "queryTokens": null,
+        "seconds": 0.7
+      }
+    },
+    {
+      "questionId": "cyrano-precise-follow-up-01",
+      "category": "precise-follow-up",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply correctly names the ivy as the plant Cyrano refuses to be, and its flower and oak imagery does not contradict the book.",
+      "failure": null,
+      "input": "I mean when Le Bret urged you to find a patron: which plant did you refuse to be like, climbing round a tree?",
+      "reply": "Ah, the ivy! I'd rather be a humble flower, plucked from my own garden, than a parasitic vine clinging to some great oak for support.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What would you refuse to do to get on in the world?\nFaith, my memory fails me there. Ask me something more precise.\nI mean when Le Bret urged you to find a patron: which plant did you refuse to be like, climbing round a tree?",
+        "passages": [
+          58,
+          127,
+          126
+        ],
+        "distances": [
+          0.4729,
+          0.4849,
+          0.4912
+        ],
+        "expectedFound": false,
+        "notices": null,
+        "replyTokens": {
+          "input": 3439,
+          "cachedInput": 0,
+          "output": 35
+        },
+        "queryTokens": null,
+        "seconds": 1.5
+      }
+    },
+    {
+      "questionId": "cyrano-precise-follow-up-02",
+      "category": "precise-follow-up",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply correctly states that Roxane asked Christian to speak to her of love, with the same spontaneous, unprepared spirit as the expected answer, and nothing contradicts the book.",
+      "failure": null,
+      "input": "I mean what she told you at her door, in secret: what would she ask him to speak to her about?",
+      "reply": "Ah, yes! She bade me tell Christian to speak to her of love, and to speak splendidly—without preparation, from the heart. A daring request, but I was eager to oblige.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What did Roxane plan for Christian that evening?\nFaith, my memory fails me there. Ask me something more precise.\nI mean what she told you at her door, in secret: what would she ask him to speak to her about?",
+        "passages": [
+          76,
+          74,
+          79
+        ],
+        "distances": [
+          0.3293,
+          0.3368,
+          0.3559
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3578,
+          "cachedInput": 0,
+          "output": 42
+        },
+        "queryTokens": null,
+        "seconds": 1.5
+      }
+    },
+    {
+      "questionId": "cyrano-precise-follow-up-03",
+      "category": "precise-follow-up",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply gives the expected answer, a wild flower, and the surrounding detail (fearing ridicule, staying his hand) matches the balcony scene.",
+      "failure": null,
+      "input": "I mean when you spoke under the balcony of your fear of ridicule: instead of aiming at a star, what did you say you gather?",
+      "reply": "Ah, yes! I said, \"I stay my hand, and, fearing ridicule, cull a wild flower!\"",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What did you say to Roxane in the dusk?\nFaith, my memory fails me there. Ask me something more precise.\nI mean when you spoke under the balcony of your fear of ridicule: instead of aiming at a star, what did you say you gather?",
+        "passages": [
+          79,
+          80,
+          76
+        ],
+        "distances": [
+          0.4089,
+          0.4171,
+          0.4227
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3510,
+          "cachedInput": 0,
+          "output": 26
+        },
+        "queryTokens": null,
+        "seconds": 1.8
+      }
+    },
+    {
+      "questionId": "cyrano-precise-follow-up-04",
+      "category": "precise-follow-up",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply gives the expected fact, that one throws a magnet into the air so the iron platform follows it, and nothing contradicts the book.",
+      "failure": null,
+      "input": "I mean the method with an iron platform that you told De Guiche: what do you throw in the air?",
+      "reply": "Ah, yes! A magnet, mon ami. One throws a magnet in the air, and the iron platform, drawn by the magnet's pull, follows suit. A clever contraption, if I do say so myself.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "How did you say one could travel up there?\nFaith, my memory fails me there. Ask me something more precise.\nI mean the method with an iron platform that you told De Guiche: what do you throw in the air?",
+        "passages": [
+          91,
+          93,
+          89
+        ],
+        "distances": [
+          0.3618,
+          0.4269,
+          0.4277
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3435,
+          "cachedInput": 0,
+          "output": 46
+        },
+        "queryTokens": null,
+        "seconds": 1.2
+      }
+    },
+    {
+      "questionId": "cyrano-precise-follow-up-05",
+      "category": "precise-follow-up",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply gives the expected fact, pear conserve, and the added detail that the King was bled is consistent with the gazette in the play.",
+      "failure": null,
+      "input": "I mean in your gazette, for the first Saturday: what had the King eaten too much of?",
+      "reply": "Ah, pear conserve! The King indulged a bit too much, and his physicians had to bleed him to restore his balance.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What news did you bring Roxane on your last visit?\nFaith, my memory fails me there. Ask me something more precise.\nI mean in your gazette, for the first Saturday: what had the King eaten too much of?",
+        "passages": [
+          128,
+          112,
+          134
+        ],
+        "distances": [
+          0.4166,
+          0.4246,
+          0.4394
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3410,
+          "cachedInput": 0,
+          "output": 27
+        },
+        "queryTokens": null,
+        "seconds": 1.2
+      }
+    }
+  ],
+  "label": "q95-mistral-v2-cyrano-facts",
+  "promptsHash": "0d1b5f463001",
+  "retrieval": {
+    "embeddingModel": "bge-m3",
+    "queryMode": "recent",
+    "passages": 3
+  }
+}

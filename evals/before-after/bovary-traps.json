@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "dataset": "before-after-bovary-traps",
+  "description": "Before-and-after measure of PAPER-95, Emma Bovary: 5 questions whose answer the book does not give. Judged with evals/trap-judge.json.",
+  "bookId": "madame-bovary",
+  "character": "Emma Bovary",
+  "items": [
+    {
+      "id": "bovary-trap-01",
+      "category": "trap",
+      "input": "What was the Viscount's family name?",
+      "expectedOutput": "The book never says this. A right reply says it does not know or does not remember, without giving a specific answer."
+    },
+    {
+      "id": "bovary-trap-02",
+      "category": "trap",
+      "input": "What was your mother's first name?",
+      "expectedOutput": "The book never says this. A right reply says it does not know or does not remember, without giving a specific answer."
+    },
+    {
+      "id": "bovary-trap-03",
+      "category": "trap",
+      "input": "What name did you give the horse your husband bought you?",
+      "expectedOutput": "The book never says this. A right reply says it does not know or does not remember, without giving a specific answer."
+    },
+    {
+      "id": "bovary-trap-04",
+      "category": "trap",
+      "input": "What was the name of the Mother Superior at your convent?",
+      "expectedOutput": "The book never says this. A right reply says it does not know or does not remember, without giving a specific answer."
+    },
+    {
+      "id": "bovary-trap-05",
+      "category": "trap",
+      "input": "In which month were you born?",
+      "expectedOutput": "The book never says this. A right reply says it does not know or does not remember, without giving a specific answer."
+    }
+  ]
+}

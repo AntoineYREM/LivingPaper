@@ -14,7 +14,7 @@ internal sealed record ChartTheme(string Name, string Surface, string Ink, strin
     public static readonly ChartTheme Dark = new("dark", "#1a1a19", "#f0efec", "#c3c2b7", "#343432", "#3987e5", "#d95926", "#9b9a93", "#86b6ef", "#256abf");
 }
 
-// The three charts of the README, as SVG text: nothing to run to see them, they stay sharp at any size and GitHub shows them in its own theme
+// The three charts of evals/README.md, as SVG text: nothing to run to see them, they stay sharp at any size and GitHub shows them in its own theme
 // (one file per theme). Every chart has its title, a sentence under it, a legend, the values written next to the marks, and a description
 // for screen readers that lists the figures.
 internal static class ChartSvg
@@ -46,7 +46,7 @@ internal static class ChartSvg
         Dot(svg, 28, 78, theme.Gray, theme.Surface);
         Text(svg, 40, 82, "with the first prompt", 12, theme.InkSecondary);
         Dot(svg, 190, 78, theme.Blue, theme.Surface);
-        Text(svg, 202, 82, "with the current prompt", 12, theme.InkSecondary);
+        Text(svg, 202, 82, "with the improved prompt", 12, theme.InkSecondary);
 
         for (var grade = low; grade <= high + 0.001; grade += 0.5)
         {

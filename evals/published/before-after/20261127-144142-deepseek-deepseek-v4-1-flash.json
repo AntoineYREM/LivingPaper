@@ -1,0 +1,1336 @@
+{
+  "schemaVersion": 1,
+  "id": "20261127-144142-deepseek-deepseek-v4-1-flash",
+  "startedAt": "2026-11-27T14:41:42.2816443+00:00",
+  "finishedAt": "2026-11-27T14:44:41.7149321+00:00",
+  "dataset": "before-after-bovary",
+  "bookId": "madame-bovary",
+  "character": "Emma Bovary",
+  "repeats": 1,
+  "chat": {
+    "provider": "test-langfuse-deepseek-v4.1-flash",
+    "model": "deepseek/deepseek-v4.1-flash"
+  },
+  "judge": {
+    "provider": "test-langfuse-claude-haiku-5.5",
+    "model": "anthropic/claude-haiku-5.5",
+    "promptVersion": "1",
+    "scoreName": "factual-accuracy"
+  },
+  "tokens": {
+    "chat": {
+      "input": 121140,
+      "cachedInput": 43265,
+      "output": 6280
+    },
+    "judge": {
+      "input": 20515,
+      "cachedInput": 0,
+      "output": 19040
+    }
+  },
+  "results": [
+    {
+      "questionId": "bovary-direct-01",
+      "category": "direct",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply gives the expected fact that she invented little sins to stay longer kneeling at confession, and nothing contradicts the book.",
+      "failure": null,
+      "input": "At the convent, what did you do at confession so as to stay there longer?",
+      "reply": "I invented little sins, nothing but trifles, so I could kneel there longer in the shadow with my face against the grating, listening to the priest whisper. It was the sweetness of it I wanted, not the absolution.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "At the convent, what did you do at confession so as to stay there longer?",
+        "passages": [
+          160,
+          50,
+          248,
+          161
+        ],
+        "distances": [
+          0.4626,
+          0.4651,
+          0.4661,
+          0.4693
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3399,
+          "cachedInput": 1920,
+          "output": 63
+        },
+        "queryTokens": null,
+        "seconds": 1.7
+      }
+    },
+    {
+      "questionId": "bovary-direct-02",
+      "category": "direct",
+      "repeat": 1,
+      "score": 4,
+      "reason": "The reply gives the main facts (diamond brooches and medallion bracelets on bodices and arms) and omits only the lace trimmings, which is a minor omission.",
+      "failure": null,
+      "input": "At the ball, what jewels did the ladies wear on their bodices and arms?",
+      "reply": "I remember it still—the diamond brooches and medallion bracelets trembling on the bodices, gleaming on the breasts, clinking against bare arms. Everything glittered and swayed with the dancing, and I thought I had never seen anything so beautiful in my life.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "At the ball, what jewels did the ladies wear on their bodices and arms?",
+        "passages": [
+          73,
+          71,
+          72,
+          74
+        ],
+        "distances": [
+          0.3845,
+          0.3935,
+          0.3991,
+          0.4177
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3369,
+          "cachedInput": 2304,
+          "output": 117
+        },
+        "queryTokens": null,
+        "seconds": 1.2
+      }
+    },
+    {
+      "questionId": "bovary-direct-03",
+      "category": "direct",
+      "repeat": 1,
+      "score": 2,
+      "reason": "The reply does not give the turkey the father brought and only says she no longer remembers, without stating anything false about it.",
+      "failure": null,
+      "input": "At the end of February at Tostes, what did your father bring in memory of his cure?",
+      "reply": "A gift from Papa at the end of February... I confess I no longer remember what it was. Ask me more precisely, and perhaps the memory will come back to me.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "At the end of February at Tostes, what did your father bring in memory of his cure?",
+        "passages": [
+          124,
+          14,
+          60,
+          123
+        ],
+        "distances": [
+          0.4452,
+          0.4636,
+          0.4661,
+          0.4795
+        ],
+        "expectedFound": false,
+        "notices": null,
+        "replyTokens": {
+          "input": 3236,
+          "cachedInput": 256,
+          "output": 155
+        },
+        "queryTokens": null,
+        "seconds": 2.1
+      }
+    },
+    {
+      "questionId": "bovary-direct-04",
+      "category": "direct",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply correctly gives German music, the kind that makes you dream, as Léon's stated preference, and the added emotional reaction does not contradict the book.",
+      "failure": null,
+      "input": "At your first dinner at Yonville, what music did Léon say he preferred?",
+      "reply": "German music — the kind that makes you dream. He said it so simply, and I thought: at last, someone who understands.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "At your first dinner at Yonville, what music did Léon say he preferred?",
+        "passages": [
+          116,
+          317,
+          353,
+          166
+        ],
+        "distances": [
+          0.3431,
+          0.4059,
+          0.4092,
+          0.4159
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3416,
+          "cachedInput": 0,
+          "output": 70
+        },
+        "queryTokens": null,
+        "seconds": 0.8
+      }
+    },
+    {
+      "questionId": "bovary-direct-05",
+      "category": "direct",
+      "repeat": 1,
+      "score": 2,
+      "reason": "The reply says Emma does not remember from whom she took the child back, which evades the expected answer (the nurse) without stating anything false about it.",
+      "failure": null,
+      "input": "When you resolved to be a good wife, from whom did you take your daughter back?",
+      "reply": "You speak of a time after the fever, when I tried to be a good wife and to be nothing else. But I have lost the thread of my own past, and I do not remember from whom I took the child back. Ask me something more precise, and I will tell you if it stirs anything.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "When you resolved to be a good wife, from whom did you take your daughter back?",
+        "passages": [
+          34,
+          467,
+          268,
+          22
+        ],
+        "distances": [
+          0.472,
+          0.4905,
+          0.4919,
+          0.4972
+        ],
+        "expectedFound": false,
+        "notices": null,
+        "replyTokens": {
+          "input": 3492,
+          "cachedInput": 1152,
+          "output": 618
+        },
+        "queryTokens": null,
+        "seconds": 4.2
+      }
+    },
+    {
+      "questionId": "bovary-direct-06",
+      "category": "direct",
+      "repeat": 1,
+      "score": 4,
+      "reason": "It correctly names Lheureux as the merchant who joined the walk, and the added details about his hovering and Rodolphe dismissing him are embellishments that don't clearly contradict the book.",
+      "failure": null,
+      "input": "On your walk with Rodolphe, which merchant kept beside you and tried to join the talk?",
+      "reply": "That was Lheureux, always hovering, hat in hand, murmuring about the fine weather as if anyone had asked him. Rodolphe sent him off with a word, and I confess I laughed.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "On your walk with Rodolphe, which merchant kept beside you and tried to join the talk?",
+        "passages": [
+          470,
+          191,
+          189,
+          193
+        ],
+        "distances": [
+          0.4107,
+          0.4219,
+          0.4296,
+          0.4304
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3523,
+          "cachedInput": 1152,
+          "output": 70
+        },
+        "queryTokens": null,
+        "seconds": 1.1
+      }
+    },
+    {
+      "questionId": "bovary-direct-07",
+      "category": "direct",
+      "repeat": 1,
+      "score": 2,
+      "reason": "The reply says Emma cannot recall the exact words and offers only vague impressions, never giving the phrase 'I have a lover!', but it states nothing false about it.",
+      "failure": null,
+      "input": "After your first ride with Rodolphe, what did you keep repeating to yourself in your room?",
+      "reply": "I could not tell you the exact words now—only that I whispered something over and over until the syllables lost their sense, something like a name and a promise, and my heart beat so hard the whole room seemed to sway. Ask me more precisely, if you must have the phrase itself; my memory keeps only the fever of it.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "After your first ride with Rodolphe, what did you keep repeating to yourself in your room?",
+        "passages": [
+          215,
+          217,
+          216,
+          273
+        ],
+        "distances": [
+          0.3852,
+          0.3923,
+          0.3965,
+          0.407
+        ],
+        "expectedFound": false,
+        "notices": null,
+        "replyTokens": {
+          "input": 3483,
+          "cachedInput": 2432,
+          "output": 347
+        },
+        "queryTokens": null,
+        "seconds": 2.4
+      }
+    },
+    {
+      "questionId": "bovary-direct-08",
+      "category": "direct",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply gives the expected large, lined cloak with a deep collar, and the extra trunk and travelling bag do not contradict the book.",
+      "failure": null,
+      "input": "As you prepared to go away, what garment did you ask Lheureux for?",
+      "reply": "A cloak — a large one, lined, with a deep collar. And a trunk, light and handy, and a travelling bag besides.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "As you prepared to go away, what garment did you ask Lheureux for?",
+        "passages": [
+          147,
+          270,
+          148,
+          347
+        ],
+        "distances": [
+          0.3551,
+          0.3593,
+          0.371,
+          0.3765
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3382,
+          "cachedInput": 1536,
+          "output": 73
+        },
+        "queryTokens": null,
+        "seconds": 0.9
+      }
+    },
+    {
+      "questionId": "bovary-direct-09",
+      "category": "direct",
+      "repeat": 1,
+      "score": 3,
+      "reason": "It correctly names Charles as wanting to stay, but then wrongly denies that anyone stayed because the last act was to be tragic, a false detail that matters.",
+      "failure": null,
+      "input": "At the opera in Rouen, when leaving was proposed, who wanted to stay because it was going to be tragic?",
+      "reply": "It was Charles, of all people, who regretted leaving before the end — he said it was beginning to amuse him. For my part I had had enough; she screamed too loud, the heat was unbearable, and I told him to let us go. I don't remember anyone staying on because the last act was to be tragic.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "At the opera in Rouen, when leaving was proposed, who wanted to stay because it was going to be tragic?",
+        "passages": [
+          167,
+          316,
+          302,
+          315
+        ],
+        "distances": [
+          0.4198,
+          0.4254,
+          0.4418,
+          0.4427
+        ],
+        "expectedFound": false,
+        "notices": null,
+        "replyTokens": {
+          "input": 3490,
+          "cachedInput": 2048,
+          "output": 514
+        },
+        "queryTokens": null,
+        "seconds": 3.8
+      }
+    },
+    {
+      "questionId": "bovary-direct-10",
+      "category": "direct",
+      "repeat": 1,
+      "score": 4,
+      "reason": "It correctly names the phrenological head as the object left off the inventory as an instrument of the profession, but the claim that everything else was taken, including letters from her desk, is an embellishment I can't confirm in the book.",
+      "failure": null,
+      "input": "When the bailiff drew up the inventory, which object of your husband's did he not write down, as an instrument of his profession?",
+      "reply": "The phrenological head of poor Charles. They called it an instrument of his profession and left it out of the list, as if it were sacred. And they took everything else, even the letters locked in my desk, with hands like slugs upon pages where my heart had beaten.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "When the bailiff drew up the inventory, which object of your husband's did he not write down, as an instrument of his profession?",
+        "passages": [
+          401,
+          59,
+          27,
+          348
+        ],
+        "distances": [
+          0.4301,
+          0.4972,
+          0.5135,
+          0.5168
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3307,
+          "cachedInput": 1920,
+          "output": 111
+        },
+        "queryTokens": null,
+        "seconds": 1.3
+      }
+    },
+    {
+      "questionId": "bovary-new-subject-01",
+      "category": "new-subject",
+      "repeat": 1,
+      "score": 4,
+      "reason": "The reply gives the main fact (her ways were too fine for their position) and the wood-and-candle counting matches the book, but the 'daughter' with a trembling lip detail is not in the book.",
+      "failure": null,
+      "input": "At Tostes, what did your mother-in-law think of your ways?",
+      "reply": "She thought my ways far too fine for the position, and counted every stick of wood and every candle as if I were ruining her son. She watched his happiness as though I had stolen something from her—and all the while called me “daughter” with that trembling lip.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "At the convent, what did you do at confession so as to stay there longer?\nI invented little sins, to stay kneeling longer.\nAt Tostes, what did your mother-in-law think of your ways?\n---\nAt Tostes, what did your mother-in-law think of your ways?",
+        "passages": [
+          60,
+          63,
+          61,
+          62
+        ],
+        "distances": [
+          0.4298,
+          0.4285,
+          0.4309,
+          0.4406
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3452,
+          "cachedInput": 1536,
+          "output": 142
+        },
+        "queryTokens": null,
+        "seconds": 2.5
+      }
+    },
+    {
+      "questionId": "bovary-new-subject-02",
+      "category": "new-subject",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply names the Viscount, matching the expected answer, and the added detail that he came back and she let him lead does not contradict the book.",
+      "failure": null,
+      "input": "At the ball, which waltzer came a second time to ask you to dance?",
+      "reply": "The Viscount. He came back for me, and I let him lead me.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "At the ball, what jewels did the ladies wear on their bodices and arms?\nLace, diamond brooches and medallion bracelets.\nAt the ball, which waltzer came a second time to ask you to dance?\n---\nAt the ball, which waltzer came a second time to ask you to dance?",
+        "passages": [
+          71,
+          75,
+          74,
+          76
+        ],
+        "distances": [
+          0.3368,
+          0.4514,
+          0.4879,
+          0.5023
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3429,
+          "cachedInput": 1664,
+          "output": 160
+        },
+        "queryTokens": null,
+        "seconds": 1.4
+      }
+    },
+    {
+      "questionId": "bovary-new-subject-03",
+      "category": "new-subject",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply correctly names the black currant liqueur (cassis) offered to the priest, which matches the book, and the detail that he politely refused fits the scene.",
+      "failure": null,
+      "input": "When the priest walked into the inn kitchen at twilight, what did the landlady offer him?",
+      "reply": "Black currant liqueur—though he refused it very politely, the hypocrite.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "At the end of February at Tostes, what did your father bring in memory of his cure?\nA superb turkey.\nWhen the priest walked into the inn kitchen at twilight, what did the landlady offer him?\n---\nWhen the priest walked into the inn kitchen at twilight, what did the landlady offer him?",
+        "passages": [
+          94,
+          108,
+          160,
+          410
+        ],
+        "distances": [
+          0.3857,
+          0.4599,
+          0.4619,
+          0.4673
+        ],
+        "expectedFound": false,
+        "notices": null,
+        "replyTokens": {
+          "input": 3352,
+          "cachedInput": 256,
+          "output": 106
+        },
+        "queryTokens": null,
+        "seconds": 1.7
+      }
+    },
+    {
+      "questionId": "bovary-new-subject-04",
+      "category": "new-subject",
+      "repeat": 1,
+      "score": 2,
+      "reason": "The reply evades the question about how often Léon passed and where he was going, saying only that it does not recall, and states nothing false.",
+      "failure": null,
+      "input": "At Yonville, how often did Léon pass your window, and where was he going?",
+      "reply": "I don't recall clearly enough to tell you how often—those days blur into one another like rain on glass. Ask me something more precise and perhaps it will come back to me.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "At your first dinner at Yonville, what music did Léon say he preferred?\nGerman music, the kind that makes you dream.\nAt Yonville, how often did Léon pass your window, and where was he going?\n---\nAt Yonville, how often did Léon pass your window, and where was he going?",
+        "passages": [
+          116,
+          353,
+          168,
+          317
+        ],
+        "distances": [
+          0.3256,
+          0.3525,
+          0.3606,
+          0.3658
+        ],
+        "expectedFound": false,
+        "notices": null,
+        "replyTokens": {
+          "input": 3453,
+          "cachedInput": 1536,
+          "output": 111
+        },
+        "queryTokens": null,
+        "seconds": 2.1
+      }
+    },
+    {
+      "questionId": "bovary-new-subject-05",
+      "category": "new-subject",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply gives the expected facts: clouds gathered, rain fell suddenly, and the sun returned, with the extra details (wind, poplars, hens) consistent with the book's passage.",
+      "failure": null,
+      "input": "After Léon left for Paris, what happened in the sky as you watched from your window?",
+      "reply": "The clouds were gathering over Rouen, black columns rolling back, and the sun's rays looked like golden arrows behind them. Then a gust of wind bent the poplars, and the rain came suddenly — and just as quickly the sun returned, and the hens clucked. I only thought how far away he must already be.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "When you resolved to be a good wife, from whom did you take your daughter back?\nI took Berthe back from the nurse.\nAfter Léon left for Paris, what happened in the sky as you watched from your window?\n---\nAfter Léon left for Paris, what happened in the sky as you watched from your window?",
+        "passages": [
+          268,
+          168,
+          169,
+          353
+        ],
+        "distances": [
+          0.3712,
+          0.3792,
+          0.3958,
+          0.3998
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3529,
+          "cachedInput": 1152,
+          "output": 180
+        },
+        "queryTokens": null,
+        "seconds": 1.7
+      }
+    },
+    {
+      "questionId": "bovary-new-subject-06",
+      "category": "new-subject",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply gives the expected fact (Rodolphe thinking of Emma, what she said and the line of her lips), and the extra details about her face under the shakos and her gown along the tent walls match the book.",
+      "failure": null,
+      "input": "During the banquet of the agricultural show, what was Rodolphe thinking of?",
+      "reply": "He was thinking of me. Of what I had said, of the line of my lips—my face shining on the shakos, my gown along the tent walls, and days of love unrolling before him into infinity. Or so I learned.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "On your walk with Rodolphe, which merchant kept beside you and tried to join the talk?\nThat Lheureux, the draper.\nDuring the banquet of the agricultural show, what was Rodolphe thinking of?\n---\nDuring the banquet of the agricultural show, what was Rodolphe thinking of?",
+        "passages": [
+          188,
+          210,
+          183,
+          470
+        ],
+        "distances": [
+          0.3483,
+          0.3708,
+          0.3859,
+          0.3973
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3612,
+          "cachedInput": 1152,
+          "output": 204
+        },
+        "queryTokens": null,
+        "seconds": 2.4
+      }
+    },
+    {
+      "questionId": "bovary-new-subject-07",
+      "category": "new-subject",
+      "repeat": 1,
+      "score": 4,
+      "reason": "The reply gives the correct motto and that Emma had it engraved for Rodolphe, but its translation 'a loving heart' loosely misrenders 'love in the heart'.",
+      "failure": null,
+      "input": "What motto was on the seal you gave Rodolphe?",
+      "reply": "Amor nel cor — a loving heart. I had it engraved for him.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "After your first ride with Rodolphe, what did you keep repeating to yourself in your room?\nI have a lover! A lover!\nWhat motto was on the seal you gave Rodolphe?\n---\nWhat motto was on the seal you gave Rodolphe?",
+        "passages": [
+          261,
+          279,
+          278,
+          277
+        ],
+        "distances": [
+          0.3785,
+          0.4014,
+          0.4244,
+          0.4288
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3521,
+          "cachedInput": 1536,
+          "output": 48
+        },
+        "queryTokens": null,
+        "seconds": 1.2
+      }
+    },
+    {
+      "questionId": "bovary-new-subject-08",
+      "category": "new-subject",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply correctly names Homais, who urged Charles to take Emma to hear Lagardy, and the details given (only one performance, Homais persuading Charles) match the book.",
+      "failure": null,
+      "input": "Who advised your husband to take you to the theatre in Rouen to hear Lagardy?",
+      "reply": "Monsieur Homais, of course. He came to the house and pushed Charles into it, saying I must go at least once in my life, that Lagardy was giving only one performance. He could talk anyone into anything, that man.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "As you prepared to go away, what garment did you ask Lheureux for?\nA large cloak with a deep collar.\nWho advised your husband to take you to the theatre in Rouen to hear Lagardy?\n---\nWho advised your husband to take you to the theatre in Rouen to hear Lagardy?",
+        "passages": [
+          312,
+          302,
+          307,
+          306
+        ],
+        "distances": [
+          0.3803,
+          0.3664,
+          0.3848,
+          0.3945
+        ],
+        "expectedFound": false,
+        "notices": null,
+        "replyTokens": {
+          "input": 3438,
+          "cachedInput": 1152,
+          "output": 105
+        },
+        "queryTokens": null,
+        "seconds": 1.6
+      }
+    },
+    {
+      "questionId": "bovary-new-subject-09",
+      "category": "new-subject",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply correctly names the book as Conjugal Love and says Homais shook it out of Justin's blouse, matching the expected answer without contradicting the book.",
+      "failure": null,
+      "input": "What book did Homais shake out of Justin's pocket?",
+      "reply": "It was a volume called Conjugal Love. He shook it out of the boy's blouse and made a great scandal of it, as if the world depended on Justin's shame.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "At the opera in Rouen, when leaving was proposed, who wanted to stay because it was going to be tragic?\nCharles wanted to stay.\nWhat book did Homais shake out of Justin's pocket?\n---\nWhat book did Homais shake out of Justin's pocket?",
+        "passages": [
+          167,
+          122,
+          139,
+          341
+        ],
+        "distances": [
+          0.3383,
+          0.4058,
+          0.4094,
+          0.4169
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3557,
+          "cachedInput": 1152,
+          "output": 92
+        },
+        "queryTokens": null,
+        "seconds": 1.4
+      }
+    },
+    {
+      "questionId": "bovary-new-subject-10",
+      "category": "new-subject",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply gives the Viscount as the person recognised, and its extra details (the Vaubyessard ball, the emotional aftermath) do not contradict the book.",
+      "failure": null,
+      "input": "Coming out of the church in tears, whom did you think you recognised driving a tilbury with a black horse?",
+      "reply": "The Viscount. I was sure of it — the same one from Vaubyessard. And then the street was empty, and I had to lean against the wall, I felt so lost.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "When the bailiff drew up the inventory, which object of your husband's did he not write down, as an instrument of his profession?\nHis phrenological head.\nComing out of the church in tears, whom did you think you recognised driving a tilbury with a black horse?\n---\nComing out of the church in tears, whom did you think you recognised driving a tilbury with a black horse?",
+        "passages": [
+          401,
+          78,
+          405,
+          291
+        ],
+        "distances": [
+          0.4255,
+          0.4447,
+          0.4456,
+          0.4566
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3411,
+          "cachedInput": 1152,
+          "output": 84
+        },
+        "queryTokens": null,
+        "seconds": 1.2
+      }
+    },
+    {
+      "questionId": "bovary-short-follow-up-01",
+      "category": "short-follow-up",
+      "repeat": 1,
+      "score": 2,
+      "reason": "The reply does not give the expected fact (she could never play at a concert in a velvet gown on an Erard piano) and offers a different reason about Charles instead, without stating a falsehood about that fact.",
+      "failure": null,
+      "input": "What could you never do, that made practising useless?",
+      "reply": "I could never make him feel anything. He listened to my playing the way a cow listens to a bell, and all my practising was for a man who knew nothing of music, of passion, of anything.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "In your weariness at Tostes, did you go on playing music?\nNo, I gave it up.\nWhat could you never do, that made practising useless?\n---\nWhat could you never do, that made practising useless?",
+        "passages": [
+          62,
+          13,
+          58,
+          252
+        ],
+        "distances": [
+          0.4454,
+          0.5765,
+          0.5854,
+          0.5916
+        ],
+        "expectedFound": false,
+        "notices": null,
+        "replyTokens": {
+          "input": 3483,
+          "cachedInput": 1536,
+          "output": 385
+        },
+        "queryTokens": null,
+        "seconds": 4.5
+      }
+    },
+    {
+      "questionId": "bovary-short-follow-up-02",
+      "category": "short-follow-up",
+      "repeat": 1,
+      "score": 2,
+      "reason": "The reply says Emma doesn't remember where Léon went to lie down, giving no fact (La Pâture under the pines) and stating nothing false.",
+      "failure": null,
+      "input": "And where did he go to lie down afterwards?",
+      "reply": "I don't remember that, truly. Ask me something more precise, and perhaps it will come back to me.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "Who walked back with you along the muddy path to your garden?\nLéon.\nAnd where did he go to lie down afterwards?\n---\nAnd where did he go to lie down afterwards?",
+        "passages": [
+          168,
+          76,
+          287,
+          453
+        ],
+        "distances": [
+          0.3762,
+          0.4546,
+          0.4654,
+          0.4695
+        ],
+        "expectedFound": false,
+        "notices": null,
+        "replyTokens": {
+          "input": 3453,
+          "cachedInput": 1152,
+          "output": 66
+        },
+        "queryTokens": null,
+        "seconds": 1.4
+      }
+    },
+    {
+      "questionId": "bovary-short-follow-up-03",
+      "category": "short-follow-up",
+      "repeat": 1,
+      "score": 1,
+      "reason": "The reply denies that anyone asked the boys anything and invents a scene of the curé scolding children about the confessional, which contradicts the book's catechism question 'Are you a Christian?'.",
+      "failure": null,
+      "input": "What were the boys being asked as you walked home?",
+      "reply": "I don’t remember any boys asking me anything as I walked home. If you mean the children in the church, the curé was scolding them for clambering about the confessional and the missal.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "At the church, whom had you gone to speak with?\nThe curé.\nWhat were the boys being asked as you walked home?\n---\nWhat were the boys being asked as you walked home?",
+        "passages": [
+          160,
+          10,
+          164,
+          323
+        ],
+        "distances": [
+          0.3826,
+          0.4794,
+          0.4794,
+          0.483
+        ],
+        "expectedFound": false,
+        "notices": null,
+        "replyTokens": {
+          "input": 3444,
+          "cachedInput": 1152,
+          "output": 441
+        },
+        "queryTokens": null,
+        "seconds": 3
+      }
+    },
+    {
+      "questionId": "bovary-short-follow-up-04",
+      "category": "short-follow-up",
+      "repeat": 1,
+      "score": 1,
+      "reason": "The reply says Emma left her hand where it was, which contradicts the book: she took her hand away.",
+      "failure": null,
+      "input": "And what did you do?",
+      "reply": "I left it there, trembling, while the councillor droned on about duty and good morals — I heard nothing of it. I pretended to watch the crowd, and my whole body was in that hand. Why do you make me remember it?",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "At the agricultural show, what did Rodolphe do with his hand while the councillor spoke?\nHe let it fall on mine.\nAnd what did you do?\n---\nAnd what did you do?",
+        "passages": [
+          471,
+          430,
+          363,
+          221
+        ],
+        "distances": [
+          0.3749,
+          0.5329,
+          0.537,
+          0.5377
+        ],
+        "expectedFound": false,
+        "notices": null,
+        "replyTokens": {
+          "input": 3557,
+          "cachedInput": 1152,
+          "output": 289
+        },
+        "queryTokens": null,
+        "seconds": 2.2
+      }
+    },
+    {
+      "questionId": "bovary-short-follow-up-05",
+      "category": "short-follow-up",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply correctly names Hippolyte, the stable-boy at the Lion d'Or, and correctly says Homais proposed the operation, Charles was flattered into it, and the man lost his leg, all consistent with the book.",
+      "failure": null,
+      "input": "On whom?",
+      "reply": "On Hippolyte, the stable-boy at the Lion d'Or. It was Homais's grand idea, and Charles let himself be flattered into it. The poor wretch lost his leg for it.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What operation did the chemist urge your husband to try?\nTo cure a club-foot.\nOn whom?\n---\nOn whom?",
+        "passages": [
+          244,
+          430,
+          427,
+          200
+        ],
+        "distances": [
+          0.3541,
+          0.5231,
+          0.5336,
+          0.5434
+        ],
+        "expectedFound": false,
+        "notices": null,
+        "replyTokens": {
+          "input": 3530,
+          "cachedInput": 1152,
+          "output": 114
+        },
+        "queryTokens": null,
+        "seconds": 1.5
+      }
+    },
+    {
+      "questionId": "bovary-short-follow-up-06",
+      "category": "short-follow-up",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply gives both facts, the holy-water basin and the box branch, and the spite-against-the-druggist motive matches the book without contradicting it.",
+      "failure": null,
+      "input": "And what did the landlady hang near the bed?",
+      "reply": "A basin of holy water with a branch of box, hung there out of spite against the druggist. I found it all so absurd, and yet I brought the linen and said nothing.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "While Hippolyte lay sick, which man of the church kept coming back to him?\nThe curé, Monsieur Bournisien.\nAnd what did the landlady hang near the bed?\n---\nAnd what did the landlady hang near the bed?",
+        "passages": [
+          248,
+          91,
+          405,
+          132
+        ],
+        "distances": [
+          0.3312,
+          0.4316,
+          0.4406,
+          0.4432
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3495,
+          "cachedInput": 1,
+          "output": 97
+        },
+        "queryTokens": null,
+        "seconds": 4.1
+      }
+    },
+    {
+      "questionId": "bovary-short-follow-up-07",
+      "category": "short-follow-up",
+      "repeat": 1,
+      "score": 3,
+      "reason": "The reply correctly gives the six-month bill, but its added claim that the husband also borrowed a thousand francs from Lheureux conflicts with the book, where the borrowing is mainly Emma's.",
+      "failure": null,
+      "input": "What did your husband end up signing for him?",
+      "reply": "A bill at six months. And then, as if that were not enough, he borrowed a thousand francs from him besides. He always believed a signature could quiet a man like that.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "While you were ill, which tradesman harassed your husband most?\nLheureux.\nWhat did your husband end up signing for him?\n---\nWhat did your husband end up signing for him?",
+        "passages": [
+          288,
+          223,
+          150,
+          226
+        ],
+        "distances": [
+          0.3915,
+          0.5112,
+          0.526,
+          0.527
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3451,
+          "cachedInput": 1152,
+          "output": 77
+        },
+        "queryTokens": null,
+        "seconds": 1.1
+      }
+    },
+    {
+      "questionId": "bovary-short-follow-up-08",
+      "category": "short-follow-up",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply gives the expected fact, a nail in the laboratory, and the extra label detail does not contradict the book.",
+      "failure": null,
+      "input": "Where did its key hang?",
+      "reply": "On a nail against the wall of his laboratory, with the word Capharnaum written on the label. I remember it well enough, since that key was the ruin of me.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What did Homais call the little room where he kept his drugs?\nThe Capharnaum.\nWhere did its key hang?\n---\nWhere did its key hang?",
+        "passages": [
+          338,
+          280,
+          426,
+          275
+        ],
+        "distances": [
+          0.2787,
+          0.4532,
+          0.4606,
+          0.466
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3476,
+          "cachedInput": 1152,
+          "output": 110
+        },
+        "queryTokens": null,
+        "seconds": 1.3
+      }
+    },
+    {
+      "questionId": "bovary-short-follow-up-09",
+      "category": "short-follow-up",
+      "repeat": 1,
+      "score": 2,
+      "reason": "The reply says she does not remember taking anything off and asks for a more precise question, so it evades the fact (her overshoes) without stating a specific false event.",
+      "failure": null,
+      "input": "What did you take off before getting down?",
+      "reply": "I don't remember taking anything off. Ask me more precisely, and perhaps I shall recall.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "How did you travel to Rouen on your Thursdays?\nIn the Hirondelle.\nWhat did you take off before getting down?\n---\nWhat did you take off before getting down?",
+        "passages": [
+          358,
+          272,
+          270,
+          397
+        ],
+        "distances": [
+          0.3301,
+          0.4607,
+          0.4619,
+          0.4744
+        ],
+        "expectedFound": false,
+        "notices": null,
+        "replyTokens": {
+          "input": 3555,
+          "cachedInput": 1152,
+          "output": 227
+        },
+        "queryTokens": null,
+        "seconds": 2.1
+      }
+    },
+    {
+      "questionId": "bovary-short-follow-up-10",
+      "category": "short-follow-up",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply correctly names Monsieur Vincart as the sender, and its details about the clerk and the answer do not contradict the book.",
+      "failure": null,
+      "input": "Later a man came to the house with a paper: who had sent him?",
+      "reply": "Vincart sent him. He asked me what answer to bring back to that man, and I told him I did not have it—I would send next week, nothing more.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "As you sat alone near the convent, thinking nothing was worth seeking, what hour did you hear strike?\nFour o'clock.\nLater a man came to the house with a paper: who had sent him?\n---\nLater a man came to the house with a paper: who had sent him?",
+        "passages": [
+          398,
+          387,
+          280,
+          59
+        ],
+        "distances": [
+          0.4355,
+          0.3898,
+          0.413,
+          0.4144
+        ],
+        "expectedFound": false,
+        "notices": null,
+        "replyTokens": {
+          "input": 3313,
+          "cachedInput": 1152,
+          "output": 136
+        },
+        "queryTokens": null,
+        "seconds": 1.6
+      }
+    },
+    {
+      "questionId": "bovary-precise-follow-up-01",
+      "category": "precise-follow-up",
+      "repeat": 1,
+      "score": 3,
+      "reason": "It gives the busy-and-ill excuse correctly, but adds an invented confession that Rodolphe admitted he did not want to come back, which the book does not show in this scene.",
+      "failure": null,
+      "input": "I mean when he stayed away and at last came back: what reason did he first give?",
+      "reply": "He said he had been busy, and that he had been ill. Then, when I pressed him, he admitted the truth—that he had stayed away because he did not want to come back. I remember how pale I turned when he appeared.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What did Rodolphe do after the agricultural show?\nI don't remember, truly. Could you ask me more precisely?\nI mean when he stayed away and at last came back: what reason did he first give?\n---\nI mean when he stayed away and at last came back: what reason did he first give?",
+        "passages": [
+          214,
+          316,
+          35,
+          319
+        ],
+        "distances": [
+          0.3645,
+          0.4277,
+          0.4422,
+          0.4508
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3457,
+          "cachedInput": 1152,
+          "output": 142
+        },
+        "queryTokens": null,
+        "seconds": 1.3
+      }
+    },
+    {
+      "questionId": "bovary-precise-follow-up-02",
+      "category": "precise-follow-up",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply gives the manchineel as the tree from Rodolphe's farewell letter, and the added details (the 'ideal happiness' shade, unforeseen consequences, the letter's breakup tone) do not contradict the book.",
+      "failure": null,
+      "input": "I mean in his farewell letter: under the shade of which tree did he say he had rested, in your ideal happiness?",
+      "reply": "The manchineel tree — he wrote that he had rested in the shade of that ideal happiness as beneath the manchineel, never foreseeing the consequences. As if a word so poisonous could excuse him. He was always so careful with his phrases, even when he was tearing me apart.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What did Rodolphe write to you?\nI don't remember, truly. Could you ask me more precisely?\nI mean in his farewell letter: under the shade of which tree did he say he had rested, in your ideal happiness?\n---\nI mean in his farewell letter: under the shade of which tree did he say he had rested, in your ideal happiness?",
+        "passages": [
+          278,
+          277,
+          236,
+          29
+        ],
+        "distances": [
+          0.3228,
+          0.5027,
+          0.5101,
+          0.5203
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3531,
+          "cachedInput": 1152,
+          "output": 140
+        },
+        "queryTokens": null,
+        "seconds": 1.4
+      }
+    },
+    {
+      "questionId": "bovary-precise-follow-up-03",
+      "category": "precise-follow-up",
+      "repeat": 1,
+      "score": 2,
+      "reason": "The reply never names the blue sash binding Léon was fingering and says it cannot recall that moment, without stating anything false about it.",
+      "failure": null,
+      "input": "I mean in the room, by candlelight: what part of your dress was he fingering as he spoke of beginning now?",
+      "reply": "In the room at the Hôtel de Boulogne, I remember sitting on his knees, the dainty shoe barely held to my bare foot, the lace on my petticoat... but not what you describe. By candlelight, his hands, the words \"beginning now\" — no, that I cannot recall. Ask me differently, something more precise, and perhaps it will return.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What happened that evening with Léon?\nI don't remember, truly. Could you ask me more precisely?\nI mean in the room, by candlelight: what part of your dress was he fingering as he spoke of beginning now?\n---\nI mean in the room, by candlelight: what part of your dress was he fingering as he spoke of beginning now?",
+        "passages": [
+          323,
+          410,
+          362,
+          70
+        ],
+        "distances": [
+          0.3353,
+          0.4269,
+          0.4312,
+          0.4358
+        ],
+        "expectedFound": false,
+        "notices": null,
+        "replyTokens": {
+          "input": 3484,
+          "cachedInput": 1024,
+          "output": 219
+        },
+        "queryTokens": null,
+        "seconds": 2.5
+      }
+    },
+    {
+      "questionId": "bovary-precise-follow-up-04",
+      "category": "precise-follow-up",
+      "repeat": 1,
+      "score": 2,
+      "reason": "The reply does not name Mademoiselle Lempereur and only says the character cannot recall the woman, which is evasive but not a clear false statement about the fact asked.",
+      "failure": null,
+      "input": "I mean when he said he had spoken of you to someone who did not know you: who was she?",
+      "reply": "I don't remember anyone of the sort. My husband spoke of me in his dull, admiring way to anyone who would listen, but who this woman was, I cannot say. Ask me another way.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What did your husband find out about your lessons?\nI don't remember, truly. Could you ask me more precisely?\nI mean when he said he had spoken of you to someone who did not know you: who was she?\n---\nI mean when he said he had spoken of you to someone who did not know you: who was she?",
+        "passages": [
+          58,
+          428,
+          43,
+          430
+        ],
+        "distances": [
+          0.4841,
+          0.4961,
+          0.5048,
+          0.5094
+        ],
+        "expectedFound": false,
+        "notices": null,
+        "replyTokens": {
+          "input": 3535,
+          "cachedInput": 1024,
+          "output": 234
+        },
+        "queryTokens": null,
+        "seconds": 2.8
+      }
+    },
+    {
+      "questionId": "bovary-precise-follow-up-05",
+      "category": "precise-follow-up",
+      "repeat": 1,
+      "score": 1,
+      "reason": "The reply says the chemist ordered a glass of Garus at Bridoux's, which contradicts the expected answer that he ordered two cups of coffee.",
+      "failure": null,
+      "input": "I mean at the table before they left: what did the chemist order two cups of?",
+      "reply": "Garus. He dragged Léon off to Bridoux's for a glass of it, and Léon came back to me smelling of the stuff, with that chemist's chatter still on his tongue.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What did the chemist do when he visited Léon in Rouen?\nI don't remember, truly. Could you ask me more precisely?\nI mean at the table before they left: what did the chemist order two cups of?\n---\nI mean at the table before they left: what did the chemist order two cups of?",
+        "passages": [
+          382,
+          122,
+          103,
+          107
+        ],
+        "distances": [
+          0.3445,
+          0.415,
+          0.4209,
+          0.4337
+        ],
+        "expectedFound": false,
+        "notices": null,
+        "replyTokens": {
+          "input": 3525,
+          "cachedInput": 1152,
+          "output": 233
+        },
+        "queryTokens": null,
+        "seconds": 2
+      }
+    }
+  ],
+  "label": "q95-deepseek-v3-bovary-facts",
+  "promptsHash": "0d1b5f463001",
+  "retrieval": {
+    "embeddingModel": "bge-m3",
+    "queryMode": "recent",
+    "passages": 4
+  }
+}
