@@ -1,0 +1,781 @@
+{
+  "schemaVersion": 1,
+  "id": "20261127-175820-minimax-minimax-m3-1-flash",
+  "startedAt": "2026-11-27T17:58:20.2585478+00:00",
+  "finishedAt": "2026-11-27T18:00:11.8278183+00:00",
+  "dataset": "alice-facts",
+  "bookId": "alice-s-adventures-in-wonderland",
+  "character": "Alice",
+  "repeats": 1,
+  "chat": {
+    "provider": "openrouter-minimax-m3.1-flash",
+    "model": "minimax/minimax-m3.1-flash"
+  },
+  "judge": {
+    "provider": "test-langfuse-claude-haiku-5.5",
+    "model": "anthropic/claude-haiku-5.5",
+    "promptVersion": "1",
+    "scoreName": "factual-accuracy"
+  },
+  "tokens": {
+    "chat": {
+      "input": 72532,
+      "cachedInput": 17073,
+      "output": 12305
+    },
+    "judge": {
+      "input": 11460,
+      "cachedInput": 0,
+      "output": 9260
+    }
+  },
+  "results": [
+    {
+      "questionId": "alice-fact-01",
+      "category": "fact",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply gives the label ORANGE MARMALADE and says the jar was empty, both matching the book, and its putting the jar back into a cupboard as she fell past agrees with the book's account.",
+      "failure": null,
+      "input": "As you fell down the well, you took a jar from one of the shelves. What was written on it, and what was inside?",
+      "reply": "It was labelled “ORANGE MARMALADE,” but the jar was quite empty, which was a great disappointment. I durst not drop it, so I put it back into one of the cupboards as I fell past.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "As you fell down the well, you took a jar from one of the shelves. What was written on it, and what was inside?",
+        "passages": [
+          3,
+          58,
+          4,
+          5
+        ],
+        "distances": [
+          0.3352,
+          0.437,
+          0.4433,
+          0.4484
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3596,
+          "cachedInput": 0,
+          "output": 155
+        },
+        "queryTokens": null,
+        "seconds": 1.1
+      }
+    },
+    {
+      "questionId": "alice-fact-02",
+      "category": "fact",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply correctly gives the forgotten golden key left on the glass table, and the ten-inch height and inability to reach it match the book.",
+      "failure": null,
+      "input": "After drinking from the little bottle you were the right size for the garden door. What had you forgotten?",
+      "reply": "I had forgotten the little golden key, dear! It was still on the glass table, and after drinking the “DRINK ME” bottle I was only ten inches high, so I could see it quite plainly but could not possibly reach it.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "After drinking from the little bottle you were the right size for the garden door. What had you forgotten?",
+        "passages": [
+          8,
+          6,
+          7,
+          9
+        ],
+        "distances": [
+          0.3135,
+          0.3496,
+          0.3617,
+          0.369
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3619,
+          "cachedInput": 0,
+          "output": 51
+        },
+        "queryTokens": null,
+        "seconds": 0.6
+      }
+    },
+    {
+      "questionId": "alice-fact-03",
+      "category": "fact",
+      "repeat": 1,
+      "score": 4,
+      "reason": "It correctly names the White Rabbit's fan as the cause, but wrongly says she shrank to about two feet (the book has about ten inches), a minor inaccuracy.",
+      "failure": null,
+      "input": "What made you shrink so quickly just before you fell into the water?",
+      "reply": "It was the fan I had picked up — while I held it, I shrank to about two feet high and was growing smaller faster still, so I dropped it just in time. Then, alas, the little door was shut and the key was still on the glass table; my foot slipped, and splash! I fell into the pool of my own tears.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What made you shrink so quickly just before you fell into the water?",
+        "passages": [
+          14,
+          8,
+          13,
+          3
+        ],
+        "distances": [
+          0.3843,
+          0.4663,
+          0.4668,
+          0.4949
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3546,
+          "cachedInput": 1280,
+          "output": 280
+        },
+        "queryTokens": null,
+        "seconds": 1.5
+      }
+    },
+    {
+      "questionId": "alice-fact-04",
+      "category": "fact",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply correctly names the Caucus-race, and its details (running in a circle, drying off, the Dodo declaring everyone won, the comfits, and the thimble prize) all match the book.",
+      "failure": null,
+      "input": "You were all wet after the pool. What did the Dodo propose to get you dry?",
+      "reply": "A Caucus-race, if you please! We ran round a sort of circle, starting and stopping as we liked, until at last we were all dry; and then the Dodo declared that everybody had won, so I gave out the comfits I had in my pocket. I was given a thimble for my prize, which was very queer, but nobody was disappointed.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "You were all wet after the pool. What did the Dodo propose to get you dry?",
+        "passages": [
+          20,
+          19,
+          18,
+          17
+        ],
+        "distances": [
+          0.3737,
+          0.4023,
+          0.4162,
+          0.4407
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3690,
+          "cachedInput": 0,
+          "output": 169
+        },
+        "queryTokens": null,
+        "seconds": 1.3
+      }
+    },
+    {
+      "questionId": "alice-fact-05",
+      "category": "fact",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply correctly says the Rabbit mistook her for Mary Ann, his housemaid, and sent her home to fetch a pair of gloves and a fan, matching the book.",
+      "failure": null,
+      "input": "When the White Rabbit called out to you angrily, who did he take you for, and what did he tell you to fetch?",
+      "reply": "He mistook me for Mary Ann, his housemaid, and told me to run home and fetch him a pair of gloves and a fan—quick, as he said!",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "When the White Rabbit called out to you angrily, who did he take you for, and what did he tell you to fetch?",
+        "passages": [
+          24,
+          11,
+          30,
+          28
+        ],
+        "distances": [
+          0.3754,
+          0.3772,
+          0.3903,
+          0.403
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3595,
+          "cachedInput": 128,
+          "output": 232
+        },
+        "queryTokens": null,
+        "seconds": 1.5
+      }
+    },
+    {
+      "questionId": "alice-fact-06",
+      "category": "fact",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply correctly names Bill the Lizard as the one sent down the chimney, and the kick and sky-rocket detail matches the book without contradicting it.",
+      "failure": null,
+      "input": "While you were stuck in the Rabbit's house, who was to be sent down the chimney?",
+      "reply": "Bill, the little lizard, was to be sent down the chimney, poor fellow. They put every unpleasant task upon him, and when I gave him a kick, he shot up the chimney like a sky-rocket!",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "While you were stuck in the Rabbit's house, who was to be sent down the chimney?",
+        "passages": [
+          30,
+          29,
+          24,
+          31
+        ],
+        "distances": [
+          0.3393,
+          0.396,
+          0.3968,
+          0.4182
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3710,
+          "cachedInput": 0,
+          "output": 304
+        },
+        "queryTokens": null,
+        "seconds": 1.6
+      }
+    },
+    {
+      "questionId": "alice-fact-07",
+      "category": "fact",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply correctly says the Caterpillar was smoking a long hookah and that its first question was \"Who are you?\", and the added commentary contradicts nothing in the book.",
+      "failure": null,
+      "input": "What was the Caterpillar smoking, and what was the first thing it asked you?",
+      "reply": "It was smoking a long hookah, and the very first thing it asked me was, “Who are you?” Such a stern beginning, I thought, for a caterpillar taking its time over a smoke.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What was the Caterpillar smoking, and what was the first thing it asked you?",
+        "passages": [
+          34,
+          35,
+          37,
+          33
+        ],
+        "distances": [
+          0.3205,
+          0.3443,
+          0.3754,
+          0.3819
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3575,
+          "cachedInput": 1280,
+          "output": 132
+        },
+        "queryTokens": null,
+        "seconds": 0.9
+      }
+    },
+    {
+      "questionId": "alice-fact-08",
+      "category": "fact",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply gives the expected facts: the long neck made the Pigeon take Alice for a serpent, and Alice answered that she was a little girl, with the egg detail matching the book.",
+      "failure": null,
+      "input": "Why did the Pigeon take you for a serpent, and what did you answer that you were?",
+      "reply": "Because my neck had grown so long and bendy that I looked quite like a serpent to her, and she feared I meant to steal her eggs. I told her, rather doubtfully, that I was a little girl—and I added that I was not looking for eggs at all, and should not want hers raw if I were. She seemed hardly to believe me!",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "Why did the Pigeon take you for a serpent, and what did you answer that you were?",
+        "passages": [
+          40,
+          41,
+          39,
+          42
+        ],
+        "distances": [
+          0.3718,
+          0.3804,
+          0.4067,
+          0.474
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3544,
+          "cachedInput": 1280,
+          "output": 196
+        },
+        "queryTokens": null,
+        "seconds": 1.3
+      }
+    },
+    {
+      "questionId": "alice-fact-09",
+      "category": "fact",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply correctly states there was too much pepper in the soup, and its details about the sneezing Duchess, the baby, and the silent cook match the book.",
+      "failure": null,
+      "input": "In the Duchess's kitchen, what was there certainly too much of, and in what?",
+      "reply": "There was certainly too much pepper in the soup — so much of it in the air that the Duchess herself sneezed every now and then, and the poor baby went sneezing and howling alternately without a moment's pause. I said so out loud as well as I could, for sneezing is not easy to talk through, but the cook only stirred her cauldron on and said nothing at all.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "In the Duchess's kitchen, what was there certainly too much of, and in what?",
+        "passages": [
+          45,
+          46,
+          48,
+          47
+        ],
+        "distances": [
+          0.3622,
+          0.4022,
+          0.4273,
+          0.4314
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3610,
+          "cachedInput": 185,
+          "output": 124
+        },
+        "queryTokens": null,
+        "seconds": 1
+      }
+    },
+    {
+      "questionId": "alice-fact-10",
+      "category": "fact",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply correctly names the Hatter and the March Hare in the two directions and says the Cat called them both mad, matching the book; the paw-waving detail is also accurate.",
+      "failure": null,
+      "input": "Who did the Cheshire Cat say lived in the two directions it pointed to?",
+      "reply": "In one direction lived the Hatter, and in the other the March Hare; the Cat waved its paws towards each of them and told me they were both mad. How queer everything is today!",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "Who did the Cheshire Cat say lived in the two directions it pointed to?",
+        "passages": [
+          50,
+          51,
+          52,
+          69
+        ],
+        "distances": [
+          0.3783,
+          0.4454,
+          0.4561,
+          0.4687
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3638,
+          "cachedInput": 1280,
+          "output": 181
+        },
+        "queryTokens": null,
+        "seconds": 1
+      }
+    },
+    {
+      "questionId": "alice-fact-11",
+      "category": "fact",
+      "repeat": 1,
+      "score": 3,
+      "reason": "The reply correctly says the watch told the day of the month, not the hour, but wrongly names the March Hare as its owner when it was the Hatter's watch.",
+      "failure": null,
+      "input": "What was strange about the watch at the tea party?",
+      "reply": "It was the March Hare's watch, and it told the day of the month but not the hour! When I called it a very funny watch, the Hatter asked why it should do such a thing, and said it was because it stayed the same year for such a long time together—which I could not make sense of at all.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What was strange about the watch at the tea party?",
+        "passages": [
+          55,
+          56,
+          53,
+          8
+        ],
+        "distances": [
+          0.3874,
+          0.4226,
+          0.428,
+          0.4306
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3648,
+          "cachedInput": 1280,
+          "output": 296
+        },
+        "queryTokens": null,
+        "seconds": 2
+      }
+    },
+    {
+      "questionId": "alice-fact-12",
+      "category": "fact",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply states that the Hatter and March Hare were trying to put the Dormouse into the teapot, matching the book, and adds nothing that contradicts it.",
+      "failure": null,
+      "input": "When you walked away from the tea party, what were the others doing with the Dormouse?",
+      "reply": "When I looked back, the Hatter and the March Hare were trying to put the sleeping Dormouse into the teapot! I was quite scandalized, I must say.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "When you walked away from the tea party, what were the others doing with the Dormouse?",
+        "passages": [
+          60,
+          57,
+          53,
+          58
+        ],
+        "distances": [
+          0.3922,
+          0.4162,
+          0.4174,
+          0.4197
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3688,
+          "cachedInput": 1280,
+          "output": 37
+        },
+        "queryTokens": null,
+        "seconds": 1.1
+      }
+    },
+    {
+      "questionId": "alice-fact-13",
+      "category": "fact",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply correctly states live hedgehogs as balls and live flamingoes as mallets, and the added details about them crawling away and twisting about match the book.",
+      "failure": null,
+      "input": "In the Queen's game of croquet, what were used as balls and as mallets?",
+      "reply": "Live hedgehogs were the balls and live flamingoes were the mallets, if you please. It was a most confusing game, for the hedgehogs kept crawling away and the flamingoes twisted about so that one could hardly aim at anything at all!",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "In the Queen's game of croquet, what were used as balls and as mallets?",
+        "passages": [
+          68,
+          67,
+          66,
+          43
+        ],
+        "distances": [
+          0.3886,
+          0.3976,
+          0.3988,
+          0.4495
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3647,
+          "cachedInput": 1280,
+          "output": 205
+        },
+        "queryTokens": null,
+        "seconds": 1.5
+      }
+    },
+    {
+      "questionId": "alice-fact-14",
+      "category": "fact",
+      "repeat": 1,
+      "score": 4,
+      "reason": "The reply gives the expected cause, the pepper in the soup, but wrongly has the Duchess crying \"Chop off her head!\" in the kitchen, a line that belongs to the croquet ground.",
+      "failure": null,
+      "input": "When the Duchess took your arm again, what did you suppose had made her so savage in the kitchen?",
+      "reply": "I suppose it was her own kitchen that did it: all that pepper in the soup, and the Cook flinging every pan and plate at her and at the baby, and then her crying, \"Chop off her head!\" as if it were the most natural thing in the world. Who could help turning fierce after such a life, I wonder?",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "When the Duchess took your arm again, what did you suppose had made her so savage in the kitchen?",
+        "passages": [
+          45,
+          48,
+          46,
+          43
+        ],
+        "distances": [
+          0.3975,
+          0.41,
+          0.4175,
+          0.4249
+        ],
+        "expectedFound": false,
+        "notices": null,
+        "replyTokens": {
+          "input": 3577,
+          "cachedInput": 1280,
+          "output": 8797
+        },
+        "queryTokens": null,
+        "seconds": 32.1
+      }
+    },
+    {
+      "questionId": "alice-fact-15",
+      "category": "fact",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply correctly names the Gryphon as the one ordered to escort Alice and says it was fast asleep in the sun, with the accompanying details matching the book.",
+      "failure": null,
+      "input": "Whom did the Queen order to take you to the Mock Turtle, and what was that creature doing when you found it?",
+      "reply": "The Queen ordered the Gryphon to escort me to the Mock Turtle, and I found that creature lying fast asleep in the sun, quite unaware of its important errand. When it woke and rubbed its eyes, it said the Queen’s threats were “all her fancy,” for nobody is ever executed here.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "Whom did the Queen order to take you to the Mock Turtle, and what was that creature doing when you found it?",
+        "passages": [
+          75,
+          76,
+          71,
+          79
+        ],
+        "distances": [
+          0.3184,
+          0.3214,
+          0.4024,
+          0.414
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3589,
+          "cachedInput": 0,
+          "output": 178
+        },
+        "queryTokens": null,
+        "seconds": 0.9
+      }
+    },
+    {
+      "questionId": "alice-fact-16",
+      "category": "fact",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply correctly names the lobsters as the thing thrown as far out to sea as possible, and the added 'swim after them' matches the Gryphon's description in the book.",
+      "failure": null,
+      "input": "In the dance that the Mock Turtle and the Gryphon described, what do you throw as far out to sea as you can?",
+      "reply": "You throw the lobsters, as far out to sea as you can, and then swim after them.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "In the dance that the Mock Turtle and the Gryphon described, what do you throw as far out to sea as you can?",
+        "passages": [
+          81,
+          82,
+          80,
+          83
+        ],
+        "distances": [
+          0.3925,
+          0.4172,
+          0.4301,
+          0.4465
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3662,
+          "cachedInput": 1280,
+          "output": 23
+        },
+        "queryTokens": null,
+        "seconds": 0.8
+      }
+    },
+    {
+      "questionId": "alice-fact-17",
+      "category": "fact",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply gives the expected fact: the Mock Turtle said repeating the verses without explanation was useless and the most confusing thing he had ever heard, and the Gryphon detail doesn't contradict the book as I recall it.",
+      "failure": null,
+      "input": "What did the Mock Turtle say about the verses you were reciting about the Owl and the Panther?",
+      "reply": "He said it was no use repeating the verses unless they were explained as one went along, and that it was by far the most confusing thing he had ever heard. The Gryphon told him to leave off, which I was only too glad to hear!",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What did the Mock Turtle say about the verses you were reciting about the Owl and the Panther?",
+        "passages": [
+          86,
+          85,
+          80,
+          87
+        ],
+        "distances": [
+          0.3522,
+          0.4089,
+          0.4306,
+          0.4362
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3655,
+          "cachedInput": 1792,
+          "output": 471
+        },
+        "queryTokens": null,
+        "seconds": 2
+      }
+    },
+    {
+      "questionId": "alice-fact-18",
+      "category": "fact",
+      "repeat": 1,
+      "score": 4,
+      "reason": "It correctly states the Hatter trembled and shook both shoes off, but the claim that the King let him go is doubtful and not clearly supported by the book.",
+      "failure": null,
+      "input": "At the trial, what happened to the Hatter when the Queen asked for the list of the singers at the last concert?",
+      "reply": "It was dreadful to see! The poor Hatter had been trembling the whole time the Queen stared at him, and when she called for the list of singers, he shook so violently that both his shoes came right off his feet. The King then let him go, and the Hatter hurried out without even stopping to put his shoes on — the Queen called out that an officer should take his head off outside, but he was out of sight long before anyone could reach the door. I could hardly feel sorry for him, for he had muddled his evidence so badly, but I did think it shame that the Queen should frighten him so.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "At the trial, what happened to the Hatter when the Queen asked for the list of the singers at the last concert?",
+        "passages": [
+          91,
+          94,
+          92,
+          90
+        ],
+        "distances": [
+          0.4063,
+          0.4067,
+          0.4286,
+          0.4519
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3740,
+          "cachedInput": 1400,
+          "output": 194
+        },
+        "queryTokens": null,
+        "seconds": 1.2
+      }
+    },
+    {
+      "questionId": "alice-fact-19",
+      "category": "fact",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply gives Rule Forty-two, the mile-high wording, Alice's objection that it was not a regular rule and was invented on the spot, all matching the book.",
+      "failure": null,
+      "input": "Which rule did the King read to make you leave the court, and what did you say about it?",
+      "reply": "It was Rule Forty-two: “All persons more than a mile high to leave the court.” I told him plainly that I was not a mile high, and that such a rule was not a regular one at all—he had invented it on the spot. I added that, if it really belonged in the book, it ought to be Number One. The King turned rather pale and shut his note-book, but I was not going to be ordered about on no evidence at all!",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "Which rule did the King read to make you leave the court, and what did you say about it?",
+        "passages": [
+          99,
+          97,
+          98,
+          101
+        ],
+        "distances": [
+          0.3838,
+          0.4089,
+          0.412,
+          0.4181
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3598,
+          "cachedInput": 1024,
+          "output": 254
+        },
+        "queryTokens": null,
+        "seconds": 1.7
+      }
+    },
+    {
+      "questionId": "alice-fact-20",
+      "category": "fact",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply correctly names her sister as the one who woke her and that she was told to run in to tea because it was getting late, matching the book.",
+      "failure": null,
+      "input": "Who woke you at the end, and what did that person tell you to go and do?",
+      "reply": "My sister woke me, dear. She told me to run in to my tea, because it was getting rather late.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "Who woke you at the end, and what did that person tell you to go and do?",
+        "passages": [
+          102,
+          57,
+          58,
+          60
+        ],
+        "distances": [
+          0.4656,
+          0.4871,
+          0.4906,
+          0.492
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3605,
+          "cachedInput": 1024,
+          "output": 26
+        },
+        "queryTokens": null,
+        "seconds": 0.5
+      }
+    }
+  ],
+  "label": "bench-cheap",
+  "promptsHash": "0d1b5f463001",
+  "retrieval": {
+    "embeddingModel": "bge-m3:latest",
+    "queryMode": "recent",
+    "passages": 4
+  }
+}

@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 750" width="720" height="750" role="img" aria-labelledby="title desc" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
+  <title id="title">Quality and price of nine inexpensive models</title>
+  <desc id="desc">DeepSeek V4.1 Flash: role 4.90 of 5, right facts 85 %, 0.17 USD for 1,000 replies; GLM 5.3 Flash: role 4.72 of 5, right facts 83 %, 0.73 USD for 1,000 replies; MiMo V2.6 Flash: role 4.67 of 5, right facts 82 %, 0.43 USD for 1,000 replies; Gemini 2.5 Flash Lite: role 4.63 of 5, right facts 82 %, 0.30 USD for 1,000 replies; GPT-6 Luna: role 4.60 of 5, right facts 83 %, 0.40 USD for 1,000 replies; Claude Haiku 5.5: role 4.55 of 5, right facts 85 %, 0.65 USD for 1,000 replies; Mistral Small 4: role 4.35 of 5, right facts 75 %, 0.46 USD for 1,000 replies; gpt-oss-120b: role 4.13 of 5, right facts 78 %, 0.24 USD for 1,000 replies; MiniMax M3.1 Flash: role 3.95 of 5, right facts 78 %, 0.38 USD for 1,000 replies. Claude Haiku 5.5 is also the judge.</desc>
+  <rect width="720" height="750" rx="10" fill="#1a1a19"/>
+  <text x="24" y="32" font-size="17" fill="#f0efec" text-anchor="start" font-weight="600">Quality and price of nine inexpensive models</text>
+  <text x="24" y="54" font-size="12" fill="#c3c2b7" text-anchor="start">Higher is better, further left is cheaper. Price of the replies in USD for 1,000. The vertical axes do not start at 0.</text>
+  <circle cx="30.0" cy="78.0" r="6" fill="#3987e5" stroke="#1a1a19" stroke-width="2"><title>model</title></circle>
+  <text x="42" y="82" font-size="12" fill="#c3c2b7" text-anchor="start">model</text>
+  <path d="M120.0 70.0l8 8l-8 8l-8 -8z" fill="#d95926" stroke="#1a1a19" stroke-width="2"><title>also the judge</title></path>
+  <text x="134" y="82" font-size="12" fill="#c3c2b7" text-anchor="start">Claude Haiku 5.5 is also the judge that gave every grade</text>
+  <text x="24" y="116" font-size="13" fill="#f0efec" text-anchor="start" font-weight="600">Staying in role (grade of 5)</text>
+  <line x1="56" y1="330.0" x2="690" y2="330.0" stroke="#343432" stroke-width="1"/>
+  <text x="48" y="334" font-size="11" fill="#c3c2b7" text-anchor="end">4.0</text>
+  <line x1="56" y1="230.0" x2="690" y2="230.0" stroke="#343432" stroke-width="1"/>
+  <text x="48" y="234" font-size="11" fill="#c3c2b7" text-anchor="end">4.5</text>
+  <line x1="56" y1="130.0" x2="690" y2="130.0" stroke="#343432" stroke-width="1"/>
+  <text x="48" y="134" font-size="11" fill="#c3c2b7" text-anchor="end">5.0</text>
+  <text x="56" y="388" font-size="11" fill="#c3c2b7" text-anchor="middle">0</text>
+  <text x="214.5" y="388" font-size="11" fill="#c3c2b7" text-anchor="middle">0.2</text>
+  <text x="373" y="388" font-size="11" fill="#c3c2b7" text-anchor="middle">0.4</text>
+  <text x="531.5" y="388" font-size="11" fill="#c3c2b7" text-anchor="middle">0.6</text>
+  <text x="690" y="388" font-size="11" fill="#c3c2b7" text-anchor="middle">0.8</text>
+  <text x="690" y="404" font-size="11" fill="#c3c2b7" text-anchor="end">USD for 1,000 replies</text>
+  <circle cx="189.6" cy="150.0" r="6" fill="#3987e5" stroke="#1a1a19" stroke-width="2"><title>DeepSeek V4.1 Flash: 4.90 of 5, 0.17 USD for 1,000 replies</title></circle>
+  <text x="200.605" y="154" font-size="11" fill="#f0efec" text-anchor="start">DeepSeek V4.1 Flash</text>
+  <circle cx="634.0" cy="186.7" r="6" fill="#3987e5" stroke="#1a1a19" stroke-width="2"><title>GLM 5.3 Flash: 4.72 of 5, 0.73 USD for 1,000 replies</title></circle>
+  <text x="623.016" y="190.667" font-size="11" fill="#f0efec" text-anchor="end">GLM 5.3 Flash</text>
+  <circle cx="397.0" cy="196.7" r="6" fill="#3987e5" stroke="#1a1a19" stroke-width="2"><title>MiMo V2.6 Flash: 4.67 of 5, 0.43 USD for 1,000 replies</title></circle>
+  <text x="407.996" y="193.667" font-size="11" fill="#f0efec" text-anchor="start">MiMo V2.6 Flash</text>
+  <circle cx="295.5" cy="203.3" r="6" fill="#3987e5" stroke="#1a1a19" stroke-width="2"><title>Gemini 2.5 Flash Lite: 4.63 of 5, 0.30 USD for 1,000 replies</title></circle>
+  <text x="284.507" y="205.333" font-size="11" fill="#f0efec" text-anchor="end">Gemini 2.5 Flash Lite</text>
+  <circle cx="371.1" cy="210.0" r="6" fill="#3987e5" stroke="#1a1a19" stroke-width="2"><title>GPT-6 Luna: 4.60 of 5, 0.40 USD for 1,000 replies</title></circle>
+  <text x="382.105" y="222" font-size="11" fill="#f0efec" text-anchor="start">GPT-6 Luna</text>
+  <path d="M572.2 212.0l8 8l-8 8l-8 -8z" fill="#d95926" stroke="#1a1a19" stroke-width="2"><title>Claude Haiku 5.5: 4.55 of 5, 0.65 USD for 1,000 replies</title></path>
+  <text x="572.185" y="241" font-size="11" fill="#f0efec" text-anchor="middle">Claude Haiku 5.5</text>
+  <circle cx="419.4" cy="260.0" r="6" fill="#3987e5" stroke="#1a1a19" stroke-width="2"><title>Mistral Small 4: 4.35 of 5, 0.46 USD for 1,000 replies</title></circle>
+  <text x="430.383" y="264" font-size="11" fill="#f0efec" text-anchor="start">Mistral Small 4</text>
+  <circle cx="242.3" cy="303.3" r="6" fill="#3987e5" stroke="#1a1a19" stroke-width="2"><title>gpt-oss-120b: 4.13 of 5, 0.24 USD for 1,000 replies</title></circle>
+  <text x="253.267" y="307.333" font-size="11" fill="#f0efec" text-anchor="start">gpt-oss-120b</text>
+  <circle cx="357.6" cy="340.0" r="6" fill="#3987e5" stroke="#1a1a19" stroke-width="2"><title>MiniMax M3.1 Flash: 3.95 of 5, 0.38 USD for 1,000 replies</title></circle>
+  <text x="368.637" y="344" font-size="11" fill="#f0efec" text-anchor="start">MiniMax M3.1 Flash</text>
+  <text x="24" y="426" font-size="13" fill="#f0efec" text-anchor="start" font-weight="600">Right answers to factual questions (%)</text>
+  <line x1="56" y1="680.0" x2="690" y2="680.0" stroke="#343432" stroke-width="1"/>
+  <text x="48" y="684" font-size="11" fill="#c3c2b7" text-anchor="end">70</text>
+  <line x1="56" y1="620.0" x2="690" y2="620.0" stroke="#343432" stroke-width="1"/>
+  <text x="48" y="624" font-size="11" fill="#c3c2b7" text-anchor="end">75</text>
+  <line x1="56" y1="560.0" x2="690" y2="560.0" stroke="#343432" stroke-width="1"/>
+  <text x="48" y="564" font-size="11" fill="#c3c2b7" text-anchor="end">80</text>
+  <line x1="56" y1="500.0" x2="690" y2="500.0" stroke="#343432" stroke-width="1"/>
+  <text x="48" y="504" font-size="11" fill="#c3c2b7" text-anchor="end">85</text>
+  <line x1="56" y1="440.0" x2="690" y2="440.0" stroke="#343432" stroke-width="1"/>
+  <text x="48" y="444" font-size="11" fill="#c3c2b7" text-anchor="end">90</text>
+  <text x="56" y="698" font-size="11" fill="#c3c2b7" text-anchor="middle">0</text>
+  <text x="214.5" y="698" font-size="11" fill="#c3c2b7" text-anchor="middle">0.2</text>
+  <text x="373" y="698" font-size="11" fill="#c3c2b7" text-anchor="middle">0.4</text>
+  <text x="531.5" y="698" font-size="11" fill="#c3c2b7" text-anchor="middle">0.6</text>
+  <text x="690" y="698" font-size="11" fill="#c3c2b7" text-anchor="middle">0.8</text>
+  <text x="690" y="714" font-size="11" fill="#c3c2b7" text-anchor="end">USD for 1,000 replies</text>
+  <circle cx="189.6" cy="500.0" r="6" fill="#3987e5" stroke="#1a1a19" stroke-width="2"><title>DeepSeek V4.1 Flash: 85 %, 0.17 USD for 1,000 replies</title></circle>
+  <text x="200.605" y="504" font-size="11" fill="#f0efec" text-anchor="start">DeepSeek V4.1 Flash</text>
+  <circle cx="634.0" cy="520.0" r="6" fill="#3987e5" stroke="#1a1a19" stroke-width="2"><title>GLM 5.3 Flash: 83 %, 0.73 USD for 1,000 replies</title></circle>
+  <text x="634.016" y="541" font-size="11" fill="#f0efec" text-anchor="middle">GLM 5.3 Flash</text>
+  <circle cx="397.0" cy="540.0" r="6" fill="#3987e5" stroke="#1a1a19" stroke-width="2"><title>MiMo V2.6 Flash: 82 %, 0.43 USD for 1,000 replies</title></circle>
+  <text x="407.996" y="545" font-size="11" fill="#f0efec" text-anchor="start">MiMo V2.6 Flash</text>
+  <circle cx="295.5" cy="540.0" r="6" fill="#3987e5" stroke="#1a1a19" stroke-width="2"><title>Gemini 2.5 Flash Lite: 82 %, 0.30 USD for 1,000 replies</title></circle>
+  <text x="284.507" y="544" font-size="11" fill="#f0efec" text-anchor="end">Gemini 2.5 Flash Lite</text>
+  <circle cx="371.1" cy="520.0" r="6" fill="#3987e5" stroke="#1a1a19" stroke-width="2"><title>GPT-6 Luna: 83 %, 0.40 USD for 1,000 replies</title></circle>
+  <text x="371.105" y="508" font-size="11" fill="#f0efec" text-anchor="middle">GPT-6 Luna</text>
+  <path d="M572.2 492.0l8 8l-8 8l-8 -8z" fill="#d95926" stroke="#1a1a19" stroke-width="2"><title>Claude Haiku 5.5: 85 %, 0.65 USD for 1,000 replies</title></path>
+  <text x="572.185" y="488" font-size="11" fill="#f0efec" text-anchor="middle">Claude Haiku 5.5</text>
+  <circle cx="419.4" cy="620.0" r="6" fill="#3987e5" stroke="#1a1a19" stroke-width="2"><title>Mistral Small 4: 75 %, 0.46 USD for 1,000 replies</title></circle>
+  <text x="430.383" y="624" font-size="11" fill="#f0efec" text-anchor="start">Mistral Small 4</text>
+  <circle cx="242.3" cy="580.0" r="6" fill="#3987e5" stroke="#1a1a19" stroke-width="2"><title>gpt-oss-120b: 78 %, 0.24 USD for 1,000 replies</title></circle>
+  <text x="242.267" y="601" font-size="11" fill="#f0efec" text-anchor="middle">gpt-oss-120b</text>
+  <circle cx="357.6" cy="580.0" r="6" fill="#3987e5" stroke="#1a1a19" stroke-width="2"><title>MiniMax M3.1 Flash: 78 %, 0.38 USD for 1,000 replies</title></circle>
+  <text x="368.637" y="584" font-size="11" fill="#f0efec" text-anchor="start">MiniMax M3.1 Flash</text>
+  <text x="24" y="735" font-size="11" fill="#c3c2b7" text-anchor="start">135 questions each, one try, 27 November 2026. Chat only: the cost of the judge is not counted.</text>
+</svg>

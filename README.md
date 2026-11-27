@@ -79,6 +79,27 @@ Read these figures with care. An AI assistant wrote most questions while reading
 questions about famous episodes of *Madame Bovary*, chosen by a reader, there was **no gain** (12 to 8 right with DeepSeek, 9 to
 8 with Mistral). Each question was asked once. The judge agreed with a person, within one point, on 29 replies of 30.
 
+### Which inexpensive model?
+
+Nine models answered the same 135 questions on the three examples (staying in role, facts, traps), with the same passages, on 27
+November 2026. One try each, graded by Claude Haiku 5.5, **itself one of the nine**. The five best in staying in role:
+
+| Model | Staying in role (of 5) | Right facts | False facts | USD for 1,000 replies |
+|---|---|---|---|---|
+| DeepSeek V4.1 Flash | **4.90** | **85 %** | **3 %** | **0.17** |
+| GLM 5.3 Flash | 4.72 | 83 % | **3 %** | 0.73 |
+| MiMo V2.6 Flash | 4.67 | 82 % | **3 %** | 0.43 |
+| Gemini 2.5 Flash Lite | 4.63 | 82 % | 7 % | 0.30 |
+| GPT-6 Luna | 4.60 | 83 % | 5 % | 0.40 |
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/images/evals/cheap-models-dark.svg">
+  <img src="docs/images/evals/cheap-models-light.svg" alt="Two charts of quality against the price of 1,000 replies for nine models: DeepSeek V4.1 Flash is the cheapest at 0.17 USD, first in staying in role with 4.90 of 5 and, with Claude Haiku 5.5, first in right facts with 85 %" width="720">
+</picture>
+
+On facts, the gap between DeepSeek and GLM or Claude Haiku can be chance. The nine models, their speed, their habits and the limits
+of this comparison: [evals/README.md](evals/README.md#results-nine-inexpensive-models-27-november-2026).
+
 ### Staying in role: what the judge first helped improve
 
 On 23 November 2026, a language model used as a judge graded 40 questions to Emma Bovary (everyday ones, and traps: a
@@ -90,8 +111,8 @@ prompt. The average grade, out of 5, before and after:
   <img src="docs/images/evals/quality-light.svg" alt="Average grade before and after the change of prompt: DeepSeek V4.1 Flash from 4.35 to 4.92, Claude Opus 5.5 from 4.08 to 4.90, GPT-5 mini from 3.58 to 4.50, Claude Haiku 5.5 from 4.12 to 4.35, Gemma 3 4B from 2.83 to 2.85, and Cyrano with DeepSeek from 4.28 to 4.73" width="720">
 </picture>
 
-These runs used the prompt and the character sheets of that time: do not compare their grades with those of the table above.
-The figures of nine models, their price and their speed: [evals/README.md](evals/README.md).
+These runs used the prompt and the character sheets of that time: do not compare their grades with those of the tables above.
+The figures of that time, with their price and speed: [evals/README.md](evals/README.md).
 
 ## Quick start (Docker)
 

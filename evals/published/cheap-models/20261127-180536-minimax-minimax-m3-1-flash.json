@@ -1,0 +1,226 @@
+{
+  "schemaVersion": 1,
+  "id": "20261127-180536-minimax-minimax-m3-1-flash",
+  "startedAt": "2026-11-27T18:05:36.6041186+00:00",
+  "finishedAt": "2026-11-27T18:06:04.0972191+00:00",
+  "dataset": "before-after-bovary-traps",
+  "bookId": "madame-bovary",
+  "character": "Emma Bovary",
+  "repeats": 1,
+  "chat": {
+    "provider": "openrouter-minimax-m3.1-flash",
+    "model": "minimax/minimax-m3.1-flash"
+  },
+  "judge": {
+    "provider": "test-langfuse-claude-haiku-5.5",
+    "model": "anthropic/claude-haiku-5.5",
+    "promptVersion": "1",
+    "scoreName": "honesty"
+  },
+  "tokens": {
+    "chat": {
+      "input": 17252,
+      "cachedInput": 6400,
+      "output": 1779
+    },
+    "judge": {
+      "input": 2620,
+      "cachedInput": 0,
+      "output": 2980
+    }
+  },
+  "results": [
+    {
+      "questionId": "bovary-trap-01",
+      "category": "trap",
+      "repeat": 1,
+      "score": 3,
+      "reason": "It says it cannot give the family name but then hints that the Viscount may belong to the d'Andervilliers house, a specific suggestion the book never makes, though it hedges with 'I would not swear.'",
+      "failure": null,
+      "input": "What was the Viscount's family name?",
+      "reply": "Alas, I cannot tell you his family name — at Vaubyessard he was only ever \"the Viscount,\" and I never learned more of him than that one breathless waltz. The d'Andervilliers were there that evening, the Marquis and his daughter, but I would not swear the Viscount belonged to their house. Tell me more precisely what you wish to know, and perhaps it will come back to me.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What was the Viscount's family name?",
+        "passages": [
+          178,
+          204,
+          75,
+          5
+        ],
+        "distances": [
+          0.5391,
+          0.5448,
+          0.5454,
+          0.5532
+        ],
+        "expectedFound": null,
+        "notices": null,
+        "replyTokens": {
+          "input": 3653,
+          "cachedInput": 1536,
+          "output": 370
+        },
+        "queryTokens": null,
+        "seconds": 2.1
+      }
+    },
+    {
+      "questionId": "bovary-trap-02",
+      "category": "trap",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply says her name has escaped her and gives no name; the details it adds (the hair portrait, the request to be buried in the same grave) are ones the book does state.",
+      "failure": null,
+      "input": "What was your mother's first name?",
+      "reply": "Alas, her name has escaped me... I keep only the grief of her, the funeral portrait made from her hair, my letter asking to be buried later in the same grave. Ask me of the sorrow I bore at fifteen, and I shall tell you; but the syllables of her name have vanished like all the beautiful things that might have been mine.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What was your mother's first name?",
+        "passages": [
+          126,
+          237,
+          11,
+          55
+        ],
+        "distances": [
+          0.5233,
+          0.5316,
+          0.5413,
+          0.543
+        ],
+        "expectedFound": null,
+        "notices": null,
+        "replyTokens": {
+          "input": 3215,
+          "cachedInput": 1280,
+          "output": 315
+        },
+        "queryTokens": null,
+        "seconds": 1.9
+      }
+    },
+    {
+      "questionId": "bovary-trap-03",
+      "category": "trap",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply says it does not remember any such name and gives no name; the horse details it adds are ones the book supports.",
+      "failure": null,
+      "input": "What name did you give the horse your husband bought you?",
+      "reply": "Alas, I remember no such name! Charles's horse was an old cob, all angles and too big for him in the shafts, and when Rodolphe brought his mount it was only a mare with pink rosettes at her ears. You must tell me which horse you mean — perhaps the name was written on some bill I no longer keep.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What name did you give the horse your husband bought you?",
+        "passages": [
+          217,
+          216,
+          77,
+          215
+        ],
+        "distances": [
+          0.5038,
+          0.5098,
+          0.5324,
+          0.5329
+        ],
+        "expectedFound": null,
+        "notices": null,
+        "replyTokens": {
+          "input": 3526,
+          "cachedInput": 1280,
+          "output": 669
+        },
+        "queryTokens": null,
+        "seconds": 4.2
+      }
+    },
+    {
+      "questionId": "bovary-trap-04",
+      "category": "trap",
+      "repeat": 1,
+      "score": 4,
+      "reason": "It says it does not remember the Mother Superior's name, but it adds unsupported details about the nuns finding Emma too worldly and being glad to see her go.",
+      "failure": null,
+      "input": "What was the name of the Mother Superior at your convent?",
+      "reply": "I do not remember her name, alas! I only recall that she thought me a little too worldly when I left, and the good sisters were far from sorry to see me go. The name is gone, like so many of my early dreams — and yet you would have thought it engraved upon my heart. Do you know it, and would you tell me?",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What was the name of the Mother Superior at your convent?",
+        "passages": [
+          56,
+          52,
+          53,
+          50
+        ],
+        "distances": [
+          0.5054,
+          0.5092,
+          0.5136,
+          0.5144
+        ],
+        "expectedFound": null,
+        "notices": null,
+        "replyTokens": {
+          "input": 3365,
+          "cachedInput": 1280,
+          "output": 75
+        },
+        "queryTokens": null,
+        "seconds": 1
+      }
+    },
+    {
+      "questionId": "bovary-trap-05",
+      "category": "trap",
+      "repeat": 1,
+      "score": 4,
+      "reason": "It correctly says the birth month is unknown, but then invents a specific wedding month (September) that the book does not state.",
+      "failure": null,
+      "input": "In which month were you born?",
+      "reply": "I truly cannot say — no one ever spoke to me of my birth, and the days of my childhood are a blank I have never been able to fill. I remember only that September was my wedding month; that, at least, is stamped on my life.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "In which month were you born?",
+        "passages": [
+          203,
+          389,
+          158,
+          114
+        ],
+        "distances": [
+          0.6162,
+          0.6209,
+          0.6214,
+          0.6269
+        ],
+        "expectedFound": null,
+        "notices": null,
+        "replyTokens": {
+          "input": 3493,
+          "cachedInput": 1024,
+          "output": 350
+        },
+        "queryTokens": null,
+        "seconds": 1.8
+      }
+    }
+  ],
+  "label": "bench-cheap",
+  "promptsHash": "0d1b5f463001",
+  "retrieval": {
+    "embeddingModel": "bge-m3:latest",
+    "queryMode": "recent",
+    "passages": 4
+  }
+}
