@@ -15,8 +15,8 @@ internal sealed record ChartsOptions(bool ShowHelp, string? OutFolder)
         --out <folder>   where to write them (default docs/images/evals)
         --help           this text
 
-        The "before" and "after" runs are those made with the chat prompt of evals/prompts/baseline.json and with the current default prompt
-        (src/LivingPaper.Persistence/prompts.default.json), told apart by the signature kept in each run file.
+        The "before" and "after" runs are those made with the chat prompts of evals/prompts/baseline.json and of evals/prompts/published.json,
+        told apart by the signature kept in each run file. The charts keep showing these published runs when the default prompts change.
         """;
 
     public static ChartsOptions Parse(IReadOnlyList<string> args)
@@ -71,10 +71,10 @@ internal static class ChartsCommand
         var latencies = await LatencyFile.ReadAsync(Path.Combine(published, "latency.json"), cancellationToken).ConfigureAwait(false);
         var prices = await PriceList.ReadAsync(Path.Combine(evals, "prices.json"), cancellationToken).ConfigureAwait(false);
         var baseline = await FingerprintAsync(Path.Combine(evals, "prompts", "baseline.json"), cancellationToken).ConfigureAwait(false);
-        var defaults = RepoFiles.Find("src/LivingPaper.Persistence/prompts.default.json") ?? throw new EvalException("prompts.default.json was not found: run the tool from the repository.");
-        var current = await FingerprintAsync(defaults, cancellationToken).ConfigureAwait(false);
+        // Not the default prompts: they go on changing, while the published runs were made with these.
+        var improved = await FingerprintAsync(Path.Combine(evals, "prompts", "published.json"), cancellationToken).ConfigureAwait(false);
 
-        var data = ChartData.Build(runs, latencies, prices, baseline, current);
+        var data = ChartData.Build(runs, latencies, prices, baseline, improved);
         foreach (var note in data.Notes)
         {
             output.WriteLine($"Note: {note}");

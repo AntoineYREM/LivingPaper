@@ -274,4 +274,4 @@ The chat prompt tells the character "You know your whole story" and never what t
 - Placing the passages at the end of the system prompt, so that a server can reuse the unchanged beginning.
 - A lesser-known book.
 - A rule in the chat prompt that lets the character say, in its own voice, that it does not remember, measured on the same
-  questions with a grade that tells an admission from an invention.
+  questions with a grade that tells an admission from an invention. Tried since: [admitting not knowing](admitting-not-knowing.md).

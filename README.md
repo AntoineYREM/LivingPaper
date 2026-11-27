@@ -99,7 +99,8 @@ With passages, the chat model needs a context of **at least 8,192 tokens**. Some
 An evaluation tool measures it: it puts 40 questions to Emma Bovary (everyday ones, and traps: a smartphone, "are you an AI?", a request for a
 recipe, a question in Japanese), has a language model grade each reply from 1 to 5, and compares two runs. The chat prompt was improved with it
 (rules on the period, on the services of an assistant, on stage directions such as "(sigh)" and on the language). Results of 23 November 2026,
-one computer, one judge (Claude Haiku 5.5); a figure moves by about a tenth or two from one run to the next:
+one computer, one judge (Claude Haiku 5.5); a figure moves by about a tenth or two from one run to the next. The chat prompt has changed
+since:
 
 | Model | Before the prompt change | With the current prompt | Time to answer |
 |---|---|---|---|

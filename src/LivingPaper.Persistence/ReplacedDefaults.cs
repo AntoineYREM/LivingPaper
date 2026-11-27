@@ -20,6 +20,7 @@ internal static class ReplacedDefaults
             "ad28d64e01a6818fcfddec26d7c12d60478dc9747903ee337383627b9c44b3f8",
             "dc2d351574b4c255bf44fef9233392bf51a426cd3d9a82c95ab0d24e354b0bb3",
             "534ce5991fb332d7d02d7a0d76576cae8180265690a9117d7098057dcb3df7ad",
+            "bbb02899fbd15b9f82a7628b5c134af3e92bce6bf10d9cffe72282d4027c39d1",
         ],
     };
 

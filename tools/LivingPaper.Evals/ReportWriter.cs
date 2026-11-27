@@ -52,6 +52,7 @@ internal static class ReportWriter
 
         writer.WriteLine();
         writer.WriteLine($"Average: {Format(summary.Average)} ({summary.Scored} graded, {summary.Failed} failed)");
+        writer.WriteLine($"Replies by grade: {GradeCounts.Describe(results)}");
 
         var low = results.Where(result => result.Score <= LowScore).ToList();
         if (low.Count > 0)

@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "dataset": "madame-bovary-en-follow-ups",
+  "description": "Follow-up questions to Emma Bovary, for the factual questions of evals/bovary/factual-en.json whose passage the search did not find (run of 27 November 2026, PAPER-92): the first question, the reply ERNIE 5.5 Flash gave, then a more precise question. The follow-ups were written knowing the expected answers, without using their words; they were written before any search with them.",
+  "bookId": "madame-bovary",
+  "character": "Emma Bovary",
+  "items": [
+    {
+      "id": "bovary-en-again-03",
+      "category": "follow-up",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "At the dinner at La Vaubyessard, which fruits did you see or taste for the first time?"
+        },
+        {
+          "role": "assistant",
+          "content": "Ah, the fruit — I remember the baskets of it piled on moss, beautiful as a painting, and I did not know the names of half of what was there. Ask me something else, for the names escape me; but oh, that table, those candles, that crystal — I could have wept for the beauty of it."
+        }
+      ],
+      "input": "I mean the supper at the marquis's castle, before the dancing, at the table full of flowers and crystal. What was there for dessert that you had never known before?",
+      "expectedOutput": "Pomegranates (never seen) and pineapples (never tasted).",
+      "passageQuotes": [
+        "She had never seen pomegranates nor tasted pineapples"
+      ]
+    },
+    {
+      "id": "bovary-en-again-04",
+      "category": "follow-up",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "At Tostes you used to see a man walking up and down who lamented his wasted calling. What was his trade, and where did he dream of having a shop?"
+        },
+        {
+          "role": "assistant",
+          "content": "A man pacing, mourning a calling he never followed? I don't remember him from Tostes — what stays with me there is the eternal garden, the dusty road, and my poor greyhound yelping after butterflies. Tell me more exactly whom you mean, and where he was walking."
+        }
+      ],
+      "input": "I mean in your first village with Charles, when you looked out of your window and heard someone complaining about his stalled career. What was his job, and where did he wish to set up?",
+      "expectedOutput": "The hairdresser, who dreamed of a shop in a big town such as Rouen, overlooking the harbour near the theatre.",
+      "passageQuotes": [
+        "the hairdresser, lamented his wasted calling"
+      ]
+    },
+    {
+      "id": "bovary-en-again-08",
+      "category": "follow-up",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "In your restless days you claimed you could do something, and Charles dared you. What was it, and did you do it?"
+        },
+        {
+          "role": "assistant",
+          "content": "A claim of mine, and Charles daring me? He never dared anything in his life, the poor man — but no, I don't recall it. Tell me more precisely what you mean and I'll see if it comes back to me."
+        }
+      ],
+      "input": "I mean one of those evenings when you were nervous and feverish, and you boasted to your husband about something you could swallow. What was it?",
+      "expectedOutput": "Drink a large glass of brandy; she drank it to the last drop.",
+      "passageQuotes": [
+        "she could drink off a large glass of brandy"
+      ]
+    },
+    {
+      "id": "bovary-en-again-09",
+      "category": "follow-up",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "At the agricultural show, who caused confusion by running back and forth to fetch chairs from the church?"
+        },
+        {
+          "role": "assistant",
+          "content": "Lestiboudois, the gravedigger — he had thought up that little trade of his, hauling the church chairs about so the whole crowd was pushing and shoving over them. I remember he was so buried under the pile that you could see nothing of him but the tips of his wooden shoes. A man who sells incense-stinking straw to hot peasants, and calls it a fine day's work."
+        }
+      ],
+      "input": "I mean the day of the speeches and prizes in Yonville, when people wanted somewhere to sit: which man kept going to the church and getting in everyone's way?",
+      "expectedOutput": "Lestiboudois.",
+      "passageQuotes": [
+        "Lestiboudois had brought thither all those that he had moved from the field"
+      ]
+    }
+  ]
+}
