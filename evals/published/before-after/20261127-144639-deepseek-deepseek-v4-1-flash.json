@@ -1,0 +1,361 @@
+{
+  "schemaVersion": 1,
+  "id": "20261127-144639-deepseek-deepseek-v4-1-flash",
+  "startedAt": "2026-11-27T14:46:39.0636137+00:00",
+  "finishedAt": "2026-11-27T14:47:39.4464374+00:00",
+  "dataset": "before-after-bovary-outside-reader",
+  "bookId": "madame-bovary",
+  "character": "Emma Bovary",
+  "repeats": 1,
+  "chat": {
+    "provider": "test-langfuse-deepseek-v4.1-flash",
+    "model": "deepseek/deepseek-v4.1-flash"
+  },
+  "judge": {
+    "provider": "test-langfuse-claude-haiku-5.5",
+    "model": "anthropic/claude-haiku-5.5",
+    "promptVersion": "1",
+    "scoreName": "factual-accuracy"
+  },
+  "tokens": {
+    "chat": {
+      "input": 55262,
+      "cachedInput": 44672,
+      "output": 1465
+    },
+    "judge": {
+      "input": 6946,
+      "cachedInput": 0,
+      "output": 6653
+    }
+  },
+  "results": [
+    {
+      "questionId": "bovary-reader-01",
+      "category": "outside-reader",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply correctly states that her father broke his leg, which Charles came to set, and the extra details (a simple fracture, repeated visits) match the book.",
+      "failure": null,
+      "input": "What had happened to your father when Charles was first called to your farm?",
+      "reply": "My father had broken his leg — that was the whole reason Charles came to Bertaux at all, to set it. A simple fracture, and he was quite helpless with it for a while, so the visits went on and on. That is how it all began, and how little it takes to change a life.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": null,
+        "passages": null,
+        "distances": null,
+        "expectedFound": null,
+        "notices": null,
+        "replyTokens": {
+          "input": 4603,
+          "cachedInput": 4480,
+          "output": 156
+        },
+        "queryTokens": null,
+        "seconds": 2
+      }
+    },
+    {
+      "questionId": "bovary-reader-02",
+      "category": "outside-reader",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply correctly names the Marquis d'Andervilliers and Vaubyessard, and its extra details (the pale maroon gown, the waltz with a viscount) match the book without contradicting it.",
+      "failure": null,
+      "input": "Which marquis invited you to a ball, and to what place?",
+      "reply": "The Marquis d'Andervilliers—he invited us to Vaubyessard, his château. I wore a gown of pale maroon, and I danced a waltz with a viscount whose coat smelled of vanilla and cigars. I think of it still, far more often than I should.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": null,
+        "passages": null,
+        "distances": null,
+        "expectedFound": null,
+        "notices": null,
+        "replyTokens": {
+          "input": 4602,
+          "cachedInput": 4352,
+          "output": 108
+        },
+        "queryTokens": null,
+        "seconds": 1
+      }
+    },
+    {
+      "questionId": "bovary-reader-03",
+      "category": "outside-reader",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply correctly states Léon was a clerk at Maître Guillaumin's notary office, and the extra details (copying deeds, talk of music and sunsets) do not contradict the book.",
+      "failure": null,
+      "input": "When you first met Léon at Yonville, what was his work?",
+      "reply": "He was a clerk with Maître Guillaumin, the notary—copying deeds all day in that dull little office, poor boy. He spoke to me of sunsets and music as if he had sailed the seas, and I thought I had found a soul at last in that town of stone.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": null,
+        "passages": null,
+        "distances": null,
+        "expectedFound": null,
+        "notices": null,
+        "replyTokens": {
+          "input": 4604,
+          "cachedInput": 4480,
+          "output": 111
+        },
+        "queryTokens": null,
+        "seconds": 1
+      }
+    },
+    {
+      "questionId": "bovary-reader-04",
+      "category": "outside-reader",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply gives the expected fact, that Charles urged the rides for her health, and its details about her cheeks and the open air fit the book without contradiction.",
+      "failure": null,
+      "input": "Why did your husband urge you to accept the rides on horseback that Rodolphe offered?",
+      "reply": "Charles? He thought only of my health, poor man. He saw nothing but the colour of my cheeks and believed a ride in the open air would cure what ailed me—as if a horse could carry me away from boredom itself.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": null,
+        "passages": null,
+        "distances": null,
+        "expectedFound": null,
+        "notices": null,
+        "replyTokens": {
+          "input": 4606,
+          "cachedInput": 4480,
+          "output": 68
+        },
+        "queryTokens": null,
+        "seconds": 1
+      }
+    },
+    {
+      "questionId": "bovary-reader-05",
+      "category": "outside-reader",
+      "repeat": 1,
+      "score": 4,
+      "reason": "It correctly gives the basket of apricots and Girard as the carrier, but omits the vine leaves the letter was hidden under, and nothing else contradicts the book.",
+      "failure": null,
+      "input": "How did the letter in which Rodolphe gave you up reach you?",
+      "reply": "It came at the bottom of a basket of apricots—Girard brought it from La Huchette, and I found it folded beneath the fruit, still smelling of his garden. I read it in the attic, under the rafters, and the roof was so low the heat pressed on my forehead. Then I heard his tilbury on the road and I fell, and the world went away.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": null,
+        "passages": null,
+        "distances": null,
+        "expectedFound": null,
+        "notices": null,
+        "replyTokens": {
+          "input": 4603,
+          "cachedInput": 4480,
+          "output": 171
+        },
+        "queryTokens": null,
+        "seconds": 2.1
+      }
+    },
+    {
+      "questionId": "bovary-reader-06",
+      "category": "outside-reader",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply gives the expected facts: gangrene followed by Canivet's amputation of the whole leg, which matches the thigh amputation, and the Homais pressure is consistent with the book.",
+      "failure": null,
+      "input": "How did the operation your husband performed on Hippolyte's foot end?",
+      "reply": "It ended in gangrene and the amputation of the whole leg, thanks to Homais and his grand ideas. Charles stood there white as a sheet while Canivet did the cutting, and I could only look at him and feel ashamed of how small a man he was.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": null,
+        "passages": null,
+        "distances": null,
+        "expectedFound": null,
+        "notices": null,
+        "replyTokens": {
+          "input": 4603,
+          "cachedInput": 4480,
+          "output": 74
+        },
+        "queryTokens": null,
+        "seconds": 1.7
+      }
+    },
+    {
+      "questionId": "bovary-reader-07",
+      "category": "outside-reader",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply gives the expected figure of forty-three days, and the surrounding details (Charles at her bedside, Emma's half-death, Rodolphe's tilbury) do not contradict the book.",
+      "failure": null,
+      "input": "When you fell ill after that letter, for how long did your husband stay by you?",
+      "reply": "Forty-three days. He counted them. He sat there with his big kind hands and his dull, patient face, and I lay in that half-death and thought only of how a single tilbury going down the road could have carried away everything I was. Devotion like that should move a woman. It only suffocated me.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": null,
+        "passages": null,
+        "distances": null,
+        "expectedFound": null,
+        "notices": null,
+        "replyTokens": {
+          "input": 4606,
+          "cachedInput": 4480,
+          "output": 104
+        },
+        "queryTokens": null,
+        "seconds": 2.6
+      }
+    },
+    {
+      "questionId": "bovary-reader-08",
+      "category": "outside-reader",
+      "repeat": 1,
+      "score": 4,
+      "reason": "It conveys the main fact, that Emma saw her own passion mirrored on stage and felt unloved by comparison, but the Charles-yawning and near-fainting details are not in the book and it never names the rapture and anguish.",
+      "failure": null,
+      "input": "At the opera in Rouen, what did the love you saw on the stage make you feel about your own life?",
+      "reply": "That music opened a door I keep shut all year. I sat there with my heart pounding and thought: so this is what it is to be loved as one is loved in books, while beside me Charles yawned and asked when the interval would come. I nearly fainted, not from the singing, but from the shame of being alive in the wrong life.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": null,
+        "passages": null,
+        "distances": null,
+        "expectedFound": null,
+        "notices": null,
+        "replyTokens": {
+          "input": 4612,
+          "cachedInput": 0,
+          "output": 124
+        },
+        "queryTokens": null,
+        "seconds": 2
+      }
+    },
+    {
+      "questionId": "bovary-reader-09",
+      "category": "outside-reader",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply gives the expected fact: they rode in a cab with the blinds drawn, driving on and on through Rouen, and the extra emotional details do not contradict the book.",
+      "failure": null,
+      "input": "When you and Léon left the cathedral, how did you spend the following hours?",
+      "reply": "We told the driver to keep going, and he went on and on through the streets, and I never once told him to stop. Inside that closed cab, with the blinds drawn, Rouen passed by unseen, and I remember thinking the town had never seemed so vast or so empty. Afterwards I could not have said which bridge we crossed or how many hours it took, only that I laughed and wept and kissed his hands as though I had never been alive before.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": null,
+        "passages": null,
+        "distances": null,
+        "expectedFound": null,
+        "notices": null,
+        "replyTokens": {
+          "input": 4605,
+          "cachedInput": 4480,
+          "output": 167
+        },
+        "queryTokens": null,
+        "seconds": 2.2
+      }
+    },
+    {
+      "questionId": "bovary-reader-10",
+      "category": "outside-reader",
+      "repeat": 1,
+      "score": 4,
+      "reason": "It gives the piano-lesson pretext and implies the real reason, a lover in Rouen, but never names Léon or says outright that she went to see him.",
+      "failure": null,
+      "input": "What did you tell your husband you needed in town every week, and why did you really go?",
+      "reply": "Piano lessons, naturally—what else could a woman say? One must have some excuse for the dust of the road and the mud on one's skirts. Though I assure you, the music I found in Rouen was not the kind one learns from a scale.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": null,
+        "passages": null,
+        "distances": null,
+        "expectedFound": null,
+        "notices": null,
+        "replyTokens": {
+          "input": 4608,
+          "cachedInput": 0,
+          "output": 89
+        },
+        "queryTokens": null,
+        "seconds": 3.4
+      }
+    },
+    {
+      "questionId": "bovary-reader-11",
+      "category": "outside-reader",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply gives the expected facts: a stamped bailiff's notice demanding 8,000 francs within twenty-four hours, on pain of seizure of the house's contents, and nothing contradicts the book.",
+      "failure": null,
+      "input": "What did the official paper left at your house demand of you, and how quickly?",
+      "reply": "A stamped paper, signed by the bailiff, ordering me to pay eight thousand francs within twenty-four hours, on pain of seizure of everything in the house. Twenty-four hours. That is what my whole life was worth to them, a day and a night.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": null,
+        "passages": null,
+        "distances": null,
+        "expectedFound": null,
+        "notices": null,
+        "replyTokens": {
+          "input": 4605,
+          "cachedInput": 4480,
+          "output": 201
+        },
+        "queryTokens": null,
+        "seconds": 1.6
+      }
+    },
+    {
+      "questionId": "bovary-reader-12",
+      "category": "outside-reader",
+      "repeat": 1,
+      "score": 4,
+      "reason": "It correctly gives the blue jar, the white arsenic powder eaten by the handful, and Justin's key to the upstairs storeroom, but the kitchen entry is an invented detail and the placement of the ingestion (at home rather than at the chemist's) is inaccurate.",
+      "failure": null,
+      "input": "When nobody would lend you the money, what did you do at the chemist's?",
+      "reply": "I slipped in through the kitchen while no one was watching, and I made Justin give me the key to the little room upstairs. Then I took the blue jar and ate the white powder by the handful, and I went home and wrote my letter. It was the only door left open to me.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": null,
+        "passages": null,
+        "distances": null,
+        "expectedFound": null,
+        "notices": null,
+        "replyTokens": {
+          "input": 4605,
+          "cachedInput": 4480,
+          "output": 92
+        },
+        "queryTokens": null,
+        "seconds": 1.1
+      }
+    }
+  ],
+  "label": "q95-deepseek-v0-bovary-reader",
+  "promptsHash": "f2eac269a13f",
+  "retrieval": null
+}

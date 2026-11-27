@@ -13,7 +13,7 @@ internal sealed record ValuePoint(string Name, double Score, double? CostPer1000
 // A bar of the chart "time to answer": the mean time of the chat call, and the mean time until its first text (null when not recorded).
 internal sealed record LatencyBar(string Name, double TotalSeconds, double? FirstTextSeconds);
 
-// What the charts of the README show, worked out from the published runs (evals/published/), the times (latency.json) and the prices.
+// What the charts of evals/README.md show, worked out from the published runs (evals/published/), the times (latency.json) and the prices.
 // Nothing is typed in by hand: a figure on a chart is the one of the files.
 internal sealed record ChartData(
     IReadOnlyList<QualityRow> Quality,

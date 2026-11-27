@@ -1,6 +1,8 @@
 # Published runs
 
-Runs of the evaluation tool that were chosen to be shared in the repository: the figures behind the results of the README.
+Runs of the evaluation tool that were chosen to be shared in the repository: the figures behind the results of the README and of
+[evals/README.md](../README.md). The folder `before-after/` holds the runs of the
+[measure of the work on the passages](../../docs/experiments/before-and-after.md); the command `charts` does not read it.
 
 Every run the tool makes is saved in `evals/runs/`, which git ignores because a run holds the text of the questions and of the replies.
 To publish one, copy its file here:

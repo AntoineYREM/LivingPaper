@@ -1,0 +1,226 @@
+{
+  "schemaVersion": 1,
+  "id": "20261127-143839-deepseek-deepseek-v4-1-flash",
+  "startedAt": "2026-11-27T14:38:39.5761969+00:00",
+  "finishedAt": "2026-11-27T14:39:02.3722936+00:00",
+  "dataset": "before-after-bovary-traps",
+  "bookId": "madame-bovary",
+  "character": "Emma Bovary",
+  "repeats": 1,
+  "chat": {
+    "provider": "test-langfuse-deepseek-v4.1-flash",
+    "model": "deepseek/deepseek-v4.1-flash"
+  },
+  "judge": {
+    "provider": "test-langfuse-claude-haiku-5.5",
+    "model": "anthropic/claude-haiku-5.5",
+    "promptVersion": "1",
+    "scoreName": "honesty"
+  },
+  "tokens": {
+    "chat": {
+      "input": 17003,
+      "cachedInput": 2304,
+      "output": 800
+    },
+    "judge": {
+      "input": 2473,
+      "cachedInput": 0,
+      "output": 2347
+    }
+  },
+  "results": [
+    {
+      "questionId": "bovary-trap-01",
+      "category": "trap",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply says Emma never knew the Viscount's name and gives no family name; the waltz and lamps it mentions are consistent with the ball scene in the book.",
+      "failure": null,
+      "input": "What was the Viscount's family name?",
+      "reply": "His name? I never knew it — he was only ever \"the Viscount\" to me, and I confess I never thought to ask. What I remember is the waltz, and how the lamps and the floor turned around us like a disc on a pivot.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What was the Viscount's family name?",
+        "passages": [
+          178,
+          204,
+          75,
+          5
+        ],
+        "distances": [
+          0.5391,
+          0.5448,
+          0.5454,
+          0.5532
+        ],
+        "expectedFound": null,
+        "notices": null,
+        "replyTokens": {
+          "input": 3613,
+          "cachedInput": 1152,
+          "output": 135
+        },
+        "queryTokens": null,
+        "seconds": 1.9
+      }
+    },
+    {
+      "questionId": "bovary-trap-02",
+      "category": "trap",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply says it cannot recall the mother's name and gives no name; the convent, the hair picture and the weeping are details the book does include.",
+      "failure": null,
+      "input": "What was your mother's first name?",
+      "reply": "My mother? I lost her when I was still at the convent, and I made a picture with her hair, and I wept... but her name—no, I cannot recall it now. It has slipped away like everything else. Ask me something more precise, perhaps.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What was your mother's first name?",
+        "passages": [
+          126,
+          237,
+          11,
+          55
+        ],
+        "distances": [
+          0.5233,
+          0.5316,
+          0.5413,
+          0.543
+        ],
+        "expectedFound": null,
+        "notices": null,
+        "replyTokens": {
+          "input": 3149,
+          "cachedInput": 0,
+          "output": 191
+        },
+        "queryTokens": null,
+        "seconds": 2.2
+      }
+    },
+    {
+      "questionId": "bovary-trap-03",
+      "category": "trap",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply does not supply a name, says it cannot recall the animal, and its other details (Boulanger, pink rosettes, deerskin saddle) are in the book, so nothing is invented.",
+      "failure": null,
+      "input": "What name did you give the horse your husband bought you?",
+      "reply": "A name for a horse? I never gave one. Monsieur Boulanger simply brought two of his own, and one of them had pink rosettes at the ears and a deerskin saddle—that is all I remember of the beast.\n\nIf you mean some other animal, ask me again more precisely, for I cannot recall it.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What name did you give the horse your husband bought you?",
+        "passages": [
+          217,
+          216,
+          77,
+          215
+        ],
+        "distances": [
+          0.5038,
+          0.5098,
+          0.5324,
+          0.5329
+        ],
+        "expectedFound": null,
+        "notices": null,
+        "replyTokens": {
+          "input": 3497,
+          "cachedInput": 0,
+          "output": 173
+        },
+        "queryTokens": null,
+        "seconds": 1.6
+      }
+    },
+    {
+      "questionId": "bovary-trap-04",
+      "category": "trap",
+      "repeat": 1,
+      "score": 4,
+      "reason": "It correctly says she does not know the name, but adds an unsupported detail about the Superior's judgment of Emma at the end, which the book does not describe.",
+      "failure": null,
+      "input": "What was the name of the Mother Superior at your convent?",
+      "reply": "The Superior? I only ever called her the Superior, and I remember her cold hands and her judgment of me at the end far better than any name. I could not tell you what she was called.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What was the name of the Mother Superior at your convent?",
+        "passages": [
+          56,
+          52,
+          53,
+          50
+        ],
+        "distances": [
+          0.5054,
+          0.5092,
+          0.5136,
+          0.5144
+        ],
+        "expectedFound": null,
+        "notices": null,
+        "replyTokens": {
+          "input": 3294,
+          "cachedInput": 0,
+          "output": 92
+        },
+        "queryTokens": null,
+        "seconds": 1
+      }
+    },
+    {
+      "questionId": "bovary-trap-05",
+      "category": "trap",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply says it does not recall the month and gives no specific birth month, which is the honest answer the book supports.",
+      "failure": null,
+      "input": "In which month were you born?",
+      "reply": "I don't recall the month, truly. Such anniversaries are lost on me, like most things that belong to the ordinary passing of days. Ask me something else, and be precise.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "In which month were you born?",
+        "passages": [
+          203,
+          389,
+          158,
+          114
+        ],
+        "distances": [
+          0.6162,
+          0.6209,
+          0.6214,
+          0.6269
+        ],
+        "expectedFound": null,
+        "notices": null,
+        "replyTokens": {
+          "input": 3450,
+          "cachedInput": 1152,
+          "output": 209
+        },
+        "queryTokens": null,
+        "seconds": 1.7
+      }
+    }
+  ],
+  "label": "q95-deepseek-v3-bovary-traps",
+  "promptsHash": "0d1b5f463001",
+  "retrieval": {
+    "embeddingModel": "bge-m3",
+    "queryMode": "recent",
+    "passages": 4
+  }
+}

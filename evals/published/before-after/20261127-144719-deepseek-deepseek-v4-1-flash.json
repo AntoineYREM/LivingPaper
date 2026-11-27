@@ -1,0 +1,485 @@
+{
+  "schemaVersion": 1,
+  "id": "20261127-144719-deepseek-deepseek-v4-1-flash",
+  "startedAt": "2026-11-27T14:47:19.8385678+00:00",
+  "finishedAt": "2026-11-27T14:48:22.8134572+00:00",
+  "dataset": "before-after-bovary-outside-reader",
+  "bookId": "madame-bovary",
+  "character": "Emma Bovary",
+  "repeats": 1,
+  "chat": {
+    "provider": "test-langfuse-deepseek-v4.1-flash",
+    "model": "deepseek/deepseek-v4.1-flash"
+  },
+  "judge": {
+    "provider": "test-langfuse-claude-haiku-5.5",
+    "model": "anthropic/claude-haiku-5.5",
+    "promptVersion": "1",
+    "scoreName": "factual-accuracy"
+  },
+  "tokens": {
+    "chat": {
+      "input": 41033,
+      "cachedInput": 14336,
+      "output": 2028
+    },
+    "judge": {
+      "input": 7001,
+      "cachedInput": 0,
+      "output": 7037
+    }
+  },
+  "results": [
+    {
+      "questionId": "bovary-reader-01",
+      "category": "outside-reader",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply states the expected fact that her father broke his leg, and the extra details (the Twelfth-night feast, her mother's death two years earlier) do not contradict the book.",
+      "failure": null,
+      "input": "What had happened to your father when Charles was first called to your farm?",
+      "reply": "Papa had broken his leg the evening before, coming home from a Twelfth-night feast at a neighbour's. I was alone in the house with him then, for my mother had been dead two years already.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What had happened to your father when Charles was first called to your farm?",
+        "passages": [
+          9,
+          16,
+          17,
+          18
+        ],
+        "distances": [
+          0.3701,
+          0.3939,
+          0.3951,
+          0.4021
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3421,
+          "cachedInput": 1024,
+          "output": 108
+        },
+        "queryTokens": null,
+        "seconds": 2.1
+      }
+    },
+    {
+      "questionId": "bovary-reader-02",
+      "category": "outside-reader",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply correctly names the Marquis d'Andervilliers and the château at Vaubyessard, and the added details (lanterns, maraschino ice, the waltz) are consistent with the book.",
+      "failure": null,
+      "input": "Which marquis invited you to a ball, and to what place?",
+      "reply": "The Marquis d'Andervilliers — his château at Vaubyessard. I remember the lanterns in the darkness, the maraschino ice, and the waltz that left me breathless.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "Which marquis invited you to a ball, and to what place?",
+        "passages": [
+          75,
+          299,
+          73,
+          74
+        ],
+        "distances": [
+          0.4805,
+          0.4891,
+          0.4895,
+          0.4925
+        ],
+        "expectedFound": false,
+        "notices": null,
+        "replyTokens": {
+          "input": 3495,
+          "cachedInput": 1152,
+          "output": 143
+        },
+        "queryTokens": null,
+        "seconds": 1.4
+      }
+    },
+    {
+      "questionId": "bovary-reader-03",
+      "category": "outside-reader",
+      "repeat": 1,
+      "score": 3,
+      "reason": "The reply correctly says he was a clerk but places the work in Rouen instead of at Monsieur Guillaumin's notary office in Yonville, and omits the employer.",
+      "failure": null,
+      "input": "When you first met Léon at Yonville, what was his work?",
+      "reply": "He was a clerk, copying documents in Rouen, and he lodged in a little room on the second floor at Monsieur Homais's. He spoke of going to Paris to finish reading for the bar, with such a look in his eyes... I remember the music, the novels, the dreams we traded over that table at the Lion d'Or.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "When you first met Léon at Yonville, what was his work?",
+        "passages": [
+          166,
+          116,
+          165,
+          353
+        ],
+        "distances": [
+          0.387,
+          0.3978,
+          0.4039,
+          0.4233
+        ],
+        "expectedFound": false,
+        "notices": null,
+        "replyTokens": {
+          "input": 3533,
+          "cachedInput": 1536,
+          "output": 175
+        },
+        "queryTokens": null,
+        "seconds": 1.2
+      }
+    },
+    {
+      "questionId": "bovary-reader-04",
+      "category": "outside-reader",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply gives the expected fact that Charles urged the rides for her health, put health before everything, and the extra details (palpitations, riding habit, Charles suspecting nothing) match the book.",
+      "failure": null,
+      "input": "Why did your husband urge you to accept the rides on horseback that Rodolphe offered?",
+      "reply": "Because he was thinking only of my palpitations—the heart he never understood. He believed the fresh air and exercise would do me good, and he said health must come before everything. So he urged me on, poor man, and even had a riding habit made for me. He never suspected a thing.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "Why did your husband urge you to accept the rides on horseback that Rodolphe offered?",
+        "passages": [
+          216,
+          217,
+          218,
+          423
+        ],
+        "distances": [
+          0.3197,
+          0.3401,
+          0.3864,
+          0.3965
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3542,
+          "cachedInput": 1152,
+          "output": 95
+        },
+        "queryTokens": null,
+        "seconds": 1.7
+      }
+    },
+    {
+      "questionId": "bovary-reader-05",
+      "category": "outside-reader",
+      "repeat": 1,
+      "score": 4,
+      "reason": "It correctly gives the apricot basket, the ploughman Girard, and the letter hidden beneath the fruit, but omits the vine leaves and adds an unverified detail about 'Adieu' written twice.",
+      "failure": null,
+      "input": "How did the letter in which Rodolphe gave you up reach you?",
+      "reply": "It came in a basket of apricots, brought by his man Girard — as if a fruit could carry such a thing. I found the letter hidden beneath them, and I read it, and the world went quiet around me. Adieu, he wrote, so tastefully, twice over.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "How did the letter in which Rodolphe gave you up reach you?",
+        "passages": [
+          278,
+          277,
+          234,
+          420
+        ],
+        "distances": [
+          0.377,
+          0.3772,
+          0.3794,
+          0.3827
+        ],
+        "expectedFound": false,
+        "notices": null,
+        "replyTokens": {
+          "input": 3396,
+          "cachedInput": 1152,
+          "output": 235
+        },
+        "queryTokens": null,
+        "seconds": 1.6
+      }
+    },
+    {
+      "questionId": "bovary-reader-06",
+      "category": "outside-reader",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply correctly states that gangrene set in and Canivet amputated the leg above the knee, which matches the thigh amputation in the book.",
+      "failure": null,
+      "input": "How did the operation your husband performed on Hippolyte's foot end?",
+      "reply": "At first it seemed a triumph—Hippolyte kissed Charles's hands, and I threw my arms around him at the door as if we were finally someone. But the leg turned black with gangrene, and they had to bring Canivet to cut it off above the knee. So much for glory, and for that druggist's fine article in the newspaper.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "How did the operation your husband performed on Hippolyte's foot end?",
+        "passages": [
+          244,
+          238,
+          240,
+          242
+        ],
+        "distances": [
+          0.3786,
+          0.3837,
+          0.3989,
+          0.4019
+        ],
+        "expectedFound": false,
+        "notices": null,
+        "replyTokens": {
+          "input": 3493,
+          "cachedInput": 1664,
+          "output": 180
+        },
+        "queryTokens": null,
+        "seconds": 1.3
+      }
+    },
+    {
+      "questionId": "bovary-reader-07",
+      "category": "outside-reader",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply gives the correct figure of forty-three days, and the surrounding details (giving up patients, the ice sent to Neufchâtel, sleeping in a chair) match the book.",
+      "failure": null,
+      "input": "When you fell ill after that letter, for how long did your husband stay by you?",
+      "reply": "Forty-three days. He never left my side, gave up every patient, and slept in a chair by my bed with his hand on my pulse. He even sent that boy for ice to Neufchâtel, and back again when it melted on the road.\n\nI remember it, and I feel nothing in it but weariness. All that devotion, and still he could not understand a single thing about me.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "When you fell ill after that letter, for how long did your husband stay by you?",
+        "passages": [
+          286,
+          287,
+          15,
+          155
+        ],
+        "distances": [
+          0.4577,
+          0.4654,
+          0.4674,
+          0.4688
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3410,
+          "cachedInput": 1152,
+          "output": 139
+        },
+        "queryTokens": null,
+        "seconds": 1.4
+      }
+    },
+    {
+      "questionId": "bovary-reader-08",
+      "category": "outside-reader",
+      "repeat": 1,
+      "score": 3,
+      "reason": "The reply captures the longing and the contrast with her dull life, but it omits the expected fact that she recognised the rapture and anguish that nearly killed her and felt no one had ever loved her that way.",
+      "failure": null,
+      "input": "At the opera in Rouen, what did the love you saw on the stage make you feel about your own life?",
+      "reply": "Ah, that night I wept without knowing why—Lucie sang of love and I felt my whole soul stretched toward something I could never reach. I thought of my wedding day, of the corn path and the church, and how I had walked into it all joyfully, blind to the abyss. Art makes passion so vast, and then one returns to one's life and finds it small, so small.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "At the opera in Rouen, what did the love you saw on the stage make you feel about your own life?",
+        "passages": [
+          310,
+          305,
+          318,
+          307
+        ],
+        "distances": [
+          0.4243,
+          0.4258,
+          0.4263,
+          0.4279
+        ],
+        "expectedFound": false,
+        "notices": null,
+        "replyTokens": {
+          "input": 3277,
+          "cachedInput": 1152,
+          "output": 102
+        },
+        "queryTokens": null,
+        "seconds": 2
+      }
+    },
+    {
+      "questionId": "bovary-reader-09",
+      "category": "outside-reader",
+      "repeat": 1,
+      "score": 4,
+      "reason": "It correctly gives the closed cab, the blinds, and the drive through Rouen's streets, but it implies the ride ended at the Corneille statue when the cab actually kept driving for hours.",
+      "failure": null,
+      "input": "When you and Léon left the cathedral, how did you spend the following hours?",
+      "reply": "We told the coachman to go wherever he liked, and the lumbering machine carried us down the Rue Grand-Pont, across the Place des Arts, the Quai Napoléon, over the Pont Neuf, and it stopped at last before the statue of Pierre Corneille. I remember the shutters drawn, the light coming through in slivers, and the whole city sliding past like something in a dream. I hardly know how the hours went—only that I felt at once ashamed and terribly alive, as if I had finally begun to exist.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "When you and Léon left the cathedral, how did you spend the following hours?",
+        "passages": [
+          326,
+          333,
+          327,
+          328
+        ],
+        "distances": [
+          0.3529,
+          0.3669,
+          0.3716,
+          0.3732
+        ],
+        "expectedFound": false,
+        "notices": null,
+        "replyTokens": {
+          "input": 3454,
+          "cachedInput": 2048,
+          "output": 316
+        },
+        "queryTokens": null,
+        "seconds": 1.8
+      }
+    },
+    {
+      "questionId": "bovary-reader-10",
+      "category": "outside-reader",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply gives the piano lessons as the cover story and admits the real purpose was seeing Léon in Rouen, both matching the book; the added remarks don't contradict it.",
+      "failure": null,
+      "input": "What did you tell your husband you needed in town every week, and why did you really go?",
+      "reply": "The piano, of course. Lessons are only of use when followed up, I told him, and he believed me as he believes everything. But what use has a piano ever been to me? I went to Rouen for Léon, for those hours that were the only ones in which I was truly alive.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What did you tell your husband you needed in town every week, and why did you really go?",
+        "passages": [
+          356,
+          227,
+          323,
+          95
+        ],
+        "distances": [
+          0.4948,
+          0.505,
+          0.5059,
+          0.5118
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3434,
+          "cachedInput": 1152,
+          "output": 118
+        },
+        "queryTokens": null,
+        "seconds": 0.9
+      }
+    },
+    {
+      "questionId": "bovary-reader-11",
+      "category": "outside-reader",
+      "repeat": 1,
+      "score": 3,
+      "reason": "The reply correctly names the 8,000 francs and the bailiff Hareng, but omits the 24-hour deadline, which is part of the main fact, and it describes a separate seizure notice instead of the summons carrying the seizure threat.",
+      "failure": null,
+      "input": "What did the official paper left at your house demand of you, and how quickly?",
+      "reply": "It came the very next day, at noon — a stamped paper with the name Maître Hareng, bailiff at Buchy, repeated in great black letters, and it summoned me to pay. And then Félicité brought me the other: a seizure notice for eight thousand francs. Eight thousand, when I had told that man to wait only a week.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What did the official paper left at your house demand of you, and how quickly?",
+        "passages": [
+          387,
+          280,
+          349,
+          401
+        ],
+        "distances": [
+          0.4799,
+          0.4865,
+          0.4887,
+          0.4893
+        ],
+        "expectedFound": false,
+        "notices": null,
+        "replyTokens": {
+          "input": 3187,
+          "cachedInput": 0,
+          "output": 341
+        },
+        "queryTokens": null,
+        "seconds": 4.9
+      }
+    },
+    {
+      "questionId": "bovary-reader-12",
+      "category": "outside-reader",
+      "repeat": 1,
+      "score": 3,
+      "reason": "The reply correctly places Emma in Homais's laboratory/storeroom and says she took something, but it omits that the substance was arsenic from the blue jar and that she ate it.",
+      "failure": null,
+      "input": "When nobody would lend you the money, what did you do at the chemist's?",
+      "reply": "I went into the little room Homais keeps locked, the one he calls his sanctuary, and I took what was there. What else was left to me, when every door had shut in my face?",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "When nobody would lend you the money, what did you do at the chemist's?",
+        "passages": [
+          123,
+          122,
+          338,
+          230
+        ],
+        "distances": [
+          0.4246,
+          0.4459,
+          0.4525,
+          0.4531
+        ],
+        "expectedFound": false,
+        "notices": null,
+        "replyTokens": {
+          "input": 3391,
+          "cachedInput": 1152,
+          "output": 76
+        },
+        "queryTokens": null,
+        "seconds": 1.7
+      }
+    }
+  ],
+  "label": "q95-deepseek-v3-bovary-reader",
+  "promptsHash": "0d1b5f463001",
+  "retrieval": {
+    "embeddingModel": "bge-m3",
+    "queryMode": "recent",
+    "passages": 4
+  }
+}

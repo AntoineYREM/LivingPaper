@@ -30,9 +30,10 @@ Each question is asked several times (3 by default), because a model does not an
 | Sending dataset, one trace per answer and the scores to Langfuse | same | done, to be checked on your Langfuse |
 | Command `compare` (two runs, tokens, cost) and the price file `evals/prices.json` | same | done |
 | Command `latency` (time to answer of each run, read from Langfuse) | same | done |
-| Command `charts` (three pictures of the README, drawn from the published files) | same, `docs/images/evals/` | done |
+| Command `charts` (three pictures of `evals/README.md`, drawn from the published files) | same, `docs/images/evals/` | done |
 | Command `calibrate` (judge against human grades) | same | to do |
-| First baseline on five models, with the runs and their limits | `README.md`, `evals/README.md`, `evals/published/` | done (23 November 2026) |
+| First baseline on five models, with the runs and their limits | `evals/README.md`, `evals/published/` | done (23 November 2026) |
+| Before and after the work on the passages: 212 new questions, runs, figures and chart | `evals/before-after/`, `evals/published/before-after/`, [report](experiments/before-and-after.md) | done (27 November 2026) |
 
 ## How to run it
 
@@ -196,8 +197,8 @@ provider was; the tool does not hide that, and the README says where and when th
 dotnet run --project tools/LivingPaper.Evals -- charts
 ```
 
-Draws the three pictures of the README in `docs/images/evals/`, each as an SVG for a light page (`-light`) and for a dark one (`-dark`); the
-README shows the one that matches the theme of GitHub with a `<picture>` tag. It reads only files of the repository (the runs of
+Draws the three pictures of `evals/README.md` in `docs/images/evals/`, each as an SVG for a light page (`-light`) and for a dark one (`-dark`); the
+page shows the one that matches the theme of GitHub with a `<picture>` tag. It reads only files of the repository (the runs of
 `evals/published/`, `evals/published/latency.json`, `evals/prices.json`): nothing is sent anywhere and Langfuse is not needed. So a figure on a
 picture is the one of the files, and publishing a new run and running the command again is enough to update them.
 

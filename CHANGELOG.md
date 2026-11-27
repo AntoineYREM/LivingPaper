@@ -7,6 +7,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Added
+
+- **A measure of the whole work on the passages** (PAPER-95): 212 new questions on four books, a judge for questions the book
+  cannot answer, two models, four steps from the whole story to the present chat
+  ([report](docs/experiments/before-and-after.md)). Right answers went from 61 to 78 % and from 45 to 77 %, false statements
+  from 21 to 5 % and from 41 to 14 %; follow-ups do worse with the two searches. The README shows it; the earlier results on
+  the role moved to `evals/README.md`.
+
 ### Changed
 
 - **A new subject is no longer drowned by the earlier messages** (PAPER-94): the chat makes two searches of the passages,

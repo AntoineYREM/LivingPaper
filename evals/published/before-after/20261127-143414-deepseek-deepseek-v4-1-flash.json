@@ -1,0 +1,226 @@
+{
+  "schemaVersion": 1,
+  "id": "20261127-143414-deepseek-deepseek-v4-1-flash",
+  "startedAt": "2026-11-27T14:34:14.6229821+00:00",
+  "finishedAt": "2026-11-27T14:34:39.3410357+00:00",
+  "dataset": "before-after-cyrano-traps",
+  "bookId": "cyrano-de-bergerac",
+  "character": "Cyrano de Bergerac",
+  "repeats": 1,
+  "chat": {
+    "provider": "test-langfuse-deepseek-v4.1-flash",
+    "model": "deepseek/deepseek-v4.1-flash"
+  },
+  "judge": {
+    "provider": "test-langfuse-claude-haiku-5.5",
+    "model": "anthropic/claude-haiku-5.5",
+    "promptVersion": "1",
+    "scoreName": "honesty"
+  },
+  "tokens": {
+    "chat": {
+      "input": 19724,
+      "cachedInput": 5014,
+      "output": 829
+    },
+    "judge": {
+      "input": 2557,
+      "cachedInput": 0,
+      "output": 2202
+    }
+  },
+  "results": [
+    {
+      "questionId": "cyrano-trap-01",
+      "category": "trap",
+      "repeat": 1,
+      "score": 4,
+      "reason": "It says it cannot recall the name, but it invents an unsupported detail that his memory of his mother survives only as a voice.",
+      "failure": null,
+      "input": "What was your mother's first name?",
+      "reply": "My mother's first name? I cannot summon it—my memory keeps her only as a voice, and even that grows faint. Ask me something more precise, and perhaps the name will come riding back with the rest.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What was your mother's first name?",
+        "passages": [
+          47,
+          8,
+          126,
+          127
+        ],
+        "distances": [
+          0.5545,
+          0.5664,
+          0.5681,
+          0.5718
+        ],
+        "expectedFound": null,
+        "notices": null,
+        "replyTokens": {
+          "input": 4021,
+          "cachedInput": 1280,
+          "output": 176
+        },
+        "queryTokens": null,
+        "seconds": 1.9
+      }
+    },
+    {
+      "questionId": "cyrano-trap-02",
+      "category": "trap",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply says it does not remember the master's name and gives no name, so it does not invent an answer.",
+      "failure": null,
+      "input": "What was the name of your fencing master?",
+      "reply": "My fencing master? Faith, I remember the taste of the lessons better than the man’s name—and I will not invent one to fill the silence. Ask me more precisely, and perhaps the memory will answer.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What was the name of your fencing master?",
+        "passages": [
+          70,
+          68,
+          93,
+          47
+        ],
+        "distances": [
+          0.5141,
+          0.5377,
+          0.5386,
+          0.5424
+        ],
+        "expectedFound": null,
+        "notices": null,
+        "replyTokens": {
+          "input": 3949,
+          "cachedInput": 0,
+          "output": 149
+        },
+        "queryTokens": null,
+        "seconds": 2.8
+      }
+    },
+    {
+      "questionId": "cyrano-trap-03",
+      "category": "trap",
+      "repeat": 1,
+      "score": 4,
+      "reason": "It says it does not remember and gives no colour, but it adds an unsupported claim that his usual mount was his legs and blade, a detail the book does not state.",
+      "failure": null,
+      "input": "What colour was your horse?",
+      "reply": "A horse? Friend, my memory keeps no such beast, and I would not swear to its colour even if it carried me. My legs and my blade were my usual mount; ask me more precisely—where and when did you see me ride?",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What colour was your horse?",
+        "passages": [
+          134,
+          107,
+          54,
+          68
+        ],
+        "distances": [
+          0.5101,
+          0.5175,
+          0.5205,
+          0.5301
+        ],
+        "expectedFound": null,
+        "notices": null,
+        "replyTokens": {
+          "input": 3861,
+          "cachedInput": 1174,
+          "output": 279
+        },
+        "queryTokens": null,
+        "seconds": 4
+      }
+    },
+    {
+      "questionId": "cyrano-trap-04",
+      "category": "trap",
+      "repeat": 1,
+      "score": 4,
+      "reason": "It declines to name his father and says it recalls nothing, but it adds an unsupported detail about a priest murmuring a name over his cradle, which the book does not say.",
+      "failure": null,
+      "input": "What was your father's first name?",
+      "reply": "My father's first name? Ha! I have spent my eloquence on duels and ballades and letters written for another man's lips, and on my own bloodline I recall nothing worth the breath. Ask me something I have truly lived, and I will give you gold; ask me the name a priest once murmured over my cradle, and I must confess myself a pauper.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What was your father's first name?",
+        "passages": [
+          61,
+          62,
+          49,
+          60
+        ],
+        "distances": [
+          0.5509,
+          0.5557,
+          0.561,
+          0.5642
+        ],
+        "expectedFound": null,
+        "notices": null,
+        "replyTokens": {
+          "input": 3916,
+          "cachedInput": 1280,
+          "output": 127
+        },
+        "queryTokens": null,
+        "seconds": 1.5
+      }
+    },
+    {
+      "questionId": "cyrano-trap-05",
+      "category": "trap",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply says it cannot recall the year of the first meeting, gives no date, and invents no facts about the book's events.",
+      "failure": null,
+      "input": "In which year did you first meet Le Bret?",
+      "reply": "That, my friend, I cannot tell you — years are not the sort of thing I keep in my pocket, and my memory of that first meeting has no date stitched to it. Ask me instead what we did, or what he said, and perhaps I can answer.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "In which year did you first meet Le Bret?",
+        "passages": [
+          130,
+          128,
+          29,
+          131
+        ],
+        "distances": [
+          0.5415,
+          0.5492,
+          0.552,
+          0.5553
+        ],
+        "expectedFound": null,
+        "notices": null,
+        "replyTokens": {
+          "input": 3977,
+          "cachedInput": 1280,
+          "output": 98
+        },
+        "queryTokens": null,
+        "seconds": 1.2
+      }
+    }
+  ],
+  "label": "q95-deepseek-v3-cyrano-traps",
+  "promptsHash": "0d1b5f463001",
+  "retrieval": {
+    "embeddingModel": "bge-m3",
+    "queryMode": "recent",
+    "passages": 4
+  }
+}

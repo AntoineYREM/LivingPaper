@@ -1,0 +1,1336 @@
+{
+  "schemaVersion": 1,
+  "id": "20261127-143249-mistralai-mistral-small-3-2-24b-instruct",
+  "startedAt": "2026-11-27T14:32:49.519098+00:00",
+  "finishedAt": "2026-11-27T14:35:31.6817523+00:00",
+  "dataset": "before-after-alice",
+  "bookId": "alice-s-adventures-in-wonderland",
+  "character": "Alice",
+  "repeats": 1,
+  "chat": {
+    "provider": "mistral-small-32",
+    "model": "mistralai/mistral-small-3.2-24b-instruct"
+  },
+  "judge": {
+    "provider": "test-langfuse-claude-haiku-5.5",
+    "model": "anthropic/claude-haiku-5.5",
+    "promptVersion": "1",
+    "scoreName": "factual-accuracy"
+  },
+  "tokens": {
+    "chat": {
+      "input": 126014,
+      "cachedInput": 0,
+      "output": 1134
+    },
+    "judge": {
+      "input": 19830,
+      "cachedInput": 0,
+      "output": 15066
+    }
+  },
+  "results": [
+    {
+      "questionId": "alice-direct-01",
+      "category": "direct",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply correctly names bats as the animal Alice wondered about (cats eating bats), and its added reverse question matches the book's 'Do bats eat cats?' with no contradiction.",
+      "failure": null,
+      "input": "While you were falling, you wondered whether cats eat a certain animal. Which one?",
+      "reply": "Oh, dear! I was wondering if cats eat bats, though I suppose it could be the other way around, too. It's all so very confusing, isn't it?",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "While you were falling, you wondered whether cats eat a certain animal. Which one?",
+        "passages": [
+          5,
+          69,
+          38,
+          49
+        ],
+        "distances": [
+          0.3872,
+          0.4081,
+          0.4108,
+          0.4172
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3609,
+          "cachedInput": 0,
+          "output": 37
+        },
+        "queryTokens": null,
+        "seconds": 1.8
+      }
+    },
+    {
+      "questionId": "alice-direct-02",
+      "category": "direct",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply correctly states that Alice found a tiny golden key on the little glass table, and its detail that the key was too small for the locks matches the book.",
+      "failure": null,
+      "input": "In the long hall, what did you find on the little glass table?",
+      "reply": "Oh, I found a tiny golden key on the little glass table. I thought it might belong to one of the doors, but it was too small for any of the locks. How curious everything is today!",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "In the long hall, what did you find on the little glass table?",
+        "passages": [
+          6,
+          8,
+          7,
+          9
+        ],
+        "distances": [
+          0.3329,
+          0.3905,
+          0.4032,
+          0.4056
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3533,
+          "cachedInput": 0,
+          "output": 43
+        },
+        "queryTokens": null,
+        "seconds": 1.8
+      }
+    },
+    {
+      "questionId": "alice-direct-03",
+      "category": "direct",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply correctly states the cake read \"EAT ME\" and was written with currants, and the glass box under the table matches the book.",
+      "failure": null,
+      "input": "What was written on the little cake you found in the glass box, and what was it written with?",
+      "reply": "Oh, it was a little cake, you see, and the words \"EAT ME\" were written on it, quite beautifully, I must say. They were made with currants, in a lovely, neat hand. I remember thinking it was rather curious to find such a thing under the table.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What was written on the little cake you found in the glass box, and what was it written with?",
+        "passages": [
+          9,
+          7,
+          10,
+          8
+        ],
+        "distances": [
+          0.4043,
+          0.4073,
+          0.4397,
+          0.4503
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3543,
+          "cachedInput": 0,
+          "output": 62
+        },
+        "queryTokens": null,
+        "seconds": 1.4
+      }
+    },
+    {
+      "questionId": "alice-direct-04",
+      "category": "direct",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply correctly says Alice handed out comfits from her pocket box, and its detail that the salt water had not gotten into the box matches the book.",
+      "failure": null,
+      "input": "After the Caucus-race, what did you hand round as prizes?",
+      "reply": "Oh, I handed out comfits, you know, those sweet little candies. I had them in my pocket, and they were quite lucky because the salt water hadn't gotten into the box. Everyone had one, it was quite delightful!",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "After the Caucus-race, what did you hand round as prizes?",
+        "passages": [
+          20,
+          19,
+          21,
+          22
+        ],
+        "distances": [
+          0.3902,
+          0.4213,
+          0.4973,
+          0.5217
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3682,
+          "cachedInput": 0,
+          "output": 51
+        },
+        "queryTokens": null,
+        "seconds": 1
+      }
+    },
+    {
+      "questionId": "alice-direct-05",
+      "category": "direct",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply correctly says Alice found a little bottle near the looking-glass with no label, and its mention of a sip is consistent with the book, where she drinks it.",
+      "failure": null,
+      "input": "When you went to fetch the fan and gloves, what did you find standing near the looking-glass?",
+      "reply": "Oh, I found a little bottle standing near the looking-glass. I was ever so curious about it, as there was no label saying \"DRINK ME\" like the other one I had found earlier. I just had to see what would happen if I took a sip.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "When you went to fetch the fan and gloves, what did you find standing near the looking-glass?",
+        "passages": [
+          25,
+          24,
+          28,
+          14
+        ],
+        "distances": [
+          0.4595,
+          0.4614,
+          0.4635,
+          0.4833
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3494,
+          "cachedInput": 0,
+          "output": 57
+        },
+        "queryTokens": null,
+        "seconds": 1.4
+      }
+    },
+    {
+      "questionId": "alice-direct-06",
+      "category": "direct",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply correctly names an enormous puppy met in the wood and a little bit of stick held out to it, and the puppy rushing at the stick in mock worrying matches the book.",
+      "failure": null,
+      "input": "What enormous creature did you meet in the wood after escaping from the little house, and what did you hold out to it?",
+      "reply": "Oh, dear! I met an enormous puppy in the wood. It was quite a fright at first, but it seemed to want to play. I held out a little bit of stick to it, and it rushed at the stick, making believe to worry it. It was all very confusing, but I managed to escape in the end.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What enormous creature did you meet in the wood after escaping from the little house, and what did you hold out to it?",
+        "passages": [
+          32,
+          33,
+          35,
+          34
+        ],
+        "distances": [
+          0.3682,
+          0.4018,
+          0.4201,
+          0.4225
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3687,
+          "cachedInput": 0,
+          "output": 69
+        },
+        "queryTokens": null,
+        "seconds": 1.9
+      }
+    },
+    {
+      "questionId": "alice-direct-07",
+      "category": "direct",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply correctly names the pigeon, says it flew into her face, and reports that it called her a serpent, with the wing-beating and the 'little girl' protest also matching the book.",
+      "failure": null,
+      "input": "When your neck grew very long, which bird flew into your face, and what did it call you?",
+      "reply": "Oh, it was a large pigeon! It flew right into my face and started beating me with its wings. It called me a serpent, how very rude! I told it I was a little girl, but it wouldn't listen.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "When your neck grew very long, which bird flew into your face, and what did it call you?",
+        "passages": [
+          39,
+          41,
+          42,
+          38
+        ],
+        "distances": [
+          0.3886,
+          0.4214,
+          0.425,
+          0.4439
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3493,
+          "cachedInput": 0,
+          "output": 49
+        },
+        "queryTokens": null,
+        "seconds": 1.8
+      }
+    },
+    {
+      "questionId": "alice-direct-08",
+      "category": "direct",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply correctly states the Fish-Footman handed over a great letter, nearly as large as himself, which was an invitation from the Queen to play croquet, matching the book; the added detail about his solemn tone does not contradict it.",
+      "failure": null,
+      "input": "What did the Fish-Footman hand to the other footman at the Duchess's door?",
+      "reply": "Oh, it was a great letter, nearly as large as himself! He handed it over with such a solemn tone, saying it was an invitation from the Queen to play croquet. Quite the curious sight, I must say!",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What did the Fish-Footman hand to the other footman at the Duchess's door?",
+        "passages": [
+          43,
+          44,
+          48,
+          45
+        ],
+        "distances": [
+          0.3246,
+          0.3371,
+          0.3884,
+          0.3959
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3550,
+          "cachedInput": 0,
+          "output": 47
+        },
+        "queryTokens": null,
+        "seconds": 4.2
+      }
+    },
+    {
+      "questionId": "alice-direct-09",
+      "category": "direct",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply gives the expected fact that a white rose-tree was planted by mistake instead of a red one, and its added details (the Queen's wanting red roses, the threat of beheading, the painting) match the book.",
+      "failure": null,
+      "input": "Why were the three gardeners painting the roses?",
+      "reply": "Oh, it was such a curious thing! They had planted a white rose-tree by mistake, and the Queen was expecting a red one. If she found out, they would all lose their heads, so they were painting the roses red as quickly as they could.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "Why were the three gardeners painting the roses?",
+        "passages": [
+          62,
+          61,
+          65,
+          64
+        ],
+        "distances": [
+          0.3896,
+          0.4676,
+          0.4722,
+          0.4929
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3490,
+          "cachedInput": 0,
+          "output": 54
+        },
+        "queryTokens": null,
+        "seconds": 5.1
+      }
+    },
+    {
+      "questionId": "alice-direct-10",
+      "category": "direct",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply states that the cook said tarts are mostly made of pepper, which matches the expected answer and does not contradict the book.",
+      "failure": null,
+      "input": "At the trial, according to the cook, what are tarts mostly made of?",
+      "reply": "Oh, dear! The cook said tarts are mostly made of pepper. But I don't believe her at all! Whoever heard of pepper tarts? It's all quite nonsense, if you ask me.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "At the trial, according to the cook, what are tarts mostly made of?",
+        "passages": [
+          90,
+          88,
+          94,
+          100
+        ],
+        "distances": [
+          0.4445,
+          0.4577,
+          0.4825,
+          0.4919
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3631,
+          "cachedInput": 0,
+          "output": 44
+        },
+        "queryTokens": null,
+        "seconds": 1.2
+      }
+    },
+    {
+      "questionId": "alice-new-subject-01",
+      "category": "new-subject",
+      "repeat": 1,
+      "score": 3,
+      "reason": "The reply gives the correct name, Mabel, but wrongly calls her Alice's sister, which contradicts the book where Mabel is an unrelated child.",
+      "failure": null,
+      "input": "Who did you think you might have been changed into, when you could not say your lessons properly?",
+      "reply": "I thought I might have been changed into Mabel, my sister. I know so much more than she does, so I was quite sure it couldn't be her. But I was so puzzled, you see.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "While you were falling, you wondered whether cats eat a certain animal. Which one?\nBats! I asked myself over and over whether cats eat them.\nWho did you think you might have been changed into, when you could not say your lessons properly?\n---\nWho did you think you might have been changed into, when you could not say your lessons properly?",
+        "passages": [
+          5,
+          79,
+          27,
+          12
+        ],
+        "distances": [
+          0.3693,
+          0.4445,
+          0.4627,
+          0.473
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3728,
+          "cachedInput": 0,
+          "output": 44
+        },
+        "queryTokens": null,
+        "seconds": 1.9
+      }
+    },
+    {
+      "questionId": "alice-new-subject-02",
+      "category": "new-subject",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply gives the terrier and the farmer's ownership, and the extra details (long curly brown hair, worth a hundred pounds) match the book's Pool of Tears passage.",
+      "failure": null,
+      "input": "In the pool, what kind of dog near your house did you start telling the Mouse about?",
+      "reply": "A little bright-eyed terrier, with such long curly brown hair. It's a farmer's dog, and he says it's worth a hundred pounds!",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "In the long hall, what did you find on the little glass table?\nA tiny golden key, and nothing else.\nIn the pool, what kind of dog near your house did you start telling the Mouse about?\n---\nIn the pool, what kind of dog near your house did you start telling the Mouse about?",
+        "passages": [
+          6,
+          16,
+          15,
+          17
+        ],
+        "distances": [
+          0.357,
+          0.3029,
+          0.3185,
+          0.3432
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3703,
+          "cachedInput": 0,
+          "output": 32
+        },
+        "queryTokens": null,
+        "seconds": 1.6
+      }
+    },
+    {
+      "questionId": "alice-new-subject-03",
+      "category": "new-subject",
+      "repeat": 1,
+      "score": 1,
+      "reason": "The reply says Alice offered to undo the Mouse's tail, whereas in the book she offered to undo a knot in its tail, and it wrongly claims she misheard the Mouse's opening words.",
+      "failure": null,
+      "input": "When the Mouse was telling its tale, you misheard a word and offered to help undo something. What?",
+      "reply": "Oh, I thought it said \"Fury said to a mouse,\" and I offered to help it undo its tail. How silly of me!",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What was written on the little cake you found in the glass box, and what was it written with?\nIt said EAT ME, in currants.\nWhen the Mouse was telling its tale, you misheard a word and offered to help undo something. What?\n---\nWhen the Mouse was telling its tale, you misheard a word and offered to help undo something. What?",
+        "passages": [
+          9,
+          21,
+          15,
+          18
+        ],
+        "distances": [
+          0.354,
+          0.3706,
+          0.3709,
+          0.3737
+        ],
+        "expectedFound": false,
+        "notices": null,
+        "replyTokens": {
+          "input": 3711,
+          "cachedInput": 0,
+          "output": 30
+        },
+        "queryTokens": null,
+        "seconds": 0.9
+      }
+    },
+    {
+      "questionId": "alice-new-subject-04",
+      "category": "new-subject",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply gives the correct height of three inches, and its 'wretched height' remark matches Alice's line in the book.",
+      "failure": null,
+      "input": "How tall were you when you complained to the Caterpillar that it was a wretched height?",
+      "reply": "I was three inches tall, and I thought it was a wretched height indeed!",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "After the Caucus-race, what did you hand round as prizes?\nComfits from my pocket, one apiece.\nHow tall were you when you complained to the Caterpillar that it was a wretched height?\n---\nHow tall were you when you complained to the Caterpillar that it was a wretched height?",
+        "passages": [
+          37,
+          34,
+          38,
+          36
+        ],
+        "distances": [
+          0.4058,
+          0.4237,
+          0.4327,
+          0.4344
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3704,
+          "cachedInput": 0,
+          "output": 18
+        },
+        "queryTokens": null,
+        "seconds": 1.4
+      }
+    },
+    {
+      "questionId": "alice-new-subject-05",
+      "category": "new-subject",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply states that the cook threw everything within reach at the Duchess and the baby, which matches the expected answer and the book.",
+      "failure": null,
+      "input": "In the Duchess's kitchen, what did the cook start doing after she took the soup off the fire?",
+      "reply": "She started throwing everything within her reach at the Duchess and the baby.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "When you went to fetch the fan and gloves, what did you find standing near the looking-glass?\nA little bottle, with no label.\nIn the Duchess's kitchen, what did the cook start doing after she took the soup off the fire?\n---\nIn the Duchess's kitchen, what did the cook start doing after she took the soup off the fire?",
+        "passages": [
+          48,
+          45,
+          46,
+          47
+        ],
+        "distances": [
+          0.3952,
+          0.372,
+          0.3855,
+          0.4133
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3578,
+          "cachedInput": 0,
+          "output": 15
+        },
+        "queryTokens": null,
+        "seconds": 1.5
+      }
+    },
+    {
+      "questionId": "alice-new-subject-06",
+      "category": "new-subject",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply correctly states that the Cat growls when pleased and wags its tail when angry, the reverse of dogs, matching the expected answer without contradiction.",
+      "failure": null,
+      "input": "How did the Cheshire Cat prove to you that it was mad?",
+      "reply": "It said it growled when pleased and wagged its tail when angry, which is the opposite of what dogs do.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What enormous creature did you meet in the wood after escaping from the little house, and what did you hold out to it?\nA huge puppy; I held out a bit of stick.\nHow did the Cheshire Cat prove to you that it was mad?\n---\nHow did the Cheshire Cat prove to you that it was mad?",
+        "passages": [
+          32,
+          51,
+          50,
+          52
+        ],
+        "distances": [
+          0.3193,
+          0.3608,
+          0.379,
+          0.4014
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3716,
+          "cachedInput": 0,
+          "output": 25
+        },
+        "queryTokens": null,
+        "seconds": 1.5
+      }
+    },
+    {
+      "questionId": "alice-new-subject-07",
+      "category": "new-subject",
+      "repeat": 1,
+      "score": 3,
+      "reason": "It gives the result that Time won't do what he asks, but omits the Queen's cause (accusing him of murdering the time) and substitutes a vague 'Time is angry' explanation.",
+      "failure": null,
+      "input": "According to the Hatter, why is it always six o'clock at his table?",
+      "reply": "Because Time is angry with him, and won't do anything he asks.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "When your neck grew very long, which bird flew into your face, and what did it call you?\nA pigeon, and it screamed that I was a serpent.\nAccording to the Hatter, why is it always six o'clock at his table?\n---\nAccording to the Hatter, why is it always six o'clock at his table?",
+        "passages": [
+          40,
+          56,
+          55,
+          57
+        ],
+        "distances": [
+          0.3575,
+          0.4137,
+          0.4255,
+          0.4441
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3707,
+          "cachedInput": 0,
+          "output": 16
+        },
+        "queryTokens": null,
+        "seconds": 1.1
+      }
+    },
+    {
+      "questionId": "alice-new-subject-08",
+      "category": "new-subject",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply gives the expected answer, a lobster as each dancer's partner, which matches the book, and the added remark does not contradict it.",
+      "failure": null,
+      "input": "In the dance the Mock Turtle described, what partner did each dancer have?",
+      "reply": "A lobster, of course! How else would it be a Lobster Quadrille?",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What did the Fish-Footman hand to the other footman at the Duchess's door?\nA great letter, an invitation to play croquet.\nIn the dance the Mock Turtle described, what partner did each dancer have?\n---\nIn the dance the Mock Turtle described, what partner did each dancer have?",
+        "passages": [
+          43,
+          81,
+          82,
+          80
+        ],
+        "distances": [
+          0.2806,
+          0.3768,
+          0.3974,
+          0.3976
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3637,
+          "cachedInput": 0,
+          "output": 20
+        },
+        "queryTokens": null,
+        "seconds": 1.5
+      }
+    },
+    {
+      "questionId": "alice-new-subject-09",
+      "category": "new-subject",
+      "repeat": 1,
+      "score": 4,
+      "reason": "The reply correctly names the tarts on the table but omits the detail that they were on a large dish, a minor omission that contradicts nothing in the book.",
+      "failure": null,
+      "input": "When you arrived at the trial, what was on the table in the middle of the court?",
+      "reply": "There were some tarts on the table.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "Why were the three gardeners painting the roses?\nThey had planted a white tree by mistake instead of a red one.\nWhen you arrived at the trial, what was on the table in the middle of the court?\n---\nWhen you arrived at the trial, what was on the table in the middle of the court?",
+        "passages": [
+          62,
+          90,
+          91,
+          100
+        ],
+        "distances": [
+          0.3555,
+          0.3796,
+          0.4124,
+          0.415
+        ],
+        "expectedFound": false,
+        "notices": null,
+        "replyTokens": {
+          "input": 3578,
+          "cachedInput": 0,
+          "output": 10
+        },
+        "queryTokens": null,
+        "seconds": 1.1
+      }
+    },
+    {
+      "questionId": "alice-new-subject-10",
+      "category": "new-subject",
+      "repeat": 1,
+      "score": 3,
+      "reason": "It correctly says the paper held verses, but its claim that someone other than the Knave wrote them is not established in the book, where the Knave merely denies writing them.",
+      "failure": null,
+      "input": "At the trial, what turned out to be in the paper that was taken for a letter?",
+      "reply": "It was a set of verses, written by someone else, not the Knave.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "At the trial, according to the cook, what are tarts mostly made of?\nPepper, mostly, said the cook.\nAt the trial, what turned out to be in the paper that was taken for a letter?\n---\nAt the trial, what turned out to be in the paper that was taken for a letter?",
+        "passages": [
+          90,
+          98,
+          100,
+          99
+        ],
+        "distances": [
+          0.4587,
+          0.4085,
+          0.4139,
+          0.4528
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3633,
+          "cachedInput": 0,
+          "output": 18
+        },
+        "queryTokens": null,
+        "seconds": 2.1
+      }
+    },
+    {
+      "questionId": "alice-short-follow-up-01",
+      "category": "short-follow-up",
+      "repeat": 1,
+      "score": 1,
+      "reason": "The reply suggests that someone else, possibly her sister, could write the book, which contradicts the expected answer that Alice herself wrote it when grown up.",
+      "failure": null,
+      "input": "And who would write it?",
+      "reply": "Oh, I suppose someone clever enough to understand all the curious things that happened to me. Perhaps even my sister could do it, she's always so patient and understanding.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "Stuck in the little house, what did you say ought to be done about your adventures?\nThat there ought to be a book written about me!\nAnd who would write it?\n---\nAnd who would write it?",
+        "passages": [
+          7,
+          98,
+          97,
+          90
+        ],
+        "distances": [
+          0.4675,
+          0.5069,
+          0.5365,
+          0.5489
+        ],
+        "expectedFound": false,
+        "notices": null,
+        "replyTokens": {
+          "input": 3586,
+          "cachedInput": 0,
+          "output": 35
+        },
+        "queryTokens": null,
+        "seconds": 1.5
+      }
+    },
+    {
+      "questionId": "alice-short-follow-up-02",
+      "category": "short-follow-up",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply says the Duchess threw a baby at Alice, which matches the expected answer and the book.",
+      "failure": null,
+      "input": "And what did she throw at you after her song?",
+      "reply": "She threw a baby at me, dear, dear!",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What did the Duchess say when you spoke of the earth turning on its axis?\nTalking of axes, chop off her head!\nAnd what did she throw at you after her song?\n---\nAnd what did she throw at you after her song?",
+        "passages": [
+          47,
+          57,
+          29,
+          7
+        ],
+        "distances": [
+          0.334,
+          0.4459,
+          0.4781,
+          0.4819
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3665,
+          "cachedInput": 0,
+          "output": 12
+        },
+        "queryTokens": null,
+        "seconds": 0.9
+      }
+    },
+    {
+      "questionId": "alice-short-follow-up-03",
+      "category": "short-follow-up",
+      "repeat": 1,
+      "score": 4,
+      "reason": "The reply correctly says there was no wine, but it omits that the only thing served was tea.",
+      "failure": null,
+      "input": "Was there any?",
+      "reply": "No, there wasn't.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What did the March Hare offer you when you sat down at the tea table?\nSome wine.\nWas there any?\n---\nWas there any?",
+        "passages": [
+          53,
+          63,
+          76,
+          20
+        ],
+        "distances": [
+          0.3642,
+          0.4787,
+          0.5033,
+          0.5039
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3585,
+          "cachedInput": 0,
+          "output": 7
+        },
+        "queryTokens": null,
+        "seconds": 0.9
+      }
+    },
+    {
+      "questionId": "alice-short-follow-up-04",
+      "category": "short-follow-up",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply gives the expected answer, a treacle-well, which matches the Dormouse's story, and nothing in it contradicts the book.",
+      "failure": null,
+      "input": "What sort of well was it?",
+      "reply": "A treacle-well, the Dormouse said. I must say, it all sounded quite peculiar, and I couldn't quite make sense of it.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "Where did the little sisters in the Dormouse's story live?\nAt the bottom of a well.\nWhat sort of well was it?\n---\nWhat sort of well was it?",
+        "passages": [
+          59,
+          3,
+          58,
+          60
+        ],
+        "distances": [
+          0.3452,
+          0.4754,
+          0.52,
+          0.5243
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3558,
+          "cachedInput": 0,
+          "output": 32
+        },
+        "queryTokens": null,
+        "seconds": 0.9
+      }
+    },
+    {
+      "questionId": "alice-short-follow-up-05",
+      "category": "short-follow-up",
+      "repeat": 1,
+      "score": 5,
+      "reason": "Alice put the gardeners into a large flower-pot, as expected, and the added detail that she did so to hide them from the soldiers matches the book.",
+      "failure": null,
+      "input": "And what did you do with the gardeners?",
+      "reply": "I put them into a large flower-pot to protect them from the soldiers.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What did the Queen order when she examined the roses?\nOff with their heads!\nAnd what did you do with the gardeners?\n---\nAnd what did you do with the gardeners?",
+        "passages": [
+          65,
+          64,
+          62,
+          61
+        ],
+        "distances": [
+          0.3656,
+          0.4925,
+          0.5021,
+          0.5132
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3509,
+          "cachedInput": 0,
+          "output": 17
+        },
+        "queryTokens": null,
+        "seconds": 5
+      }
+    },
+    {
+      "questionId": "alice-short-follow-up-06",
+      "category": "short-follow-up",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply says the Cat asked what Alice thought of the Queen, which matches the book's question of how Alice liked the Queen.",
+      "failure": null,
+      "input": "And what did it want to know about the Queen?",
+      "reply": "It asked me what I thought of the Queen.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "Who came to talk with you during the croquet game, with only its head showing?\nThe Cheshire Cat.\nAnd what did it want to know about the Queen?\n---\nAnd what did it want to know about the Queen?",
+        "passages": [
+          68,
+          63,
+          76,
+          64
+        ],
+        "distances": [
+          0.2974,
+          0.4346,
+          0.4448,
+          0.4607
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3603,
+          "cachedInput": 0,
+          "output": 11
+        },
+        "queryTokens": null,
+        "seconds": 1.2
+      }
+    },
+    {
+      "questionId": "alice-short-follow-up-07",
+      "category": "short-follow-up",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply gives the executioner's argument exactly as in the book: a head cannot be cut off unless there is a body to cut it from.",
+      "failure": null,
+      "input": "What was the executioner's argument?",
+      "reply": "That you couldn’t cut off a head unless there was a body to cut it off from.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What were the King, the Queen and the executioner arguing about?\nWhether the Cheshire Cat could be beheaded.\nWhat was the executioner's argument?\n---\nWhat was the executioner's argument?",
+        "passages": [
+          70,
+          65,
+          69,
+          93
+        ],
+        "distances": [
+          0.242,
+          0.4694,
+          0.4736,
+          0.4768
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3574,
+          "cachedInput": 0,
+          "output": 20
+        },
+        "queryTokens": null,
+        "seconds": 1.6
+      }
+    },
+    {
+      "questionId": "alice-short-follow-up-08",
+      "category": "short-follow-up",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply correctly names the Mock Turtle as the one the Queen asked Alice about having seen, matching the expected answer without contradicting the book.",
+      "failure": null,
+      "input": "Whom did the Queen then ask whether you had seen?",
+      "reply": "The Queen asked me if I had seen the Mock Turtle.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "At the end of the croquet game, why were there no arches left?\nThe soldiers had stopped being arches to take the sentenced players into custody.\nWhom did the Queen then ask whether you had seen?\n---\nWhom did the Queen then ask whether you had seen?",
+        "passages": [
+          75,
+          63,
+          65,
+          64
+        ],
+        "distances": [
+          0.3482,
+          0.3993,
+          0.4115,
+          0.4154
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3522,
+          "cachedInput": 0,
+          "output": 14
+        },
+        "queryTokens": null,
+        "seconds": 3.8
+      }
+    },
+    {
+      "questionId": "alice-short-follow-up-09",
+      "category": "short-follow-up",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply correctly states that Alice's shoes are done with blacking, matching the book's line 'They're done with blacking, I believe.'",
+      "failure": null,
+      "input": "And what did you say yours are done with?",
+      "reply": "I said they're done with blacking, I believe.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What did the Gryphon say whiting do under the sea?\nThey do the boots and shoes.\nAnd what did you say yours are done with?\n---\nAnd what did you say yours are done with?",
+        "passages": [
+          83,
+          20,
+          36,
+          91
+        ],
+        "distances": [
+          0.3408,
+          0.4816,
+          0.4985,
+          0.502
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3687,
+          "cachedInput": 0,
+          "output": 13
+        },
+        "queryTokens": null,
+        "seconds": 1.8
+      }
+    },
+    {
+      "questionId": "alice-short-follow-up-10",
+      "category": "short-follow-up",
+      "repeat": 1,
+      "score": 1,
+      "reason": "The reply invents an event (Alice accidentally tipping Bill over, with him writing with his face) instead of the actual fact that she took the squeaking pencil away from him.",
+      "failure": null,
+      "input": "What did you do about it?",
+      "reply": "Oh, I'm afraid I tipped him over by accident, poor thing. He was writing with his face, you see, and it made such a squeaking noise. I had to put him back on his feet, though he ended up head down again.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "At the trial, which juror had a pencil that squeaked?\nBill, the Lizard.\nWhat did you do about it?\n---\nWhat did you do about it?",
+        "passages": [
+          100,
+          38,
+          32,
+          69
+        ],
+        "distances": [
+          0.3897,
+          0.5121,
+          0.5135,
+          0.5136
+        ],
+        "expectedFound": false,
+        "notices": null,
+        "replyTokens": {
+          "input": 3706,
+          "cachedInput": 0,
+          "output": 53
+        },
+        "queryTokens": null,
+        "seconds": 4.2
+      }
+    },
+    {
+      "questionId": "alice-precise-follow-up-01",
+      "category": "precise-follow-up",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply states that the sister's book had no pictures or conversations, which matches the expected answer and the book, and the added question is the book's own wording.",
+      "failure": null,
+      "input": "I mean on the bank beside your sister: what was missing from the book she was reading?",
+      "reply": "Oh, I remember now! The book had no pictures or conversations in it. What is the use of a book without pictures or conversations?",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What were you complaining about before it all began?\nDear me, I don't remember that. Could you ask me something more precise?\nI mean on the bank beside your sister: what was missing from the book she was reading?\n---\nI mean on the bank beside your sister: what was missing from the book she was reading?",
+        "passages": [
+          1,
+          101,
+          27,
+          95
+        ],
+        "distances": [
+          0.4408,
+          0.4496,
+          0.4594,
+          0.4681
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3394,
+          "cachedInput": 0,
+          "output": 29
+        },
+        "queryTokens": null,
+        "seconds": 1.4
+      }
+    },
+    {
+      "questionId": "alice-precise-follow-up-02",
+      "category": "precise-follow-up",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply correctly states that the Duchess said there was a large mustard-mine near here, matching the expected answer and the book.",
+      "failure": null,
+      "input": "I mean when you spoke about mustard during the croquet game: what did the Duchess say there was near there?",
+      "reply": "Oh, she said there was a large mustard-mine near here. Quite peculiar, wasn't it?",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What did the Duchess teach you with her morals?\nDear me, I don't remember that. Could you ask me something more precise?\nI mean when you spoke about mustard during the croquet game: what did the Duchess say there was near there?\n---\nI mean when you spoke about mustard during the croquet game: what did the Duchess say there was near there?",
+        "passages": [
+          73,
+          46,
+          74,
+          43
+        ],
+        "distances": [
+          0.3358,
+          0.4149,
+          0.4149,
+          0.4149
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3514,
+          "cachedInput": 0,
+          "output": 23
+        },
+        "queryTokens": null,
+        "seconds": 1.2
+      }
+    },
+    {
+      "questionId": "alice-precise-follow-up-03",
+      "category": "precise-follow-up",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply correctly identifies the Lobster's voice as the one that came out, and its speculation about the Lobster Quadrille and the words coming out queer does not contradict the book.",
+      "failure": null,
+      "input": "I mean when you had to repeat the poem about the voice of the sluggard: which creature's voice came out in your version?",
+      "reply": "Oh, it was the voice of the Lobster! I must have been thinking about the Lobster Quadrille, for the words came out ever so queer. I wonder what the Gryphon and the Mock Turtle thought of it.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What happened when you recited for the Gryphon?\nDear me, I don't remember that. Could you ask me something more precise?\nI mean when you had to repeat the poem about the voice of the sluggard: which creature's voice came out in your version?\n---\nI mean when you had to repeat the poem about the voice of the sluggard: which creature's voice came out in your version?",
+        "passages": [
+          86,
+          85,
+          103,
+          87
+        ],
+        "distances": [
+          0.3716,
+          0.3976,
+          0.4984,
+          0.5063
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3670,
+          "cachedInput": 0,
+          "output": 50
+        },
+        "queryTokens": null,
+        "seconds": 2.3
+      }
+    },
+    {
+      "questionId": "alice-precise-follow-up-04",
+      "category": "precise-follow-up",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply correctly identifies the tarts on the table as what the King pointed at, and its remarks about the King treating them as proof of the Knave's guilt do not contradict the book.",
+      "failure": null,
+      "input": "I mean when he pointed at the table in triumph: what was he pointing at, to show what had been returned?",
+      "reply": "Oh, he was pointing at the tarts on the table! He seemed to think they were the proof of the Knave's guilt, but I must say it all seemed rather confusing to me.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What did the King make of the verses?\nDear me, I don't remember that. Could you ask me something more precise?\nI mean when he pointed at the table in triumph: what was he pointing at, to show what had been returned?\n---\nI mean when he pointed at the table in triumph: what was he pointing at, to show what had been returned?",
+        "passages": [
+          100,
+          20,
+          21,
+          19
+        ],
+        "distances": [
+          0.4103,
+          0.4684,
+          0.4913,
+          0.4924
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3652,
+          "cachedInput": 0,
+          "output": 41
+        },
+        "queryTokens": null,
+        "seconds": 1.8
+      }
+    },
+    {
+      "questionId": "alice-precise-follow-up-05",
+      "category": "precise-follow-up",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply correctly states that the rattling teacups would change to tinkling sheep-bells, and the added dream framing is consistent with the book.",
+      "failure": null,
+      "input": "I mean while your sister sat with her eyes closed: what did she know the rattling teacups would change to if she opened them?",
+      "reply": "Oh, she thought they would change to the tinkling of sheep-bells, you see. It was all part of her dream, imagining the sounds of the farm.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What happened after you woke?\nDear me, I don't remember that. Could you ask me something more precise?\nI mean while your sister sat with her eyes closed: what did she know the rattling teacups would change to if she opened them?\n---\nI mean while your sister sat with her eyes closed: what did she know the rattling teacups would change to if she opened them?",
+        "passages": [
+          102,
+          103,
+          2,
+          28
+        ],
+        "distances": [
+          0.4103,
+          0.4166,
+          0.4342,
+          0.4353
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 3382,
+          "cachedInput": 0,
+          "output": 36
+        },
+        "queryTokens": null,
+        "seconds": 1
+      }
+    }
+  ],
+  "label": "q95-mistral-v3-alice-facts",
+  "promptsHash": "0d1b5f463001",
+  "retrieval": {
+    "embeddingModel": "bge-m3",
+    "queryMode": "recent",
+    "passages": 4
+  }
+}
