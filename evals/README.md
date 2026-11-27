@@ -12,7 +12,7 @@ way: [decision 0010](../docs/decisions/0010-character-evaluation-with-an-llm-jud
 | `alice/factual.json`, `cyrano/factual.json`, `bovary/factual-en.json` | 20 factual questions each on the English text of the shipped examples. |
 | `accuracy-judge.json` | The prompt of the judge of facts, which compares a reply with the expected answer. |
 | `judge.json` | The prompt of the judge, which grades a reply from 1 to 5. |
-| `prompts/` | The chat prompts before the change of 23 November 2026 (`baseline.json`) and its first attempt (`rules-v1.json`), to replay the baseline with `--prompts-file`. |
+| `prompts/` | The chat prompts before the change of 23 November 2026 (`baseline.json`), its first attempt (`rules-v1.json`) and the prompts of the published runs (`published.json`, also those before PAPER-92), to replay them with `--prompts-file`. |
 | `prices.json` | Price in USD per million tokens of each model, to show what a run cost (`compare`). Update it when prices change. |
 | `runs/` | **Not committed.** One file per run of the tool: the replies and their grades. |
 | `published/` | Runs chosen to be shared, committed by hand. See its README. |

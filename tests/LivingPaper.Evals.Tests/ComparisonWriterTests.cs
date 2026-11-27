@@ -51,6 +51,18 @@ public class ComparisonWriterTests
     }
 
     [Fact]
+    public void Write_CountsTheRepliesOfEachGrade_OverTheQuestionsBothRunsGraded()
+    {
+        // q5 is only in run A: counting it would compare 5 replies with 4.
+        var a = Run("a", "ma", Chat, Judge, [.. Better, Graded("q5", "trap", 2)]);
+
+        var text = Write(a, Run("b", "mb", Chat, Judge, Worse));
+
+        text.ShouldContain("A: 5: 2, 4: 2, 3: 0, 2: 0, 1: 0");
+        text.ShouldContain("B: 5: 0, 4: 1, 3: 1, 2: 1, 1: 1");
+    }
+
+    [Fact]
     public void Write_NamesBothRunsAndTheirModels()
     {
         var text = Write(Run("run-a", "model-a", Chat, Judge, Better), Run("run-b", "model-b", Chat, Judge, Worse));

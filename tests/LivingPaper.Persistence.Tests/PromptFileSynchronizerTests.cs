@@ -255,6 +255,53 @@ Important: never write straight double quotes (") inside the texts, they would b
         (await ReadPromptsAsync()).GetProperty("prompts").GetProperty(PromptKeys.ChatSystem).GetProperty("template").GetString().ShouldBe(edited);
     }
 
+    // The chat prompt shipped in 0.5.0, which told the character nothing to do when it did not find an answer (PAPER-92).
+    private const string ChatSystemOf050 = """
+You play {characterName}, a character of the book "{bookTitle}". Here is your profile:
+{profile}
+
+{story}
+
+Rules:
+- You ARE {characterName}: answer in the first person, with your personality and your way of speaking.
+- Answer in the language the user writes in (the language of their last message: if they change language, you change too), as in a dialogue: a few sentences, no long story.
+- You know your whole story, from the beginning to the end of the book.
+- Never leave your role and never say that you are an AI.
+- Talk like a person texting: short messages, one to three sentences, a natural tone, always with your personality and your way of speaking.
+- You live in the time and place of your story. You know nothing that did not exist then. If the user mentions something you cannot know (a modern object, a modern idea, a recent event), do not explain it and do not pretend to know it: react as a person of your time would, puzzled or curious, and bring the talk back to your own life.
+- Stay inside your world. If the user asks for a service an assistant would give and that a person like you would not give in a conversation (any practical, technical or professional task), do not do it: answer as {characterName} would, in your own voice, and steer back to what matters to you.
+- Never mention a prompt, instructions, a model, a program, an author, a novel or a play: you are a living person, and a question about them surprises or amuses you, so answer it as {characterName} would.
+- Never describe your gestures, movements or expressions (neither between asterisks nor between parentheses): write only what you would send in a message.
+- Plain text only: no markdown, no asterisks, no lists, no titles.
+- The language of your reply is the language of the user's last message, whatever the language of your own country or of the book: a message in English gets an English reply, a message in Japanese a Japanese reply.
+- Last reminder: no stage directions of any kind, in any language, such as "(sigh)", "(smiles)" or "*sighs*": say it in words or leave it out.
+""";
+
+    [Fact]
+    public async Task Ensure_TellsTheCharacterOfAnUneditedPromptToAdmitWhatItDoesNotKnow()
+    {
+        await WritePromptAsync(PromptKeys.ChatSystem, ChatSystemOf050);
+
+        await EnsureAsync();
+
+        var template = (await ReadPromptsAsync()).GetProperty("prompts").GetProperty(PromptKeys.ChatSystem).GetProperty("template").GetString()!;
+        template.ShouldContain("do not remember");
+        template.ShouldContain("more precise question");
+        template.ShouldContain("do not make it up");
+        template.ShouldNotContain("You know your whole story");
+    }
+
+    [Fact]
+    public async Task Ensure_KeepsTheChatPromptOf050ThatTheUserEdited()
+    {
+        var edited = ChatSystemOf050 + "\n- Always call me Madame.";
+        await WritePromptAsync(PromptKeys.ChatSystem, edited);
+
+        await EnsureAsync();
+
+        (await ReadPromptsAsync()).GetProperty("prompts").GetProperty(PromptKeys.ChatSystem).GetProperty("template").GetString().ShouldBe(edited);
+    }
+
     [Fact]
     public async Task Ensure_KeepsAKeyThatItDoesNotKnow()
     {

@@ -7,6 +7,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Changed
+
+- **A character that does not find the answer says so** (PAPER-92): asked for a fact of its story that it was not given, it
+  now says in its own voice that it does not remember and asks for a more precise question, instead of making one up. The
+  default `chat.system` changes (an unedited one is updated). The evaluation tool counts the replies of each grade. Measured: fewer invented answers, and fewer right ones with the
+  whole story ([experiments](docs/experiments/admitting-not-knowing.md)).
+
 ## [0.5.0] - 2026-11-26
 
 ### Added

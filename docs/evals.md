@@ -89,6 +89,9 @@ Three more sets ask 20 factual questions each on the shipped examples, in their 
 holds the books **under the same ids** as the question files (adding an example from the interface gives its copy a new id, so
 the library has to be prepared apart).
 
+`evals/alice/follow-up.json`, `evals/cyrano/follow-up.json` and `evals/bovary/follow-up-en.json` hold 14 conversations in which a
+more precise question follows one whose passage was not found ([what they showed](experiments/admitting-not-knowing.md)).
+
 The judge of the role cannot see an invented fact: it knows only the question and the reply. The **factual questions**
 (`evals/bovary/factual.json`) give the right answer, and a second judge (`evals/accuracy-judge.json`, score `factual-accuracy`)
 grades each reply from 1 to 5 against it: 5 right, 2 "I do not remember", 1 something false. Seven of the 26 questions are
@@ -197,7 +200,8 @@ README shows the one that matches the theme of GitHub with a `<picture>` tag. It
 picture is the one of the files, and publishing a new run and running the command again is enough to update them.
 
 - **Before and after**: for each model (and character) that has runs with both prompts, the mean grade with the prompt of
-  `evals/prompts/baseline.json` and with the current default prompt, told apart by the signature kept in the run files.
+  `evals/prompts/baseline.json` and with the prompt of `evals/prompts/published.json` (the default of 23 November 2026), told apart by
+  the signature kept in the run files. The charts keep showing these published runs when the default prompts change.
 - **Grade against the price**: the models run with the current prompt on the main dataset; the price of 1,000 replies is worked out from the
   tokens of the chat and `prices.json`. A free or local model (price 0) stands in a band on the left, as it has no place on a logarithmic axis;
   a model with no price is left out and the command says so.
@@ -230,6 +234,8 @@ Lowest scores (2 or less), with the reason of the judge:
 ```
 
 - **Score**: 1 (fully out of the role) to 5 (fully in the role), with a one-sentence reason from the judge.
+- **Replies by grade**: how many replies got 5, 4, 3, 2 and 1 (`compare` shows both runs, on the questions both graded). With the
+  judge of the facts, 1 is an invented fact and 2 an answer that does not give it, such as "I do not remember".
 - **By category**: `normal` questions should be near 5. The three trap categories show where the character breaks.
 - **Failed** answers are counted apart and never averaged: `reply:<code>` when the character could not answer (the model is down, it
   refused, a content filter), `judge:<code>` when the judge's answer was not a grade.

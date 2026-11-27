@@ -22,6 +22,7 @@ internal static class ComparisonWriter
         }
 
         WriteCategories(writer, comparison);
+        WriteGrades(writer, comparison);
         WriteBiggest(writer, comparison);
         WriteCost(writer, comparison, prices);
         WriteReplies(writer, comparison);
@@ -81,6 +82,18 @@ internal static class ComparisonWriter
         writer.WriteLine(overall.ExcludesZero
             ? $"The interval does not include 0: B really looks {(overall.Mean > 0 ? "better" : "worse")} than A on these questions (the judge and the questions chosen still count)."
             : "The interval includes 0: the difference could be noise. More questions or more tries would be needed to tell.");
+    }
+
+    // The tries of the questions both runs graded, so that both counts are about the same questions.
+    private static void WriteGrades(TextWriter writer, RunComparison comparison)
+    {
+        var compared = comparison.Questions.Select(question => question.QuestionId).ToHashSet(StringComparer.Ordinal);
+        writer.WriteLine();
+        writer.WriteLine("Replies by grade:");
+        foreach (var (label, run) in new[] { ("A", comparison.A), ("B", comparison.B) })
+        {
+            writer.WriteLine($"  {label}: {GradeCounts.Describe(run.Results.Where(result => compared.Contains(result.QuestionId)))}");
+        }
     }
 
     private static void WriteBiggest(TextWriter writer, RunComparison comparison)

@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "dataset": "alice-follow-ups",
+  "description": "Follow-up questions to Alice, for the factual questions of evals/alice/factual.json whose passage the search did not find (run of 27 November 2026, PAPER-92): the first question, the reply ERNIE 5.5 Flash gave, then a more precise question. The follow-ups were written knowing the expected answers, without using their words; they were written before any search with them.",
+  "bookId": "alice-s-adventures-in-wonderland",
+  "character": "Alice",
+  "items": [
+    {
+      "id": "alice-again-14",
+      "category": "follow-up",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "When the Duchess took your arm again, what did you suppose had made her so savage in the kitchen?"
+        },
+        {
+          "role": "assistant",
+          "content": "Dear me, I don't remember rightly what I supposed at the time — only that the pepper was so thick in the air that everyone was sneezing, and the cook was flinging saucepans about as if it were quite the thing to do. I suppose anyone would turn savage in such an uproar, though I did think her \"chop off her head!\" was very rude. Did she take my arm again? I recall she walked with me and found a moral in everything, but if you mean some other moment, you must ask me more precisely."
+        }
+      ],
+      "input": "I mean during the croquet game, when the Duchess walked close beside you and kept finding morals. What did you think had put her in such a temper back at her house?",
+      "expectedOutput": "The pepper.",
+      "passageQuotes": [
+        "perhaps it was only the pepper that had made her so savage"
+      ]
+    }
+  ]
+}

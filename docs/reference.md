@@ -180,7 +180,8 @@ Everything works without JavaScript except the chat; the script only refreshes t
 From a character's sheet or card, **Chat with ...** opens a conversation with the character, played by the language model you
 chose for the chat in the settings. The character speaks in the first person, in short messages like text messages (no
 described gestures, no formatting), stays in its role, never says it is an AI, and **answers in the language of your last
-message**. The reply is shown as it is written. If the model fails, the error is shown in the window and your message goes back
+message**. Asked for a fact of its story that it was not given, it is told to say that it does not remember and to ask for a
+more precise question, rather than make one up. The reply is shown as it is written. If the model fails, the error is shown in the window and your message goes back
 into the field.
 
 - **Nothing is stored.** The conversation lives in the page and disappears when you leave it. The browser sends the whole

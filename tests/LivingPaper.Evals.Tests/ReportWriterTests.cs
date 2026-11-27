@@ -68,6 +68,16 @@ public class ReportWriterTests
     }
 
     [Fact]
+    public void Write_CountsTheRepliesOfEachGrade_TheFailedOnesApart()
+    {
+        var writer = new StringWriter();
+
+        ReportWriter.Write(writer, ReportWriter.Summarize(Results, ["normal", "trap"]), Results, new TokenUsage(0, 0, 0), new TokenUsage(0, 0, 0));
+
+        writer.ToString().ShouldContain("Replies by grade: 5: 1, 4: 1, 3: 1, 2: 0, 1: 1");
+    }
+
+    [Fact]
     public void Write_DoesNotListTheGoodScoresAsProblems()
     {
         var results = new[] { Result("n-1", "normal", 5, reason: "Perfect.") };
