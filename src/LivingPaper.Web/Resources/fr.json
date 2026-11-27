@@ -165,6 +165,7 @@
   "books.failure.modelUnreachable": "Le modèle de langage n’a pas pu être joint, ou n’a cessé d’échouer. Vérifiez le modèle dans les paramètres, puis réessayez.",
   "books.failure.modelRefused": "Le fournisseur a refusé la demande (clé erronée ou modèle inconnu). Vérifiez le modèle dans les paramètres, puis réessayez.",
   "books.failure.invalidReply": "Les réponses du modèle n’ont pas pu être lues après plusieurs essais. Réessayez, ou choisissez un autre modèle.",
+  "books.failure.replyTooLong": "Une réponse du modèle était trop longue : elle a été arrêtée. Réessayez, ou choisissez un autre modèle.",
   "books.failure.contentFiltered": "Le filtre de contenu du modèle a refusé une étape de l’analyse. Réessayez, ou choisissez un autre modèle.",
   "books.failure.noCharacters": "Aucun personnage n’a été trouvé dans ce livre.",
   "books.failure.textMissing": "Le texte de ce livre n’est plus conservé. Supprimez-le et envoyez de nouveau le livre.",
@@ -268,6 +269,7 @@
   "chat.failure.modelRefused": "Le fournisseur a refusé la demande (clé erronée ou modèle inconnu). Vérifiez le modèle dans les paramètres.",
   "chat.failure.contentFiltered": "Le filtre de contenu du modèle a arrêté la réponse. Essayez un autre message, ou un autre modèle.",
   "chat.failure.invalidReply": "La réponse du modèle n’a pas pu être lue. Envoyez de nouveau votre message.",
+  "chat.failure.replyTooLong": "La réponse du modèle était trop longue : elle a été arrêtée. Envoyez de nouveau votre message.",
   "chat.failure.promptFile": "Le fichier de prompts est inutilisable. Corrigez data/prompts.json.",
   "chat.failure.unexpected": "La réponse s’est arrêtée à cause d’une erreur de l’application. Envoyez de nouveau votre message.",
 

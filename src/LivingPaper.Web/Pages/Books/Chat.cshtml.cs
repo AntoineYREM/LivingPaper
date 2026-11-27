@@ -205,6 +205,7 @@ public partial class ChatModel(BookService books, CharacterChatService chat, ITe
                 ["modelRefused"] = texts["chat.failure.modelRefused"],
                 ["contentFiltered"] = texts["chat.failure.contentFiltered"],
                 ["invalidReply"] = texts["chat.failure.invalidReply"],
+                ["replyTooLong"] = texts["chat.failure.replyTooLong"],
                 ["promptFile"] = texts["chat.failure.promptFile"],
                 ["unexpected"] = texts["chat.failure.unexpected"],
                 ["refused"] = texts["chat.error.refused"],

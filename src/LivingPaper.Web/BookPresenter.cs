@@ -210,6 +210,7 @@ public sealed class BookPresenter(BookService books, ITextLocalizer texts)
             nameof(AnalysisFailure.ModelUnreachable) => texts["books.failure.modelUnreachable"],
             nameof(AnalysisFailure.ModelRefused) => texts["books.failure.modelRefused"],
             nameof(AnalysisFailure.InvalidReply) => texts["books.failure.invalidReply"],
+            nameof(AnalysisFailure.ReplyTooLong) => texts["books.failure.replyTooLong"],
             nameof(AnalysisFailure.ContentFiltered) => texts["books.failure.contentFiltered"],
             nameof(AnalysisFailure.NoCharacters) => texts["books.failure.noCharacters"],
             nameof(AnalysisFailure.TextMissing) => texts["books.failure.textMissing"],

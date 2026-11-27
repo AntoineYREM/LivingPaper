@@ -1,4 +1,5 @@
 using System.Net.Sockets;
+using System.Text;
 using System.Text.Json;
 using LivingPaper.Application;
 using LivingPaper.Domain;
@@ -561,6 +562,159 @@ public sealed class OpenAiCompatibleChatModelTests : IAsyncLifetime
                 await cancellation.CancelAsync();
             }
         });
+    }
+
+    // ---- Limits of a reply ----
+
+    [Fact]
+    public void TheDefaultLimits_AreOneMegabyteALine_AMillionCharacters_AndThirtyMinutes()
+    {
+        var options = new OpenAiCompatibleOptions();
+
+        options.MaxLineBytes.ShouldBe(1024 * 1024);
+        options.MaxReplyLength.ShouldBe(1_000_000);
+        options.MaxReplyDuration.ShouldBe(TimeSpan.FromMinutes(30));
+    }
+
+    // The stream as bytes, in the pieces given, each one sent at once.
+    private static async Task WriteRawAsync(HttpContext context, params byte[][] pieces)
+    {
+        context.Response.ContentType = "text/event-stream";
+        await context.Response.StartAsync(context.RequestAborted);
+        foreach (var piece in pieces)
+        {
+            await context.Response.Body.WriteAsync(piece, context.RequestAborted);
+            await context.Response.Body.FlushAsync(context.RequestAborted);
+        }
+    }
+
+    private static byte[] Utf8(string text) => Encoding.UTF8.GetBytes(text);
+
+    private async Task<ChatProviderException> ShouldBeTooLongAsync(OpenAiCompatibleOptions options)
+    {
+        // Well before the fake provider gives up: the client stopped by itself.
+        using var patience = CancellationTokenSource.CreateLinkedTokenSource(Token);
+        patience.CancelAfter(TimeSpan.FromSeconds(5));
+
+        var exception = await Should.ThrowAsync<ChatProviderException>(() => NewModel(options).CompleteAsync(Messages, null, patience.Token));
+
+        exception.Kind.ShouldBe(ChatFailureKind.ReplyTooLong);
+        exception.IsTransient.ShouldBeFalse();
+        return exception;
+    }
+
+    [Fact]
+    public async Task Complete_ThrowsReplyTooLong_ForALineThatNeverEnds_WithoutWaitingForItsEnd()
+    {
+        _server.Handler = async context =>
+        {
+            await WriteRawAsync(context, Utf8("data: SECRET-LINE" + new string('a', 5000)));
+            await Task.Delay(TimeSpan.FromSeconds(10), context.RequestAborted);
+        };
+
+        var exception = await ShouldBeTooLongAsync(new OpenAiCompatibleOptions { MaxLineBytes = 1000 });
+
+        exception.Message.ShouldNotContain("SECRET-LINE"); // It could hold the reply.
+    }
+
+    [Theory]
+    [InlineData(0, true)]
+    [InlineData(1, false)]
+    public async Task Complete_AcceptsALineUpToTheLimit_CountedInBytes(int bytesUnderTheLine, bool accepted)
+    {
+        // "é" takes two bytes: the line has fewer characters than bytes.
+        var comment = ": " + new string('é', 100);
+        _server.Handler = context => WriteRawAsync(context, Utf8(comment + "\n" + "data: " + FakeReplies.Chunk("ok") + "\ndata: [DONE]\n"));
+        var options = new OpenAiCompatibleOptions { MaxLineBytes = Utf8(comment).Length - bytesUnderTheLine };
+
+        if (accepted)
+        {
+            (await NewModel(options).CompleteAsync(Messages, null, Token)).ShouldBe("ok");
+        }
+        else
+        {
+            await ShouldBeTooLongAsync(options);
+        }
+    }
+
+    [Theory]
+    [InlineData("\n")]
+    [InlineData("\r\n")]
+    [InlineData("\r")]
+    public async Task Complete_ReadsEveryKindOfLineEnd_EvenCutAnywhereBetweenTwoPackets(string end)
+    {
+        var bytes = Utf8("data: " + FakeReplies.Chunk("Él") + end + end + "data: " + FakeReplies.Chunk("ève") + end + "data: [DONE]" + end);
+        // One byte a packet: a line, a line end and a character of two bytes are all cut.
+        _server.Handler = context => WriteRawAsync(context, [.. bytes.Select(value => new[] { value })]);
+
+        (await NewModel().CompleteAsync(Messages, null, Token)).ShouldBe("Élève");
+    }
+
+    [Fact]
+    public async Task Complete_IgnoresAByteOrderMarkAtTheStartOfTheStream_AndReadsALastLineWithNoEnd()
+    {
+        _server.Handler = context => WriteRawAsync(
+            context, [0xEF, 0xBB, 0xBF], Utf8("data: " + FakeReplies.Chunk("Hi") + "\n\ndata: [DONE]"));
+
+        (await NewModel().CompleteAsync(Messages, null, Token)).ShouldBe("Hi");
+    }
+
+    [Fact]
+    public async Task Complete_AcceptsAReplyOfExactlyTheLongestText()
+    {
+        _server.Handler = context => FakeReplies.TextAsync(context, "12345", "67890");
+
+        (await NewModel(new OpenAiCompatibleOptions { MaxReplyLength = 10 }).CompleteAsync(Messages, null, Token)).ShouldBe("1234567890");
+    }
+
+    [Fact]
+    public async Task StreamReply_ThrowsReplyTooLong_BeforeGivingThePieceThatGoesOverTheLongestText()
+    {
+        _server.Handler = context => FakeReplies.TextAsync(context, "12345", "678901", "more");
+        var received = new List<string>();
+
+        var exception = await Should.ThrowAsync<ChatProviderException>(async () =>
+        {
+            await foreach (var piece in NewModel(new OpenAiCompatibleOptions { MaxReplyLength = 10 }).StreamReplyAsync(Messages, null, Token))
+            {
+                received.Add(piece);
+            }
+        });
+
+        exception.Kind.ShouldBe(ChatFailureKind.ReplyTooLong);
+        received.ShouldBe(["12345"]);
+    }
+
+    [Theory]
+    [InlineData(": still there\n\n")]
+    [InlineData("data: {\"choices\":[{\"delta\":{\"content\":\"x\"}}]}\n\n")]
+    public async Task Complete_ThrowsReplyTooLong_WhenEventsKeepComingPastTheLongestTime(string repeated)
+    {
+        _server.Handler = async context =>
+        {
+            context.Response.ContentType = "text/event-stream";
+            await context.Response.StartAsync(context.RequestAborted);
+            for (var i = 0; i < 200; i++)
+            {
+                await context.Response.WriteAsync(repeated, context.RequestAborted);
+                await context.Response.Body.FlushAsync(context.RequestAborted);
+                await Task.Delay(50, context.RequestAborted);
+            }
+        };
+
+        await ShouldBeTooLongAsync(new OpenAiCompatibleOptions { MaxReplyDuration = TimeSpan.FromMilliseconds(400) });
+    }
+
+    [Fact]
+    public async Task Complete_ThrowsReplyTooLong_WhenTheLongestTimePassesWhileTheProviderIsSilent()
+    {
+        _server.Handler = async context =>
+        {
+            await FakeReplies.StreamAsync(context, [FakeReplies.Chunk("Hel")], done: false);
+            await Task.Delay(TimeSpan.FromSeconds(10), context.RequestAborted);
+        };
+
+        await ShouldBeTooLongAsync(new OpenAiCompatibleOptions { MaxReplyDuration = TimeSpan.FromMilliseconds(300) });
     }
 
     private static int FreeLocalPort()
