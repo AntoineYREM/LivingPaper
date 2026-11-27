@@ -7,6 +7,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-11-27
+
+Characters make up fewer facts, and find the right passage after a change of subject. Books analyzed with 0.5.0 need nothing:
+no new analysis, no new indexing. A prompt you never edited is updated by itself.
+
 ### Added
 
 - **A measure of the whole work on the passages** (PAPER-95): 212 new questions on four books, a judge for questions the book
@@ -24,13 +29,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   (5 to 3 of 7) ([experiments](docs/experiments/admitting-not-knowing.md)).
 - **A character that does not find the answer says so** (PAPER-92): asked for a fact of its story that it was not given, it
   now says in its own voice that it does not remember and asks for a more precise question, instead of making one up. The
-  default `chat.system` changes (an unedited one is updated). The evaluation tool counts the replies of each grade. Measured: fewer invented answers, and fewer right ones with the
-  whole story ([experiments](docs/experiments/admitting-not-knowing.md)).
+  default `chat.system` changes (an unedited one is updated). The evaluation tool counts the replies of each grade. Measured:
+  fewer invented answers, and fewer right ones with the whole story
+  ([experiments](docs/experiments/admitting-not-knowing.md)).
 
 ### Security
 
 - **A reply of a model can no longer fill the memory or never end** (PAPER-31): reading it stops at a line over 1 MB, a
   text over 1,000,000 characters, or after 30 minutes. It is not retried, and the page says the reply was too long.
+
+### Known limits
+
+- **With no model for vectorization** (the whole story), the new rule also loses right answers: on 60 questions with one free
+  model, 35 to 24, while false ones fell from 14 to 6. To go back, replace in `chat.system` (`data/prompts.json`) the rule
+  that starts with "You lived your story" by the earlier one: "You know your whole story, from the beginning to the end of
+  the book."
+- **Follow-ups** such as "And where did he go?" are answered right less often with the two searches than with one
+  ([report](docs/experiments/before-and-after.md)).
 
 ## [0.5.0] - 2026-11-26
 
@@ -330,7 +345,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - The tests of the web application no longer reach the limit of file watchers (inotify) of Linux machines, and the test of a
   connection cut in the middle of a reply no longer depends on timing.
 
-[Unreleased]: https://github.com/AntoineYREM/LivingPaper/compare/v0.5.0...HEAD
+[Unreleased]: https://github.com/AntoineYREM/LivingPaper/compare/v0.6.0...HEAD
+[0.6.0]: https://github.com/AntoineYREM/LivingPaper/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/AntoineYREM/LivingPaper/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/AntoineYREM/LivingPaper/compare/v0.3.0...v0.4.0
 [0.1.0]: https://github.com/AntoineYREM/LivingPaper/releases/tag/v0.1.0
