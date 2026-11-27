@@ -52,7 +52,7 @@ On a phone, the same pages fit the screen:
 Measured on 27 November 2026 on four books, one of them little known, with 212 new questions fixed before the runs, two models
 and a language model as the judge ([full report](docs/experiments/before-and-after.md)). **Start**: the character is given the
 story of the book. **Now**: passages of the book found by two searches, and a character that is told to say when it does not
-remember (the code of `main`, after version 0.5.0; it needs a [model for vectorization](#the-passages-of-the-book-optional)).
+remember (version 0.6.0; it needs a [model for vectorization](#the-passages-of-the-book-optional)).
 
 | | DeepSeek V4.1 Flash, start | **now** | Mistral Small 3.2, start | **now** |
 |---|---|---|---|---|
