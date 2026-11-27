@@ -1,0 +1,117 @@
+{
+  "schemaVersion": 1,
+  "dataset": "before-after-bovary-outside-reader",
+  "description": "Before-and-after measure of PAPER-95, Emma Bovary: 12 facts of her life asked about in a public quiz on the novel that the owner found, put in our own words, without its choices, and checked in the book. Kept apart: their subjects were not chosen by whoever wrote the other questions; they are famous episodes, and some were also asked while the defaults were tuned.",
+  "bookId": "madame-bovary",
+  "character": "Emma Bovary",
+  "items": [
+    {
+      "id": "bovary-reader-01",
+      "category": "outside-reader",
+      "input": "What had happened to your father when Charles was first called to your farm?",
+      "expectedOutput": "He had broken his leg.",
+      "passageQuotes": [
+        "to set a broken leg"
+      ]
+    },
+    {
+      "id": "bovary-reader-02",
+      "category": "outside-reader",
+      "input": "Which marquis invited you to a ball, and to what place?",
+      "expectedOutput": "The Marquis d'Andervilliers, to Vaubyessard.",
+      "passageQuotes": [
+        "invited by the Marquis d'Andervilliers to Vaubyessard"
+      ]
+    },
+    {
+      "id": "bovary-reader-03",
+      "category": "outside-reader",
+      "input": "When you first met Léon at Yonville, what was his work?",
+      "expectedOutput": "He was a clerk at the notary's, Monsieur Guillaumin.",
+      "passageQuotes": [
+        "a clerk at the notary's, Monsieur Guillaumin"
+      ]
+    },
+    {
+      "id": "bovary-reader-04",
+      "category": "outside-reader",
+      "input": "Why did your husband urge you to accept the rides on horseback that Rodolphe offered?",
+      "expectedOutput": "For your health, which came before everything.",
+      "passageQuotes": [
+        "Health before everything"
+      ]
+    },
+    {
+      "id": "bovary-reader-05",
+      "category": "outside-reader",
+      "input": "How did the letter in which Rodolphe gave you up reach you?",
+      "expectedOutput": "At the bottom of a basket of apricots, under vine leaves, brought by his ploughman Girard.",
+      "passageQuotes": [
+        "had a basket of apricots picked"
+      ]
+    },
+    {
+      "id": "bovary-reader-06",
+      "category": "outside-reader",
+      "input": "How did the operation your husband performed on Hippolyte's foot end?",
+      "expectedOutput": "In gangrene: Doctor Canivet amputated the leg at the thigh.",
+      "passageQuotes": [
+        "amputation of the thigh by Doctor Canivet"
+      ]
+    },
+    {
+      "id": "bovary-reader-07",
+      "category": "outside-reader",
+      "input": "When you fell ill after that letter, for how long did your husband stay by you?",
+      "expectedOutput": "Forty-three days.",
+      "passageQuotes": [
+        "For forty-three days Charles did not leave her"
+      ]
+    },
+    {
+      "id": "bovary-reader-08",
+      "category": "outside-reader",
+      "input": "At the opera in Rouen, what did the love you saw on the stage make you feel about your own life?",
+      "expectedOutput": "She recognised the rapture and anguish that had almost killed her, and felt no one had ever loved her with such a love.",
+      "passageQuotes": [
+        "no one on earth had loved her with such love"
+      ]
+    },
+    {
+      "id": "bovary-reader-09",
+      "category": "outside-reader",
+      "input": "When you and Léon left the cathedral, how did you spend the following hours?",
+      "expectedOutput": "Shut in a cab with the blinds drawn, driving on and on through Rouen.",
+      "passageQuotes": [
+        "a cab with blinds drawn"
+      ]
+    },
+    {
+      "id": "bovary-reader-10",
+      "category": "outside-reader",
+      "input": "What did you tell your husband you needed in town every week, and why did you really go?",
+      "expectedOutput": "Piano lessons; in fact to see her lover, Léon.",
+      "passageQuotes": [
+        "permission to go to town once a week to see her lover"
+      ]
+    },
+    {
+      "id": "bovary-reader-11",
+      "category": "outside-reader",
+      "input": "What did the official paper left at your house demand of you, and how quickly?",
+      "expectedOutput": "To pay eight thousand francs within twenty-four hours, or her furniture would be seized.",
+      "passageQuotes": [
+        "To pay the sum of eight thousand francs"
+      ]
+    },
+    {
+      "id": "bovary-reader-12",
+      "category": "outside-reader",
+      "input": "When nobody would lend you the money, what did you do at the chemist's?",
+      "expectedOutput": "She took arsenic from the blue jar in his storeroom and ate it.",
+      "passageQuotes": [
+        "seized the blue jar"
+      ]
+    }
+  ]
+}

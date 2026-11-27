@@ -1,0 +1,574 @@
+{
+  "schemaVersion": 1,
+  "dataset": "before-after-cyrano",
+  "description": "Before-and-after measure of PAPER-95, Cyrano de Bergerac: 10 direct questions, 10 on a new subject after another one, 10 short follow-ups and 5 more precise ones after an admission. Written on 27 November 2026 from passages that no earlier question used, before any search or reply with them, and frozen. The earlier replies of the conversations were written by hand.",
+  "bookId": "cyrano-de-bergerac",
+  "character": "Cyrano de Bergerac",
+  "items": [
+    {
+      "id": "cyrano-direct-01",
+      "category": "direct",
+      "input": "Which painter did Ragueneau say could alone have portrayed you, had he not been dead?",
+      "expectedOutput": "Jacques Callot.",
+      "passageQuotes": [
+        "only Jacques Callot, now dead and gone"
+      ]
+    },
+    {
+      "id": "cyrano-direct-02",
+      "category": "direct",
+      "input": "After the evening at the theatre, what did you accept from the buffet-girl?",
+      "expectedOutput": "A few grapes, a glass of water and half a macaroon.",
+      "passageQuotes": [
+        "And half a macaroon"
+      ]
+    },
+    {
+      "id": "cyrano-direct-03",
+      "category": "direct",
+      "input": "What was Ragueneau doing at his little table one morning in his shop, before his cooks interrupted him?",
+      "expectedOutput": "Writing poetry with an inspired air, counting on his fingers.",
+      "passageQuotes": [
+        "writing, with an inspired air, at a small table"
+      ]
+    },
+    {
+      "id": "cyrano-direct-04",
+      "category": "direct",
+      "input": "When the crowd rushed into the shop to praise you, what did a man of letters with a writing-board ask you for?",
+      "expectedOutput": "A few details (for the Court Gazette).",
+      "passageQuotes": [
+        "A few details"
+      ]
+    },
+    {
+      "id": "cyrano-direct-05",
+      "category": "direct",
+      "input": "When you told the cadets about your night fight, who kept interrupting you with the word nose?",
+      "expectedOutput": "Christian, who had joined that day.",
+      "passageQuotes": [
+        "Christian balances on his chair"
+      ]
+    },
+    {
+      "id": "cyrano-direct-06",
+      "category": "direct",
+      "input": "What revenge on you did Roxane suggest to De Guiche, to keep you out of the war?",
+      "expectedOutput": "Leaving Cyrano behind with the Cadets while the regiment marched to Arras.",
+      "passageQuotes": [
+        "left here with his beloved boon companions"
+      ]
+    },
+    {
+      "id": "cyrano-direct-07",
+      "category": "direct",
+      "input": "What did Roxane pretend the postscript of the letter asked to be given to the convent?",
+      "expectedOutput": "Twenty pistoles.",
+      "passageQuotes": [
+        "Give twenty pistoles for the Convent"
+      ]
+    },
+    {
+      "id": "cyrano-direct-08",
+      "category": "direct",
+      "input": "At the siege, why did you cross the Spanish lines at each dawn?",
+      "expectedOutput": "To send letters to Roxane, as he had promised Christian would write often.",
+      "passageQuotes": [
+        "I promised he should write often"
+      ]
+    },
+    {
+      "id": "cyrano-direct-09",
+      "category": "direct",
+      "input": "How was Christian struck down at Arras?",
+      "expectedOutput": "By the first shot of the enemy.",
+      "passageQuotes": [
+        "Struck by first shot of the enemy"
+      ]
+    },
+    {
+      "id": "cyrano-direct-10",
+      "category": "direct",
+      "input": "What did the sisters of the convent bake for you?",
+      "expectedOutput": "Pasties of angelica.",
+      "passageQuotes": [
+        "We make him pasties of angelica"
+      ]
+    },
+    {
+      "id": "cyrano-new-subject-01",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "Which painter did Ragueneau say could alone have portrayed you, had he not been dead?"
+        },
+        {
+          "role": "assistant",
+          "content": "Jacques Callot alone, said Ragueneau, and he is dead."
+        }
+      ],
+      "input": "What did you threaten to make the marquises taste if they did not hold their tongues?",
+      "expectedOutput": "His cane.",
+      "passageQuotes": [
+        "make them taste my cane"
+      ]
+    },
+    {
+      "id": "cyrano-new-subject-02",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "After the evening at the theatre, what did you accept from the buffet-girl?"
+        },
+        {
+          "role": "assistant",
+          "content": "A few grapes, a glass of water and half a macaroon."
+        }
+      ],
+      "input": "According to you, what is a big nose a sign of?",
+      "expectedOutput": "A soul affable, kind, courteous, liberal and brave.",
+      "passageQuotes": [
+        "a big nose is indicative"
+      ]
+    },
+    {
+      "id": "cyrano-new-subject-03",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "What was Ragueneau doing at his little table one morning in his shop, before his cooks interrupted him?"
+        },
+        {
+          "role": "assistant",
+          "content": "Writing verses, counting on his fingers."
+        }
+      ],
+      "input": "What graceful thing did Ligniere once do as he was leaving church?",
+      "expectedOutput": "He saw his love take holy water and drank the whole stoup, although he hates water.",
+      "passageQuotes": [
+        "drank it all, to the last drop"
+      ]
+    },
+    {
+      "id": "cyrano-new-subject-04",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "When the crowd rushed into the shop to praise you, what did a man of letters with a writing-board ask you for?"
+        },
+        {
+          "role": "assistant",
+          "content": "A few details for his Gazette. I refused."
+        }
+      ],
+      "input": "Which recipe did Ragueneau recite in verse to the poets?",
+      "expectedOutput": "How almond tartlets are made.",
+      "passageQuotes": [
+        "How almond tartlets are made"
+      ]
+    },
+    {
+      "id": "cyrano-new-subject-05",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "When you told the cadets about your night fight, who kept interrupting you with the word nose?"
+        },
+        {
+          "role": "assistant",
+          "content": "A newcomer, Christian."
+        }
+      ],
+      "input": "Whose battered hats did a cadet bring you strung on his sword?",
+      "expectedOutput": "The hats of the fugitives of the ambush.",
+      "passageQuotes": [
+        "hats O' the fugitives"
+      ]
+    },
+    {
+      "id": "cyrano-new-subject-06",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "What revenge on you did Roxane suggest to De Guiche, to keep you out of the war?"
+        },
+        {
+          "role": "assistant",
+          "content": "To leave me behind with the Cadets while the regiment marched."
+        }
+      ],
+      "input": "How did you explain to the duenna the two musicians who followed you?",
+      "expectedOutput": "He had won them from D'Assoucy in a wager over a point of grammar.",
+      "passageQuotes": [
+        "a wager I won of D'Assoucy"
+      ]
+    },
+    {
+      "id": "cyrano-new-subject-07",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "What did Roxane pretend the postscript of the letter asked to be given to the convent?"
+        },
+        {
+          "role": "assistant",
+          "content": "Twenty pistoles."
+        }
+      ],
+      "input": "When you stopped De Guiche, what did you swear your nose would spout if he squeezed it?",
+      "expectedOutput": "Milk.",
+      "passageQuotes": [
+        "it would spout milk"
+      ]
+    },
+    {
+      "id": "cyrano-new-subject-08",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "At the siege, why did you cross the Spanish lines at each dawn?"
+        },
+        {
+          "role": "assistant",
+          "content": "To carry letters: I had promised he would write often."
+        }
+      ],
+      "input": "What did the old piper play to the starving cadets?",
+      "expectedOutput": "On his flute, airs of their own country (Languedoc, Gascony), which made them homesick.",
+      "passageQuotes": [
+        "play the airs of Languedoc"
+      ]
+    },
+    {
+      "id": "cyrano-new-subject-09",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "How was Christian struck down at Arras?"
+        },
+        {
+          "role": "assistant",
+          "content": "By the enemy's first shot."
+        }
+      ],
+      "input": "What did De Guiche say as soon as he came upon the cadets after their feast?",
+      "expectedOutput": "That it smelt good there.",
+      "passageQuotes": [
+        "It smells good here"
+      ]
+    },
+    {
+      "id": "cyrano-new-subject-10",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "What did the sisters of the convent bake for you?"
+        },
+        {
+          "role": "assistant",
+          "content": "Pasties of angelica, the good sisters."
+        }
+      ],
+      "input": "What did the Duke warn Le Bret had been said at the Queen's card-play?",
+      "expectedOutput": "That Cyrano may die by accident.",
+      "passageQuotes": [
+        "That Cyrano may die"
+      ]
+    },
+    {
+      "id": "cyrano-short-follow-up-01",
+      "category": "short-follow-up",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "Who had been posted that night to attack Ligniere?"
+        },
+        {
+          "role": "assistant",
+          "content": "A hundred men."
+        }
+      ],
+      "input": "And where were they waiting?",
+      "expectedOutput": "At the Porte de Nesle.",
+      "passageQuotes": [
+        "At the Porte de Nesle"
+      ]
+    },
+    {
+      "id": "cyrano-short-follow-up-02",
+      "category": "short-follow-up",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "What did a bore ask you after the duel, about a great man to shield you?"
+        },
+        {
+          "role": "assistant",
+          "content": "Whether I had a patron. I have none."
+        }
+      ],
+      "input": "What did you say protects you instead?",
+      "expectedOutput": "A protectress: his sword.",
+      "passageQuotes": [
+        "A protectress"
+      ]
+    },
+    {
+      "id": "cyrano-short-follow-up-03",
+      "category": "short-follow-up",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "Why did you hate Montfleury?"
+        },
+        {
+          "role": "assistant",
+          "content": "Because he dared to raise his eyes to her."
+        }
+      ],
+      "input": "What did it look like to you when he did?",
+      "expectedOutput": "A slug crawling over a flower's petals.",
+      "passageQuotes": [
+        "A slug crawl slavering"
+      ]
+    },
+    {
+      "id": "cyrano-short-follow-up-04",
+      "category": "short-follow-up",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "As children, where did you use to play with Roxane?"
+        },
+        {
+          "role": "assistant",
+          "content": "At Bergerac, by the lake-side."
+        }
+      ],
+      "input": "What did you cut there, and what for?",
+      "expectedOutput": "Reeds, to make swords.",
+      "passageQuotes": [
+        "the reeds you cut to make your swords"
+      ]
+    },
+    {
+      "id": "cyrano-short-follow-up-05",
+      "category": "short-follow-up",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "Under Roxane's balcony, who first spoke to her, and haltingly?"
+        },
+        {
+          "role": "assistant",
+          "content": "Christian."
+        }
+      ],
+      "input": "And what did you do about it?",
+      "expectedOutput": "Drew him under the balcony and slipped into his place to speak for him.",
+      "passageQuotes": [
+        "slipping into his place"
+      ]
+    },
+    {
+      "id": "cyrano-short-follow-up-06",
+      "category": "short-follow-up",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "Which farewell letter had you already written before the last battle?"
+        },
+        {
+          "role": "assistant",
+          "content": "Christian's, to Roxane."
+        }
+      ],
+      "input": "What did he notice on it?",
+      "expectedOutput": "A little spot: a tear.",
+      "passageQuotes": [
+        "This little spot"
+      ]
+    },
+    {
+      "id": "cyrano-short-follow-up-07",
+      "category": "short-follow-up",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "How did Roxane reach the army at Arras?"
+        },
+        {
+          "role": "assistant",
+          "content": "Through the Spanish lines, in her carriage."
+        }
+      ],
+      "input": "What did she answer when they asked where she was going?",
+      "expectedOutput": "That she was going to see her lover.",
+      "passageQuotes": [
+        "I go to see my lover"
+      ]
+    },
+    {
+      "id": "cyrano-short-follow-up-08",
+      "category": "short-follow-up",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "Who drove Roxane's carriage into the camp?"
+        },
+        {
+          "role": "assistant",
+          "content": "Ragueneau!"
+        }
+      ],
+      "input": "What did he first draw from under the seat?",
+      "expectedOutput": "A plate with a galantine.",
+      "passageQuotes": [
+        "The galantine passes from hand to hand"
+      ]
+    },
+    {
+      "id": "cyrano-short-follow-up-09",
+      "category": "short-follow-up",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "At the siege, how often did you send Roxane letters in Christian's name?"
+        },
+        {
+          "role": "assistant",
+          "content": "Every day."
+        }
+      ],
+      "input": "And how many times a day?",
+      "expectedOutput": "Twice.",
+      "passageQuotes": [
+        "every day,—twice"
+      ]
+    },
+    {
+      "id": "cyrano-short-follow-up-10",
+      "category": "short-follow-up",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "When you swooned on your last visit, what did you say had caused it?"
+        },
+        {
+          "role": "assistant",
+          "content": "The old wound of Arras."
+        }
+      ],
+      "input": "And what did you then ask her to let you read?",
+      "expectedOutput": "Christian's letter.",
+      "passageQuotes": [
+        "His letter! Ah! you promised me one day"
+      ]
+    },
+    {
+      "id": "cyrano-precise-follow-up-01",
+      "category": "precise-follow-up",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "What would you refuse to do to get on in the world?"
+        },
+        {
+          "role": "assistant",
+          "content": "Faith, my memory fails me there. Ask me something more precise."
+        }
+      ],
+      "input": "I mean when Le Bret urged you to find a patron: which plant did you refuse to be like, climbing round a tree?",
+      "expectedOutput": "The ivy.",
+      "passageQuotes": [
+        "like the crawling ivy round a tree"
+      ]
+    },
+    {
+      "id": "cyrano-precise-follow-up-02",
+      "category": "precise-follow-up",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "What did Roxane plan for Christian that evening?"
+        },
+        {
+          "role": "assistant",
+          "content": "Faith, my memory fails me there. Ask me something more precise."
+        }
+      ],
+      "input": "I mean what she told you at her door, in secret: what would she ask him to speak to her about?",
+      "expectedOutput": "Love, giving rein to his fancy.",
+      "passageQuotes": [
+        "Speak to me of love, and speak splendidly"
+      ]
+    },
+    {
+      "id": "cyrano-precise-follow-up-03",
+      "category": "precise-follow-up",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "What did you say to Roxane in the dusk?"
+        },
+        {
+          "role": "assistant",
+          "content": "Faith, my memory fails me there. Ask me something more precise."
+        }
+      ],
+      "input": "I mean when you spoke under the balcony of your fear of ridicule: instead of aiming at a star, what did you say you gather?",
+      "expectedOutput": "A wild flower.",
+      "passageQuotes": [
+        "cull a wild flower"
+      ]
+    },
+    {
+      "id": "cyrano-precise-follow-up-04",
+      "category": "precise-follow-up",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "How did you say one could travel up there?"
+        },
+        {
+          "role": "assistant",
+          "content": "Faith, my memory fails me there. Ask me something more precise."
+        }
+      ],
+      "input": "I mean the method with an iron platform that you told De Guiche: what do you throw in the air?",
+      "expectedOutput": "A magnet.",
+      "passageQuotes": [
+        "To throw a magnet in the air"
+      ]
+    },
+    {
+      "id": "cyrano-precise-follow-up-05",
+      "category": "precise-follow-up",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "What news did you bring Roxane on your last visit?"
+        },
+        {
+          "role": "assistant",
+          "content": "Faith, my memory fails me there. Ask me something more precise."
+        }
+      ],
+      "input": "I mean in your gazette, for the first Saturday: what had the King eaten too much of?",
+      "expectedOutput": "Pear conserve.",
+      "passageQuotes": [
+        "eaten to excess Of pear-conserve"
+      ]
+    }
+  ]
+}

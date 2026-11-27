@@ -1,0 +1,574 @@
+{
+  "schemaVersion": 1,
+  "dataset": "before-after-cayley",
+  "description": "Before-and-after measure of PAPER-95, Lois Cayley: 10 direct questions, 10 on a new subject after another one, 10 short follow-ups and 5 more precise ones after an admission. Written on 27 November 2026 from passages that no earlier question used, before any search or reply with them, and frozen. The earlier replies of the conversations were written by hand.",
+  "bookId": "miss-cayley-s-adventures",
+  "character": "Lois Cayley",
+  "items": [
+    {
+      "id": "cayley-direct-01",
+      "category": "direct",
+      "input": "To which German spa did the Cantankerous Old Lady need to travel?",
+      "expectedOutput": "Schlangenbad.",
+      "passageQuotes": [
+        "Schlangenbad with the Cantankerous Old Lady"
+      ]
+    },
+    {
+      "id": "cayley-direct-02",
+      "category": "direct",
+      "input": "On the train from Ostend, at which station did the Count fear you might have to give up your compartment?",
+      "expectedOutput": "Malines.",
+      "passageQuotes": [
+        "give up our coupé at Malines"
+      ]
+    },
+    {
+      "id": "cayley-direct-03",
+      "category": "direct",
+      "input": "What was the name of the American who asked you to meet him at Fraunheim?",
+      "expectedOutput": "Cyrus W. Hitchcock.",
+      "passageQuotes": [
+        "my name's not Cyrus W. Hitchcock"
+      ]
+    },
+    {
+      "id": "cayley-direct-04",
+      "category": "direct",
+      "input": "What did you remember, from the college laboratory, that a blackish film like the one on the bangle might be?",
+      "expectedOutput": "Sulphide of silver.",
+      "passageQuotes": [
+        "sulphide of silver was a blackish-looking body"
+      ]
+    },
+    {
+      "id": "cayley-direct-05",
+      "category": "direct",
+      "input": "When you climbed up the rope to the top, how many nooses did you know there were?",
+      "expectedOutput": "Forty-eight.",
+      "passageQuotes": [
+        "there were forty-eight of them"
+      ]
+    },
+    {
+      "id": "cayley-direct-06",
+      "category": "direct",
+      "input": "In Florence, who did you recognise the urbane old gentleman to be?",
+      "expectedOutput": "Mr. Marmaduke Ashurst, sent by Lady Georgina.",
+      "passageQuotes": [
+        "You are Mr. Marmaduke Ashurst"
+      ]
+    },
+    {
+      "id": "cayley-direct-07",
+      "category": "direct",
+      "input": "In the oasis, where had the veiled Englishwoman first been sold to a man?",
+      "expectedOutput": "At Dongola.",
+      "passageQuotes": [
+        "sold to a man at Dongola"
+      ]
+    },
+    {
+      "id": "cayley-direct-08",
+      "category": "direct",
+      "input": "Aboard ship, who said he had come to superintend the preparations for your reception?",
+      "expectedOutput": "The Maharajah of Moozuffernuggar.",
+      "passageQuotes": [
+        "superintend the preparations for your reception"
+      ]
+    },
+    {
+      "id": "cayley-direct-09",
+      "category": "direct",
+      "input": "At the trial, where did you say you had typed Mr. Ashurst's will?",
+      "expectedOutput": "In her office at Florence.",
+      "passageQuotes": [
+        "In my office at Florence"
+      ]
+    },
+    {
+      "id": "cayley-direct-10",
+      "category": "direct",
+      "input": "On which make of typewriter did you say the suspect will had been written?",
+      "expectedOutput": "A Spread Eagle, the same sort as hers.",
+      "passageQuotes": [
+        "It is written with a Spread Eagle"
+      ]
+    },
+    {
+      "id": "cayley-new-subject-01",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "To which German spa did the Cantankerous Old Lady need to travel?"
+        },
+        {
+          "role": "assistant",
+          "content": "To Schlangenbad."
+        }
+      ],
+      "input": "What name was on the card the foreign gentleman handed to Lady Georgina?",
+      "expectedOutput": "M. le Comte de Laroche-sur-Loiret.",
+      "passageQuotes": [
+        "Comte de Laroche-sur-Loiret"
+      ]
+    },
+    {
+      "id": "cayley-new-subject-02",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "On the train from Ostend, at which station did the Count fear you might have to give up your compartment?"
+        },
+        {
+          "role": "assistant",
+          "content": "At Malines, he said."
+        }
+      ],
+      "input": "When Harold and you compared colleges, which did you name as yours?",
+      "expectedOutput": "Girton.",
+      "passageQuotes": [
+        "Yours?' 'Girton"
+      ]
+    },
+    {
+      "id": "cayley-new-subject-03",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "What was the name of the American who asked you to meet him at Fraunheim?"
+        },
+        {
+          "role": "assistant",
+          "content": "Cyrus W. Hitchcock, he was."
+        }
+      ],
+      "input": "What did the German official finally say about your entering the race?",
+      "expectedOutput": "That the woman could not compete.",
+      "passageQuotes": [
+        "The woman cannot compete"
+      ]
+    },
+    {
+      "id": "cayley-new-subject-04",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "What did you remember, from the college laboratory, that a blackish film like the one on the bangle might be?"
+        },
+        {
+          "role": "assistant",
+          "content": "Sulphide of silver, I remembered."
+        }
+      ],
+      "input": "At the Austrian frontier, which book caused your trunks to be held back?",
+      "expectedOutput": "A book of astronomy, Revolution of the Heavenly Bodies, taken for revolutionary literature.",
+      "passageQuotes": [
+        "Revolution of the Heavenly Bodies"
+      ]
+    },
+    {
+      "id": "cayley-new-subject-05",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "When you climbed up the rope to the top, how many nooses did you know there were?"
+        },
+        {
+          "role": "assistant",
+          "content": "Forty-eight, and I counted them."
+        }
+      ],
+      "input": "Which newspaper offered to send you to Egypt to write articles?",
+      "expectedOutput": "The Daily Telephone.",
+      "passageQuotes": [
+        "want on the Daily Telephone"
+      ]
+    },
+    {
+      "id": "cayley-new-subject-06",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "In Florence, who did you recognise the urbane old gentleman to be?"
+        },
+        {
+          "role": "assistant",
+          "content": "Mr. Marmaduke Ashurst."
+        }
+      ],
+      "input": "To which city did your arrangement with your newspaper proprietor take you from Suez?",
+      "expectedOutput": "Bombay.",
+      "passageQuotes": [
+        "included a trip to Bombay"
+      ]
+    },
+    {
+      "id": "cayley-new-subject-07",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "In the oasis, where had the veiled Englishwoman first been sold to a man?"
+        },
+        {
+          "role": "assistant",
+          "content": "To a man at Dongola, she told us."
+        }
+      ],
+      "input": "Before the tiger hunt, what did you say you had never held in your life?",
+      "expectedOutput": "A gun.",
+      "passageQuotes": [
+        "I never held a gun in my born days before"
+      ]
+    },
+    {
+      "id": "cayley-new-subject-08",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "Aboard ship, who said he had come to superintend the preparations for your reception?"
+        },
+        {
+          "role": "assistant",
+          "content": "The Maharajah of Moozuffernuggar."
+        }
+      ],
+      "input": "In what did Lady Georgina say Mr. Ashurst had made his money?",
+      "expectedOutput": "In soap and cocoa.",
+      "passageQuotes": [
+        "feathered his nest in soap and cocoa"
+      ]
+    },
+    {
+      "id": "cayley-new-subject-09",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "At the trial, where did you say you had typed Mr. Ashurst's will?"
+        },
+        {
+          "role": "assistant",
+          "content": "In my office at Florence."
+        }
+      ],
+      "input": "After your day in court, who came in a carriage to call on you, to your discomfort?",
+      "expectedOutput": "The Maharajah.",
+      "passageQuotes": [
+        "with a pang that this was the Maharajah"
+      ]
+    },
+    {
+      "id": "cayley-new-subject-10",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "On which make of typewriter did you say the suspect will had been written?"
+        },
+        {
+          "role": "assistant",
+          "content": "A Spread Eagle, like my own."
+        }
+      ],
+      "input": "Behind which drawer of the desk was the secret hiding place of the real will?",
+      "expectedOutput": "The central drawer on the left-hand side.",
+      "passageQuotes": [
+        "the central drawer on the left-hand side"
+      ]
+    },
+    {
+      "id": "cayley-short-follow-up-01",
+      "category": "short-follow-up",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "How did Lady Georgina try to reward you for saving her jewels?"
+        },
+        {
+          "role": "assistant",
+          "content": "With a cheque."
+        }
+      ],
+      "input": "What did she do with it when you refused?",
+      "expectedOutput": "She tore it up into very small pieces.",
+      "passageQuotes": [
+        "she tore the cheque up into very small pieces"
+      ]
+    },
+    {
+      "id": "cayley-short-follow-up-02",
+      "category": "short-follow-up",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "How did you leave Schlangenbad?"
+        },
+        {
+          "role": "assistant",
+          "content": "By the coach, on my own."
+        }
+      ],
+      "input": "And how much money did you have in your pocket then?",
+      "expectedOutput": "Two pounds.",
+      "passageQuotes": [
+        "I quitted Schlangenbad with two pounds in pocket"
+      ]
+    },
+    {
+      "id": "cayley-short-follow-up-03",
+      "category": "short-follow-up",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "What did Mr. Hitchcock offer you after the race?"
+        },
+        {
+          "role": "assistant",
+          "content": "To keep the Manitou bicycle."
+        }
+      ],
+      "input": "What cut did you then propose on the orders you would bring him?",
+      "expectedOutput": "Ten per cent.",
+      "passageQuotes": [
+        "ten per cent on all orders I brought you"
+      ]
+    },
+    {
+      "id": "cayley-short-follow-up-04",
+      "category": "short-follow-up",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "Who admired your bicycle on the road and tried it?"
+        },
+        {
+          "role": "assistant",
+          "content": "Two Germans."
+        }
+      ],
+      "input": "What price did you give them for it?",
+      "expectedOutput": "400 marks.",
+      "passageQuotes": [
+        "The price of the palfrey is 400 marks"
+      ]
+    },
+    {
+      "id": "cayley-short-follow-up-05",
+      "category": "short-follow-up",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "When you went to find Harold on the mountain, how did you track him?"
+        },
+        {
+          "role": "assistant",
+          "content": "By his footprints."
+        }
+      ],
+      "input": "What was it about his boots that left marks?",
+      "expectedOutput": "They were mountain boots with sharp-headed nails.",
+      "passageQuotes": [
+        "mountain boots with sharp-headed nails"
+      ]
+    },
+    {
+      "id": "cayley-short-follow-up-06",
+      "category": "short-follow-up",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "What did you think of the towns you passed on the Nile?"
+        },
+        {
+          "role": "assistant",
+          "content": "All the same: only the name differed."
+        }
+      ],
+      "input": "What did you say it was just like?",
+      "expectedOutput": "Wall-paper.",
+      "passageQuotes": [
+        "It was just like wall-paper"
+      ]
+    },
+    {
+      "id": "cayley-short-follow-up-07",
+      "category": "short-follow-up",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "Whom had Lord Southminster taken on as his courier?"
+        },
+        {
+          "role": "assistant",
+          "content": "Higginson."
+        }
+      ],
+      "input": "From whom had he enticed him away?",
+      "expectedOutput": "From Marmy, Mr. Ashurst.",
+      "passageQuotes": [
+        "I'll entice this chap away from Marmy"
+      ]
+    },
+    {
+      "id": "cayley-short-follow-up-08",
+      "category": "short-follow-up",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "At the tiger hunt, what did your mahout cry out about you?"
+        },
+        {
+          "role": "assistant",
+          "content": "That the Mem Sahib was a great shikari."
+        }
+      ],
+      "input": "And had you really fired?",
+      "expectedOutput": "No: the rifle went off of itself.",
+      "passageQuotes": [
+        "the rifle went off of itself without me"
+      ]
+    },
+    {
+      "id": "cayley-short-follow-up-09",
+      "category": "short-follow-up",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "In Scotland, what did you answer when asked about your luggage?"
+        },
+        {
+          "role": "assistant",
+          "content": "That we had none."
+        }
+      ],
+      "input": "At what time was the detective due in Edinburgh, so that you had to marry before?",
+      "expectedOutput": "At half past six.",
+      "passageQuotes": [
+        "where he was due at 6.30"
+      ]
+    },
+    {
+      "id": "cayley-short-follow-up-10",
+      "category": "short-follow-up",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "Whom did the solicitor threaten with prosecution to make him confess?"
+        },
+        {
+          "role": "assistant",
+          "content": "White."
+        }
+      ],
+      "input": "Who did he say had forged the false will, and who had accepted it?",
+      "expectedOutput": "Higginson forged it and Lord Southminster accepted it.",
+      "passageQuotes": [
+        "Higginson forged, and Lord Southminster accepted"
+      ]
+    },
+    {
+      "id": "cayley-precise-follow-up-01",
+      "category": "precise-follow-up",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "How did Lady Georgina behave when Harold paid you attention?"
+        },
+        {
+          "role": "assistant",
+          "content": "I'm afraid it has slipped my mind. Do ask me something more precise."
+        }
+      ],
+      "input": "I mean her sharp hints at Schlangenbad: what sort of women did she go on about?",
+      "expectedOutput": "Adventuresses.",
+      "passageQuotes": [
+        "about the ways of adventuresses"
+      ]
+    },
+    {
+      "id": "cayley-precise-follow-up-02",
+      "category": "precise-follow-up",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "What happened when Harold came to see you at the chalet?"
+        },
+        {
+          "role": "assistant",
+          "content": "I'm afraid it has slipped my mind. Do ask me something more precise."
+        }
+      ],
+      "input": "I mean when he asked to stay: who did you say ought to have been there to protect you two girls?",
+      "expectedOutput": "Lady Georgina, as a matron of experience.",
+      "passageQuotes": [
+        "Lady Georgina, as a matron of experience, ought to have protected us"
+      ]
+    },
+    {
+      "id": "cayley-precise-follow-up-03",
+      "category": "precise-follow-up",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "What did Mr. Ashurst say about a young woman while you worked for him?"
+        },
+        {
+          "role": "assistant",
+          "content": "I'm afraid it has slipped my mind. Do ask me something more precise."
+        }
+      ],
+      "input": "I mean the story of your coming to Germany, before he knew it was you: as what did he say his sister had taken you?",
+      "expectedOutput": "As her maid.",
+      "passageQuotes": [
+        "took the young woman with her as her maid to Germany"
+      ]
+    },
+    {
+      "id": "cayley-precise-follow-up-04",
+      "category": "precise-follow-up",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "What did Lord Southminster want from you?"
+        },
+        {
+          "role": "assistant",
+          "content": "I'm afraid it has slipped my mind. Do ask me something more precise."
+        }
+      ],
+      "input": "I mean when he proposed and you refused: on whom did he say you were staking your money?",
+      "expectedOutput": "On the wrong fellow.",
+      "passageQuotes": [
+        "staking your money on the wrong fellah"
+      ]
+    },
+    {
+      "id": "cayley-precise-follow-up-05",
+      "category": "precise-follow-up",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "What did the lawyer make you admit in court?"
+        },
+        {
+          "role": "assistant",
+          "content": "I'm afraid it has slipped my mind. Do ask me something more precise."
+        }
+      ],
+      "input": "I mean when you tried to explain your engagement: on what condition had you said you would marry Harold?",
+      "expectedOutput": "Only if he was poor and without expectations.",
+      "passageQuotes": [
+        "only marry him in case he was poor and without expectations"
+      ]
+    }
+  ]
+}

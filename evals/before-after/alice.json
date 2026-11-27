@@ -1,0 +1,574 @@
+{
+  "schemaVersion": 1,
+  "dataset": "before-after-alice",
+  "description": "Before-and-after measure of PAPER-95, Alice: 10 direct questions, 10 on a new subject after another one, 10 short follow-ups and 5 more precise ones after an admission. Written on 27 November 2026 from passages that no earlier question used, before any search or reply with them, and frozen. The earlier replies of the conversations were written by hand.",
+  "bookId": "alice-s-adventures-in-wonderland",
+  "character": "Alice",
+  "items": [
+    {
+      "id": "alice-direct-01",
+      "category": "direct",
+      "input": "While you were falling, you wondered whether cats eat a certain animal. Which one?",
+      "expectedOutput": "Bats.",
+      "passageQuotes": [
+        "do cats eat bats"
+      ]
+    },
+    {
+      "id": "alice-direct-02",
+      "category": "direct",
+      "input": "In the long hall, what did you find on the little glass table?",
+      "expectedOutput": "A tiny golden key.",
+      "passageQuotes": [
+        "a tiny golden key"
+      ]
+    },
+    {
+      "id": "alice-direct-03",
+      "category": "direct",
+      "input": "What was written on the little cake you found in the glass box, and what was it written with?",
+      "expectedOutput": "EAT ME, marked in currants.",
+      "passageQuotes": [
+        "beautifully marked in currants"
+      ]
+    },
+    {
+      "id": "alice-direct-04",
+      "category": "direct",
+      "input": "After the Caucus-race, what did you hand round as prizes?",
+      "expectedOutput": "Comfits, from a box in her pocket.",
+      "passageQuotes": [
+        "pulled out a box of comfits"
+      ]
+    },
+    {
+      "id": "alice-direct-05",
+      "category": "direct",
+      "input": "When you went to fetch the fan and gloves, what did you find standing near the looking-glass?",
+      "expectedOutput": "A little bottle, with no label.",
+      "passageQuotes": [
+        "a little bottle that stood near the looking-glass"
+      ]
+    },
+    {
+      "id": "alice-direct-06",
+      "category": "direct",
+      "input": "What enormous creature did you meet in the wood after escaping from the little house, and what did you hold out to it?",
+      "expectedOutput": "An enormous puppy; a little bit of stick.",
+      "passageQuotes": [
+        "held it out to the puppy"
+      ]
+    },
+    {
+      "id": "alice-direct-07",
+      "category": "direct",
+      "input": "When your neck grew very long, which bird flew into your face, and what did it call you?",
+      "expectedOutput": "A pigeon, which called her a serpent.",
+      "passageQuotes": [
+        "a large pigeon had flown into her face"
+      ]
+    },
+    {
+      "id": "alice-direct-08",
+      "category": "direct",
+      "input": "What did the Fish-Footman hand to the other footman at the Duchess's door?",
+      "expectedOutput": "A great letter: an invitation from the Queen to the Duchess to play croquet.",
+      "passageQuotes": [
+        "An invitation from the Queen to play croquet"
+      ]
+    },
+    {
+      "id": "alice-direct-09",
+      "category": "direct",
+      "input": "Why were the three gardeners painting the roses?",
+      "expectedOutput": "They had planted a white rose-tree by mistake instead of a red one.",
+      "passageQuotes": [
+        "we put a white one in by mistake"
+      ]
+    },
+    {
+      "id": "alice-direct-10",
+      "category": "direct",
+      "input": "At the trial, according to the cook, what are tarts mostly made of?",
+      "expectedOutput": "Pepper.",
+      "passageQuotes": [
+        "Pepper, mostly"
+      ]
+    },
+    {
+      "id": "alice-new-subject-01",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "While you were falling, you wondered whether cats eat a certain animal. Which one?"
+        },
+        {
+          "role": "assistant",
+          "content": "Bats! I asked myself over and over whether cats eat them."
+        }
+      ],
+      "input": "Who did you think you might have been changed into, when you could not say your lessons properly?",
+      "expectedOutput": "Mabel.",
+      "passageQuotes": [
+        "I must have been changed for Mabel"
+      ]
+    },
+    {
+      "id": "alice-new-subject-02",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "In the long hall, what did you find on the little glass table?"
+        },
+        {
+          "role": "assistant",
+          "content": "A tiny golden key, and nothing else."
+        }
+      ],
+      "input": "In the pool, what kind of dog near your house did you start telling the Mouse about?",
+      "expectedOutput": "A little bright-eyed terrier, which belongs to a farmer.",
+      "passageQuotes": [
+        "little bright-eyed terrier"
+      ]
+    },
+    {
+      "id": "alice-new-subject-03",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "What was written on the little cake you found in the glass box, and what was it written with?"
+        },
+        {
+          "role": "assistant",
+          "content": "It said EAT ME, in currants."
+        }
+      ],
+      "input": "When the Mouse was telling its tale, you misheard a word and offered to help undo something. What?",
+      "expectedOutput": "A knot.",
+      "passageQuotes": [
+        "let me help to undo it"
+      ]
+    },
+    {
+      "id": "alice-new-subject-04",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "After the Caucus-race, what did you hand round as prizes?"
+        },
+        {
+          "role": "assistant",
+          "content": "Comfits from my pocket, one apiece."
+        }
+      ],
+      "input": "How tall were you when you complained to the Caterpillar that it was a wretched height?",
+      "expectedOutput": "Three inches.",
+      "passageQuotes": [
+        "three inches is such a wretched height"
+      ]
+    },
+    {
+      "id": "alice-new-subject-05",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "When you went to fetch the fan and gloves, what did you find standing near the looking-glass?"
+        },
+        {
+          "role": "assistant",
+          "content": "A little bottle, with no label."
+        }
+      ],
+      "input": "In the Duchess's kitchen, what did the cook start doing after she took the soup off the fire?",
+      "expectedOutput": "Throwing everything within reach at the Duchess and the baby (fire-irons, saucepans, plates, dishes).",
+      "passageQuotes": [
+        "throwing everything within her reach at the Duchess and the baby"
+      ]
+    },
+    {
+      "id": "alice-new-subject-06",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "What enormous creature did you meet in the wood after escaping from the little house, and what did you hold out to it?"
+        },
+        {
+          "role": "assistant",
+          "content": "A huge puppy; I held out a bit of stick."
+        }
+      ],
+      "input": "How did the Cheshire Cat prove to you that it was mad?",
+      "expectedOutput": "A dog growls when angry and wags its tail when pleased; the Cat growls when pleased and wags its tail when angry.",
+      "passageQuotes": [
+        "I growl when I'm pleased"
+      ]
+    },
+    {
+      "id": "alice-new-subject-07",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "When your neck grew very long, which bird flew into your face, and what did it call you?"
+        },
+        {
+          "role": "assistant",
+          "content": "A pigeon, and it screamed that I was a serpent."
+        }
+      ],
+      "input": "According to the Hatter, why is it always six o'clock at his table?",
+      "expectedOutput": "Since the Queen cried that he was murdering the time, Time will not do anything he asks.",
+      "passageQuotes": [
+        "murdering the time"
+      ]
+    },
+    {
+      "id": "alice-new-subject-08",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "What did the Fish-Footman hand to the other footman at the Duchess's door?"
+        },
+        {
+          "role": "assistant",
+          "content": "A great letter, an invitation to play croquet."
+        }
+      ],
+      "input": "In the dance the Mock Turtle described, what partner did each dancer have?",
+      "expectedOutput": "A lobster.",
+      "passageQuotes": [
+        "Each with a lobster as a partner"
+      ]
+    },
+    {
+      "id": "alice-new-subject-09",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "Why were the three gardeners painting the roses?"
+        },
+        {
+          "role": "assistant",
+          "content": "They had planted a white tree by mistake instead of a red one."
+        }
+      ],
+      "input": "When you arrived at the trial, what was on the table in the middle of the court?",
+      "expectedOutput": "A large dish of tarts.",
+      "passageQuotes": [
+        "a large dish of tarts upon it"
+      ]
+    },
+    {
+      "id": "alice-new-subject-10",
+      "category": "new-subject",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "At the trial, according to the cook, what are tarts mostly made of?"
+        },
+        {
+          "role": "assistant",
+          "content": "Pepper, mostly, said the cook."
+        }
+      ],
+      "input": "At the trial, what turned out to be in the paper that was taken for a letter?",
+      "expectedOutput": "A set of verses.",
+      "passageQuotes": [
+        "a set of verses"
+      ]
+    },
+    {
+      "id": "alice-short-follow-up-01",
+      "category": "short-follow-up",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "Stuck in the little house, what did you say ought to be done about your adventures?"
+        },
+        {
+          "role": "assistant",
+          "content": "That there ought to be a book written about me!"
+        }
+      ],
+      "input": "And who would write it?",
+      "expectedOutput": "Alice herself, when she grows up.",
+      "passageQuotes": [
+        "when I grow up, I'll write one"
+      ]
+    },
+    {
+      "id": "alice-short-follow-up-02",
+      "category": "short-follow-up",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "What did the Duchess say when you spoke of the earth turning on its axis?"
+        },
+        {
+          "role": "assistant",
+          "content": "Talking of axes, chop off her head!"
+        }
+      ],
+      "input": "And what did she throw at you after her song?",
+      "expectedOutput": "The baby.",
+      "passageQuotes": [
+        "flinging the baby at her"
+      ]
+    },
+    {
+      "id": "alice-short-follow-up-03",
+      "category": "short-follow-up",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "What did the March Hare offer you when you sat down at the tea table?"
+        },
+        {
+          "role": "assistant",
+          "content": "Some wine."
+        }
+      ],
+      "input": "Was there any?",
+      "expectedOutput": "No, there was nothing but tea.",
+      "passageQuotes": [
+        "there was nothing on it but tea"
+      ]
+    },
+    {
+      "id": "alice-short-follow-up-04",
+      "category": "short-follow-up",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "Where did the little sisters in the Dormouse's story live?"
+        },
+        {
+          "role": "assistant",
+          "content": "At the bottom of a well."
+        }
+      ],
+      "input": "What sort of well was it?",
+      "expectedOutput": "A treacle-well.",
+      "passageQuotes": [
+        "It was a treacle-well"
+      ]
+    },
+    {
+      "id": "alice-short-follow-up-05",
+      "category": "short-follow-up",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "What did the Queen order when she examined the roses?"
+        },
+        {
+          "role": "assistant",
+          "content": "Off with their heads!"
+        }
+      ],
+      "input": "And what did you do with the gardeners?",
+      "expectedOutput": "Put them into a large flower-pot.",
+      "passageQuotes": [
+        "she put them into a large flower-pot"
+      ]
+    },
+    {
+      "id": "alice-short-follow-up-06",
+      "category": "short-follow-up",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "Who came to talk with you during the croquet game, with only its head showing?"
+        },
+        {
+          "role": "assistant",
+          "content": "The Cheshire Cat."
+        }
+      ],
+      "input": "And what did it want to know about the Queen?",
+      "expectedOutput": "How Alice liked the Queen.",
+      "passageQuotes": [
+        "How do you like the Queen"
+      ]
+    },
+    {
+      "id": "alice-short-follow-up-07",
+      "category": "short-follow-up",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "What were the King, the Queen and the executioner arguing about?"
+        },
+        {
+          "role": "assistant",
+          "content": "Whether the Cheshire Cat could be beheaded."
+        }
+      ],
+      "input": "What was the executioner's argument?",
+      "expectedOutput": "You cannot cut off a head unless there is a body to cut it off from.",
+      "passageQuotes": [
+        "unless there was a body to cut it off from"
+      ]
+    },
+    {
+      "id": "alice-short-follow-up-08",
+      "category": "short-follow-up",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "At the end of the croquet game, why were there no arches left?"
+        },
+        {
+          "role": "assistant",
+          "content": "The soldiers had stopped being arches to take the sentenced players into custody."
+        }
+      ],
+      "input": "Whom did the Queen then ask whether you had seen?",
+      "expectedOutput": "The Mock Turtle.",
+      "passageQuotes": [
+        "Have you seen the Mock Turtle yet"
+      ]
+    },
+    {
+      "id": "alice-short-follow-up-09",
+      "category": "short-follow-up",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "What did the Gryphon say whiting do under the sea?"
+        },
+        {
+          "role": "assistant",
+          "content": "They do the boots and shoes."
+        }
+      ],
+      "input": "And what did you say yours are done with?",
+      "expectedOutput": "Blacking.",
+      "passageQuotes": [
+        "with blacking, I believe"
+      ]
+    },
+    {
+      "id": "alice-short-follow-up-10",
+      "category": "short-follow-up",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "At the trial, which juror had a pencil that squeaked?"
+        },
+        {
+          "role": "assistant",
+          "content": "Bill, the Lizard."
+        }
+      ],
+      "input": "What did you do about it?",
+      "expectedOutput": "Took the pencil away from him.",
+      "passageQuotes": [
+        "found an opportunity of taking it away"
+      ]
+    },
+    {
+      "id": "alice-precise-follow-up-01",
+      "category": "precise-follow-up",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "What were you complaining about before it all began?"
+        },
+        {
+          "role": "assistant",
+          "content": "Dear me, I don't remember that. Could you ask me something more precise?"
+        }
+      ],
+      "input": "I mean on the bank beside your sister: what was missing from the book she was reading?",
+      "expectedOutput": "Pictures or conversations.",
+      "passageQuotes": [
+        "it had no pictures or conversations in it"
+      ]
+    },
+    {
+      "id": "alice-precise-follow-up-02",
+      "category": "precise-follow-up",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "What did the Duchess teach you with her morals?"
+        },
+        {
+          "role": "assistant",
+          "content": "Dear me, I don't remember that. Could you ask me something more precise?"
+        }
+      ],
+      "input": "I mean when you spoke about mustard during the croquet game: what did the Duchess say there was near there?",
+      "expectedOutput": "A large mustard-mine.",
+      "passageQuotes": [
+        "large mustard-mine"
+      ]
+    },
+    {
+      "id": "alice-precise-follow-up-03",
+      "category": "precise-follow-up",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "What happened when you recited for the Gryphon?"
+        },
+        {
+          "role": "assistant",
+          "content": "Dear me, I don't remember that. Could you ask me something more precise?"
+        }
+      ],
+      "input": "I mean when you had to repeat the poem about the voice of the sluggard: which creature's voice came out in your version?",
+      "expectedOutput": "The Lobster's.",
+      "passageQuotes": [
+        "Tis the voice of the Lobster"
+      ]
+    },
+    {
+      "id": "alice-precise-follow-up-04",
+      "category": "precise-follow-up",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "What did the King make of the verses?"
+        },
+        {
+          "role": "assistant",
+          "content": "Dear me, I don't remember that. Could you ask me something more precise?"
+        }
+      ],
+      "input": "I mean when he pointed at the table in triumph: what was he pointing at, to show what had been returned?",
+      "expectedOutput": "The tarts.",
+      "passageQuotes": [
+        "pointing to the tarts on the table"
+      ]
+    },
+    {
+      "id": "alice-precise-follow-up-05",
+      "category": "precise-follow-up",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "What happened after you woke?"
+        },
+        {
+          "role": "assistant",
+          "content": "Dear me, I don't remember that. Could you ask me something more precise?"
+        }
+      ],
+      "input": "I mean while your sister sat with her eyes closed: what did she know the rattling teacups would change to if she opened them?",
+      "expectedOutput": "Tinkling sheep-bells.",
+      "passageQuotes": [
+        "tinkling sheep-bells"
+      ]
+    }
+  ]
+}

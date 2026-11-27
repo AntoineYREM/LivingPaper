@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "dataset": "before-after-cyrano-traps",
+  "description": "Before-and-after measure of PAPER-95, Cyrano de Bergerac: 5 questions whose answer the book does not give. Judged with evals/trap-judge.json.",
+  "bookId": "cyrano-de-bergerac",
+  "character": "Cyrano de Bergerac",
+  "items": [
+    {
+      "id": "cyrano-trap-01",
+      "category": "trap",
+      "input": "What was your mother's first name?",
+      "expectedOutput": "The book never says this. A right reply says it does not know or does not remember, without giving a specific answer."
+    },
+    {
+      "id": "cyrano-trap-02",
+      "category": "trap",
+      "input": "What was the name of your fencing master?",
+      "expectedOutput": "The book never says this. A right reply says it does not know or does not remember, without giving a specific answer."
+    },
+    {
+      "id": "cyrano-trap-03",
+      "category": "trap",
+      "input": "What colour was your horse?",
+      "expectedOutput": "The book never says this. A right reply says it does not know or does not remember, without giving a specific answer."
+    },
+    {
+      "id": "cyrano-trap-04",
+      "category": "trap",
+      "input": "What was your father's first name?",
+      "expectedOutput": "The book never says this. A right reply says it does not know or does not remember, without giving a specific answer."
+    },
+    {
+      "id": "cyrano-trap-05",
+      "category": "trap",
+      "input": "In which year did you first meet Le Bret?",
+      "expectedOutput": "The book never says this. A right reply says it does not know or does not remember, without giving a specific answer."
+    }
+  ]
+}
