@@ -58,6 +58,8 @@ public sealed class OpenAiCompatibleChatModel : IChatModel
     {
         ArgumentNullException.ThrowIfNull(messages);
         using var request = BuildRequest(messages);
+        // Counts from here to the end of the reply, whatever keeps coming.
+        using var deadline = new CancellationTokenSource(_options.MaxReplyDuration);
 
         // ResponseHeadersRead: start reading as soon as the first bytes arrive, not when the whole reply is there.
         using var response = await SendAsync(request, cancellationToken).ConfigureAwait(false);
@@ -73,10 +75,10 @@ public sealed class OpenAiCompatibleChatModel : IChatModel
         }
 
         var body = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
-        using var reader = new StreamReader(body, Encoding.UTF8);
-        var gotText = false;
+        var reader = new BoundedLineReader(body, _options.MaxLineBytes);
+        var replyLength = 0;
         var finished = false;
-        while (await ReadLineAsync(reader, cancellationToken).ConfigureAwait(false) is { } line)
+        while (await ReadLineAsync(reader, deadline.Token, cancellationToken).ConfigureAwait(false) is { } line)
         {
             if (!line.StartsWith("data:", StringComparison.Ordinal))
             {
@@ -106,7 +108,12 @@ public sealed class OpenAiCompatibleChatModel : IChatModel
 
             if (!string.IsNullOrEmpty(choice?.Delta?.Content))
             {
-                gotText = true;
+                if (choice.Delta.Content.Length > _options.MaxReplyLength - replyLength)
+                {
+                    throw TooLong("The reply of the language model is too long.");
+                }
+
+                replyLength += choice.Delta.Content.Length;
                 yield return choice.Delta.Content;
             }
         }
@@ -118,7 +125,7 @@ public sealed class OpenAiCompatibleChatModel : IChatModel
             throw new ChatProviderException(ChatFailureKind.StreamCut, "The reply of the language model ended before its end.");
         }
 
-        if (!gotText)
+        if (replyLength == 0)
         {
             throw new ChatProviderException(ChatFailureKind.EmptyReply, "The language model answered with no text.");
         }
@@ -163,9 +170,9 @@ public sealed class OpenAiCompatibleChatModel : IChatModel
         }
     }
 
-    private async Task<string?> ReadLineAsync(StreamReader reader, CancellationToken cancellationToken)
+    private async Task<string?> ReadLineAsync(BoundedLineReader reader, CancellationToken deadline, CancellationToken cancellationToken)
     {
-        using var timeout = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        using var timeout = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, deadline);
         timeout.CancelAfter(_options.IdleTimeout);
         try
         {
@@ -173,7 +180,13 @@ public sealed class OpenAiCompatibleChatModel : IChatModel
         }
         catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
         {
-            throw new ChatProviderException(ChatFailureKind.TimedOut, "The language model stopped sending its reply.");
+            throw deadline.IsCancellationRequested
+                ? TooLong("The reply of the language model takes too long.")
+                : new ChatProviderException(ChatFailureKind.TimedOut, "The language model stopped sending its reply.");
+        }
+        catch (LineTooLongException)
+        {
+            throw TooLong("The language model sent a line that is too long.");
         }
         catch (Exception exception) when (exception is IOException or HttpRequestException)
         {
@@ -194,6 +207,8 @@ public sealed class OpenAiCompatibleChatModel : IChatModel
             throw new ChatProviderException(ChatFailureKind.InvalidResponse, "The language model sent a part of its reply that could not be read.");
         }
     }
+
+    private static ChatProviderException TooLong(string message) => new(ChatFailureKind.ReplyTooLong, message);
 
     private static int NonNegative(int? count) => Math.Max(0, count ?? 0);
 

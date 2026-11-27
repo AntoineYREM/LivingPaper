@@ -85,6 +85,7 @@ public class LlmConnectionTesterTests
     [InlineData(ChatFailureKind.EmptyReply, ConnectionFailure.InvalidResponse)]
     [InlineData(ChatFailureKind.StreamCut, ConnectionFailure.InvalidResponse)]
     [InlineData(ChatFailureKind.ContentFiltered, ConnectionFailure.InvalidResponse)]
+    [InlineData(ChatFailureKind.ReplyTooLong, ConnectionFailure.InvalidResponse)]
     public async Task Test_TellsWhatWentWrong_ForAFailureThatIsNotAnHttpStatus(ChatFailureKind kind, ConnectionFailure expected)
     {
         var factory = new FakeChatModelFactory { Reply = (_, _) => throw new ChatProviderException(kind, "failure") };

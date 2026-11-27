@@ -391,6 +391,7 @@ public sealed class BookAnalyzerTests : IDisposable
     [InlineData(ChatFailureKind.Http, 404, AnalysisFailure.ModelRefused, "HTTP 404")]
     [InlineData(ChatFailureKind.InvalidResponse, null, AnalysisFailure.InvalidReply, "InvalidResponse")]
     [InlineData(ChatFailureKind.EmptyReply, null, AnalysisFailure.InvalidReply, "EmptyReply")]
+    [InlineData(ChatFailureKind.ReplyTooLong, null, AnalysisFailure.ReplyTooLong, "ReplyTooLong")]
     public async Task AFailureOfTheModel_StopsTheAnalysis_WithItsCodeAndAShortDetail(ChatFailureKind kind, int? status, AnalysisFailure expected, string detail)
     {
         var book = await WaitingBookAsync();

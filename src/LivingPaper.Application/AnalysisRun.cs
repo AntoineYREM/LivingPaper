@@ -561,6 +561,7 @@ internal sealed class AnalysisRun(
         ChatFailureKind.Http when exception.StatusCode is 400 or 401 or 403 or 404 => new AnalysisException(AnalysisFailure.ModelRefused, $"HTTP {exception.StatusCode}"),
         ChatFailureKind.Http => new AnalysisException(AnalysisFailure.ModelUnreachable, $"HTTP {exception.StatusCode}"),
         ChatFailureKind.InvalidResponse or ChatFailureKind.EmptyReply => new AnalysisException(AnalysisFailure.InvalidReply, exception.Kind.ToString()),
+        ChatFailureKind.ReplyTooLong => new AnalysisException(AnalysisFailure.ReplyTooLong, exception.Kind.ToString()),
         _ => new AnalysisException(AnalysisFailure.ModelUnreachable, exception.Kind.ToString()),
     };
 

@@ -22,6 +22,9 @@ public enum ChatFailureKind
     // The reply ended without any text.
     EmptyReply,
 
+    // The reply went over a limit of the client (a line, the whole text, or the time it takes): reading stopped.
+    ReplyTooLong,
+
     // The provider's content filter stopped the reply.
     ContentFiltered,
 }

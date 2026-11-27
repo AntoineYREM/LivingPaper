@@ -19,6 +19,9 @@ public enum ChatFailure
     // The reply came in a form the application cannot read, or ended before its end.
     InvalidReply,
 
+    // The reply was far longer, in size or in time, than a reply can be: reading it stopped.
+    ReplyTooLong,
+
     // The prompts file cannot be used.
     PromptFile,
 
