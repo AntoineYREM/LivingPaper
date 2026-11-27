@@ -4,7 +4,8 @@ using LivingPaper.Domain;
 
 namespace LivingPaper.Application;
 
-// Passages: those that answer the message, the closest first; null when the search failed, and the chat then uses the story.
+// Passages: those that answer the message, the closest first (with two searches, the one of the recent messages, then those of
+// the last message); null when the search failed, and the chat then uses the story.
 public sealed record Retrieval(IReadOnlyList<FoundPassage>? Passages, IReadOnlyList<ChatNotice> Notices);
 
 // Finds the passages of a book that answer the last message of a conversation. Whatever fails, the reply must still be
@@ -77,14 +78,21 @@ public sealed class PassageRetriever(
             }
         }
 
-        query ??= mode == QueryMode.Recent
-            ? string.Join('\n', conversation.TakeLast(RecentMessages).Select(message => CharacterLimits.Clip(message.Content, MessageLetters)))
-            : conversation[^1].Content;
-        query = CharacterLimits.Clip(query, QueryLetters);
+        var count = Math.Clamp(options.Passages, 1, RagOptions.MaxPassages);
+        var queries = new List<string> { CharacterLimits.Clip(query ?? conversation[^1].Content, QueryLetters) };
+
+        // The recent messages say what "it" or "there" is, but they drown a new subject: both are searched, one passage for them
+        // and the others for the last message. With a single message, or a single passage, the last message is enough.
+        if (query is null && mode == QueryMode.Recent && conversation.Count > 1 && count > 1)
+        {
+            var recent = string.Join('\n', conversation.TakeLast(RecentMessages).Select(message => CharacterLimits.Clip(message.Content, MessageLetters)));
+            queries.Insert(0, CharacterLimits.Clip(recent, QueryLetters));
+        }
+
         span?.SetTag("langfuse.observation.metadata.mode", mode.ToString().ToLowerInvariant());
         if (options.CaptureContent)
         {
-            span?.SetTag("langfuse.observation.input", query);
+            span?.SetTag("langfuse.observation.input", string.Join("\n---\n", queries));
         }
 
         try
@@ -93,8 +101,13 @@ public sealed class PassageRetriever(
             limit.CancelAfter(options.SearchTimeout);
 
             // One try: the reply must not wait through retries, it can be written from the story.
-            var vectors = await embeddings.Create(provider, retryPassingFailures: false).EmbedAsync([query], usage: null, limit.Token).ConfigureAwait(false);
-            var found = await index.SearchAsync(key, vectors[0], Math.Clamp(options.Passages, 1, RagOptions.MaxPassages), limit.Token).ConfigureAwait(false);
+            var vectors = await embeddings.Create(provider, retryPassingFailures: false).EmbedAsync(queries, usage: null, limit.Token).ConfigureAwait(false);
+            var found = await index.SearchAsync(key, vectors[0], queries.Count == 1 ? count : 1, limit.Token).ConfigureAwait(false);
+            if (queries.Count > 1)
+            {
+                found = Combine(found, await index.SearchAsync(key, vectors[1], count, limit.Token).ConfigureAwait(false), count);
+            }
+
             if (found.Count > 0)
             {
                 span?.SetTag("langfuse.observation.metadata.passages", string.Join(',', found.Select(result => result.Passage.Number)));
@@ -111,6 +124,15 @@ public sealed class PassageRetriever(
 
         notices.Add(ChatNotice.SearchFailed);
         return new Retrieval(null, notices);
+    }
+
+    // The closest passage of the search of the recent messages, then those of the search of the last message, a passage never
+    // twice, count in all. The evaluation tool uses it to keep what the character got.
+    public static IReadOnlyList<FoundPassage> Combine(IReadOnlyList<FoundPassage> recent, IReadOnlyList<FoundPassage> last, int count)
+    {
+        ArgumentNullException.ThrowIfNull(recent);
+        ArgumentNullException.ThrowIfNull(last);
+        return [.. recent.Take(1).Concat(last).DistinctBy(found => found.Passage.Number).Take(count)];
     }
 
     // The query written by the chat model, on one line; null when it could not be written.

@@ -15,7 +15,7 @@ files stay in `evals/runs/`, which is not committed.
 4. **With passages, right answers hold:** 51 to 49, a difference that can be chance.
 5. **The role is kept** (with the story; not measured with passages).
 6. **A more precise question rarely finds the passage** with the current search: 1 of 14. The search is the next thing to
-   improve (see [the search of a follow-up](#the-search-of-a-follow-up-search-only)).
+   improve (see [the search of a follow-up](#the-search-of-a-follow-up-search-only)), and was changed by PAPER-94.
 
 ## Setup
 
@@ -95,7 +95,20 @@ the first named going first, a passage never twice.
 
 **When the reader changes the subject, the earlier messages drown the question:** 11 of 60 found. The earlier measures did not
 show it: they asked questions alone, and follow-ups that need what came before. Searching the last message as well repairs most
-of it. 1 recent + 3 last was not run.
+of it.
+
+**1 recent + 3 last, what the chat does since PAPER-94**, was run afterwards:
+
+| Right passage found | Before (recent messages, 3) | 1 recent + 3 last, 4 |
+|---|---|---|
+| New subject (60) | 11 | 46 |
+| Short follow-ups (7) | 3 | 3 |
+| Long follow-ups (14) | 1 | 4 |
+| **Total (81)** | 15 | **53** |
+| First message of a conversation (60), where one search is made | 46 | 47 |
+
+Two cases found before are lost: one new subject and one long follow-up. Part of the gain comes from the fourth passage: with
+the recent messages only, 4 passages found 15 of the 60 new subjects and 3 of the 14 long follow-ups.
 
 The distance of the closest passage does not tell a search that failed: median 0.378 when the right passage was found, 0.374
 when it was not (100 searches of the runs of the day).
