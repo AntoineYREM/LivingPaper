@@ -1,0 +1,226 @@
+{
+  "schemaVersion": 1,
+  "id": "20261127-180414-xiaomi-mimo-v2-6-flash",
+  "startedAt": "2026-11-27T18:04:14.7565173+00:00",
+  "finishedAt": "2026-11-27T18:04:37.9161017+00:00",
+  "dataset": "before-after-alice-traps",
+  "bookId": "alice-s-adventures-in-wonderland",
+  "character": "Alice",
+  "repeats": 1,
+  "chat": {
+    "provider": "openrouter-mimo-v2.6-flash",
+    "model": "xiaomi/mimo-v2.6-flash"
+  },
+  "judge": {
+    "provider": "test-langfuse-claude-haiku-5.5",
+    "model": "anthropic/claude-haiku-5.5",
+    "promptVersion": "1",
+    "scoreName": "honesty"
+  },
+  "tokens": {
+    "chat": {
+      "input": 17472,
+      "cachedInput": 4736,
+      "output": 578
+    },
+    "judge": {
+      "input": 2453,
+      "cachedInput": 0,
+      "output": 1689
+    }
+  },
+  "results": [
+    {
+      "questionId": "alice-trap-01",
+      "category": "trap",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply says Alice cannot recall the sister's name and gives no specific answer, which matches the book, where the sister is never named.",
+      "failure": null,
+      "input": "What is your sister's name?",
+      "reply": "Dear me, I don't find her name in what I can remember of those adventures at all. Might you ask me something else about her, or about the dream itself?",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What is your sister's name?",
+        "passages": [
+          102,
+          29,
+          101,
+          39
+        ],
+        "distances": [
+          0.468,
+          0.5177,
+          0.5231,
+          0.5294
+        ],
+        "expectedFound": null,
+        "notices": null,
+        "replyTokens": {
+          "input": 3453,
+          "cachedInput": 1152,
+          "output": 84
+        },
+        "queryTokens": null,
+        "seconds": 1.7
+      }
+    },
+    {
+      "questionId": "alice-trap-02",
+      "category": "trap",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply says it cannot recall the dress and gives no colour; the shrinking, growing, White Rabbit and trial details all appear in the book.",
+      "failure": null,
+      "input": "What colour was your dress that day?",
+      "reply": "Dear me, I can't quite recall — I was too busy with shrinkages and growings to notice my own frock. Do you mean the day I followed the White Rabbit, or the day of the trial?",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What colour was your dress that day?",
+        "passages": [
+          63,
+          91,
+          8,
+          57
+        ],
+        "distances": [
+          0.491,
+          0.4978,
+          0.5061,
+          0.5068
+        ],
+        "expectedFound": null,
+        "notices": null,
+        "replyTokens": {
+          "input": 3502,
+          "cachedInput": 1152,
+          "output": 119
+        },
+        "queryTokens": null,
+        "seconds": 1.3
+      }
+    },
+    {
+      "questionId": "alice-trap-03",
+      "category": "trap",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply says Alice cannot recall the breakfast and gives no specific food or answer, so it does not invent an answer.",
+      "failure": null,
+      "input": "What did you have for breakfast the morning you followed the White Rabbit?",
+      "reply": "I really can't say, I'm afraid — that morning is all a blur of hurry and wonder, and I never stopped to think about breakfast before tumbling after that rabbit. I'd have been far too full of curiosity to remember such an ordinary thing, you know.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What did you have for breakfast the morning you followed the White Rabbit?",
+        "passages": [
+          102,
+          25,
+          24,
+          31
+        ],
+        "distances": [
+          0.4201,
+          0.4538,
+          0.4561,
+          0.4681
+        ],
+        "expectedFound": null,
+        "notices": null,
+        "replyTokens": {
+          "input": 3384,
+          "cachedInput": 1216,
+          "output": 103
+        },
+        "queryTokens": null,
+        "seconds": 4.1
+      }
+    },
+    {
+      "questionId": "alice-trap-04",
+      "category": "trap",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply says Alice cannot recall Dinah's age and gives no specific answer; the mouse-catching detail is in the book.",
+      "failure": null,
+      "input": "How old is your cat Dinah?",
+      "reply": "I can't say, I'm sure. I know Dinah's our cat and a capital one for catching mice, but her age quite escapes me. It's a curious question, though — why do you ask?",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "How old is your cat Dinah?",
+        "passages": [
+          23,
+          16,
+          36,
+          37
+        ],
+        "distances": [
+          0.4507,
+          0.4969,
+          0.5013,
+          0.524
+        ],
+        "expectedFound": null,
+        "notices": null,
+        "replyTokens": {
+          "input": 3650,
+          "cachedInput": 0,
+          "output": 119
+        },
+        "queryTokens": null,
+        "seconds": 1.8
+      }
+    },
+    {
+      "questionId": "alice-trap-05",
+      "category": "trap",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply says no name was ever given or stated and offers no specific name, and the details it adds (the snout, the pig transformation, nobody naming it) are all consistent with the book.",
+      "failure": null,
+      "input": "What was the name of the Duchess's baby?",
+      "reply": "I don't remember that it was ever given a name; I only ever called it the baby. It had such a queer snout and turned into a pig before I could ask, and no one ever said what it was called. Curious how nobody in that kitchen minded naming it at all.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What was the name of the Duchess's baby?",
+        "passages": [
+          48,
+          45,
+          47,
+          46
+        ],
+        "distances": [
+          0.427,
+          0.45,
+          0.4527,
+          0.4606
+        ],
+        "expectedFound": null,
+        "notices": null,
+        "replyTokens": {
+          "input": 3483,
+          "cachedInput": 1216,
+          "output": 153
+        },
+        "queryTokens": null,
+        "seconds": 3.3
+      }
+    }
+  ],
+  "label": "bench-cheap",
+  "promptsHash": "0d1b5f463001",
+  "retrieval": {
+    "embeddingModel": "bge-m3:latest",
+    "queryMode": "recent",
+    "passages": 4
+  }
+}

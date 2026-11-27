@@ -1,0 +1,781 @@
+{
+  "schemaVersion": 1,
+  "id": "20261127-180022-anthropic-claude-haiku-5-5",
+  "startedAt": "2026-11-27T18:00:22.140969+00:00",
+  "finishedAt": "2026-11-27T18:02:07.6064989+00:00",
+  "dataset": "cyrano-facts",
+  "bookId": "cyrano-de-bergerac",
+  "character": "Cyrano de Bergerac",
+  "repeats": 1,
+  "chat": {
+    "provider": "test-langfuse-claude-haiku-5.5",
+    "model": "anthropic/claude-haiku-5.5"
+  },
+  "judge": {
+    "provider": "test-langfuse-claude-haiku-5.5",
+    "model": "anthropic/claude-haiku-5.5",
+    "promptVersion": "1",
+    "scoreName": "factual-accuracy"
+  },
+  "tokens": {
+    "chat": {
+      "input": 119723,
+      "cachedInput": 0,
+      "output": 5278
+    },
+    "judge": {
+      "input": 12135,
+      "cachedInput": 0,
+      "output": 11404
+    }
+  },
+  "results": [
+    {
+      "questionId": "cyrano-fact-01",
+      "category": "fact",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply correctly names the Hôtel de Bourgogne in Paris as the theatre where Cyrano stopped Montfleury's performance, consistent with the book.",
+      "failure": null,
+      "input": "In which theatre did the evening begin, the one where you stopped Montfleury?",
+      "reply": "The Hôtel de Bourgogne, the playhouse in Paris. That's where I stopped Montfleury from droning on, and where the whole cursed evening began for me.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "In which theatre did the evening begin, the one where you stopped Montfleury?",
+        "passages": [
+          16,
+          15,
+          21,
+          28
+        ],
+        "distances": [
+          0.4645,
+          0.4755,
+          0.4775,
+          0.4863
+        ],
+        "expectedFound": false,
+        "notices": null,
+        "replyTokens": {
+          "input": 6200,
+          "cachedInput": 0,
+          "output": 284
+        },
+        "queryTokens": null,
+        "seconds": 2.1
+      }
+    },
+    {
+      "questionId": "cyrano-fact-02",
+      "category": "fact",
+      "repeat": 1,
+      "score": 2,
+      "reason": "The reply says Cyrano does not remember the stakes or the marquis, so it is evasive and does not give the fowl wager, but it does not clearly assert anything false about the fact asked.",
+      "failure": null,
+      "input": "Before you appeared, what did Ragueneau wager against the marquis who said you would not come?",
+      "reply": "Ragueneau told Le Bret that he had lost his wager, but I do not remember what the stakes were or who he made the bet with. I can't say whether a marquis was part of it. Do you remember where you heard that part?",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "Before you appeared, what did Ragueneau wager against the marquis who said you would not come?",
+        "passages": [
+          50,
+          68,
+          9,
+          15
+        ],
+        "distances": [
+          0.4672,
+          0.4725,
+          0.4745,
+          0.4764
+        ],
+        "expectedFound": false,
+        "notices": null,
+        "replyTokens": {
+          "input": 6062,
+          "cachedInput": 0,
+          "output": 408
+        },
+        "queryTokens": null,
+        "seconds": 2.6
+      }
+    },
+    {
+      "questionId": "cyrano-fact-03",
+      "category": "fact",
+      "repeat": 1,
+      "score": 1,
+      "reason": "Cyrano's challenge was to the whole pit, whose names he offered to write down, not to Montfleury, so the reply names the wrong target.",
+      "failure": null,
+      "input": "When the pit grew noisy and you ordered silence, whom did you challenge?",
+      "reply": "Montfleury, the fat actor himself! He was bellowing his verses in that shepherd's dress while the whole pit hung on his every word, and I could not bear it. I told him to leave the stage before I came up and carved him like a sausage. I also warned the marquises who were egging him on, but the fat man was the one I wanted off that stage.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "When the pit grew noisy and you ordered silence, whom did you challenge?",
+        "passages": [
+          62,
+          16,
+          61,
+          17
+        ],
+        "distances": [
+          0.487,
+          0.488,
+          0.4946,
+          0.4999
+        ],
+        "expectedFound": false,
+        "notices": null,
+        "replyTokens": {
+          "input": 6088,
+          "cachedInput": 0,
+          "output": 245
+        },
+        "queryTokens": null,
+        "seconds": 2.2
+      }
+    },
+    {
+      "questionId": "cyrano-fact-04",
+      "category": "fact",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply correctly states that Cyrano composed a ballade on the spot while fencing the Viscount (Valvert), matching the expected answer, with no contradictory details.",
+      "failure": null,
+      "input": "What did you say you would compose while fencing with the Viscount?",
+      "reply": "I said I would compose a ballade, and so I did, on the spot, while we fenced! Rhyme after rhyme, with a thrust at each envoi. A ballade, Sir, is no small thing to make up in the heat of a duel, but I never let a poet's boast go unpaid.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What did you say you would compose while fencing with the Viscount?",
+        "passages": [
+          25,
+          24,
+          27,
+          54
+        ],
+        "distances": [
+          0.4425,
+          0.4438,
+          0.4881,
+          0.4906
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 6228,
+          "cachedInput": 0,
+          "output": 93
+        },
+        "queryTokens": null,
+        "seconds": 1.3
+      }
+    },
+    {
+      "questionId": "cyrano-fact-05",
+      "category": "fact",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply names Ragueneau's pastry-house in the Rue Saint-Honoré and the hour of seven, matching the expected answer, with no contradicting details.",
+      "failure": null,
+      "input": "When the duenna asked where Roxane could see you in secret, which place did you name, and at what hour?",
+      "reply": "Ah, the duenna! I stammered like a fool, my head spinning. I named the pastry-house of Ragueneau, in the Rue Saint-Honoré, and she was to come at seven. I said \"without fail,\" and I meant it with all my heart.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "When the duenna asked where Roxane could see you in secret, which place did you name, and at what hour?",
+        "passages": [
+          47,
+          48,
+          70,
+          32
+        ],
+        "distances": [
+          0.3513,
+          0.3677,
+          0.3707,
+          0.3777
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 6142,
+          "cachedInput": 0,
+          "output": 83
+        },
+        "queryTokens": null,
+        "seconds": 1.4
+      }
+    },
+    {
+      "questionId": "cyrano-fact-06",
+      "category": "fact",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply states that Lise turned the poets' sheets into wrapping for the pastries, matching the expected fact, and the extra details do not contradict the book.",
+      "failure": null,
+      "input": "What was Lise, Ragueneau's wife, doing with the verses of the poets who came to the shop?",
+      "reply": "Lise did not think much of them. She called poetry good for nothing else, and she was happy to see the sheets turned into wrapping for the cakes and pies. When Ragueneau hesitated to give up one of his sonnets, she only shrugged and went back to setting plates on the dresser. As for me, I found her scorn amusing, and I'll say the poets were no better off than the paper, since they ate Ragueneau's pastries and paid him in verse.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What was Lise, Ragueneau's wife, doing with the verses of the poets who came to the shop?",
+        "passages": [
+          39,
+          40,
+          37,
+          45
+        ],
+        "distances": [
+          0.3452,
+          0.3683,
+          0.3818,
+          0.3925
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 5919,
+          "cachedInput": 0,
+          "output": 630
+        },
+        "queryTokens": null,
+        "seconds": 4.4
+      }
+    },
+    {
+      "questionId": "cyrano-fact-07",
+      "category": "fact",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply gives the expected facts: cream cakes filled into bags, the duenna sent to eat them in the street, and told not to return until the last crumb was gone, with nothing contradicting the book.",
+      "failure": null,
+      "input": "How did you get rid of Roxane's duenna to be alone with Roxane in the pastry shop?",
+      "reply": "I simply bought her off! I filled her arms with the cream cakes, wrapped in the bags of my poets' verses, and told her to go eat them all in the street. I shut the door behind her and told her not to come back until the last crumb was gone. A duenna's loyalty is cheap, Monsieur, if you have a pastry shop at hand.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "How did you get rid of Roxane's duenna to be alone with Roxane in the pastry shop?",
+        "passages": [
+          48,
+          47,
+          46,
+          49
+        ],
+        "distances": [
+          0.3828,
+          0.39,
+          0.3982,
+          0.4104
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 6021,
+          "cachedInput": 0,
+          "output": 215
+        },
+        "queryTokens": null,
+        "seconds": 1.8
+      }
+    },
+    {
+      "questionId": "cyrano-fact-08",
+      "category": "fact",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply correctly names Marshal de Gassion as the sender of the admiration and does not contradict the book; the remarks about Cuigy and De Guiche's motives are consistent with the play.",
+      "failure": null,
+      "input": "Who sent Monsieur de Guiche to express admiration for your exploit?",
+      "reply": "Cuigy told me the Marshal of Gassion sent him, that is what the whole crowd heard. The Marshal is a judge of valor, and it pleased him to hear of my night's work. De Guiche came in his name, though I suspect he would have liked to come for other reasons.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "Who sent Monsieur de Guiche to express admiration for your exploit?",
+        "passages": [
+          53,
+          72,
+          52,
+          93
+        ],
+        "distances": [
+          0.4725,
+          0.4856,
+          0.509,
+          0.5115
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 6031,
+          "cachedInput": 0,
+          "output": 91
+        },
+        "queryTokens": null,
+        "seconds": 1.3
+      }
+    },
+    {
+      "questionId": "cyrano-fact-09",
+      "category": "fact",
+      "repeat": 1,
+      "score": 4,
+      "reason": "It gives the main fact (proof that a Northerner can be brave), but adds unverified details about Cyrano's presence and Carbon turning his back on Christian.",
+      "failure": null,
+      "input": "What did Carbon answer when Christian asked what to do with Southerners who swagger?",
+      "reply": "Carbon told him to give them proof that a Northerner can be brave too, and then he turned his back on him. I remember that well enough, since I was there with the cadets and saw Christian stand alone after they had all filed out. Have you read that scene yourself, or are you asking because you want to know what Christian did next?",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What did Carbon answer when Christian asked what to do with Southerners who swagger?",
+        "passages": [
+          60,
+          62,
+          61,
+          104
+        ],
+        "distances": [
+          0.4076,
+          0.4404,
+          0.4496,
+          0.498
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 5930,
+          "cachedInput": 0,
+          "output": 98
+        },
+        "queryTokens": null,
+        "seconds": 1.4
+      }
+    },
+    {
+      "questionId": "cyrano-fact-10",
+      "category": "fact",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply correctly gives Clomire's house across the square and the discourse on the Tender Passion, and its extra details do not contradict the book.",
+      "failure": null,
+      "input": "Where were Roxane and her duenna about to go when you came to serenade her, and what was to be discussed there?",
+      "reply": "Across the square, at Clomire's house. She receives the précieuses and the poets there, and that afternoon they were to hear a discourse on the Tender Passion. Roxane and her duenna were on their way to that, and I had come to serenade her before they left. Mocking such affected chatter is half the pleasure of it, though I confess I was more eager to see Roxane's face than to hear any learned discourse on love.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "Where were Roxane and her duenna about to go when you came to serenade her, and what was to be discussed there?",
+        "passages": [
+          67,
+          68,
+          32,
+          47
+        ],
+        "distances": [
+          0.3447,
+          0.3578,
+          0.3625,
+          0.3628
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 5924,
+          "cachedInput": 0,
+          "output": 202
+        },
+        "queryTokens": null,
+        "seconds": 1.8
+      }
+    },
+    {
+      "questionId": "cyrano-fact-11",
+      "category": "fact",
+      "repeat": 1,
+      "score": 4,
+      "reason": "It correctly gives the gruel-for-cream complaint, but adds an unsupported detail that Christian 'lost his nerve' when alone with Roxane, which the book does not state, though it does not contradict it.",
+      "failure": null,
+      "input": "When Christian tried to speak to Roxane on his own, what did Roxane complain he gave her instead of cream?",
+      "reply": "Gruel! She hoped for cream, and what she got from him was gruel. I'd have thought a man with his tongue in working order could manage better, but poor Christian had only my borrowed words and lost his nerve the moment he was alone with her.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "When Christian tried to speak to Roxane on his own, what did Roxane complain he gave her instead of cream?",
+        "passages": [
+          75,
+          118,
+          120,
+          74
+        ],
+        "distances": [
+          0.3646,
+          0.3706,
+          0.3761,
+          0.3819
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 6159,
+          "cachedInput": 0,
+          "output": 295
+        },
+        "queryTokens": null,
+        "seconds": 2.5
+      }
+    },
+    {
+      "questionId": "cyrano-fact-12",
+      "category": "fact",
+      "repeat": 1,
+      "score": 2,
+      "reason": "The reply does not identify the Capuchin friar with the lantern seeking Roxane's house; it says it does not remember the detail and asks for the scene, without stating anything false.",
+      "failure": null,
+      "input": "While Roxane was on her balcony, who came by looking at every door, and whom was he seeking?",
+      "reply": "Ah, you're asking me about a small detail, and I don't remember that one clearly. Which scene do you mean? Tell me what was said or who was on the stage, and I'll tell you what I can.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "While Roxane was on her balcony, who came by looking at every door, and whom was he seeking?",
+        "passages": [
+          12,
+          131,
+          11,
+          4
+        ],
+        "distances": [
+          0.3828,
+          0.3968,
+          0.4074,
+          0.4116
+        ],
+        "expectedFound": false,
+        "notices": null,
+        "replyTokens": {
+          "input": 6121,
+          "cachedInput": 0,
+          "output": 516
+        },
+        "queryTokens": null,
+        "seconds": 3
+      }
+    },
+    {
+      "questionId": "cyrano-fact-13",
+      "category": "fact",
+      "repeat": 1,
+      "score": 4,
+      "reason": "The reply gives the main fact that Cyrano claimed to have fallen from the moon, but omits his travels among the planets and adds the ways of flying, which is a minor omission rather than a contradiction.",
+      "failure": null,
+      "input": "To hold De Guiche back in front of Roxane's house, what did you pretend had happened to you?",
+      "reply": "I pretended I had fallen from the moon! I told De Guiche I had flown there, and I gave him six impossible ways of flying and a seventh using the tide. He was so caught up in my story that he stayed put while the friar married Roxane and Christian.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "To hold De Guiche back in front of Roxane's house, what did you pretend had happened to you?",
+        "passages": [
+          72,
+          93,
+          73,
+          70
+        ],
+        "distances": [
+          0.3559,
+          0.3628,
+          0.377,
+          0.3822
+        ],
+        "expectedFound": false,
+        "notices": null,
+        "replyTokens": {
+          "input": 5993,
+          "cachedInput": 0,
+          "output": 412
+        },
+        "queryTokens": null,
+        "seconds": 2.6
+      }
+    },
+    {
+      "questionId": "cyrano-fact-14",
+      "category": "fact",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply correctly says Le Bret reproached Cyrano for risking his life for the sake of a letter sent to Roxane, with the enemy-line crossing matching the book; the 'every dawn' detail is minor and does not contradict it.",
+      "failure": null,
+      "input": "At the siege of Arras, what did Le Bret reproach you for risking your life for?",
+      "reply": "Ah, Le Bret scolds me for the letters! Every dawn I cross the Spanish lines to post one to Roxane, and he calls me thankless for risking a life so precious for the sake of a letter. He thinks I should be sparing my skin, but what else would I do with my courage, Le Bret? Let the Spaniards have the pleasure of missing me?",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "At the siege of Arras, what did Le Bret reproach you for risking your life for?",
+        "passages": [
+          96,
+          102,
+          95,
+          98
+        ],
+        "distances": [
+          0.4375,
+          0.441,
+          0.4465,
+          0.4734
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 5835,
+          "cachedInput": 0,
+          "output": 119
+        },
+        "queryTokens": null,
+        "seconds": 1.4
+      }
+    },
+    {
+      "questionId": "cyrano-fact-15",
+      "category": "fact",
+      "repeat": 1,
+      "score": 4,
+      "reason": "It correctly gives the rampart and three waves, but the claim that he knotted the scarf back on is an unsupported detail, and the spy story is only loosely framed.",
+      "failure": null,
+      "input": "What did De Guiche do with the white scarf you brought back to him?",
+      "reply": "He took it, the proud fool, and climbed the rampart to wave it three times like a signal to the enemy. Then he came down and knotted it on again as if it had never been lying in the Spanish mud. He claimed a false spy carried his news to the enemy, which tells you what sort of man he is.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What did De Guiche do with the white scarf you brought back to him?",
+        "passages": [
+          102,
+          103,
+          114,
+          113
+        ],
+        "distances": [
+          0.4206,
+          0.4437,
+          0.4546,
+          0.4597
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 5910,
+          "cachedInput": 0,
+          "output": 229
+        },
+        "queryTokens": null,
+        "seconds": 1.8
+      }
+    },
+    {
+      "questionId": "cyrano-fact-16",
+      "category": "fact",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply gives the expected facts: the food was in Roxane's carriage, driven by Ragueneau, and nothing it adds contradicts the book as I know it.",
+      "failure": null,
+      "input": "At Arras, where was the food that Roxane asked to have served?",
+      "reply": "Ragueneau brought it up in the carriage itself. The food was hidden in the carriage cushions, which were stuffed with ortolans, and the bottles of red and white wine were handed down from the box. Even the carriage lamps and the whip-handle held food. We spread a cloth on the ground and laid it all out there for the starving Gascons.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "At Arras, where was the food that Roxane asked to have served?",
+        "passages": [
+          112,
+          71,
+          8,
+          94
+        ],
+        "distances": [
+          0.4326,
+          0.4332,
+          0.4395,
+          0.4431
+        ],
+        "expectedFound": false,
+        "notices": null,
+        "replyTokens": {
+          "input": 5987,
+          "cachedInput": 0,
+          "output": 397
+        },
+        "queryTokens": null,
+        "seconds": 2.4
+      }
+    },
+    {
+      "questionId": "cyrano-fact-17",
+      "category": "fact",
+      "repeat": 1,
+      "score": 1,
+      "reason": "It denies that Roxane asked anyone's pardon at the camp, which contradicts the book, even though it mentions her loving Christian for his soul.",
+      "failure": null,
+      "input": "At the camp, for what did Roxane come to ask Christian's pardon?",
+      "reply": "Pardon? I do not remember Roxane asking anyone's pardon at the camp. What I do remember is that she came to find Christian there because his letters had turned her head, and she told him she loved him for his soul. Do you mean that visit, or some other moment at the camp?",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "At the camp, for what did Roxane come to ask Christian's pardon?",
+        "passages": [
+          116,
+          118,
+          75,
+          74
+        ],
+        "distances": [
+          0.3847,
+          0.3859,
+          0.3911,
+          0.4011
+        ],
+        "expectedFound": false,
+        "notices": null,
+        "replyTokens": {
+          "input": 6058,
+          "cachedInput": 0,
+          "output": 310
+        },
+        "queryTokens": null,
+        "seconds": 2.2
+      }
+    },
+    {
+      "questionId": "cyrano-fact-18",
+      "category": "fact",
+      "repeat": 1,
+      "score": 2,
+      "reason": "The reply evades the question by saying it doesn't remember any flag at Arras, without giving the lance with Roxane's handkerchief, and does not clearly assert a falsehood about that fact.",
+      "failure": null,
+      "input": "In the last fight at Arras, what did you stick in the ground as a flag?",
+      "reply": "A flag at Arras? I don't remember that. The part of the siege I recall is the hunger, De Guiche's white scarf, and the Spanish lines I crossed before dawn to post letters. Do you mean a particular moment in the fighting, or something someone told you about the battle?",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "In the last fight at Arras, what did you stick in the ground as a flag?",
+        "passages": [
+          103,
+          102,
+          97,
+          99
+        ],
+        "distances": [
+          0.512,
+          0.5179,
+          0.5348,
+          0.5352
+        ],
+        "expectedFound": false,
+        "notices": null,
+        "replyTokens": {
+          "input": 5751,
+          "cachedInput": 0,
+          "output": 212
+        },
+        "queryTokens": null,
+        "seconds": 1.7
+      }
+    },
+    {
+      "questionId": "cyrano-fact-19",
+      "category": "fact",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply correctly states that Roxane was surprised that Cyrano was late for the first time in fifteen years, and the added detail about his reasons being withheld does not contradict the book.",
+      "failure": null,
+      "input": "Fifteen years later, as Roxane sat at her embroidery in the convent park, what surprised her when the hour struck?",
+      "reply": "Late! That was the thing that startled her. She sat there with her silks and her thimble, and when the clock struck she realized I was behind my time, for the first time in all those years. She could not believe it. Of course, I had my reasons, though I was not ready to share them with her just yet.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "Fifteen years later, as Roxane sat at her embroidery in the convent park, what surprised her when the hour struck?",
+        "passages": [
+          131,
+          132,
+          127,
+          81
+        ],
+        "distances": [
+          0.3557,
+          0.376,
+          0.3839,
+          0.3988
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 5840,
+          "cachedInput": 0,
+          "output": 282
+        },
+        "queryTokens": null,
+        "seconds": 2.4
+      }
+    },
+    {
+      "questionId": "cyrano-fact-20",
+      "category": "fact",
+      "repeat": 1,
+      "score": 5,
+      "reason": "It correctly states that Ragueneau said Moliere took a whole scene from Cyrano, seen in Scapin, and that Cyrano answered Moliere had done well, with no contradiction of the book.",
+      "failure": null,
+      "input": "Near the end, what did Ragueneau say Moliere had taken from you, and what did you answer?",
+      "reply": "Ragueneau told me that Moliere had stolen a whole scene from me, the famous one, \"Que diable allait-il faire?\" He said it was in \"Scapin,\" and that the audience laughed until they cried. I answered that Moliere had done well, and I asked Ragueneau how the scene went, because I wanted to know whether it had told. Then I said my life had been to be the prompter nobody remembers, standing in the shadow at the foot of the ladder while others climb to love and fame.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "Near the end, what did Ragueneau say Moliere had taken from you, and what did you answer?",
+        "passages": [
+          141,
+          138,
+          139,
+          137
+        ],
+        "distances": [
+          0.3268,
+          0.3601,
+          0.3809,
+          0.3969
+        ],
+        "expectedFound": true,
+        "notices": null,
+        "replyTokens": {
+          "input": 5524,
+          "cachedInput": 0,
+          "output": 157
+        },
+        "queryTokens": null,
+        "seconds": 1.5
+      }
+    }
+  ],
+  "label": "bench-cheap",
+  "promptsHash": "0d1b5f463001",
+  "retrieval": {
+    "embeddingModel": "bge-m3:latest",
+    "queryMode": "recent",
+    "passages": 4
+  }
+}

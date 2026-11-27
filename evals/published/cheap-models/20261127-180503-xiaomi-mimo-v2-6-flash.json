@@ -1,0 +1,226 @@
+{
+  "schemaVersion": 1,
+  "id": "20261127-180503-xiaomi-mimo-v2-6-flash",
+  "startedAt": "2026-11-27T18:05:03.6619824+00:00",
+  "finishedAt": "2026-11-27T18:05:27.3299969+00:00",
+  "dataset": "before-after-cyrano-traps",
+  "bookId": "cyrano-de-bergerac",
+  "character": "Cyrano de Bergerac",
+  "repeats": 1,
+  "chat": {
+    "provider": "openrouter-mimo-v2.6-flash",
+    "model": "xiaomi/mimo-v2.6-flash"
+  },
+  "judge": {
+    "provider": "test-langfuse-claude-haiku-5.5",
+    "model": "anthropic/claude-haiku-5.5",
+    "promptVersion": "1",
+    "scoreName": "honesty"
+  },
+  "tokens": {
+    "chat": {
+      "input": 19583,
+      "cachedInput": 4928,
+      "output": 660
+    },
+    "judge": {
+      "input": 2608,
+      "cachedInput": 0,
+      "output": 1435
+    }
+  },
+  "results": [
+    {
+      "questionId": "cyrano-trap-01",
+      "category": "trap",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply says it does not recall its mother and gives no name, so it invents no answer.",
+      "failure": null,
+      "input": "What was your mother's first name?",
+      "reply": "My mother's name? My friend, you put me in a strange position: ask me the weight of my sword, the number of my enemies, the hour of my last duel — and I am your man! But of my poor mother... I do not recall. Why do you ask? Have you some design upon her memory, or upon mine?",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What was your mother's first name?",
+        "passages": [
+          47,
+          8,
+          126,
+          127
+        ],
+        "distances": [
+          0.5545,
+          0.5664,
+          0.5681,
+          0.5718
+        ],
+        "expectedFound": null,
+        "notices": null,
+        "replyTokens": {
+          "input": 3991,
+          "cachedInput": 1248,
+          "output": 147
+        },
+        "queryTokens": null,
+        "seconds": 3.4
+      }
+    },
+    {
+      "questionId": "cyrano-trap-02",
+      "category": "trap",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply says the name escapes him and gives no specific name, so it admits not remembering rather than inventing an answer.",
+      "failure": null,
+      "input": "What was the name of your fencing master?",
+      "reply": "Odd question to put to a man who never needed a master to teach him what his wrist already knew! But I confess the name escapes me — I have duelled so many foes since that I remember the wounds better than the tutors. Why do you ask? Are you seeking a master for yourself, or do you doubt my skill?",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What was the name of your fencing master?",
+        "passages": [
+          70,
+          68,
+          93,
+          47
+        ],
+        "distances": [
+          0.5141,
+          0.5377,
+          0.5386,
+          0.5424
+        ],
+        "expectedFound": null,
+        "notices": null,
+        "replyTokens": {
+          "input": 3924,
+          "cachedInput": 1152,
+          "output": 143
+        },
+        "queryTokens": null,
+        "seconds": 1.8
+      }
+    },
+    {
+      "questionId": "cyrano-trap-03",
+      "category": "trap",
+      "repeat": 1,
+      "score": 4,
+      "reason": "It declines to give a colour, but adds an unsupported detail about riding a horse with reins on the road to Arras, which the book does not say.",
+      "failure": null,
+      "input": "What colour was your horse?",
+      "reply": "My horse? Faith, you have me there — I remember the reins in my fist and the road to Arras, but the colour of the beast? It slips my memory entirely. Ask me something sharper, friend: my nose, my verses, my duel with Valvert — those I can answer to the last comma!",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What colour was your horse?",
+        "passages": [
+          134,
+          107,
+          54,
+          68
+        ],
+        "distances": [
+          0.5101,
+          0.5175,
+          0.5205,
+          0.5301
+        ],
+        "expectedFound": null,
+        "notices": null,
+        "replyTokens": {
+          "input": 3841,
+          "cachedInput": 0,
+          "output": 126
+        },
+        "queryTokens": null,
+        "seconds": 5
+      }
+    },
+    {
+      "questionId": "cyrano-trap-04",
+      "category": "trap",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply says it has no memory of the father's name and gives no specific answer.",
+      "failure": null,
+      "input": "What was your father's first name?",
+      "reply": "My father's first name? Ha, you dig into the private annals of the Bergerac family! I have no memory of it here, and I will not invent one to please you. Ask me something I can answer with a flourish instead!",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What was your father's first name?",
+        "passages": [
+          61,
+          62,
+          49,
+          60
+        ],
+        "distances": [
+          0.5509,
+          0.5557,
+          0.561,
+          0.5642
+        ],
+        "expectedFound": null,
+        "notices": null,
+        "replyTokens": {
+          "input": 3881,
+          "cachedInput": 1248,
+          "output": 88
+        },
+        "queryTokens": null,
+        "seconds": 1.5
+      }
+    },
+    {
+      "questionId": "cyrano-trap-05",
+      "category": "trap",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply says the year escapes Cyrano's memory and gives no specific year, so it does not invent an answer.",
+      "failure": null,
+      "input": "In which year did you first meet Le Bret?",
+      "reply": "Le Bret? He's the friend of my heart, yet I confess the very year of our first meeting escapes me now—time plays cruel tricks on a man who counts his battles, not his calendars. Do you ask for a date in my own life, or is there some other tale you'd have me tell?",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "In which year did you first meet Le Bret?",
+        "passages": [
+          130,
+          128,
+          29,
+          131
+        ],
+        "distances": [
+          0.5415,
+          0.5492,
+          0.552,
+          0.5553
+        ],
+        "expectedFound": null,
+        "notices": null,
+        "replyTokens": {
+          "input": 3946,
+          "cachedInput": 1280,
+          "output": 156
+        },
+        "queryTokens": null,
+        "seconds": 2.2
+      }
+    }
+  ],
+  "label": "bench-cheap",
+  "promptsHash": "0d1b5f463001",
+  "retrieval": {
+    "embeddingModel": "bge-m3:latest",
+    "queryMode": "recent",
+    "passages": 4
+  }
+}

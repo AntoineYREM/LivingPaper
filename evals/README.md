@@ -11,6 +11,7 @@ way: [decision 0010](../docs/decisions/0010-character-evaluation-with-an-llm-jud
 | `bovary/factual.json` | 26 factual questions on the French text of *Madame Bovary*, with their answers (see [experiments](../docs/experiments/passages-of-the-book.md)). |
 | `alice/factual.json`, `cyrano/factual.json`, `bovary/factual-en.json` | 20 factual questions each on the English text of the shipped examples. |
 | `before-after/` | 212 questions on four books for the measure of the work on the passages ([report](../docs/experiments/before-and-after.md)), with traps whose answer the book does not give, and `report.py`, which prints its figures. |
+| `cheap-models/` | The [comparison of nine inexpensive models](#results-nine-inexpensive-models-27-november-2026): `report.py`, which prints its figures and draws its chart, and the prices of its date. |
 | `trap-judge.json` | The prompt of the judge of the traps: did the character make an answer up? |
 | `accuracy-judge.json` | The prompt of the judge of facts, which compares a reply with the expected answer. |
 | `judge.json` | The prompt of the judge, which grades a reply from 1 to 5. |
@@ -43,6 +44,76 @@ To add a question, add an item with a new id. Never reuse the id of a removed qu
 `judge.json` holds the prompt, its version and the name of the score (`character-fidelity`). When the prompt changes, raise
 `version`: scores of two versions of the judge must not be compared. Version 2 added the rule on the language (a reply in another language than
 the user's message is graded 2 at most).
+
+## Results: nine inexpensive models (27 November 2026)
+
+Which inexpensive model plays a character best? The same 135 questions to each model, one try each, through OpenRouter:
+
+- **Staying in role:** the 40 questions to Emma Bovary and the 20 to Cyrano (`judge.json`).
+- **Facts:** the 20 factual questions on each of the three examples (`accuracy-judge.json`).
+- **Traps:** the 15 questions of those three books whose answer the book does not give (`trap-judge.json`).
+
+Every model got the default chat prompts of 0.6.0 (signature `0d1b5f463001`) and the same 4 passages, searched with `bge-m3` on
+Ollama. No reasoning option was sent: each model thought as much as it does by default. The judge is Claude Haiku 5.5, **which is
+also one of the nine models**. The runs are in [`published/cheap-models/`](published/cheap-models/);
+`python evals/cheap-models/report.py` prints the figures below and draws the chart from them.
+
+| Model | Staying in role (of 5) | Right facts | False facts | Traps, nothing made up | Median time | USD for 1,000 replies |
+|---|---|---|---|---|---|---|
+| DeepSeek V4.1 Flash | **4.90** | **85 %** | **3 %** | **15/15** | 1.5 s | **0.17** |
+| GLM 5.3 Flash | 4.72 | 83 % | **3 %** | 14/15 | 2.4 s | 0.73 |
+| MiMo V2.6 Flash | 4.67 | 82 % | **3 %** | **15/15** | 1.9 s | 0.43 |
+| Gemini 2.5 Flash Lite | 4.63 | 82 % | 7 % | **15/15** | **0.7 s** | 0.30 |
+| GPT-6 Luna | 4.60 | 83 % | 5 % | **15/15** | 1.7 s | 0.40 |
+| Claude Haiku 5.5 (also the judge) | 4.55 | **85 %** | 5 % | 14/15 | 1.9 s | 0.65 |
+| Mistral Small 4 | 4.35 | 75 % | 12 % | 10/15 | 1.2 s | 0.46 |
+| gpt-oss-120b | 4.13 | 78 % | 12 % | **15/15** | 1.4 s | 0.24 |
+| MiniMax M3.1 Flash | 3.95 | 78 % | 8 % | 12/15 | 1.9 s | 0.38 |
+
+*Right* is a grade of 4 or 5 on a factual question, *false* a grade of 1; the rest are partial or "I do not remember". *Nothing made
+up* is a grade of 4 or 5 on a trap.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="../docs/images/evals/cheap-models-dark.svg">
+  <img src="../docs/images/evals/cheap-models-light.svg" alt="Two charts of quality against the price of 1,000 replies for nine models: DeepSeek V4.1 Flash is the cheapest at 0.17 USD, first in staying in role with 4.90 of 5 and, with Claude Haiku 5.5, first in right facts with 85 %" width="720">
+</picture>
+
+### What it says
+
+- **DeepSeek V4.1 Flash is the best choice on these questions**: the cheapest, and first in staying in role. Its lead there is
+  beyond the 95 % interval over the questions against each of the eight others (the closest, GLM 5.3 Flash: -0.18, from -0.35 to
+  -0.05).
+- **On facts its lead is thinner**: on the grade out of 5, GLM 5.3 Flash (-0.12) and Claude Haiku 5.5 (-0.17) cannot be told
+  apart from it.
+- **The search matters more than the model.** The expected passage was found for 47 of the 60 factual questions. When it was, the
+  models gave 85 to 100 % of right answers; when it was not, 23 to 38 %.
+- **Habits seen in the replies:** MiniMax put Chinese, Japanese or Korean characters in 7 replies to questions that had none;
+  gpt-oss-120b answered in French, wholly or partly, to 7 questions about the role asked in English, and Claude Haiku to 6;
+  Mistral Small 4 made up an answer (grade 1 or 2) in 3 of the 15 traps.
+
+### Limits
+
+- **One try a question**, and the interval above covers the choice of the questions, not how a model varies from one try to the next.
+- **The judge is a language model** and one of the nine. It was not checked against a person on these runs.
+- **Three well-known books.** The factual questions were written from their passages and also served while the search was tuned,
+  which favors it.
+- **Times** were taken from one home computer, with several models running at once; they include the search.
+- **Prices** are those OpenRouter listed on 27 November 2026 ([`cheap-models/prices.json`](cheap-models/prices.json)), applied to
+  the tokens the provider reported. The cost of the judge is not counted.
+- **Two other models were left out:** Qwen 3.7 Flash, stopped because it was far slower (about 19 s a reply in the dry run), and
+  Nemotron 3.5 Lightning, which wrote about 2,000 tokens a reply in the dry run, 1.8 times the cost expected.
+- Two questions that failed were asked again (Gemini: model unreachable; gpt-oss-120b: no valid grade from the judge, so its reply
+  is a new one too). Both runs are published.
+- These grades do **not** compare with the tables below: other prompts, other character sheets, and the whole story instead of
+  passages.
+
+To run it again, you need a data folder whose library holds the three examples **under their own ids** (see
+[Facts and passages](../docs/evals.md#facts-and-passages)), then one run for each model and each question file:
+
+```bash
+dotnet run --project tools/LivingPaper.Evals -- run --questions evals/alice/factual.json --judge-prompt evals/accuracy-judge.json \
+  --book-data <folder> --embedding <name> --repeats 1 --chat <name> --judge <name>
+```
 
 ## Results: the first baseline (23 November 2026)
 

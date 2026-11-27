@@ -7,6 +7,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Added
+
+- **A comparison of nine inexpensive models** (PAPER-97): 135 questions each on the three examples (staying in role, facts, traps), one try,
+  with the same passages. DeepSeek V4.1 Flash came first in staying in role and was the cheapest; the judge, Claude Haiku 5.5, is
+  one of the nine. Table and chart in the README, details and limits in [evals/README.md](evals/README.md), runs and the script
+  that draws the chart in the repository.
+
 ## [0.6.0] - 2026-11-27
 
 Characters make up fewer facts, and find the right passage after a change of subject. Books analyzed with 0.5.0 need nothing:

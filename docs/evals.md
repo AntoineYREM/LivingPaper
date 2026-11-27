@@ -34,6 +34,7 @@ Each question is asked several times (3 by default), because a model does not an
 | Command `calibrate` (judge against human grades) | same | to do |
 | First baseline on five models, with the runs and their limits | `evals/README.md`, `evals/published/` | done (23 November 2026) |
 | Before and after the work on the passages: 212 new questions, runs, figures and chart | `evals/before-after/`, `evals/published/before-after/`, [report](experiments/before-and-after.md) | done (27 November 2026) |
+| Nine inexpensive models on 135 questions: runs, figures and chart | `evals/cheap-models/`, `evals/published/cheap-models/`, [results](../evals/README.md#results-nine-inexpensive-models-27-november-2026) | done (27 November 2026) |
 
 ## How to run it
 

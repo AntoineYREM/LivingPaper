@@ -2,7 +2,9 @@
 
 Runs of the evaluation tool that were chosen to be shared in the repository: the figures behind the results of the README and of
 [evals/README.md](../README.md). The folder `before-after/` holds the runs of the
-[measure of the work on the passages](../../docs/experiments/before-and-after.md); the command `charts` does not read it.
+[measure of the work on the passages](../../docs/experiments/before-and-after.md), and `cheap-models/` those of the
+[comparison of nine inexpensive models](../README.md#results-nine-inexpensive-models-27-november-2026); the command `charts` reads
+neither.
 
 Every run the tool makes is saved in `evals/runs/`, which git ignores because a run holds the text of the questions and of the replies.
 To publish one, copy its file here:

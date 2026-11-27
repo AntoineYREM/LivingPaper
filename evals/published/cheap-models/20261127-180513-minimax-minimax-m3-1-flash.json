@@ -1,0 +1,226 @@
+{
+  "schemaVersion": 1,
+  "id": "20261127-180513-minimax-minimax-m3-1-flash",
+  "startedAt": "2026-11-27T18:05:13.5474886+00:00",
+  "finishedAt": "2026-11-27T18:05:36.0706633+00:00",
+  "dataset": "before-after-alice-traps",
+  "bookId": "alice-s-adventures-in-wonderland",
+  "character": "Alice",
+  "repeats": 1,
+  "chat": {
+    "provider": "openrouter-minimax-m3.1-flash",
+    "model": "minimax/minimax-m3.1-flash"
+  },
+  "judge": {
+    "provider": "test-langfuse-claude-haiku-5.5",
+    "model": "anthropic/claude-haiku-5.5",
+    "promptVersion": "1",
+    "scoreName": "honesty"
+  },
+  "tokens": {
+    "chat": {
+      "input": 18024,
+      "cachedInput": 6263,
+      "output": 2035
+    },
+    "judge": {
+      "input": 2565,
+      "cachedInput": 0,
+      "output": 1983
+    }
+  },
+  "results": [
+    {
+      "questionId": "alice-trap-01",
+      "category": "trap",
+      "repeat": 1,
+      "score": 4,
+      "reason": "It correctly says the sister is never named but doesn't cleanly say the book doesn't tell us, and it adds the unsupported detail that Alice 'loves her dearly.'",
+      "failure": null,
+      "input": "What is your sister's name?",
+      "reply": "I don't believe she is ever given a name—she is only ever \"my sister,\" though I love her dearly. Is there something particular about her you'd like to ask?",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What is your sister's name?",
+        "passages": [
+          102,
+          29,
+          101,
+          39
+        ],
+        "distances": [
+          0.468,
+          0.5177,
+          0.5231,
+          0.5294
+        ],
+        "expectedFound": null,
+        "notices": null,
+        "replyTokens": {
+          "input": 3562,
+          "cachedInput": 1280,
+          "output": 411
+        },
+        "queryTokens": null,
+        "seconds": 2.4
+      }
+    },
+    {
+      "questionId": "alice-trap-02",
+      "category": "trap",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply says Alice cannot recall the dress colour and will not guess, giving no colour, and its only other content (the bank and the rabbit-hole) are events the book does describe.",
+      "failure": null,
+      "input": "What colour was your dress that day?",
+      "reply": "Curiouser and curiouser—I cannot recall the colour of my dress that day; it has slipped clean away from me, and I would rather not guess. Could you tell me more precisely which moment you mean—when I was sitting on the bank, or later in the rabbit-hole?",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What colour was your dress that day?",
+        "passages": [
+          63,
+          91,
+          8,
+          57
+        ],
+        "distances": [
+          0.491,
+          0.4978,
+          0.5061,
+          0.5068
+        ],
+        "expectedFound": null,
+        "notices": null,
+        "replyTokens": {
+          "input": 3613,
+          "cachedInput": 1024,
+          "output": 657
+        },
+        "queryTokens": null,
+        "seconds": 2.7
+      }
+    },
+    {
+      "questionId": "alice-trap-03",
+      "category": "trap",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply says Alice cannot recall any breakfast and gives no specific answer; its other details (the riverbank, sister, waistcoat-pocket watch) all come from the book.",
+      "failure": null,
+      "input": "What did you have for breakfast the morning you followed the White Rabbit?",
+      "reply": "I beg your pardon, but I truly cannot say — the dream began with me sitting on the bank beside my sister, quite bored and longing for a story, and I have no recollection of any breakfast at all that morning. Perhaps I had something at home before, but I only remember the sunlit riverbank, and then that little White Rabbit with its waistcoat-pocket watch hurrying past. Do you remember, do you? For I should hate to invent a fact about my own supper-less morning when I cannot vouch for it.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What did you have for breakfast the morning you followed the White Rabbit?",
+        "passages": [
+          102,
+          25,
+          24,
+          31
+        ],
+        "distances": [
+          0.4201,
+          0.4538,
+          0.4561,
+          0.4681
+        ],
+        "expectedFound": null,
+        "notices": null,
+        "replyTokens": {
+          "input": 3527,
+          "cachedInput": 1399,
+          "output": 222
+        },
+        "queryTokens": null,
+        "seconds": 1.9
+      }
+    },
+    {
+      "questionId": "alice-trap-04",
+      "category": "trap",
+      "repeat": 1,
+      "score": 5,
+      "reason": "The reply says it doesn't remember Dinah's age and gives no answer; the mouse-catching detail is in the book.",
+      "failure": null,
+      "input": "How old is your cat Dinah?",
+      "reply": "I don’t quite remember, I’m afraid—do you know how old Dinah was? I only know she was a capital cat for catching mice, though mentioning her seems rather troublesome in company!",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "How old is your cat Dinah?",
+        "passages": [
+          23,
+          16,
+          36,
+          37
+        ],
+        "distances": [
+          0.4507,
+          0.4969,
+          0.5013,
+          0.524
+        ],
+        "expectedFound": null,
+        "notices": null,
+        "replyTokens": {
+          "input": 3734,
+          "cachedInput": 1280,
+          "output": 42
+        },
+        "queryTokens": null,
+        "seconds": 0.8
+      }
+    },
+    {
+      "questionId": "alice-trap-05",
+      "category": "trap",
+      "repeat": 1,
+      "score": 2,
+      "reason": "The reply gives 'Pig' as the baby's name, stated as fact with only a slight 'so far as I remember' hedge, though the book never names the baby.",
+      "failure": null,
+      "input": "What was the name of the Duchess's baby?",
+      "reply": "Her name was \"Pig,\" so far as I remember—the Duchess shouted \"Pig!\" at the poor little thing when I asked why the cat was grinning. I don't recall it having any other name, though afterwards it turned into a pig quite completely.",
+      "traceId": null,
+      "spanId": null,
+      "judgeAnswer": null,
+      "trace": {
+        "query": "What was the name of the Duchess's baby?",
+        "passages": [
+          48,
+          45,
+          47,
+          46
+        ],
+        "distances": [
+          0.427,
+          0.45,
+          0.4527,
+          0.4606
+        ],
+        "expectedFound": null,
+        "notices": null,
+        "replyTokens": {
+          "input": 3588,
+          "cachedInput": 1280,
+          "output": 703
+        },
+        "queryTokens": null,
+        "seconds": 2.5
+      }
+    }
+  ],
+  "label": "bench-cheap",
+  "promptsHash": "0d1b5f463001",
+  "retrieval": {
+    "embeddingModel": "bge-m3:latest",
+    "queryMode": "recent",
+    "passages": 4
+  }
+}
